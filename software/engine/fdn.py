@@ -1,1 +1,1 @@
-@[/tmp/fdn_content.py]
+PLACEHOLDER_WILL_REPLACE
