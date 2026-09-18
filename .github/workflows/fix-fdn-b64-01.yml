@@ -1,0 +1,32 @@
+name: fix-fdn-b64-01
+on: workflow_dispatch
+jobs:
+  fix:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - name: Fix one-char corruption in 01.b64
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import hashlib
+          p = Path('software/engine/.fdn_b64/01.b64')
+          c = p.read_text()
+          bad = 'cHJpbWVzW2ldICUgOTcgIC8gOTcuMA'
+          good = 'cHJpbWVzW2ldICUgOTcpIC8gOTcuMA'
+          assert bad in c, 'bad pattern missing'
+          assert c.count(bad)==1
+          c2 = c.replace(bad, good, 1)
+          blob = hashlib.sha1(b'blob %d\0'%len(c2.encode())+c2.encode()).hexdigest()
+          print('blob', blob)
+          assert blob == 'a186b5f8965fdd1ee210ac59f28b6b09690c7d9e'
+          p.write_text(c2)
+          PY
+      - run: |
+          git config user.name idle-hanz
+          git config user.email 68693929+idle-hanz@users.noreply.github.com
+          git add software/engine/.fdn_b64/01.b64
+          git commit -m "Fix software/engine/.fdn_b64/01.b64 one-char corruption"
+          git push
