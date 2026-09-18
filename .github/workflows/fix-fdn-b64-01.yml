@@ -1,5 +1,6 @@
 name: fix-fdn-b64-01
-on: workflow_dispatch
+on:
+  workflow_dispatch:
 jobs:
   fix:
     runs-on: ubuntu-latest
@@ -7,26 +8,28 @@ jobs:
       contents: write
     steps:
       - uses: actions/checkout@v4
-      - name: Fix one-char corruption in 01.b64
+      - name: Fix one-byte corruption in 01.b64
         run: |
-          python3 - <<'PY'
+          python3 << 'PY'
           from pathlib import Path
           import hashlib
-          p = Path('software/engine/.fdn_b64/01.b64')
+          p = Path("software/engine/.fdn_b64/01.b64")
           c = p.read_text()
-          bad = 'cHJpbWVzW2ldICUgOTcgIC8gOTcuMA'
-          good = 'cHJpbWVzW2ldICUgOTcpIC8gOTcuMA'
-          assert bad in c, 'bad pattern missing'
-          assert c.count(bad)==1
+          bad = "cHJpbWVzW2ldICUgOTcgIC8gOTcuMC"
+          good = "cHJpbWVzW2ldICUgOTcpIC8gOTcuMC"
+          assert bad in c, repr(c[2400:2500])
+          assert c.count(bad) == 1
           c2 = c.replace(bad, good, 1)
-          blob = hashlib.sha1(b'blob %d\0'%len(c2.encode())+c2.encode()).hexdigest()
-          print('blob', blob)
-          assert blob == 'a186b5f8965fdd1ee210ac59f28b6b09690c7d9e'
+          nul = bytes([0])
+          blob = hashlib.sha1(b"blob %d" % len(c2.encode()) + nul + c2.encode()).hexdigest()
+          print("blob", blob)
+          assert blob == "a186b5f8965fdd1ee210ac59f28b6b09690c7d9e", blob
           p.write_text(c2)
           PY
-      - run: |
-          git config user.name idle-hanz
-          git config user.email 68693929+idle-hanz@users.noreply.github.com
+      - name: Commit fix
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add software/engine/.fdn_b64/01.b64
-          git commit -m "Fix software/engine/.fdn_b64/01.b64 one-char corruption"
+          git commit -m "fix: correct one-byte corruption in fdn_b64/01.b64"
           git push
