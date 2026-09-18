@@ -1,0 +1,7 @@
+Self-contained copy of /workspace/early-field/ modules.
+
+Run selfcheck from this directory (with parent venv active, numpy on path):
+
+  python selfcheck.py
+
+Key modules: early_field.py, fdn.py, moving_room_demo.py, selfcheck.py
