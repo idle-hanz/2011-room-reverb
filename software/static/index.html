@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>2011 Room Reverb</title>
+  <link rel="stylesheet" href="/static/css/app.css" />
+</head>
+<body>
+  <div class="app">
+    <header class="topbar">
+      <div class="brand">
+        <span class="brand-mark"></span>
+        <div>
+          <h1>2011 Room Reverb</h1>
+          <p class="tagline">Place on Floor · orbit in 3D · sculpt the early field</p>
+        </div>
+      </div>
+      <div class="top-actions">
+        <label class="file-btn">
+          <input type="file" id="wavInput" accept="audio/wav,.wav" hidden />
+          <span>Upload WAV</span>
+        </label>
+        <button type="button" class="btn primary" id="renderBtn">Render</button>
+      </div>
+    </header>
+    <main class="layout">
+      <section class="stage">
+        <div class="view-switch" role="tablist" aria-label="Room views">
+          <button type="button" class="view-tab active" data-view="edit" role="tab" aria-selected="true">Floor · Side · 3D</button>
+          <button type="button" class="view-tab" data-view="mic" role="tab">Mic</button>
+          <button type="button" class="view-tab" data-view="lattice" role="tab">Lattice</button>
+          <button type="button" class="view-tab" data-view="paths" role="tab">Paths</button>
+          <button type="button" class="view-tab" data-view="colour" role="tab">Colour</button>
+          <button type="button" class="view-tab" data-view="surfaces" role="tab">Surfaces</button>
+          <button type="button" class="view-tab" data-view="polar" role="tab">Polar 3D</button>
+          <div class="mic-toggles" id="micToggles" hidden>
+            <span class="mic-label">Mics</span>
+            <label class="mic-chip"><input type="checkbox" data-mic="L" /> L</label>
+            <label class="mic-chip"><input type="checkbox" data-mic="C" checked /> C</label>
+            <label class="mic-chip"><input type="checkbox" data-mic="R" /> R</label>
+            <button type="button" class="mic-all" id="micAll">All</button>
+          </div>
+        </div>
+
+        <div id="editViews">
+          <div class="view-row">
+            <div class="panel map-panel">
+              <div class="panel-head">
+                <h2>Floor plan</h2>
+                <span class="hint">Drag Src / Mic handles · empty click picks nearest</span>
+              </div>
+              <div class="tool-row">
+                <label class="link-heights" title="When on, source height and mic height stay equal">
+                  <input type="checkbox" id="link_heights" />
+                  <span>Link heights</span>
+                </label>
+                <span class="live-metres" id="liveMetres">—</span>
+              </div>
+              <div class="canvas-wrap">
+                <canvas id="floorCanvas" width="900" height="640" aria-label="Room floor plan XZ"></canvas>
+              </div>
+            </div>
+            <div class="panel view3d-panel">
+              <div class="panel-head">
+                <h2>3D room</h2>
+                <span class="hint">Orbit drag · pan Shift · scroll zoom · drag on Floor / Mic</span>
+              </div>
+              <div class="tool-row view3d-readout-row">
+                <span class="live-metres" id="liveMetres3d">—</span>
+              </div>
+              <div class="canvas-wrap view3d-wrap">
+                <canvas id="view3dCanvas" width="900" height="640" aria-label="3D room perspective"></canvas>
+              </div>
+            </div>
+          </div>
+          <div class="panel elev-panel">
+            <div class="panel-head">
+              <h2>Side elevation</h2>
+              <span class="hint">Drag Src H / Mic H · empty click picks nearest</span>
+            </div>
+            <div class="canvas-wrap">
+              <canvas id="elevCanvas" width="900" height="220" aria-label="Side elevation ZY"></canvas>
+            </div>
+          </div>
+        </div>
+
+
+        <div id="micViews" class="mic-desk" hidden>
+          <div class="mic-desk-grid">
+            <div class="panel mic-map-panel">
+              <div class="panel-head">
+                <h2>Top · plan</h2>
+                <span class="hint">Drag body to place · drag arc to yaw · Side for heights</span>
+              </div>
+              <div class="tool-row">
+                <label class="link-heights" title="When on, source height and mic height stay equal">
+                  <input type="checkbox" id="link_heights_mic" />
+                  <span>Link heights</span>
+                </label>
+                <span class="live-metres" id="liveMetresMic">—</span>
+              </div>
+              <div class="canvas-wrap mic-floor-wrap">
+                <canvas id="micFloorCanvas" width="900" height="480" aria-label="Mic stand top plan (zoomed)"></canvas>
+              </div>
+            </div>
+            <div class="panel mic-3d-panel">
+              <div class="panel-head">
+                <h2>3D · array</h2>
+                <span class="hint">Orbit only · stand + L/C/R look cones</span>
+              </div>
+              <div class="canvas-wrap mic-3d-wrap">
+                <canvas id="mic3dCanvas" width="900" height="480" aria-label="Mic array 3D close-up"></canvas>
+              </div>
+            </div>
+            <div class="panel mic-elev-panel">
+              <div class="panel-head">
+                <h2>Side · height</h2>
+                <span class="hint">Drag Src H / Mic H only (heights · no XZ)</span>
+              </div>
+              <div class="canvas-wrap mic-elev-wrap">
+                <canvas id="micElevCanvas" width="900" height="260" aria-label="Mic array side elevation (zoomed)"></canvas>
+              </div>
+            </div>
+            <div class="panel mic-polar-panel">
+              <div class="panel-head">
+                <h2>Polar · Left / Centre / Right</h2>
+                <span class="tag-assumed">Pattern × yaw</span>
+              </div>
+              <div class="mic-polar-trio" id="micPolarTrio">
+                <div class="mic-polar-col" data-cap="L">
+                  <div class="mic-polar-title cap-l">Left</div>
+                  <canvas id="micPolarL" width="220" height="220" aria-label="Left polar pattern"></canvas>
+                  <div class="mic-cap-slot" id="micCapSlotL"></div>
+                </div>
+                <div class="mic-polar-col" data-cap="C">
+                  <div class="mic-polar-title cap-c">Centre</div>
+                  <canvas id="micPolarC" width="220" height="220" aria-label="Centre polar pattern"></canvas>
+                  <div class="mic-cap-slot" id="micCapSlotC"></div>
+                </div>
+                <div class="mic-polar-col" data-cap="R">
+                  <div class="mic-polar-title cap-r">Right</div>
+                  <canvas id="micPolarR" width="220" height="220" aria-label="Right polar pattern"></canvas>
+                  <div class="mic-cap-slot" id="micCapSlotR"></div>
+                </div>
+              </div>
+              <p class="hint mic-desk-foot">Drag body to place · drag amber arc to yaw · Side for heights · pattern/yaw under each plot</p>
+            </div>
+          </div>
+        </div>
+
+        <div id="imageViews" class="panel image-panel" hidden>
+          <div class="panel-head">
+            <h2 id="imageViewTitle">Image lattice</h2>
+            <span class="hint" id="imageViewHint">Mirrored-room tiling · orbit Alt/RMB · pan Shift · scroll zoom</span>
+          </div>
+          <div class="tool-row paths-mode-row" id="pathsModeRow" hidden>
+            <span class="mic-label">Mode</span>
+            <button type="button" class="chip paths-mode-chip active" data-paths-mode="paths" aria-pressed="true">In-room paths</button>
+            <button type="button" class="chip paths-mode-chip" data-paths-mode="legs" aria-pressed="false">Last legs</button>
+          </div>
+          <div class="tool-row">
+            <span class="live-metres" id="liveMetresImg">—</span>
+          </div>
+          <div class="canvas-wrap image-wrap">
+            <canvas id="imageCanvas" width="1200" height="720" aria-label="Early-field image view"></canvas>
+          </div>
+        </div>
+
+        <div id="colourSurfacesViews" class="cs-views" hidden>
+          <div class="cs-split">
+            <div class="panel colour-panel">
+              <div class="panel-head">
+                <h2>Colour <span class="assumed-tag">ASSUMED long-term</span></h2>
+                <span class="hint">1/3-octave magnitude of wet IR · updates after Render</span>
+              </div>
+              <div class="colour-toolbar" id="colourToolbar" role="toolbar" aria-label="Colour compare and reference">
+                <div class="colour-legend" id="colourLegend" aria-live="polite">
+                  <span class="cleg now active"><i></i>Now</span>
+                  <span class="cleg last"><i></i>Last</span>
+                  <span class="cleg holda"><i></i>Hold A</span>
+                  <span class="cleg holdb"><i></i>Hold B</span>
+                </div>
+                <div class="colour-tools">
+                  <label class="colour-ref">
+                    <span>0 dB</span>
+                    <select id="colourRefMode" title="dB reference">
+                      <option value="peak" selected>Peak band</option>
+                      <option value="1khz">1 kHz</option>
+                    </select>
+                  </label>
+                  <button type="button" class="chip colour-hold-btn" id="colourHoldA" title="Snapshot Now into Hold A">Hold A</button>
+                  <button type="button" class="chip colour-hold-btn" id="colourHoldB" title="Snapshot Now into Hold B">Hold B</button>
+                  <button type="button" class="chip" id="colourClearCompare" title="Clear Last and Holds">Clear</button>
+                </div>
+              </div>
+              <div class="colour-face-badge" id="colourFaceBadge" title="Selected surface orientation (ASSUMED)">
+                <span class="cfb-arrow" id="colourFaceArrow">←</span>
+                <span class="cfb-text">
+                  <strong id="colourFaceName">A · Left</strong>
+                  <em id="colourFaceAxis">faces −X · ASSUMED</em>
+                </span>
+              </div>
+              <div class="colour-meta" id="colourMeta">Render to see room colouration</div>
+              <div class="colour-hover" id="colourHover" hidden>—</div>
+              <div class="canvas-wrap colour-wrap">
+                <canvas id="colourCanvas" width="1100" height="400" aria-label="1/3-octave Colour curve"></canvas>
+                <div class="colour-tooltip" id="colourTooltip" hidden></div>
+              </div>
+              <div class="colour-spark-block" id="colourSparkBlock">
+                <div class="surf-graph-label">This face · absorb×EQ <em id="colourSparkLabel">A · Left · faces −X · ASSUMED</em></div>
+                <canvas id="colourSparkCanvas" width="1100" height="72" aria-label="Selected surface EQ sparkline"></canvas>
+              </div>
+            </div>
+            <div class="panel surfaces-panel" id="surfacesPanel">
+              <div class="panel-head">
+                <h2>Surfaces <span class="assumed-tag">ASSUMED</span></h2>
+                <span class="hint">A–F absorb · EQ · seeded path-length jitter · not Structure-locked wall EQ</span>
+              </div>
+              <p class="assumed-banner" id="surfacesBanner">
+                ASSUMED tuning layer. Structure has A–F 0|1 mask writers; letter→wall dictionary
+                and Surface EQ OCR are <strong>not</strong> claimed. Hits = geometric wall crossings.
+                Diffusion is seeded path-length jitter (not an allpass proxy).
+              </p>
+              <div class="room-net-wrap">
+                <div class="room-net-caption">
+                  Room net · click a face
+                  <span class="assumed-tag">ASSUMED orientation</span>
+                  <span class="rn-compass-hint" title="+Z is Front / Ahead">compass: Front = +Z</span>
+                </div>
+                <div class="room-net" id="roomNet" role="listbox" aria-label="Room surface net A–F">
+                  <!-- filled by colour_surfaces.js -->
+                </div>
+              </div>
+              <div class="surface-cards" id="surfaceCards" role="listbox" aria-label="Surfaces A–F list"></div>
+              <div class="surface-detail" id="surfaceDetail">
+                <div class="surface-detail-head">
+                  <h3 id="surfaceDetailTitle">Surface A</h3>
+                  <span class="hint" id="surfaceDetailHint">—</span>
+                </div>
+                <div class="surface-graphs">
+                  <div class="surf-graph-block">
+                    <div class="surf-graph-label">Absorption vs frequency <em>ASSUMED</em></div>
+                    <canvas id="absorbCanvas" width="520" height="160" aria-label="Absorb curve"></canvas>
+                    <div class="absorb-sliders" id="absorbSliders"></div>
+                  </div>
+                  <div class="surf-graph-block">
+                    <div class="surf-graph-label">Surface EQ <em>ASSUMED shelves / peak</em></div>
+                    <canvas id="eqCanvas" width="520" height="160" aria-label="EQ curve"></canvas>
+                    <div class="eq-controls" id="eqControls"></div>
+                  </div>
+                </div>
+                <label class="ctrl diffusion-ctrl">
+                  <span>Diffusion <em>ASSUMED path-length jitter</em></span>
+                  <input type="range" id="diffusionSlider" min="0" max="1" step="0.01" value="0.15" />
+                  <output id="diffusionOut">0.15</output>
+                </label>
+                <div class="diffusion-global">
+                  <label class="ctrl">
+                    <span>Diffusion seed <em>ASSUMED · per render</em></span>
+                    <input type="number" id="diffusion_seed" min="0" step="1" value="0" />
+                  </label>
+                  <label class="ctrl">
+                    <span>λ_ref <em>m ASSUMED roughness</em></span>
+                    <input type="number" id="lambda_ref" min="0" max="1" step="0.001" value="0.02" />
+                  </label>
+                </div>
+                <p class="surface-workflow">
+                  Δd = D · λ_ref · sin²(θ) · u. Same seed + params → bit-identical IR.
+                  D=0 → specular delays. Tweak → <strong>Render</strong> → Colour + Polar update.
+                </p>
+              </div>
+            </div>
+            <div class="panel polar-panel" id="polarPanel">
+              <div class="panel-head">
+                <h2>Polar field <span class="assumed-tag">ASSUMED</span></h2>
+                <span class="hint">Mic pattern × frequency · plane = mics+source · L/C/R + Sum</span>
+              </div>
+              <p class="assumed-banner">Mic pattern × frequency in the mic–source plane. Low bands → omni; high → cardioid × Car/Omni. ASSUMED — not image arrivals.</p>
+              <div class="polar-toggles" id="polarToggles">
+                <label class="polar-chip"><input type="checkbox" data-polar="L" /> L</label>
+                <label class="polar-chip"><input type="checkbox" data-polar="C" /> C</label>
+                <label class="polar-chip"><input type="checkbox" data-polar="R" /> R</label>
+                <label class="polar-chip sum"><input type="checkbox" data-polar="sum" checked /> Sum</label>
+                <button type="button" class="chip" id="polarRefresh">Refresh</button>
+                <span class="hint" id="polarMeta">—</span>
+              </div>
+              <div class="canvas-wrap polar-wrap" id="polarWrap">
+                <canvas id="polarCanvas" width="900" height="520" aria-label="3D polar field"></canvas>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </section>
+      <aside class="sidebar">
+        <div class="panel" id="panelRoom" data-sidebar="room">
+          <div class="panel-head"><h2>Room size</h2></div>
+          <label class="ctrl"><span>Width <em>m</em></span><input type="range" id="W" min="1" max="40" step="0.1" value="6" /><output id="W_out">6.0</output></label>
+          <label class="ctrl"><span>Ceiling <em>m</em></span><input type="range" id="H" min="1" max="20" step="0.1" value="3" /><output id="H_out">3.0</output></label>
+          <label class="ctrl"><span>Length <em>m</em></span><input type="range" id="L" min="2" max="60" step="0.5" value="8" /><output id="L_out">8.0</output></label>
+        </div>
+        <div class="panel" id="panelListen" data-sidebar="listen">
+          <div class="panel-head"><h2>Listen</h2></div>
+          <label class="ctrl ctrl-select">
+            <span>Mic setup</span>
+            <select id="mic_setup" aria-label="Mic setup">
+              <option value="ab_omni">AB spaced pair (omni)</option>
+              <option value="ab_card">AB spaced pair (cardioid)</option>
+              <option value="xy_90">XY coincident 90°</option>
+              <option value="xy_120">XY 120°</option>
+              <option value="ortf" selected>ORTF</option>
+              <option value="nos">NOS</option>
+              <option value="din">DIN</option>
+              <option value="ms">MS — omni mid, cardioids inward</option>
+              <option value="ms_classic">MS classic (Mid cardioid + Side fig‑8)</option>
+              <option value="mono_c">Mono centre</option>
+              <option value="custom">Custom</option>
+            </select>
+          </label>
+          <p class="hint mic-setup-hint" id="micSetupHint">Snaps space, L/C/R pattern + yaw — then tweak freely.</p>
+          <label class="ctrl"><span>Capsule space <em>m</em></span><input type="range" id="space" min="0" max="6" step="0.01" value="0.17" /><output id="space_out">0.17</output></label>
+          <label class="ctrl"><span>Stand X <em>m</em></span><input type="range" id="mcx" min="0" max="40" step="0.01" value="3" /><output id="mcx_out">3.00</output></label>
+          <label class="ctrl"><span>Stand Z <em>m</em></span><input type="range" id="mcz" min="0" max="60" step="0.01" value="1.5" /><output id="mcz_out">1.50</output></label>
+          <label class="ctrl"><span>Mic height <em>m</em></span><input type="range" id="my" min="0" max="20" step="0.01" value="1.5" /><output id="my_out">1.50</output></label>
+          <label class="ctrl"><span>Src height <em>m</em></span><input type="range" id="sy" min="0" max="20" step="0.01" value="1.5" /><output id="sy_out">1.50</output></label>
+          <div class="capsule-stack" id="capsuleStackListen">
+            <div class="capsule-row" data-cap="L">
+              <span class="cap-id cap-l">Left</span>
+              <select id="pattern_l" aria-label="L pattern" class="cap-pattern">
+                <option value="omni">Omni</option>
+                <option value="cardioid" selected>Cardioid</option>
+                <option value="fig8">Fig‑8 <em>ASSUMED</em></option>
+              </select>
+              <label class="cap-yaw"><span>Yaw</span><input type="range" id="yaw_l_deg" min="-180" max="180" step="1" value="-55" /><output id="yaw_l_deg_out">−55°</output></label>
+            </div>
+            <div class="capsule-row" data-cap="C">
+              <span class="cap-id cap-c">Centre</span>
+              <select id="pattern_c" aria-label="C pattern" class="cap-pattern">
+                <option value="omni">Omni</option>
+                <option value="cardioid" selected>Cardioid</option>
+                <option value="fig8">Fig‑8 <em>ASSUMED</em></option>
+              </select>
+              <label class="cap-yaw"><span>Yaw</span><input type="range" id="yaw_c_deg" min="-180" max="180" step="1" value="0" /><output id="yaw_c_deg_out">0°</output></label>
+            </div>
+            <div class="capsule-row" data-cap="R">
+              <span class="cap-id cap-r">Right</span>
+              <select id="pattern_r" aria-label="R pattern" class="cap-pattern">
+                <option value="omni">Omni</option>
+                <option value="cardioid" selected>Cardioid</option>
+                <option value="fig8">Fig‑8 <em>ASSUMED</em></option>
+              </select>
+              <label class="cap-yaw"><span>Yaw</span><input type="range" id="yaw_r_deg" min="-180" max="180" step="1" value="55" /><output id="yaw_r_deg_out">+55°</output></label>
+            </div>
+          </div>
+          <p class="hint yaw-hint">Yaw 0° = room forward (+Z). MS inward: L −90° / R +90° (noses toward mid).</p>
+          <!-- Hidden legacy fields for API compat -->
+          <input type="hidden" id="diverg" value="1" />
+          <input type="hidden" id="toe_half_deg" value="55" />
+          <input type="hidden" id="car_omni" value="1" />
+        </div>
+        <div class="panel" id="panelMix" data-sidebar="mix">
+          <div class="panel-head"><h2>Mix</h2></div>
+          <div class="hadamard-block" id="hadamardBlock">
+            <div class="hadamard-label">Hadamard size <em>(images + FDN lines)</em></div>
+            <div class="hadamard-row" id="hadamardRow" role="group" aria-label="Hadamard size">
+              <button type="button" class="chip hadamard-chip" data-n="8">8</button>
+              <button type="button" class="chip hadamard-chip" data-n="16">16</button>
+              <button type="button" class="chip hadamard-chip active" data-n="32">32</button>
+              <button type="button" class="chip hadamard-chip" data-n="64">64</button>
+              <button type="button" class="chip hadamard-chip" data-n="128">128</button>
+            </div>
+            <p class="hadamard-readout" id="hadamardReadout">32 images · 32 FDN lines</p>
+            <p class="hadamard-note">Matrix is unscaled ±1 (Sylvester) — no 1/√N. Keep Decay (g) under 1/√N.</p>
+          </div>
+          <label class="ctrl"><span>Early reflections</span><input type="range" id="early_wet" min="0" max="2" step="0.01" value="1" /><output id="early_wet_out">1.00</output></label>
+          <label class="ctrl"><span>Late reverb (FDN)</span><input type="range" id="fdn_wet" min="0" max="1" step="0.01" value="0.12" /><output id="fdn_wet_out">0.12</output></label>
+          <label class="ctrl"><span>Dry</span><input type="range" id="dry_gain" min="0" max="1" step="0.01" value="0.10" /><output id="dry_gain_out">0.10</output></label>
+          <label class="ctrl"><span>Decay (FDN g)</span><input type="range" id="fdn_g" min="0" max="1" step="0.005" value="0.08" /><output id="fdn_g_out">0.08</output></label>
+          <label class="ctrl"><span>IR length <em>ms</em></span><input type="range" id="ir_length_ms" min="50" max="2000" step="10" value="400" /><output id="ir_length_ms_out">400</output></label>
+          <label class="ctrl"><span>Diffusion seed <em>ASSUMED</em></span><input type="number" id="diffusion_seed_mix" min="0" step="1" value="0" /></label>
+        </div>
+        <div class="panel preview-panel" id="panelPreview" data-sidebar="preview">
+          <div class="panel-head"><h2>Preview</h2></div>
+          <p class="file-name" id="fileName">No file loaded</p>
+          <audio id="previewAudio" controls></audio>
+          <p class="path-quiet" id="outPath"></p>
+          <pre class="status" id="status"></pre>
+        </div>
+        <details class="panel advanced" id="panelAdvanced" data-sidebar="advanced">
+          <summary>Advanced / Structure locks</summary>
+          <label class="check">
+            <input type="checkbox" id="reaktor_parity" />
+            <span>Reaktor parity — lock mic X to room centre (W/2)</span>
+          </label>
+          <p class="adv-note">
+            VERIFIED: MCZ = L − MZ · SY = MY · angles Diverg×0.3×±0.25 (≈±4.3° at Diverg=1) · c = 340 m/s.
+            Free mic X is a modern UI extension (parity off by default).
+            Absolute toe-in (Mic setup / Angle °) is a modern UI extension — XY/ORTF need larger angles than Reaktor Diverg.
+            Room size changes keep absolute metre positions (clamp only).
+            Image views fold method-of-images paths into the home room (see UI_NOTES).
+            Diffusion λ_ref default 0.02 m (ASSUMED roughness length).
+          </p>
+        </details>
+      </aside>
+    </main>
+  </div>
+  <script src="/static/js/vendor/three.min.js"></script>
+  <script src="/static/js/room_3d.js"></script>
+  <script src="/static/js/room_editor.js"></script>
+  <script src="/static/js/image_views.js"></script>
+  <script src="/static/js/colour_surfaces.js"></script>
+  <script src="/static/js/polar_field.js"></script>
+  <script src="/static/js/mic_desk.js"></script>
+  <script src="/static/js/app.js"></script>
+</body>
+</html>
