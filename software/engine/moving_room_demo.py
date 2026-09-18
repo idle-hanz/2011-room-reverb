@@ -1,1 +1,1 @@
-PLACEHOLDER
+__INCLUDE_FILE__:/tmp/fix_moving_room_demo.py
