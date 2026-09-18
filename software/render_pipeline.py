@@ -1,0 +1,1 @@
+PLACEHOLDER_LOAD_FROM_/workspace/gh-push-now/singles/software_render_pipeline.py.json
