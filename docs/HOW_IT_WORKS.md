@@ -108,7 +108,7 @@ Not one global cardioid↔omni knob for the product story. The Listen panel and 
 | XY 90° / 120° | ~0.01 m | Coincident; absolute toe degrees |
 | ORTF (default) | ~0.17 m | ±55° half-angle |
 | NOS / DIN | ~0.30 / ~0.20 m | ±45° |
-| **MS** | ~0.05 m | **Omni mid + inward cardioids** (L −90° / R +90°) — ASSUMED layout; UI label |
+| **MS** | ~0.05 m | UI label: omni mid + inward cardioids (L −90° / R +90°). Current preset code still snaps mid to **cardioid** + inward cardioids — ASSUMED; align code to label when convenient |
 | MS classic | ~0.05 m | Mid cardioid + Side fig‑8 (fig‑8 ASSUMED) |
 | Mono centre | 0 | C only |
 | Custom | — | Free tweak after drift |
