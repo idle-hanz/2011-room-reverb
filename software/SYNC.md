@@ -38,3 +38,14 @@ Restart app + **Ctrl+F5**. Open **Mic**:
 1. Top — click Stand / L / R (highlight), drag body to place; drag amber arc for yaw; live readout while dragging.
 2. Side — only height handles move sy/my.
 3. Polar trio — Pattern + Yaw under each plot; Listen sidebar keeps setup/space/stand/heights only (no duplicate pattern/yaw on Mic).
+
+
+## Vendor note (GitHub clone)
+
+`software/static/js/vendor/three.min.js` is **not** in this public repo (too large for text push).
+
+After clone, either:
+1. Copy `three.min.js` from the Desktop pack at `software/static/js/vendor/`, or
+2. Download Three.js r160 `three.min.js` into `software/static/js/vendor/`.
+
+Without it the 3D room view will not load; Floor / Side / Lattice / Paths / Mic still work.
