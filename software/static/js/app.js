@@ -1,1 +1,1 @@
-@/tmp/one_file.txt
+__LOAD__/tmp/one_file.txt
