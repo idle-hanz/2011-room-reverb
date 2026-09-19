@@ -64,7 +64,7 @@
   var _applyingPreset = false;
   var wavFile = null;
   var currentView = "edit";
-  var pathsMode = "paths"; /* paths | legs — Paths tab submode */
+  var pathsMode = "paths"; /* paths | legs \u2014 Paths tab submode */
   var selectedMics = ["C"];
   var imagesCache = null;
   var imagesFetchTimer = null;
@@ -112,7 +112,7 @@
       if (statusEl) statusEl.textContent = "Images: #imageCanvas missing";
       return null;
     }
-    /* Do not create WebGL while layout is still 0×0 (hidden/settling). */
+    /* Do not create WebGL while layout is still 0\u00d70 (hidden/settling). */
     var rect = canvas.getBoundingClientRect();
     if (rect.width < 2 || rect.height < 2) return null;
     try {
@@ -133,7 +133,7 @@
     return imageView;
   }
 
-  /** After #imageViews is unhidden: double-rAF → init → resize; optional size retry. */
+  /** After #imageViews is unhidden: double-rAF \u2192 init \u2192 resize; optional size retry. */
   function paintImageViewsSoon() {
     requestAnimationFrame(function () {
       requestAnimationFrame(function () {
@@ -147,7 +147,7 @@
         if (!canvas) return;
         var rect = canvas.getBoundingClientRect();
         if (rect.width >= 2 && rect.height >= 2) return;
-        /* Optional: layout still settling — one short retry */
+        /* Optional: layout still settling \u2014 one short retry */
         setTimeout(function () {
           if (currentView !== "lattice" && currentView !== "paths") return;
           ensureImageView();
@@ -197,4 +197,109 @@
   }
 
   function scheduleImagesFetch(delayMs) {
-    i
+    if (currentView !== "lattice" && currentView !== "paths") return;
+    if (imagesFetchTimer) clearTimeout(imagesFetchTimer);
+    var ms = delayMs == null ? imagesFetchDelayMs : delayMs;
+    imagesFetchTimer = setTimeout(fetchImages, ms);
+  }
+
+  async function fetchImages() {
+    selectedMics = selectedMicsFromUI();
+    var body = Object.assign({}, state, { mics: selectedMics });
+    try {
+      var res = await fetch("/api/images", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body)
+      });
+      if (!res.ok) throw new Error("HTTP " + res.status);
+      imagesCache = await res.json();
+      ensureImageView();
+      applyImageView();
+      /* Layout may still settle after fetch \u2014 resize+apply again next frames */
+      requestAnimationFrame(function () {
+        requestAnimationFrame(function () {
+          if (currentView !== "lattice" && currentView !== "paths") return;
+          if (imageView) {
+            imageView.resize();
+            applyImageView();
+          }
+        });
+      });
+      if (statusEl && (statusEl.textContent.indexOf("Images:") === 0 || statusEl.textContent.indexOf("Images WebGL:") === 0)) {
+        statusEl.textContent = "";
+      }
+    } catch (err) {
+      if (statusEl) statusEl.textContent = "Images: " + String(err && err.message ? err.message : err);
+    }
+  }
+
+  function applyImageView() {
+    if (!imagesCache) return;
+    if (currentView !== "lattice" && currentView !== "paths") return;
+    if (!imageView) ensureImageView();
+    if (!imageView) return;
+    var mode = currentView === "lattice" ? "lattice" : pathsMode;
+    try {
+      imageView.setMode(mode);
+      imageView.setData(imagesCache);
+    } catch (err) {
+      if (statusEl) {
+        statusEl.textContent = "Images rebuild: " + String(err && err.message ? err.message : err);
+      }
+      return;
+    }
+    var n = imagesCache.count || (imagesCache.lattice && imagesCache.lattice.length) || 0;
+    var mics = (imagesCache.selected_mics || []).join("+") || "C";
+    if (liveMetresImg) {
+      var hn = imagesCache.hadamard_n || n;
+      liveMetresImg.textContent =
+        n + " images \u00b7 " + hn + " FDN lines \u00b7 mics " + mics +
+        " \u00b7 c=" + (imagesCache.c || 340) + " m/s";
+    }
+  }
+
+  function syncPathsModeUI() {
+    document.querySelectorAll(".paths-mode-chip").forEach(function (btn) {
+      var on = btn.getAttribute("data-paths-mode") === pathsMode;
+      btn.classList.toggle("active", on);
+      btn.setAttribute("aria-pressed", on ? "true" : "false");
+    });
+    if (pathsMode === "legs") {
+      if (imageViewTitle) imageViewTitle.textContent = "Last legs into the mic";
+      if (imageViewHint) imageViewHint.textContent =
+        "Final arrival segment at the listener \u00b7 where early energy comes from";
+    } else {
+      if (imageViewTitle) imageViewTitle.textContent = "In-room specular paths";
+      if (imageViewHint) imageViewHint.textContent =
+        "Folded bounce paths inside the real room \u00b7 one polyline per image\u00d7mic";
+    }
+  }
+
+
+  var micDesk = null;
+  (function () {
+    var top = document.getElementById("micFloorCanvas");
+    var side = document.getElementById("micElevCanvas");
+    var v3d = document.getElementById("mic3dCanvas");
+    if (!top || !side || !window.MicDesk) return;
+    micDesk = MicDesk.create({
+      topCanvas: top,
+      sideCanvas: side,
+      view3dCanvas: v3d,
+      polarL: document.getElementById("micPolarL"),
+      polarC: document.getElementById("micPolarC"),
+      polarR: document.getElementById("micPolarR"),
+      getState: function () { return state; },
+      setState: function (s) { Object.assign(state, s); },
+      onChange: syncUI,
+      RoomMath: window.RoomMath
+    });
+  })();
+
+
+
+  /* Pattern+yaw IDs live in #capsuleStackListen; on Mic tab relocate under polar plots. */
+  function placeCapsuleControls(view) {
+    var stack = document.getElementById("capsuleStackListen");
+    var yawHint = document.querySelector("#panelListen .yaw-hi
