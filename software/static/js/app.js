@@ -302,4 +302,113 @@
   /* Pattern+yaw IDs live in #capsuleStackListen; on Mic tab relocate under polar plots. */
   function placeCapsuleControls(view) {
     var stack = document.getElementById("capsuleStackListen");
-    var yawHint = document.querySelector("#panelListen .yaw-hi
+    var yawHint = document.querySelector("#panelListen .yaw-hint");
+    var map = { L: "micCapSlotL", C: "micCapSlotC", R: "micCapSlotR" };
+    ["L", "C", "R"].forEach(function (cap) {
+      var row = document.querySelector('.capsule-row[data-cap="' + cap + '"]');
+      if (!row) return;
+      var slot = document.getElementById(map[cap]);
+      if (view === "mic" && slot) {
+        if (row.parentElement !== slot) slot.appendChild(row);
+      } else if (stack) {
+        if (row.parentElement !== stack) stack.appendChild(row);
+      }
+    });
+    if (stack) stack.hidden = view === "mic";
+    if (yawHint) yawHint.hidden = view === "mic";
+  }
+
+  /* Sidebar relevance by view — same control may appear on several tabs if useful. */
+  function syncSidebar(view) {
+    var show = {
+      room: true,
+      listen: view === "mic" || view === "polar" || view === "lattice" || view === "paths",
+      mix: view === "lattice" || view === "paths" || view === "colour" || view === "surfaces" || view === "polar",
+      preview: view !== "mic",
+      advanced: true
+    };
+    var map = {
+      room: document.getElementById("panelRoom"),
+      listen: document.getElementById("panelListen"),
+      mix: document.getElementById("panelMix"),
+      preview: document.getElementById("panelPreview"),
+      advanced: document.getElementById("panelAdvanced")
+    };
+    Object.keys(map).forEach(function (key) {
+      if (map[key]) map[key].hidden = !show[key];
+    });
+  }
+
+  function setView(view) {
+    currentView = view;
+
+    document.querySelectorAll(".view-tab").forEach(function (tab) {
+      var on = tab.getAttribute("data-view") === view;
+      tab.classList.toggle("active", on);
+      tab.setAttribute("aria-selected", on ? "true" : "false");
+    });
+
+    var isEdit = view === "edit";
+    var isMic = view === "mic";
+    var isImage = view === "lattice" || view === "paths";
+    var isCS = view === "colour" || view === "surfaces" || view === "polar";
+    if (editViews) editViews.hidden = !isEdit;
+    if (micViews) micViews.hidden = !isMic;
+    if (imageViewsEl) imageViewsEl.hidden = !isImage;
+    if (colourSurfacesViews) colourSurfacesViews.hidden = !isCS;
+    if (micToggles) micToggles.hidden = !isImage;
+
+    /* Per-tab sidebar: only show controls relevant to the current view. */
+    syncSidebar(view);
+    placeCapsuleControls(view);
+
+    var pathsModeRow = document.getElementById("pathsModeRow");
+    if (pathsModeRow) pathsModeRow.hidden = view !== "paths";
+
+    if (view === "lattice") {
+      if (imageViewTitle) imageViewTitle.textContent = "Mirrored-room lattice";
+      if (imageViewHint) imageViewHint.textContent =
+        "Wireframe image rooms · home room gold · ± polarity colour · orbit Alt/RMB";
+    } else if (view === "paths") {
+      syncPathsModeUI();
+    }
+
+    if (isEdit) {
+      editor.redraw();
+    } else if (isMic) {
+      requestAnimationFrame(function () {
+        requestAnimationFrame(function () {
+          if (currentView !== "mic") return;
+          if (micDesk) {
+            if (micDesk.view3d && micDesk.view3d.resize) micDesk.view3d.resize();
+            micDesk.redraw();
+          }
+        });
+      });
+    } else if (isImage) {
+      /* Lazy-init WebGL only after panel is unhidden (avoid 0×0 canvas context). */
+      scheduleImagesFetch(80);
+      paintImageViewsSoon();
+    } else if (isCS && colourSurfaces) {
+      colourSurfaces.setMode(view === "polar" ? "colour" : view);
+      colourSurfaces.drawColour();
+      colourSurfaces.drawSurfaceGraphs();
+      if (view === "polar" && polarView) {
+        polarView.resize();
+        polarView.refresh();
+      }
+    }
+  }
+
+  function syncHadamardUI() {
+    var n = state.hadamard_n || 32;
+    document.querySelectorAll(".hadamard-chip").forEach(function (btn) {
+      var bn = parseInt(btn.getAttribute("data-n"), 10);
+      btn.classList.toggle("active", bn === n);
+    });
+    var ro = document.getElementById("hadamardReadout");
+    if (ro) ro.textContent = n + " images · " + n + " FDN lines";
+  }
+
+  function setHadamardN(n) {
+    var allowed = [8,
