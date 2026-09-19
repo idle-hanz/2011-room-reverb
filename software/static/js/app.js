@@ -64,7 +64,7 @@
   var _applyingPreset = false;
   var wavFile = null;
   var currentView = "edit";
-  var pathsMode = "paths"; /* paths | legs \u2014 Paths tab submode */
+  var pathsMode = "paths"; /* paths | legs — Paths tab submode */
   var selectedMics = ["C"];
   var imagesCache = null;
   var imagesFetchTimer = null;
