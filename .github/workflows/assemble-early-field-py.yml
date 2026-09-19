@@ -1,0 +1,52 @@
+name: assemble-early-field-py
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - "assemble/early-field-py/**"
+permissions:
+  contents: write
+jobs:
+  assemble:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Assemble file from hex parts
+        id: build
+        run: |
+          set -euo pipefail
+          python3 << 'PY'
+          from pathlib import Path
+          import hashlib, json, os
+          root = Path("assemble/early-field-py")
+          meta = json.loads((root / "meta.json").read_text())
+          parts = sorted(root.glob("part_*.hex"))
+          assert len(parts) == meta["n"], (len(parts), meta["n"])
+          hexdata = "".join(p.read_text().strip() for p in parts)
+          assert len(hexdata) == meta["total_hex"], (len(hexdata), meta["total_hex"])
+          raw = bytes.fromhex(hexdata)
+          text = raw.decode("utf-8")
+          assert len(text) == meta["target_len"], (len(text), meta["target_len"])
+          assert hashlib.sha256(text.encode()).hexdigest() == meta["sha256"]
+          assert text.startswith(meta["startswith"])
+          assert "PLACEHOLDER" not in text
+          out = Path(meta["out_path"])
+          out.parent.mkdir(parents=True, exist_ok=True)
+          out.write_text(text, encoding="utf-8")
+          print("wrote", out, "len", len(text))
+          with open(os.environ["GITHUB_OUTPUT"], "a") as fh:
+              fh.write(f"out_path={out}\n")
+          PY
+      - name: Commit assembled file
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          OUT="software/engine/early_field.py"
+          git add "$OUT"
+          if git diff --cached --quiet; then
+            echo "No changes"
+            exit 0
+          fi
+          git commit -m "Assemble $OUT to target_len"
+          git push

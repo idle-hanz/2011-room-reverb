@@ -1,0 +1,8 @@
+{
+  "n": 25,
+  "total_hex": 98686,
+  "target_len": 49023,
+  "sha256": "f95e1983f0407a93b5ea9c8cdd84fe706e0f86b6de5c280d050e3dc1b9ac14dc",
+  "out_path": "software/engine/early_field.py",
+  "startswith": "#!/usr"
+}

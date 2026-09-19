@@ -1,0 +1,8 @@
+{
+  "n": 18,
+  "total_hex": 71702,
+  "target_len": 35821,
+  "sha256": "89e44ef0c06535b17e1042e5b0f2a69ea76da924e47d057c728f488e8240010b",
+  "out_path": "software/static/js/colour_surfaces.js",
+  "startswith": "/* Colour"
+}
