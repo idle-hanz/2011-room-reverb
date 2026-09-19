@@ -1,1 +1,1 @@
-@/workspace/gh-push-now/push_args/CONTENT_app_24000.js
+LOAD_FROM_FILE:/tmp/expect_24000.js
