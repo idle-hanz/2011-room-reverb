@@ -11,21 +11,19 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Assemble file from hex parts
-        id: build
+      - name: Assemble from hex
         run: |
           set -euo pipefail
           python3 << 'PY'
           from pathlib import Path
-          import hashlib, json, os
+          import hashlib, json
           root = Path("assemble/app-css")
           meta = json.loads((root / "meta.json").read_text())
           parts = sorted(root.glob("part_*.hex"))
           assert len(parts) == meta["n"], (len(parts), meta["n"])
           hexdata = "".join(p.read_text().strip() for p in parts)
           assert len(hexdata) == meta["total_hex"], (len(hexdata), meta["total_hex"])
-          raw = bytes.fromhex(hexdata)
-          text = raw.decode("utf-8")
+          text = bytes.fromhex(hexdata).decode("utf-8")
           assert len(text) == meta["target_len"], (len(text), meta["target_len"])
           assert hashlib.sha256(text.encode()).hexdigest() == meta["sha256"]
           assert text.startswith(meta["startswith"])
@@ -34,19 +32,13 @@ jobs:
           out.parent.mkdir(parents=True, exist_ok=True)
           out.write_text(text, encoding="utf-8")
           print("wrote", out, "len", len(text))
-          with open(os.environ["GITHUB_OUTPUT"], "a") as fh:
-              fh.write(f"out_path={out}\n")
           PY
-      - name: Commit assembled file
+      - name: Commit
         run: |
           set -euo pipefail
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          OUT="software/static/css/app.css"
-          git add "$OUT"
-          if git diff --cached --quiet; then
-            echo "No changes"
-            exit 0
-          fi
-          git commit -m "Assemble $OUT to target_len"
+          git add "software/static/css/app.css"
+          if git diff --cached --quiet; then echo "No changes"; exit 0; fi
+          git commit -m "Assemble software/static/css/app.css to target_len"
           git push
