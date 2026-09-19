@@ -729,4 +729,130 @@
         var v = parseFloat(e.target.value);
         if (!isFinite(v)) return;
         state["yaw_" + cap + "_deg"] = v;
-        if (
+        if (cap === "l" || cap === "r") {
+          var yl = Number(state.yaw_l_deg);
+          var yr = Number(state.yaw_r_deg);
+          if (isFinite(yl) && isFinite(yr)) {
+            state.toe_half_deg = 0.5 * (Math.abs(yl) + Math.abs(yr));
+            state.diverg = divergFromToe(state.toe_half_deg);
+          }
+        }
+        markCustomIfDrifted();
+        syncUI();
+        if (polarView && currentView === "polar") polarView.refresh();
+      });
+    }
+  });
+
+  document.querySelectorAll(".paths-mode-chip").forEach(function (btn) {
+    btn.addEventListener("click", function () {
+      var m = btn.getAttribute("data-paths-mode");
+      pathsMode = (m === "legs") ? "legs" : "paths";
+      syncPathsModeUI();
+      if (currentView === "paths") {
+        if (imagesCache) applyImageView();
+        else scheduleImagesFetch(80);
+      }
+    });
+  });
+
+  document.querySelectorAll(".view-tab").forEach(function (tab) {
+    tab.addEventListener("click", function () {
+      setView(tab.getAttribute("data-view"));
+    });
+  });
+
+  document.querySelectorAll("#micToggles input[data-mic]").forEach(function (box) {
+    box.addEventListener("change", function () {
+      selectedMics = selectedMicsFromUI();
+      scheduleImagesFetch(120);
+    });
+  });
+  var micAll = document.getElementById("micAll");
+  if (micAll) {
+    micAll.addEventListener("click", function () {
+      document.querySelectorAll("#micToggles input[data-mic]").forEach(function (b) {
+        b.checked = true;
+      });
+      selectedMics = ["L", "C", "R"];
+      scheduleImagesFetch(120);
+    });
+  }
+
+
+  document.querySelectorAll(".hadamard-chip").forEach(function (btn) {
+    btn.addEventListener("click", function () {
+      setHadamardN(parseInt(btn.getAttribute("data-n"), 10));
+    });
+  });
+
+  var wavInput = document.getElementById("wavInput");
+  if (wavInput) {
+    wavInput.addEventListener("change", function (e) {
+      wavFile = (e.target.files && e.target.files[0]) || null;
+      if (fileName) fileName.textContent = wavFile ? wavFile.name : "No file loaded";
+    });
+  }
+
+  if (renderBtn) {
+    renderBtn.addEventListener("click", async function () {
+      if (!wavFile) {
+        if (statusEl) statusEl.textContent = "Load an input WAV first.";
+        return;
+      }
+      renderBtn.disabled = true;
+      if (statusEl) statusEl.textContent = "Rendering…";
+      var fd = new FormData();
+      fd.append("file", wavFile, wavFile.name);
+      fd.append("params_json", JSON.stringify(state));
+      try {
+        var res = await fetch("/api/render", { method: "POST", body: fd });
+        var raw = await res.text();
+        var data;
+        try {
+          data = JSON.parse(raw);
+        } catch (parseErr) {
+          if (statusEl) {
+            statusEl.textContent = "Render server error (HTTP " + res.status + "): " +
+              raw.replace(/\s+/g, " ").slice(0, 240);
+          }
+          return;
+        }
+        if (!data.ok) {
+          if (statusEl) statusEl.textContent = data.error || ("Render failed (HTTP " + res.status + ")");
+          return;
+        }
+        if (statusEl) statusEl.textContent = data.status || "Done";
+        if (outPathEl) outPathEl.textContent = data.out_path || "";
+        if (previewAudio) {
+          previewAudio.src = (data.preview_url || "") + "&t=" + Date.now();
+          previewAudio.play().catch(function () {});
+        }
+        if (data.geometry && data.geometry.params) {
+          Object.assign(state, data.geometry.params);
+          syncUI();
+        }
+        if (data.colour && colourSurfaces) {
+          colourSurfaces.setColour(data.colour);
+          // Stay on colour/surfaces if already there; else jump to Colour
+          if (currentView !== "colour" && currentView !== "surfaces") {
+            setView("colour");
+          } else {
+            colourSurfaces.drawColour();
+          }
+        }
+        if (polarView && (currentView === "polar" || currentView === "colour" || currentView === "surfaces")) {
+          polarView.refresh();
+        }
+      } catch (err) {
+        if (statusEl) statusEl.textContent = String(err);
+      } finally {
+        renderBtn.disabled = false;
+      }
+    });
+  }
+
+  // Default Mic setup = ORTF (absolute toes); refresh geometry + polar params
+  applyMicPreset(state.mic_setup || "ortf", false);
+  setView("edit");
+})();
