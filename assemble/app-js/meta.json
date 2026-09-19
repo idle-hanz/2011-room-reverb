@@ -2,5 +2,6 @@
   "n": 13,
   "total_hex": 48084,
   "target_len": 24000,
-  "sha256": "61e65742804f1b80f9bbbaccbd3de5196ed29621f7c10f88323bc88670a6953f"
+  "sha256": "61e65742804f1b80f9bbbaccbd3de5196ed29621f7c10f88323bc88670a6953f",
+  "trigger": 1
 }
