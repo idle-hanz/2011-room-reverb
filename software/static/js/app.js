@@ -411,4 +411,122 @@
   }
 
   function setHadamardN(n) {
-    var allowed = [8,
+    var allowed = [8, 16, 32, 64, 128];
+    if (allowed.indexOf(n) < 0) n = 32;
+    state.hadamard_n = n;
+    syncHadamardUI();
+    if (currentView === "lattice" || currentView === "paths") scheduleImagesFetch(120);
+  }
+
+  function setPolarMics(ids) {
+    var want = {};
+    (ids || []).forEach(function (id) { want[id] = true; });
+    document.querySelectorAll("#polarToggles input[data-polar]").forEach(function (box) {
+      var id = box.getAttribute("data-polar");
+      if (id === "sum") {
+        box.checked = !ids || !ids.length;
+        return;
+      }
+      box.checked = !!want[id];
+    });
+    // If L/C/R selected, uncheck sum; if none, keep sum
+    var any = false;
+    document.querySelectorAll("#polarToggles input[data-polar]").forEach(function (box) {
+      var id = box.getAttribute("data-polar");
+      if (id !== "sum" && box.checked) any = true;
+    });
+    var sumBox = document.querySelector("#polarToggles input[data-polar=\"sum\"]");
+    if (sumBox) sumBox.checked = !any;
+  }
+
+  function near(a, b, eps) {
+    return Math.abs(Number(a) - Number(b)) <= (eps != null ? eps : 0.02);
+  }
+
+  function matchPresetId() {
+    var ids = Object.keys(MIC_PRESETS);
+    for (var i = 0; i < ids.length; i++) {
+      var id = ids[i];
+      var p = MIC_PRESETS[id];
+      if (!p) continue;
+      if (
+        near(state.space, p.space, 0.015) &&
+        near(state.toe_half_deg, p.toe_half_deg, 0.6) &&
+        near(state.car_omni, p.car_omni, 0.05)
+      ) {
+        return id;
+      }
+    }
+    return "custom";
+  }
+
+  function applyMicPreset(id, fromUser) {
+    if (id === "custom" || !MIC_PRESETS[id]) {
+      state.mic_setup = "custom";
+      var sel = document.getElementById("mic_setup");
+      if (sel) sel.value = "custom";
+      return;
+    }
+    var p = MIC_PRESETS[id];
+    _applyingPreset = true;
+    state.mic_setup = id;
+    state.space = p.space;
+    state.toe_half_deg = p.toe_half_deg;
+    state.car_omni = p.car_omni;
+    state.diverg = divergFromToe(p.toe_half_deg);
+    if (p.pattern_l) state.pattern_l = p.pattern_l;
+    if (p.pattern_c) state.pattern_c = p.pattern_c;
+    if (p.pattern_r) state.pattern_r = p.pattern_r;
+    if (p.yaw_l_deg != null) state.yaw_l_deg = p.yaw_l_deg;
+    if (p.yaw_c_deg != null) state.yaw_c_deg = p.yaw_c_deg;
+    if (p.yaw_r_deg != null) state.yaw_r_deg = p.yaw_r_deg;
+    var divergEl = document.getElementById("diverg");
+    if (divergEl) divergEl.value = String(state.diverg);
+    setPolarMics(p.polar);
+    Object.assign(state, RoomMath.clampRoom(state));
+    syncUI();
+    _applyingPreset = false;
+    if (fromUser && polarView && currentView === "polar") {
+      polarView.refresh();
+    }
+  }
+
+  function markCustomIfDrifted() {
+    if (_applyingPreset) return;
+    var matched = matchPresetId();
+    state.mic_setup = matched;
+    var sel = document.getElementById("mic_setup");
+    if (sel && sel.value !== matched) sel.value = matched;
+  }
+
+  function syncUI() {
+    if (syncRaf) return;
+    syncRaf = requestAnimationFrame(function () {
+      syncRaf = 0;
+      syncUINow();
+    });
+  }
+
+  function syncUINow() {
+    var geo = RoomMath.compute(state);
+    Object.assign(state, geo.state);
+    var spaceEl = document.getElementById("space");
+    if (spaceEl) spaceEl.max = Math.max(0.01, geo.max_space);
+
+    var numeric = ["W","H","L","space","car_omni","early_wet","fdn_wet","dry_gain","fdn_g","ir_length_ms"];
+    for (var i = 0; i < numeric.length; i++) {
+      var id = numeric[i];
+      var el = document.getElementById(id);
+      var out = document.getElementById(id + "_out");
+      if (!el || !out) continue;
+      el.value = state[id];
+      if (id === "car_omni") {
+        var v = state[id];
+        out.textContent = v >= 0.66 ? "Cardioid" : (v <= 0.33 ? "Omni" : "Blend");
+      } else if (id === "ir_length_ms") {
+        out.textContent = String(Math.round(state[id]));
+      } else {
+        out.textContent = fmt(state[id], (id === "W" || id === "H" || id === "L") ? 1 : 2);
+      }
+    }
+    var toeEl = document.getElementByI
