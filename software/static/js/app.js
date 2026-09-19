@@ -79,4 +79,28 @@
   var renderBtn = document.getElementById("renderBtn");
   var editViews = document.getElementById("editViews");
   var micViews = document.getElementById("micViews");
-  var liveMe
+  var liveMetresMic = document.getElementById("liveMetresMic");
+  var imageViewsEl = document.getElementById("imageViews");
+  var micToggles = document.getElementById("micToggles");
+  var imageViewTitle = document.getElementById("imageViewTitle");
+  var imageViewHint = document.getElementById("imageViewHint");
+
+  var editor = RoomEditor.create({
+    floorCanvas: document.getElementById("floorCanvas"),
+    elevCanvas: document.getElementById("elevCanvas"),
+    view3dCanvas: document.getElementById("view3dCanvas"),
+    getState: function () { return state; },
+    setState: function (s) { Object.assign(state, s); },
+    onChange: syncUI
+  });
+
+  var imageView = null;
+  var imageViewInitFailed = false;
+  var syncRaf = 0;
+  var imagesFetchDelayMs = 280; /* defer fetch while dragging (~drag-end) */
+
+  function ensureImageView() {
+    if (imageView || imageViewInitFailed) return imageView;
+    if (!window.ImageViews) {
+      imageViewInitFailed = true;
+      if (statusEl) statusEl.textContent = "Images: 
