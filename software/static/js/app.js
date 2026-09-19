@@ -618,4 +618,115 @@
       onRoomDim(id, parseFloat(e.target.value));
     });
   });
-  ["space","car_omni","e
+  ["space","car_omni","early_wet","fdn_wet","dry_gain","fdn_g","ir_length_ms"].forEach(function (id) {
+    var el = document.getElementById(id);
+    if (!el) return;
+    el.addEventListener("input", function (e) {
+      state[id] = parseFloat(e.target.value);
+      Object.assign(state, RoomMath.clampRoom(state));
+      if (id === "space" || id === "car_omni") markCustomIfDrifted();
+      syncUI();
+      if ((id === "space" || id === "car_omni") && polarView && currentView === "polar") {
+        polarView.refresh();
+      }
+    });
+  });
+  var toeSlider = document.getElementById("toe_half_deg");
+  if (toeSlider) {
+    toeSlider.addEventListener("input", function (e) {
+      state.toe_half_deg = parseFloat(e.target.value);
+      state.diverg = divergFromToe(state.toe_half_deg);
+      var divergEl = document.getElementById("diverg");
+      if (divergEl) divergEl.value = String(state.diverg);
+      Object.assign(state, RoomMath.clampRoom(state));
+      markCustomIfDrifted();
+      syncUI();
+      if (polarView && currentView === "polar") polarView.refresh();
+    });
+  }
+  var micSetupEl = document.getElementById("mic_setup");
+  if (micSetupEl) {
+    micSetupEl.addEventListener("change", function (e) {
+      applyMicPreset(e.target.value, true);
+    });
+  }
+  var parityEl = document.getElementById("reaktor_parity");
+  if (parityEl) {
+    parityEl.addEventListener("change", function (e) {
+      state.reaktor_parity = e.target.checked;
+      Object.assign(state, RoomMath.clampRoom(state));
+      syncUI();
+    });
+  }
+
+  function bindSeed(id) {
+    var el = document.getElementById(id);
+    if (!el) return;
+    el.addEventListener("input", function (e) {
+      var v = parseInt(e.target.value, 10);
+      if (!isFinite(v)) v = 0;
+      state.diffusion_seed = v;
+      var a = document.getElementById("diffusion_seed");
+      var b = document.getElementById("diffusion_seed_mix");
+      if (a && a !== e.target) a.value = String(v);
+      if (b && b !== e.target) b.value = String(v);
+    });
+  }
+  bindSeed("diffusion_seed");
+  bindSeed("diffusion_seed_mix");
+  var lamEl = document.getElementById("lambda_ref");
+  if (lamEl) {
+    lamEl.addEventListener("input", function (e) {
+      var v = parseFloat(e.target.value);
+      if (!isFinite(v)) v = 0.02;
+      state.lambda_ref = Math.max(0, Math.min(1, v));
+    });
+  }
+
+  function bindLinkHeights(id) {
+    var el = document.getElementById(id);
+    if (!el) return;
+    el.addEventListener("change", function (e) {
+      state.link_heights = !!e.target.checked;
+      var a = document.getElementById("link_heights");
+      var b = document.getElementById("link_heights_mic");
+      if (a && a !== e.target) a.checked = state.link_heights;
+      if (b && b !== e.target) b.checked = state.link_heights;
+      syncUI();
+    });
+  }
+  bindLinkHeights("link_heights");
+  bindLinkHeights("link_heights_mic");
+
+  ["mcx", "mcz", "my", "sy"].forEach(function (id) {
+    var el = document.getElementById(id);
+    if (!el) return;
+    el.addEventListener("input", function (e) {
+      var v = parseFloat(e.target.value);
+      if (!isFinite(v)) return;
+      state[id] = v;
+      if (id === "my" && state.link_heights) state.sy = v;
+      if (id === "sy" && state.link_heights) state.my = v;
+      if (window.RoomMath && RoomMath.clampRoom) Object.assign(state, RoomMath.clampRoom(state));
+      markCustomIfDrifted();
+      syncUI();
+    });
+  });
+
+  ["l", "c", "r"].forEach(function (cap) {
+    var pat = document.getElementById("pattern_" + cap);
+    var yaw = document.getElementById("yaw_" + cap + "_deg");
+    if (pat) {
+      pat.addEventListener("change", function (e) {
+        state["pattern_" + cap] = e.target.value;
+        markCustomIfDrifted();
+        syncUI();
+        if (polarView && currentView === "polar") polarView.refresh();
+      });
+    }
+    if (yaw) {
+      yaw.addEventListener("input", function (e) {
+        var v = parseFloat(e.target.value);
+        if (!isFinite(v)) return;
+        state["yaw_" + cap + "_deg"] = v;
+        if (
