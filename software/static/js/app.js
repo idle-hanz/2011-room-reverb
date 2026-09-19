@@ -1,1 +1,1 @@
-@/tmp/mcp_push_software_static_js_app.js.json
+PLACEHOLDER_WILL_REPLACE_WITH_FULL_CONTENT_FROM_SINGLES_JSON
