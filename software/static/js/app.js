@@ -103,4 +103,98 @@
     if (imageView || imageViewInitFailed) return imageView;
     if (!window.ImageViews) {
       imageViewInitFailed = true;
-      if (statusEl) statusEl.textContent = "Images: 
+      if (statusEl) statusEl.textContent = "Images: ImageViews module missing";
+      return null;
+    }
+    var canvas = document.getElementById("imageCanvas");
+    if (!canvas) {
+      imageViewInitFailed = true;
+      if (statusEl) statusEl.textContent = "Images: #imageCanvas missing";
+      return null;
+    }
+    /* Do not create WebGL while layout is still 0×0 (hidden/settling). */
+    var rect = canvas.getBoundingClientRect();
+    if (rect.width < 2 || rect.height < 2) return null;
+    try {
+      imageView = ImageViews.create({ canvas: canvas });
+      if (!imageView) {
+        imageViewInitFailed = true;
+        if (statusEl) statusEl.textContent = "Images: WebGL init failed (Three.js / GPU)";
+        return null;
+      }
+    } catch (err) {
+      imageViewInitFailed = true;
+      imageView = null;
+      if (statusEl) {
+        statusEl.textContent = "Images WebGL: " + String(err && err.message ? err.message : err);
+      }
+      return null;
+    }
+    return imageView;
+  }
+
+  /** After #imageViews is unhidden: double-rAF → init → resize; optional size retry. */
+  function paintImageViewsSoon() {
+    requestAnimationFrame(function () {
+      requestAnimationFrame(function () {
+        if (currentView !== "lattice" && currentView !== "paths") return;
+        ensureImageView();
+        if (imageView) {
+          imageView.resize();
+          if (imagesCache) applyImageView();
+        }
+        var canvas = document.getElementById("imageCanvas");
+        if (!canvas) return;
+        var rect = canvas.getBoundingClientRect();
+        if (rect.width >= 2 && rect.height >= 2) return;
+        /* Optional: layout still settling — one short retry */
+        setTimeout(function () {
+          if (currentView !== "lattice" && currentView !== "paths") return;
+          ensureImageView();
+          if (imageView) {
+            imageView.resize();
+            if (imagesCache) applyImageView();
+          }
+        }, 80);
+      });
+    });
+  }
+
+  var colourSurfacesViews = document.getElementById("colourSurfacesViews");
+  var colourSurfaces = null;
+  if (window.ColourSurfaces) {
+    if (!state.surfaces) state.surfaces = ColourSurfacesDefaults.defaultSurfaces();
+    colourSurfaces = new ColourSurfaces({
+      getState: function () { return state; },
+      onChange: function () { /* client state only until Render */ }
+    });
+  }
+
+  var polarView = null;
+  if (window.PolarFieldView) {
+    polarView = new PolarFieldView({
+      getState: function () { return state; }
+    });
+  }
+
+
+  function fmt(n, d) {
+    if (d === undefined) d = 2;
+    return Number(n).toFixed(d);
+  }
+
+  function selectedMicsFromUI() {
+    var boxes = document.querySelectorAll("#micToggles input[data-mic]");
+    var out = [];
+    boxes.forEach(function (b) {
+      if (b.checked) out.push(b.getAttribute("data-mic"));
+    });
+    if (!out.length) {
+      var c = document.querySelector('#micToggles input[data-mic="C"]');
+      if (c) { c.checked = true; out = ["C"]; }
+    }
+    return out;
+  }
+
+  function scheduleImagesFetch(delayMs) {
+    i
