@@ -1,7 +1,6 @@
 {
-  "n": 13,
-  "total_hex": 48084,
-  "target_len": 24000,
-  "sha256": "61e65742804f1b80f9bbbaccbd3de5196ed29621f7c10f88323bc88670a6953f",
-  "trigger": 1
+  "n": 15,
+  "total_hex": 56084,
+  "target_len": 28000,
+  "sha256": "53de87fb0203b150cdeb6ff8167d7c734923ee576adbf1f8eb2ec1761dfa0fde"
 }
