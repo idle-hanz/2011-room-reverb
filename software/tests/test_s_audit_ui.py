@@ -60,10 +60,19 @@ def audit_server(tmp_path_factory):
     port = _free_port()
     wav = tmp_path_factory.mktemp("saudit") / "burst.wav"
     _tiny_wav(wav)
+    # publish_out_copy keeps ten stamps in the out.wav folder and deletes the
+    # oldest. Point this server at a temp folder so the pinned listen wav stays.
+    boot = (
+        "import tempfile\n"
+        "from pathlib import Path\n"
+        "import app_server\n"
+        "d = Path(tempfile.mkdtemp(prefix='rr_audit_renders_'))\n"
+        "app_server.default_out_path = lambda: d / 'out.wav'\n"
+        "import uvicorn\n"
+        f"uvicorn.run(app_server.app, host='127.0.0.1', port={port}, log_level='warning')\n"
+    )
     proc = subprocess.Popen(
-        [str(PY), "-c",
-         "import uvicorn; from app_server import app; "
-         f"uvicorn.run(app, host='127.0.0.1', port={port}, log_level='warning')"],
+        [str(PY), "-c", boot],
         cwd=str(SW),
         stdout=subprocess.DEVNULL,
         stderr=subprocess.PIPE,
