@@ -1,0 +1,1317 @@
+{
+  "schema": "bloom-compressor-presets/1",
+  "compiled": "2026-10-18 (Europe/London); circuit/SPICE update 2026-10-18 19:15; UAD cross-check + LA-2A/Natural switched to UAD behaviour 2026-10-19 13:08 (Idle's decision)",
+  "doc": "COMPRESSOR_RESEARCH.md (sources S1..S48 in section 7; UAD cross-check in section 4C and UAD_COMPARISON_2026-10-19.md)",
+  "generic_model": {
+    "reference": "Giannoulis, Massberg & Reiss, JAES 60(6) 2012 [S28]",
+    "gain_computer": "soft-knee Eq.4: y=x if 2(x-T)<-W; x+(1/R-1)(x-T+W/2)^2/(2W) if |2(x-T)|<=W; T+(x-T)/R above. Optional second segment: ratio2 above knee2_db over threshold.",
+    "detector_default": "log-domain, after gain computer (Eq.23), smooth decoupled peak (Eq.17); alpha=exp(-1/(tau*fs))",
+    "release_models": {
+      "one_pole": "branching smooth detector (Eq.16) with tauR",
+      "dual_stage": "two branches on same target: fast(tauA,tauR_fast), slow(tau_charge,tauR_slow); combine max() or weighted w*fast+(1-w)*slow [S16]",
+      "constant_rate": "release ramps at rate_db_per_s in dB (dbx) [S17,S18]",
+      "opto_memory": "dual_stage weighted w=0.5 where tauR_slow = slow_min_s + M*(slow_max_s-slow_min_s); M charges from sustained GR with tau_mem_s",
+      "rc_network": "simulate the unit's actual release RC network as coupled one-pole states in 'detector volts', then map volts->GR with the unit's gain-element law (Fairchild, SSL). Exact for linear networks; costs 2-3 multiplies per state per sample.",
+      "series_two_section": "SSL Auto: two parallel-RC sections in series. Charging current i flows through both: dv1/dt=i/C1 - v1/(R1 C1); dv2/dt=i/C2 - v2/(R2 C2); control = v1+v2. Release = a1 e^-t/tau1 + a2 e^-t/tau2 exactly. UAD-confirmed 2026-10-19 (slow share within 0.02 of SPICE).",
+      "opto_light_memory": "UAD-matched opto (Natural from 2026-10-19): release applied to LDR conductance u=10^(GR/20)-1 as two decays u(t)=u0*[(1-w_s)*exp(-t/tau_f)+w_s*exp(-t/tau_s)]; tau_f=0.032+0.045*M s, w_s=0.12+0.11*M, tau_s=0.90 s; M=1-exp(-d/0.3 s), d = time spent compressing (memory saturates after ~1 s)"
+    },
+    "bloom_law": "wet_gain_dB = clamp(Amount_dB + GR_dB, -MaxDuck_dB, +Amount_dB); applied to tail only; detector on dry (or dry+wet in self-keyed mode); per-sample detector; Amount=0 => bit-identical bypass",
+    "timing_definitions_rule": {
+      "value": "Fairchild and SSL panel release times ~= time to recover from ~10 dB GR to ~0.5-1 dB, i.e. ~2.1-2.5 x the RC time constant; not tau",
+      "status": "SPICE-derived",
+      "sources": [
+        "S12",
+        "S34",
+        "S35"
+      ]
+    },
+    "uad_cross_check": {
+      "value": "see COMPRESSOR_RESEARCH.md section 4C",
+      "source": "UAD 2026-10-19 (roadmap/bloom/UAD_COMPARISON_2026-10-19.md; data roadmap/bloom/uad/)"
+    }
+  },
+  "bloom_presets": [
+    {
+      "id": "natural",
+      "name": "Natural",
+      "emulates": [
+        "Teletronix LA-2A (behaviour of the UADx LA-2A Silver model)",
+        "Tube-Tech CL 1B (Fix/Man)"
+      ],
+      "default": true,
+      "detector": {
+        "value": "peak (opto behavioural)",
+        "status": "estimate"
+      },
+      "sidechain_filter": {
+        "value": null,
+        "status": "published",
+        "sources": [
+          "S6"
+        ],
+        "note": "LA-2A has optional HF-emphasis; off by default"
+      },
+      "ratio": {
+        "value": 5.0,
+        "status": "UAD-measured",
+        "source": "UAD 2026-10-19 (roadmap/bloom/UAD_COMPARISON_2026-10-19.md; data roadmap/bloom/uad/)",
+        "was": 4.0,
+        "note": "UAD Silver Comp local ratio 3.4 (3 dB GR) -> 4.8 (8) -> 5.3 (13) -> 5.1 (18) -> 4.3 (22) -> 3.7 (27); Gray 2.4 -> 5.5 -> 3.1; UA text 'about 4:1' [S9]"
+      },
+      "knee_db": {
+        "value": 8.0,
+        "status": "UAD-measured",
+        "source": "UAD 2026-10-19 (roadmap/bloom/UAD_COMPARISON_2026-10-19.md; data roadmap/bloom/uad/)",
+        "was": 10.0,
+        "note": "ratio reaches ~4.8 by 8 dB GR"
+      },
+      "ratio2": {
+        "value": 4.0,
+        "status": "UAD-measured",
+        "source": "UAD 2026-10-19 (roadmap/bloom/UAD_COMPARISON_2026-10-19.md; data roadmap/bloom/uad/)",
+        "was": "inf",
+        "note": "Comp mode never limits in UAD: local ratio peaks ~5.3 at ~13 dB GR and eases back to ~4 above ~20 dB GR; modelled as 4:1 from 20 dB above threshold (~16 dB GR). (UAD Limit mode: 3.8 -> 6.9 -> 13.6 -> inf at ~20 dB GR)"
+      },
+      "knee2_db_above_threshold": {
+        "value": 20.0,
+        "status": "UAD-measured",
+        "source": "UAD 2026-10-19 (roadmap/bloom/UAD_COMPARISON_2026-10-19.md; data roadmap/bloom/uad/)",
+        "was": 10.0,
+        "note": "dB above threshold (input), ~16 dB GR at ratio 5"
+      },
+      "attack_ms": {
+        "value": 2.0,
+        "status": "UAD-measured",
+        "source": "UAD 2026-10-19 (roadmap/bloom/UAD_COMPARISON_2026-10-19.md; data roadmap/bloom/uad/)",
+        "was": 10.0,
+        "note": "UAD Silver closed-loop t63 ~2 ms, t90 22-38 ms (Gray t63 2-3 ms, t90 14-34 ms). Faster than UA spec 10 ms [S7] and our cell SPICE (~20 ms)"
+      },
+      "release": {
+        "model": "opto_light_memory",
+        "source": "UAD 2026-10-19 (roadmap/bloom/UAD_COMPARISON_2026-10-19.md; data roadmap/bloom/uad/)",
+        "form": "conductance u=10^(GR/20)-1 decays as u0*[(1-w_s)e^(-t/tau_f)+w_s e^(-t/tau_s)]; M=1-exp(-d/tm), d = time compressing; memory drains with tm_decay when dark",
+        "tau_f_s": {
+          "value": "0.032 + 0.045*M",
+          "status": "UAD-measured (fit)",
+          "note": "tuned so the two-decay law hits the measured conductance t63 0.044/0.090/0.112/0.113 s after 0.05/0.3/1/5 s (law gives 0.050/0.086/0.115/0.118 s). Free two-exponential fits on their own gave 0.052/0.076/0.085/0.086 s"
+        },
+        "w_slow": {
+          "value": "0.12 + 0.11*M",
+          "status": "UAD-measured (fit)",
+          "note": "UAD Silver fits: 0.13/0.19/0.23/0.23"
+        },
+        "tau_s_s": {
+          "value": 0.9,
+          "status": "UAD-measured (fit)",
+          "note": "free fits 0.80-1.0 s; 0.90 s balances the 10 dB -> 1 dB time (law 1.27 s, UAD 1.13 s) and the 0.5 dB time (law 1.92 s, UAD 1.95 s)"
+        },
+        "tm_s": {
+          "value": 0.3,
+          "status": "UAD-measured (fit)",
+          "was": 0.84,
+          "note": "memory full after ~1 s of compression (was 2x0.84 s cascaded lags reaching full only after ~5 s)"
+        },
+        "tm_decay_s": {
+          "value": 0.3,
+          "status": "estimate",
+          "was": 20.0,
+          "note": "UAD shows no long history; drain time not measured, set equal to tm"
+        },
+        "headline": {
+          "value": "conductance t63 ~0.11 s after any burst >= 1 s (0.044 s after 50 ms, 0.090 s after 0.3 s); from 10 dB: GR half-time ~0.1 s, within 1 dB ~1.1 s, within 0.5 dB ~2.0 s",
+          "status": "UAD-measured",
+          "source": "UAD 2026-10-19 (roadmap/bloom/UAD_COMPARISON_2026-10-19.md; data roadmap/bloom/uad/)"
+        },
+        "was": "opto_memory_v2: tau_rel = 0.06 + 1.53*M2 s (0.14/0.57/1.51 s after 0.3/1/5 s); see release_alt_cell_fit"
+      },
+      "link": {
+        "value": "linked",
+        "status": "published",
+        "sources": [
+          "S9"
+        ]
+      },
+      "bloom_defaults": {
+        "amount_db": 5,
+        "gr_target_db": "3-6",
+        "predelay_ms": 20,
+        "max_duck_db": 12
+      },
+      "confidence": "medium",
+      "confidence_note": "Follows the UADx LA-2A Silver model per Idle's decision 2026-10-19 13:08 (little memory, fast attack, ~4-5:1). UAD is a model; real LA-2As vary widely (6 units: release 0.45-1.67 s to settle [S37]). Cell-fit alternative kept in *_alt_* fields.",
+      "attack_two_stage": {
+        "domain": "LDR conductance",
+        "w_fast": {
+          "value": 0.8,
+          "status": "UAD-measured",
+          "source": "UAD 2026-10-19 (roadmap/bloom/UAD_COMPARISON_2026-10-19.md; data roadmap/bloom/uad/)",
+          "was": 0.88
+        },
+        "a1_s": {
+          "value": 0.002,
+          "status": "UAD-measured",
+          "source": "UAD 2026-10-19 (roadmap/bloom/UAD_COMPARISON_2026-10-19.md; data roadmap/bloom/uad/)",
+          "was": 0.104
+        },
+        "a2_s": {
+          "value": 0.16,
+          "status": "UAD-measured",
+          "source": "UAD 2026-10-19 (roadmap/bloom/UAD_COMPARISON_2026-10-19.md; data roadmap/bloom/uad/)",
+          "was": 1.25,
+          "note": "Gray: 80 % / 4 ms + 20 % / 0.14 s; dB-domain Silver 87 % / 2 ms + 13 % / 0.13 s"
+        }
+      },
+      "curve": {
+        "gain_element": {
+          "value": "CdS LDR shunt attenuator: G = k*L^gamma, gamma 0.6 (0.6-0.85)",
+          "status": "published (datasheet class)",
+          "sources": [
+            "S38"
+          ]
+        },
+        "el_drive_exponent_n": {
+          "value": 8.7,
+          "status": "UAD-fit (effective)",
+          "source": "UAD 2026-10-19 (roadmap/bloom/UAD_COMPARISON_2026-10-19.md; data roadmap/bloom/uad/)",
+          "was": 3.0,
+          "note": "effective gamma*n ~5.2 (u ~ out^5.2) with gamma kept at 0.6; not a physical EL exponent, just what reproduces UAD's curve"
+        },
+        "static_ratio": {
+          "value": "UAD Silver: local ratio 3.4 / 4.8 / 5.3 / 5.1 / 4.3 / 3.7 at 3 / 8 / 13 / 18 / 22 / 27 dB GR (Comp); equivalent gamma*n ~5.2 (Gray ~4.8)",
+          "status": "UAD-measured",
+          "source": "UAD 2026-10-19 (roadmap/bloom/UAD_COMPARISON_2026-10-19.md; data roadmap/bloom/uad/)",
+          "was": "soft knee, local ratio rises 1.1 -> asymptote 1+gamma*n (2.8 with defaults); UA quotes ~4:1 so tune n*gamma ~3"
+        },
+        "detector": {
+          "value": "no rectifier/RC: the EL panel + LDR are the detector (light-domain averaging)",
+          "status": "published",
+          "sources": [
+            "S6"
+          ]
+        },
+        "topology": {
+          "value": "feedback",
+          "status": "published (secondary)",
+          "sources": [
+            "S37"
+          ]
+        }
+      },
+      "release_alt_cell_fit": {
+        "model": "opto_memory_v2",
+        "form": "tau_rel = r0 + (r1-r0)*M2; M1,M2 cascaded lags (tm) charging while light is on, decaying with tm_decay when dark; applied to LDR conductance G; GR_dB = 20*log10(1+Rs*G)",
+        "r0_s": {
+          "value": 0.06,
+          "status": "behavioural-fit",
+          "sources": [
+            "S7",
+            "S36"
+          ],
+          "note": "short-peak floor; matches UA 60 ms-to-50% (tau 87 ms) and Stroe 90 ms after 300 ms burst"
+        },
+        "r1_s": {
+          "value": 1.59,
+          "status": "behavioural-fit",
+          "sources": [
+            "S36"
+          ],
+          "note": "fit to Stroe Table 6.6 CdS+Old-Modelled cell: 0.09/0.58/1.56 s after 0.3/1/5 s bursts (resid <= 47 ms)"
+        },
+        "tm_s": {
+          "value": 0.84,
+          "status": "behavioural-fit",
+          "sources": [
+            "S36"
+          ]
+        },
+        "tm_decay_s": {
+          "value": 20.0,
+          "status": "estimate",
+          "sources": [
+            "S36"
+          ],
+          "note": "Lawrence 1964 via Stroe: cell remembers GR from the last 20-30 s"
+        },
+        "spice_check": {
+          "value": "closed-loop release G-tau 0.14/0.57/1.51 s for 0.3/1/5 s bursts; 5 s burst recovers to 0.5 dB in 4.8 s (spec 0.5-5 s)",
+          "status": "SPICE-derived (behavioural)"
+        },
+        "kept_because": "Idle 2026-10-19: Natural follows UAD; the cell-fit long memory is kept documented in case he wants it back"
+      },
+      "attack_two_stage_alt_cell_fit": {
+        "w_fast": {
+          "value": 0.88,
+          "status": "behavioural-fit",
+          "sources": [
+            "S36"
+          ]
+        },
+        "a1_s": {
+          "value": 0.104,
+          "status": "behavioural-fit",
+          "sources": [
+            "S36"
+          ]
+        },
+        "a2_s": {
+          "value": 1.25,
+          "status": "behavioural-fit",
+          "sources": [
+            "S36"
+          ],
+          "note": "open-loop cell values; feedback loop makes the audible attack ~5x faster"
+        }
+      },
+      "static_alt_device_model": {
+        "ratio": {
+          "value": 4.0,
+          "status": "published",
+          "sources": [
+            "S9"
+          ],
+          "note": "2-LA-2 Compress ~4:1 program-dependent"
+        },
+        "knee_db": {
+          "value": 10.0,
+          "status": "derived",
+          "sources": [
+            "S6"
+          ],
+          "note": "compression 'gradually increases over the first 10 dB' then horizontal"
+        },
+        "ratio2": {
+          "value": "inf",
+          "status": "published",
+          "sources": [
+            "S6",
+            "S9"
+          ]
+        },
+        "knee2_db_above_threshold": {
+          "value": 10.0,
+          "status": "derived",
+          "sources": [
+            "S6"
+          ]
+        },
+        "attack_ms": {
+          "value": 10.0,
+          "status": "published",
+          "sources": [
+            "S7",
+            "S8"
+          ],
+          "note": "1966 manual 10 us conflict; SPICE closed loop of fitted cell gives 63% in ~20 ms; Moore 2025 measured 33-81 ms to stabilise on 6 real LA-2As"
+        },
+        "curve_static_ratio": {
+          "value": "soft knee, local ratio rises 1.1 -> asymptote 1+gamma*n (2.8 with defaults); UA quotes ~4:1 so tune n*gamma ~3",
+          "status": "behavioural-fit"
+        },
+        "el_drive_exponent_n": {
+          "value": 3.0,
+          "status": "estimate"
+        }
+      },
+      "source": "UAD 2026-10-19 (roadmap/bloom/UAD_COMPARISON_2026-10-19.md; data roadmap/bloom/uad/)"
+    },
+    {
+      "id": "glue",
+      "name": "Glue",
+      "emulates": [
+        "SSL G-series bus compressor"
+      ],
+      "detector": {
+        "value": "full-wave rectifier -> diode -> attack R -> cap (peak-hold, linear volts, not RMS, not log)",
+        "status": "circuit-derived",
+        "sources": [
+          "S34",
+          "S35"
+        ]
+      },
+      "sidechain_filter": {
+        "value": null,
+        "status": "estimate",
+        "sources": [
+          "S14"
+        ],
+        "note": "Waves adds 21-500 Hz HPF; not confirmed on hardware"
+      },
+      "ratio": {
+        "value": 4.0,
+        "status": "published",
+        "sources": [
+          "S13"
+        ]
+      },
+      "knee_db": {
+        "value": 12.0,
+        "status": "UAD-measured (approximation)",
+        "source": "UAD 2026-10-19 (roadmap/bloom/UAD_COMPARISON_2026-10-19.md; data roadmap/bloom/uad/)",
+        "was": 0.0,
+        "note": "UAD 4:1 is a soft knee: local ratio ~1.65 + 0.12*GR (1.9 at 2 dB, 2.7 at 8, 3.2 at 12, 3.8 at 17.5, 4.4 at 23.6 dB GR). Preferred: drive the ratio from ratio_vs_gr directly; 12 dB knee is the generic-computer fallback. Circuit reading (hard onset at the diode) kept in knee_alt_circuit"
+      },
+      "attack_ms": {
+        "value": 10.0,
+        "status": "published",
+        "sources": [
+          "S13",
+          "S14",
+          "S15"
+        ],
+        "note": "RC = 82k*0.47uF = 38.5 ms; feedback shortens it: SPICE 63% = 26.7/14.5/9.4 ms at 4/8/13 dB GR (4:1). Labels hold at ~12 dB GR; slower at light GR, faster at heavy GR",
+        "uad_t63_ms": {
+          "value": {
+            "3.6dB": 15.0,
+            "7.8dB": 9.2,
+            "13.2dB": 6.0
+          },
+          "status": "UAD-measured",
+          "source": "UAD 2026-10-19 (roadmap/bloom/UAD_COMPARISON_2026-10-19.md; data roadmap/bloom/uad/)",
+          "note": "10 ms label: 35-45 % faster than SPICE 26.7/14.5/9.4 ms at 4/8/13 dB; same speed-up with GR. 30 ms label: 31/21/14 ms at 2.5/5.9/10.7 dB"
+        }
+      },
+      "release": {
+        "model": "series_two_section",
+        "combine": "sum",
+        "tau_fast_ms": {
+          "value": 42.8,
+          "status": "circuit-derived",
+          "sources": [
+            "S34",
+            "S35"
+          ],
+          "note": "91k || 0.47uF; values confirmed on a 1979 original card (GroupDIY)",
+          "uad": {
+            "value": "37-41 ms",
+            "status": "UAD-measured",
+            "source": "UAD 2026-10-19 (roadmap/bloom/UAD_COMPARISON_2026-10-19.md; data roadmap/bloom/uad/)"
+          }
+        },
+        "tau_slow_ms": {
+          "value": 5100,
+          "status": "circuit-derived",
+          "sources": [
+            "S34",
+            "S35"
+          ],
+          "note": "750k || 6.8uF",
+          "uad": {
+            "value": "3.6-4.1 s",
+            "status": "UAD-measured",
+            "source": "UAD 2026-10-19 (roadmap/bloom/UAD_COMPARISON_2026-10-19.md; data roadmap/bloom/uad/)",
+            "note": "20-29 % shorter than the drawings' 5.1 s; 5.1 s kept (circuit-derived)"
+          }
+        },
+        "w_slow_vs_burst": {
+          "value": {
+            "0.05": 0.11,
+            "0.3": 0.36,
+            "1": 0.69,
+            "3": 0.86,
+            "8": 0.88,
+            "20": 0.88
+          },
+          "status": "SPICE-derived, UAD-confirmed",
+          "source": "UAD 2026-10-19 (roadmap/bloom/UAD_COMPARISON_2026-10-19.md; data roadmap/bloom/uad/)",
+          "uad": {
+            "0.05": 0.12,
+            "0.3": 0.37,
+            "1": 0.69,
+            "3": 0.85,
+            "8": 0.87,
+            "20": 0.87
+          },
+          "note": "burst length (s) -> slow-section share. Best: simulate the two series sections directly (series_two_section); otherwise interpolate this table in log(d). Replaces the formula d/(d+0.62 s) cap 0.89, which read low at short d (0.075 at 50 ms)",
+          "was": "w_slow ~= d/(d+0.62 s), max 0.89"
+        },
+        "superseded": "old estimate fast 100 ms / charge 300 ms / slow 1200 ms (max)",
+        "alt_clone": {
+          "value": "GSSL / gyraf clone swaps the resistors: 0.35 s and 0.62 s (much less program-dependent)",
+          "status": "published (clone docs)",
+          "sources": [
+            "S35"
+          ]
+        },
+        "uad_recovery": {
+          "value": "after 50 ms: half 35 ms, to 1 dB 0.26 s (SPICE 35 ms / 0.12 s); after >=3 s: half 2.2 s, to 1 dB 9.2 s (SPICE 2.8 / 9.6 s)",
+          "status": "UAD-measured",
+          "source": "UAD 2026-10-19 (roadmap/bloom/UAD_COMPARISON_2026-10-19.md; data roadmap/bloom/uad/)"
+        }
+      },
+      "link": {
+        "value": "always fully linked",
+        "status": "published",
+        "sources": [
+          "S13"
+        ]
+      },
+      "bloom_defaults": {
+        "amount_db": 3,
+        "gr_target_db": "1-4",
+        "predelay_ms": 15,
+        "max_duck_db": 8
+      },
+      "confidence": "medium-high",
+      "confidence_note": "timing parts read from the original drawings and confirmed on a real card; VCA scale assumed; Auto release structure UAD-confirmed 2026-10-19; knee softer in UAD",
+      "fixed_release_tau_ms": {
+        "value": {
+          "0.1": 84.6,
+          "0.3": 126.9,
+          "0.6": 263.2,
+          "1.2": 564
+        },
+        "status": "circuit-derived",
+        "sources": [
+          "S34"
+        ],
+        "note": "labels ~= time from 8-10 dB to 1 dB (SPICE: 0.17/0.26/0.55/1.18 s)",
+        "uad": {
+          "value": {
+            "0.1": 80,
+            "0.3": 117,
+            "0.6": 225,
+            "1.2": 413
+          },
+          "status": "UAD-measured",
+          "source": "UAD 2026-10-19 (roadmap/bloom/UAD_COMPARISON_2026-10-19.md; data roadmap/bloom/uad/)",
+          "note": "to 1 dB: 0.18/0.27/0.54/1.01 s"
+        }
+      },
+      "ratio_vs_gr": {
+        "value": "local ratio ~= 1.65 + 0.12*GR_dB at the 4:1 setting (UAD); 10:1: 4.1 -> 7.3; 2:1: 1.4 -> 2.2",
+        "status": "UAD-measured",
+        "source": "UAD 2026-10-19 (roadmap/bloom/UAD_COMPARISON_2026-10-19.md; data roadmap/bloom/uad/)",
+        "was": "R0 + 0.115*GR_dB (SPICE 4:1: 3.9 -> 4.4 over 4-13 dB)",
+        "note": "same slope as our circuit law (+0.12 per dB) but offset ~-2.3; at Glue's 1-4 dB GR the effective ratio is ~2-2.5:1 (was ~4.1-4.5:1). Onset -36/-28/-24 dBFS at 2/4/10:1 (lower ratio -> lower threshold, as manual)"
+      },
+      "topology_original": {
+        "value": "feedback via sidechain VCA mirroring the main VCA",
+        "status": "published (designer doc)",
+        "sources": [
+          "S28",
+          "S35"
+        ]
+      },
+      "knee_alt_circuit": {
+        "value": 0.0,
+        "status": "circuit-derived",
+        "sources": [
+          "S34",
+          "S35"
+        ],
+        "note": "hard onset at the rectifier diode; softness from the rising ratio"
+      },
+      "source": "UAD 2026-10-19 (roadmap/bloom/UAD_COMPARISON_2026-10-19.md; data roadmap/bloom/uad/)"
+    },
+    {
+      "id": "room_crush",
+      "name": "Room Crush",
+      "emulates": [
+        "UREI 1176LN all-buttons",
+        "Andy Johns room-mic technique"
+      ],
+      "detector": {
+        "value": "peak",
+        "status": "published",
+        "sources": [
+          "S1"
+        ]
+      },
+      "topology_original": {
+        "value": "feedback",
+        "status": "published",
+        "sources": [
+          "S5",
+          "S20"
+        ]
+      },
+      "sidechain_filter": {
+        "value": null,
+        "status": "published"
+      },
+      "ratio": {
+        "value": 16.0,
+        "status": "derived",
+        "sources": [
+          "S1",
+          "S4"
+        ],
+        "note": "all-buttons ratio ~12-20 and varying; add +-4 slow drift",
+        "uad": {
+          "value": "All-buttons static local ratio 13-45:1 (UADx 1176 FET, input -20)",
+          "status": "UAD-measured",
+          "source": "UAD 2026-10-19 (roadmap/bloom/UAD_COMPARISON_2026-10-19.md; data roadmap/bloom/uad/)"
+        }
+      },
+      "knee_db": {
+        "value": 9.0,
+        "status": "UAD-measured",
+        "source": "UAD 2026-10-19 (roadmap/bloom/UAD_COMPARISON_2026-10-19.md; data roadmap/bloom/uad/)",
+        "was": 5.0,
+        "note": "UAD 1176LN Rev E at 4:1: local ratio 2.3 (1.7 dB GR) -> 3.7 (4.5) -> 4.7 (7.6) -> 5.6-5.8 (11-21 dB); knee ~8-10 dB; '4:1' settles at ~5.5-6:1 (Rev A 2.1 -> 5.9). 20:1 is near-hard"
+      },
+      "attack_ms": {
+        "value": 0.4,
+        "status": "published",
+        "sources": [
+          "S1",
+          "S3"
+        ],
+        "note": "labels describe the start of the gain change. Circuit RC = up to 25k*220nF = 5.5 ms; KT clone measured ~0.5 ms to 37% but ~5 ms to full (GroupDIY). SPICE: 63% in 0.16 ms (8 dB GR) / 0.09 ms (16 dB GR) at fastest; 1.2 / 0.7 ms at slowest"
+      },
+      "attack_onset_lag_ms": {
+        "value": 2.0,
+        "status": "estimate (UAD-supported)",
+        "sources": [
+          "S1",
+          "S4"
+        ],
+        "note": "mechanism (jhaible PSpice study): all-buttons shorts part of the bias divider, pushing the FET past pinch-off so the cap must charge through a dead zone before GR starts; lag grows with slower attack settings and lighter drive. Our SPICE shows only tens of us at fastest attack, so 2 ms stays an estimate",
+        "uad": {
+          "value": "All-buttons t10 0.8-2.5 ms vs < 0.5 ms at normal ratios; attack tail t90 0.2-0.28 s",
+          "status": "UAD-measured",
+          "source": "UAD 2026-10-19 (roadmap/bloom/UAD_COMPARISON_2026-10-19.md; data roadmap/bloom/uad/)"
+        }
+      },
+      "release": {
+        "model": "one_pole",
+        "tauR_ms": {
+          "value": 300,
+          "status": "estimate (range circuit-derived, UAD-confirmed)",
+          "sources": [
+            "S1",
+            "S2",
+            "S39"
+          ],
+          "note": "range 59-1160 ms = (270k + 0..5M pot)*220nF (circuit-derived, matches manual 63% spec); 300 ms suits medium tempo",
+          "uad": {
+            "value": "t63 1.19/1.10/0.83/0.55/0.30/0.077/0.056 s at knob 1..7 (LN Rev E); Rev A 1.27 ... 0.094 s",
+            "status": "UAD-measured",
+            "source": "UAD 2026-10-19 (roadmap/bloom/UAD_COMPARISON_2026-10-19.md; data roadmap/bloom/uad/)",
+            "note": "circuit range 59-1160 ms UAD-confirmed within 5 %. Fast knobs have a ~10 % tail at ~0.84 s; LN knob 4 mildly program-dependent (0.45/0.55/0.77 s after 0.05/0.5/3 s). All-buttons release 10-30x faster (t63 3-40 ms)"
+          }
+        }
+      },
+      "link": {
+        "value": "linked",
+        "status": "estimate"
+      },
+      "bloom_defaults": {
+        "amount_db": 8,
+        "gr_target_db": "5-10 (3-5 for 'nudging')",
+        "predelay_ms": 10,
+        "max_duck_db": 15
+      },
+      "confidence": "medium",
+      "attack_settle_ms": {
+        "value": 3.0,
+        "status": "measured-third-party",
+        "sources": [
+          "S39"
+        ],
+        "note": "second, slower stage of attack to full GR (0.5-5.5 ms); new field"
+      },
+      "curve": {
+        "gain_element": {
+          "value": "JFET shunt: Rds ~ Ron/(1-Vgs/Vp) (2N5457 Ron 273 ohm, 2N3819 130 ohm, vendor models); max GR ~30 dB",
+          "status": "SPICE-derived",
+          "sources": [
+            "S40",
+            "S41"
+          ]
+        },
+        "detector": {
+          "value": "full-wave peak rectifier with ratio-dependent bias + feedback gain (ratio buttons change both)",
+          "status": "third-party circuit analysis",
+          "sources": [
+            "S41"
+          ]
+        },
+        "level_dependent_times": {
+          "value": "attack and release speed up as GR increases (FET slope changes loop gain)",
+          "status": "SPICE-derived",
+          "sources": [
+            "S41"
+          ]
+        }
+      },
+      "source": "UAD 2026-10-19 (roadmap/bloom/UAD_COMPARISON_2026-10-19.md; data roadmap/bloom/uad/)"
+    },
+    {
+      "id": "nuke",
+      "name": "Nuke",
+      "emulates": [
+        "Empirical Labs Distressor Nuke/20:1 on room mics"
+      ],
+      "detector": {
+        "value": "peak, special limiter detector",
+        "status": "published",
+        "sources": [
+          "S24"
+        ]
+      },
+      "sidechain_filter": {
+        "value": {
+          "type": "hpf",
+          "fc_hz": 100,
+          "slope_db_oct": 6
+        },
+        "status": "published",
+        "sources": [
+          "S24"
+        ]
+      },
+      "ratio": {
+        "value": "inf",
+        "status": "published",
+        "sources": [
+          "S24"
+        ],
+        "note": "'within 1 dB or so'",
+        "uad": {
+          "value": "local 20-36:1 up to ~20 dB GR",
+          "status": "UAD-measured",
+          "source": "UAD 2026-10-19 (roadmap/bloom/UAD_COMPARISON_2026-10-19.md; data roadmap/bloom/uad/)"
+        }
+      },
+      "knee_db": {
+        "value": 0.0,
+        "status": "published",
+        "sources": [
+          "S24"
+        ],
+        "note": "20:1/Nuke are the curves without dominant knees"
+      },
+      "attack_ms": {
+        "value": 2.5,
+        "status": "UAD-measured",
+        "source": "UAD 2026-10-19 (roadmap/bloom/UAD_COMPARISON_2026-10-19.md; data roadmap/bloom/uad/)",
+        "was": 1.85,
+        "note": "UAD t63 at knob 4 = 2.2 ms, knob 5 = 3.0 ms (6:1). Old manual-anchored taper gave 1.06/1.85 ms"
+      },
+      "release": {
+        "model": "dual_stage",
+        "combine": "weighted",
+        "source": "UAD 2026-10-19 (roadmap/bloom/UAD_COMPARISON_2026-10-19.md; data roadmap/bloom/uad/)",
+        "tauR_fast_ms": {
+          "value": 60,
+          "status": "UAD-measured",
+          "was": 150,
+          "note": "Nuke release 2/3/5: fast 36-53 / 48-69 / 91-126 ms (short / 1 s burst)"
+        },
+        "tauR_slow_ms": {
+          "value": 550,
+          "status": "UAD-measured",
+          "was": 1000,
+          "note": "0.48-0.57 s across release 2-5"
+        },
+        "w_slow": {
+          "value": "0.06 + 0.26*(1-exp(-d/0.35 s))",
+          "status": "UAD-measured at 2 points (0.05 s: 0.06-0.11; 1 s: 0.31-0.32), interpolation estimate",
+          "was": "w_fast 0.67 fixed"
+        },
+        "tau_charge_ms": {
+          "value": 350,
+          "status": "estimate (from the w_slow interpolation)",
+          "was": 200
+        },
+        "note": "'logarithmic ... lets off quickly at first and then slows' [S24] confirmed as two-stage with growing slow share"
+      },
+      "link": {
+        "value": "optional",
+        "status": "published",
+        "sources": [
+          "S24"
+        ]
+      },
+      "bloom_defaults": {
+        "amount_db": 10,
+        "amount_cap_db": 12,
+        "gr_target_db": "15-20",
+        "predelay_ms": 10,
+        "max_duck_db": 24
+      },
+      "confidence": "medium-high",
+      "confidence_note": "behaviour and room recipe published; tapers and Nuke release now measured on the UAD model (no hardware schematic exists)",
+      "knob_taper": {
+        "attack": {
+          "value": {
+            "0": "<0.25",
+            "1": 0.5,
+            "2": 0.8,
+            "3": 1.3,
+            "3.5": 1.8,
+            "4": 2.2,
+            "5": 3.0,
+            "6": 4.0,
+            "7": 6.0,
+            "8": 10.3,
+            "9": 16.8,
+            "10": 23.8
+          },
+          "units": "ms t63 (6:1)",
+          "status": "UAD-measured",
+          "source": "UAD 2026-10-19 (roadmap/bloom/UAD_COMPARISON_2026-10-19.md; data roadmap/bloom/uad/)",
+          "was": "k<=3.5: 0.05*16^(k/3.5) ms; k>3.5: 0.8*37.5^((k-3.5)/6.5) ms"
+        },
+        "release": {
+          "value": {
+            "0": 0.03,
+            "1": 0.041,
+            "2": 0.073,
+            "3": 0.095,
+            "4": 0.117,
+            "5": 0.165,
+            "6": 0.311,
+            "7": 0.568,
+            "8": 0.785,
+            "9": 0.93,
+            "10": 0.938,
+            "10.5": 0.938
+          },
+          "units": "s t63 (6:1, 0.5 s burst)",
+          "status": "UAD-measured",
+          "source": "UAD 2026-10-19 (roadmap/bloom/UAD_COMPARISON_2026-10-19.md; data roadmap/bloom/uad/)",
+          "to_1dB_s": {
+            "0": 0.33,
+            "2": 0.42,
+            "3": 0.46,
+            "5": 0.57,
+            "6": 0.82,
+            "7": 1.25,
+            "8": 1.62,
+            "9": 1.87,
+            "10": 1.88
+          },
+          "note": "not single-exponential (fast fall then slow last dB); knob stops changing above 9; max ~1 s t63, not 3.5 s",
+          "was": "0.05*70^(k/10) s (estimate) - retired"
+        }
+      },
+      "curve": {
+        "detector": {
+          "value": "separate special detector circuitry for 2:1, 10:1 and Nuke; VCA gain element; no public schematic",
+          "status": "published",
+          "sources": [
+            "S42"
+          ]
+        },
+        "spice": {
+          "value": "not possible - no schematic published",
+          "status": "n/a"
+        }
+      },
+      "opto_10to1_uad": {
+        "value": "to 1 dB after 0.05/0.5/3/10 s bursts: 0.21/0.73/3.3/8.4 s (0.5 dB: 0.37/1.3/8.8/14 s)",
+        "status": "UAD-measured",
+        "source": "UAD 2026-10-19 (roadmap/bloom/UAD_COMPARISON_2026-10-19.md; data roadmap/bloom/uad/)",
+        "note": "strong history dependence, consistent with the manual's 'up to 20 s'"
+      },
+      "ratios_uad": {
+        "value": "local ratio at ~10 dB GR: 2:1 -> 3.9, 3:1 -> 5.1, 4:1 -> 5.0, 6:1 -> 6.7, 10:1 -> ~12, 20:1 -> ~24, Nuke -> ~29; 2:1/3:1 keep rising over 15-20 dB; all fall back above ~18-20 dB GR at Input 5",
+        "status": "UAD-measured",
+        "source": "UAD 2026-10-19 (roadmap/bloom/UAD_COMPARISON_2026-10-19.md; data roadmap/bloom/uad/)"
+      },
+      "source": "UAD 2026-10-19 (roadmap/bloom/UAD_COMPARISON_2026-10-19.md; data roadmap/bloom/uad/)"
+    },
+    {
+      "id": "swell",
+      "name": "Swell",
+      "emulates": [
+        "Fairchild 670 position 5",
+        "Manley Variable Mu"
+      ],
+      "detector": {
+        "value": "peak (vari-mu)",
+        "status": "estimate"
+      },
+      "topology_original": {
+        "value": "feedback",
+        "status": "published",
+        "sources": [
+          "S12"
+        ]
+      },
+      "sidechain_filter": {
+        "value": {
+          "type": "hpf",
+          "fc_hz": 100,
+          "slope_db_oct": 6
+        },
+        "status": "published",
+        "sources": [
+          "S25"
+        ]
+      },
+      "ratio": {
+        "value": 1.6,
+        "status": "UAD-measured (approximation)",
+        "source": "UAD 2026-10-19 (roadmap/bloom/UAD_COMPARISON_2026-10-19.md; data roadmap/bloom/uad/)",
+        "was": 2.0,
+        "note": "UAD Fairchild 670 local ratio 1.6 (2 dB GR) -> 2.4 -> 3.3 -> 4.4 (10 dB) -> 5.4 -> 6.4 -> 9+ (18 dB); use static_curve_uad table when possible"
+      },
+      "knee_db": {
+        "value": 10.0,
+        "status": "UAD-measured (approximation)",
+        "source": "UAD 2026-10-19 (roadmap/bloom/UAD_COMPARISON_2026-10-19.md; data roadmap/bloom/uad/)",
+        "was": 12.0
+      },
+      "ratio2": {
+        "value": 6.0,
+        "status": "UAD-measured (approximation)",
+        "source": "UAD 2026-10-19 (roadmap/bloom/UAD_COMPARISON_2026-10-19.md; data roadmap/bloom/uad/)",
+        "was": 20.0,
+        "note": "within Swell's 10 dB cap the curve only reaches ~4.4:1; 6:1 second segment approximates the table up to ~15 dB"
+      },
+      "knee2_db_above_threshold": {
+        "value": 10.0,
+        "status": "UAD-measured (approximation)",
+        "source": "UAD 2026-10-19 (roadmap/bloom/UAD_COMPARISON_2026-10-19.md; data roadmap/bloom/uad/)",
+        "was": 12.0
+      },
+      "max_gr_db": {
+        "value": 10.0,
+        "status": "Bloom safety choice",
+        "source": "UAD 2026-10-19 (roadmap/bloom/UAD_COMPARISON_2026-10-19.md; data roadmap/bloom/uad/)",
+        "was_status": "published",
+        "note": "UA's manual says the hardware never exceeds 10 dB [S25], but the UADx Manley Variable Mu reached 13.6 dB (Limit) and 19.7 dB (hot). Kept as a safety cap, not as a hardware match"
+      },
+      "attack_ms": {
+        "value": 25.0,
+        "status": "published",
+        "sources": [
+          "S25"
+        ],
+        "note": "Manley 25-70 ms; Fairchild 0.2-0.4 ms (manual) - SPICE network with an assumed 100 ohm source gives 0.2 ms"
+      },
+      "release": {
+        "model": "rc_network",
+        "network": "Fairchild pos 5: CT 4uF || RT 220k || (RU 100k + CU 8uF); pos 6 adds (RV 100k + CV 20uF)",
+        "sources": [
+          "S12"
+        ],
+        "pos5_eigen_tau_s": {
+          "value": [
+            0.219,
+            3.22
+          ],
+          "status": "circuit-derived",
+          "sources": [
+            "S12"
+          ]
+        },
+        "pos6_eigen_tau_s": {
+          "value": [
+            0.077,
+            1.12,
+            8.21
+          ],
+          "status": "circuit-derived",
+          "sources": [
+            "S12"
+          ]
+        },
+        "spice_release_from_10dB": {
+          "value": {
+            "pos5": "to 1 dB: 3.3 s after a 10 ms peak, 7.5 s after >=3 s; pos6: 0.29 s after a peak, 13 s after 1 s, 18.9 s (25 s to 0.5 dB) after >=10 s"
+          },
+          "status": "SPICE-derived",
+          "note": "matches manual 2/10 s and 0.3/10/25 s as recovery-to-~1 dB times"
+        },
+        "superseded": "old preset used 2 s / 10 s as tau - about 3x too slow",
+        "uad_check": {
+          "value": "pos 1-4 tau 0.102/0.293/0.859/1.69 s (circuit 0.10/0.30/0.88/1.76, within 4 %) - UAD-confirmed. Pos 5 volts-domain tau 0.26-0.32 + 3.74-3.85 s (dB domain 0.30 + 4.0 s); slow share 13/19/33/51/59 % after 0.05/0.3/1/3/10 s. To 1 dB after 10 ms*/50 ms/0.3/1/3/10 s: 1.36*/1.85/3.46/5.61/7.25/7.74 s (SPICE 3.35/-/5.20/6.69/7.40/7.46). Pos 6 to 1 dB after 0.01/0.3/1/3/10 s: 0.30/1.53/7.1/13.9/18.4 s (SPICE 0.29/6.64/13.2/17.4/18.9); 0.5 dB after >=10 s 25.6-26.4 s",
+          "status": "UAD-measured",
+          "source": "UAD 2026-10-19 (roadmap/bloom/UAD_COMPARISON_2026-10-19.md; data roadmap/bloom/uad/)",
+          "note": "*10 ms burst reached only 7.6 dB GR. Positions 5/6 release about 2x faster in UAD after short and medium bursts; long-burst end points agree. Circuit eigen-taus kept for the preset (timing confidence high)"
+        }
+      },
+      "link": {
+        "value": "linked",
+        "status": "published",
+        "sources": [
+          "S25"
+        ]
+      },
+      "bloom_defaults": {
+        "amount_db": 5,
+        "gr_target_db": "3-6",
+        "predelay_ms": 30,
+        "max_duck_db": 10
+      },
+      "confidence": "high (timing), medium (curve, UAD-measured)",
+      "curve": {
+        "gain_element": {
+          "value": "6386 remote-cutoff triode: GR_dB = -20 log10(gm(Vbias - Vsc)/gm(Vbias)); fit GR ~= 18.1*ln(1+V/8.06) (max err 1.3 dB, 0-30 V); ~1.9 dB/V at start, ~0.4 dB/V at 30 V",
+          "status": "SPICE-derived (DAFx-12 6386 model)",
+          "sources": [
+            "S12"
+          ]
+        },
+        "detector": {
+          "value": "push-pull sidechain amp (class-B first stage with DC-threshold crossover) -> bridge rectifier -> timing network; feedback",
+          "status": "published (paper)",
+          "sources": [
+            "S12"
+          ]
+        }
+      },
+      "static_curve_uad": {
+        "value": {
+          "gr_db_end_of_step": [
+            1.3,
+            2.3,
+            3.5,
+            4.9,
+            6.3,
+            7.8,
+            9.4,
+            11.0,
+            12.7,
+            14.4,
+            16.1,
+            17.9,
+            19.7
+          ],
+          "local_ratio": [
+            1.65,
+            2.07,
+            2.53,
+            3.01,
+            3.54,
+            4.07,
+            4.65,
+            5.29,
+            5.88,
+            6.62,
+            7.4,
+            8.91,
+            13.1
+          ]
+        },
+        "setting": "UADx Fairchild 670, time constant 5, threshold 5, input 0; local ratio over each 2 dB input step, GR at the end of the step (uad/static_curves.csv)",
+        "status": "UAD-measured",
+        "source": "UAD 2026-10-19 (roadmap/bloom/UAD_COMPARISON_2026-10-19.md; data roadmap/bloom/uad/)",
+        "note": "adopted for presets. Our 6386 law in a feedback loop tops out near 3.1:1 (dGR/dOut -> 18.1*ln10/20 = 2.08); best fit to UAD 2.2 dB rms, 4.6 dB max. The law stays good for timing (volts domain), not for the static curve"
+      },
+      "manley_uad": {
+        "value": "recovery Fast..Slo tau 0.18/0.38/0.79/1.72/3.28 s (published 0.2/0.4/0.6/4/8); attack knob 0/5 t63 ~19 ms, knob 10 1.8 ms; Comp ratio 1.2-1.6, Limit 1.7-2.4 (hot 4-5.6)",
+        "status": "UAD-measured",
+        "source": "UAD 2026-10-19 (roadmap/bloom/UAD_COMPARISON_2026-10-19.md; data roadmap/bloom/uad/)"
+      },
+      "source": "UAD 2026-10-19 (roadmap/bloom/UAD_COMPARISON_2026-10-19.md; data roadmap/bloom/uad/)"
+    },
+    {
+      "id": "talkback",
+      "name": "Talkback (optional)",
+      "emulates": [
+        "SSL 4000E Listen Mic Compressor"
+      ],
+      "detector": {
+        "value": "precision full-wave rectifier -> 1k -> 15uF, no isolating diode: mean-absolute (average) detector, symmetric charge/discharge",
+        "status": "circuit-derived",
+        "sources": [
+          "S43"
+        ],
+        "note": "cap value read from a hand-drawn scan, \"15/25v\""
+      },
+      "sidechain_filter": {
+        "value": {
+          "type": "hpf",
+          "fc_hz": 150,
+          "slope_db_oct": 6
+        },
+        "status": "estimate"
+      },
+      "ratio": {
+        "value": "very high (limiter); max GR limited by 2N5486 Ron vs ~22k series: ~50 dB",
+        "status": "SPICE-derived",
+        "sources": [
+          "S43",
+          "S40"
+        ],
+        "note": "Korneff 100:1 model value kept as reference"
+      },
+      "knee_db": {
+        "value": 0.0,
+        "status": "estimate"
+      },
+      "attack_ms": {
+        "value": 3.0,
+        "status": "SPICE-derived",
+        "sources": [
+          "S43"
+        ],
+        "note": "RC 15 ms; feedback gives 63% in 4.3 ms (11 dB GR) / 2.3 ms (25 dB GR); 15 ms at light GR"
+      },
+      "release": {
+        "model": "one_pole",
+        "tauR_ms": {
+          "value": 15,
+          "status": "circuit-derived",
+          "sources": [
+            "S43"
+          ],
+          "note": "GR itself is gone in ~5 ms from 25 dB because the cap rests well below the FET pinch-off (dead zone) - SPICE, bias assumed"
+        }
+      },
+      "bloom_defaults": {
+        "amount_db": 12,
+        "gr_target_db": "20+",
+        "predelay_ms": 0,
+        "max_duck_db": 30
+      },
+      "confidence": "medium-low",
+      "note": "pair with a gate for the gated-room sound (out of scope)",
+      "curve": {
+        "gain_element": {
+          "value": "2N5486 JFET shunt (Siliconix model)",
+          "status": "circuit-derived",
+          "sources": [
+            "S43",
+            "S40"
+          ]
+        }
+      }
+    }
+  ],
+  "units": {
+    "LA-2A": {
+      "type": "opto/T4",
+      "topology": "feedback (medium confidence)",
+      "attack": "10 ms [S7,S8]; '10 usec' in 1966 manual [S6]",
+      "release": "~60 ms to 50%, then 0.5-5 s complete (spec) / 1-15 s (text), history-dependent [S6,S7,S8]",
+      "ratio": "Compress ~4:1, Limit up to inf, program-dependent [S9]",
+      "knee": "gradual over first 10 dB then horizontal [S6]",
+      "sidechain": "HF-emphasis adjust [S6]",
+      "link": "2-LA-2 Link/Dual [S9]",
+      "uad_2026_10_19": "Silver/Gray: conductance release t63 ~0.11 s after any burst >= 1 s (no long memory); attack t63 ~2 ms; Comp local ratio ~3.4-5.3:1. LA-2: mild memory 0.35->0.53 s. Natural now follows UAD Silver."
+    },
+    "1176LN": {
+      "type": "FET",
+      "topology": "feedback [S5,S20]",
+      "attack": "20-800 us [S1,S3]",
+      "release": "50 ms-1.1 s, 63% recovery [S1,S2]",
+      "ratio": "4,8,12,20; higher ratio raises threshold; soft knee [S1]",
+      "all_buttons": "attack lag on initial transients, changing attack/release and bias; ~12-20:1 [S1,S4]",
+      "room_use": "all-buttons on rooms; Andy Johns 'nudging'; 3-5 dB room mic (Newland) [S1]",
+      "uad_2026_10_19": "release t63 56 ms-1.19 s (LN Rev E), 94 ms-1.27 s (Rev A); 4:1 soft knee ~8-10 dB settling ~5.5-6:1; All-buttons onset lag 0.8-2.5 ms, release 10-30x faster"
+    },
+    "Fairchild 660/670": {
+      "type": "vari-mu tube",
+      "topology": "feedback [S12]",
+      "ratio": "1:1-20:1 above +2 dBm (spec); 2:1 to 30:1 (text) [S10]",
+      "time_constants": {
+        "1": "0.2 ms / 0.3 s",
+        "2": "0.2 ms / 0.8 s",
+        "3": "0.4 ms / 2 s",
+        "4": "0.4 ms / 5 s",
+        "5": "0.4 ms / 2 s single, 10 s multiple peaks",
+        "6": "0.2 ms / 0.3 s single, 10 s multiple, 25 s sustained"
+      },
+      "time_constants_source": "original manual [S10]; UA table differs on attack (pos4 800us, pos5 200us, pos6 400us) [S11]",
+      "uad_2026_10_19": "pos 1-4 tau within 4 % of circuit; pos 5 0.30 + 4.0 s (dB domain); pos 5/6 recover ~2x faster after short/medium bursts; local ratio 1.6 -> 4.4 (10 dB GR) -> 9+ (18 dB)"
+    },
+    "SSL G bus": {
+      "type": "VCA",
+      "attack_ms": [
+        0.1,
+        0.3,
+        1,
+        3,
+        10,
+        30
+      ],
+      "release_s": [
+        0.1,
+        0.3,
+        0.6,
+        1.2,
+        "auto"
+      ],
+      "ratio": [
+        2,
+        4,
+        10
+      ],
+      "link": "always linked",
+      "sources": [
+        "S13",
+        "S14",
+        "S15"
+      ],
+      "auto": "program-dependent multi-stage, two stacked release networks [S13,S28]; constants unpublished",
+      "uad_2026_10_19": "Auto: tau 37-41 ms + 3.6-4.1 s, slow share 0.12/0.37/0.69/0.85/0.87 after 0.05/0.3/1/3/8 s; fixed tau 80/117/225/413 ms; 4:1 soft knee ratio ~1.65+0.12*GR; attack 35-45 % faster than SPICE"
+    },
+    "dbx 160": {
+      "type": "VCA, true RMS",
+      "topology": "feedforward [S19] (medium)",
+      "attack": "15 ms@10 dB, 5 ms@20 dB, 3 ms@30 dB over threshold [S17,S18]; fit t=438*dB^-1.465 ms (derived)",
+      "release": "120 dB/s (160) [S17]; 125 dB/s (160A) [S18]",
+      "ratio": "1:1-inf (160); to -1:1 (160A)",
+      "knee": "hard (160); OverEasy or hard (160A)",
+      "link": "true RMS power summing (160A)",
+      "uad_2026_10_19": "release constant ~87-93 dB/s (spec 120); attack t63 20/7.3/3.0 ms at 10/20/30 dB over; 4:1 hard, local 4.1-4.8"
+    },
+    "API 2500": {
+      "type": "VCA, RMS detector",
+      "attack_ms": [
+        0.03,
+        0.1,
+        0.3,
+        1,
+        3,
+        10,
+        30
+      ],
+      "release_s": [
+        0.05,
+        0.1,
+        0.2,
+        0.5,
+        1,
+        2,
+        "var 0.05-3"
+      ],
+      "ratio": [
+        1.5,
+        2,
+        3,
+        4,
+        6,
+        10,
+        "inf"
+      ],
+      "knee": "hard/med/soft (widths unpublished)",
+      "thrust": "10 dB/decade SC filter before RMS detector; LOUD -15 dB@20 Hz, +15 dB@20 kHz",
+      "type_switch": "New=feedforward, Old=feedback",
+      "link": "IND, 50-100% with shape filters",
+      "sources": [
+        "S20",
+        "S21"
+      ]
+    },
+    "Neve 33609": {
+      "type": "diode bridge",
+      "compressor": {
+        "ratio": [
+          1.5,
+          2,
+          3,
+          4,
+          6
+        ],
+        "knee": "true ratio >5 dB above threshold",
+        "attack": "fast 3+-1 ms, slow 6+-1 ms with 100 Hz 1st-order SC HPF",
+        "recovery": "100-1500 ms; a1 100 ms/2000 ms; a2 50 ms/5000 ms"
+      },
+      "limiter": {
+        "ratio": "<0.1 dB change for 10 dB step (>100:1 derived)",
+        "attack": "2+-1 / 4+-1 ms",
+        "recovery": "50-800 ms; a1, a2 as above"
+      },
+      "link": "stereo links side-chains",
+      "sources": [
+        "S22"
+      ]
+    },
+    "Neve 2254/R": {
+      "type": "diode bridge, closed-loop side-chains",
+      "limiter": {
+        "ratio": ">100:1",
+        "attack": "5 ms or 0.1-2 ms fast",
+        "recovery": "100/200/800 ms/auto"
+      },
+      "compressor": {
+        "ratio": [
+          1.5,
+          2,
+          3,
+          4,
+          6
+        ],
+        "knee": "true ratio within 5-10 dB above threshold",
+        "attack": "5 ms",
+        "recovery": "CONFLICT: text 100/200/800/auto vs spec 400/800/1500/auto"
+      },
+      "sources": [
+        "S23"
+      ]
+    },
+    "Distressor": {
+      "ratio": [
+        "1:1",
+        "2:1",
+        "3:1",
+        "4:1",
+        "6:1",
+        "10:1 opto",
+        "20:1",
+        "Nuke"
+      ],
+      "attack": "50 us-30 ms",
+      "release": "0.05-3.5 s (also '3 s'); opto mode up to 20 s",
+      "nuke_release": "logarithmic: fast then slow",
+      "detector": "HPF 100 Hz 6 dB/oct; band emphasis ~6 kHz; link",
+      "room": "Nuke/20:1 [10,6,2.5,6] or att 5 rel 3; 15-20 dB GR",
+      "sources": [
+        "S24"
+      ],
+      "uad_2026_10_19": "see nuke.knob_taper; release t63 30 ms-0.94 s (knob 0-9, flat above 9); Nuke fast ~40-130 ms + slow ~0.55 s; 10:1 opto strongly history-dependent"
+    },
+    "Manley Variable Mu": {
+      "attack": "25-70 ms",
+      "recovery_s": [
+        0.2,
+        0.4,
+        0.6,
+        4,
+        8
+      ],
+      "compress": "1.5:1 soft knee",
+      "limit": "4:1 rising to 20:1 beyond 12 dB",
+      "max_gr_db": 10,
+      "sc_hpf": "-3 dB @100 Hz, 6 dB/oct",
+      "sources": [
+        "S25"
+      ],
+      "uad_2026_10_19": "no 10 dB GR cap in UAD (13.6 dB Limit, 19.7 dB hot); recovery tau 0.18/0.38/0.79/1.72/3.28 s; Comp 1.2-1.6:1, Limit 1.7-2.4:1"
+    },
+    "Tube-Tech CL 1B": {
+      "type": "opto",
+      "ratio": "2:1-10:1",
+      "attack": "0.5-300 ms",
+      "release": "0.05-10 s",
+      "fixed": "1 ms / 50 ms",
+      "fix_man": "1 ms attack; fast release for short peaks then manual release; attack knob sets delay before slow release",
+      "threshold": "+20 to -40 dBu",
+      "sources": [
+        "S26",
+        "S27"
+      ]
+    },
+    "SSL Listen Mic": {
+      "times": "fixed, unpublished [S32]",
+      "ratio": "100:1 in Korneff model [S31]",
+      "history": "[S30]"
+    },
+    "LA-3A": {
+      "uad_2026_10_19": "release t63 0.05-0.12 s, mild memory but 0.5 dB tail 4.6-5 s after >= 5 s bursts; Comp local ratio 3.5-4.9:1",
+      "status": "UAD-measured"
+    }
+  },
+  "confidence_labels": {
+    "published": "printed by manufacturer",
+    "derived": "calculated from published numbers",
+    "circuit-derived": "calculated from schematic component values",
+    "measured-third-party": "measured on hardware by a named third party",
+    "SPICE-derived": "ngspice simulation of schematic parts; device-model source noted",
+    "behavioural-fit": "behavioural model fitted to third-party measurements",
+    "estimate": "engineering guess, tune by ear",
+    "UAD-measured": "measured by us on the UADx plug-in model (pedalboard, 1 kHz tone tests at ~10 dB GR); a second model, not hardware"
+  },
+  "spice": {
+    "dir": "spice/",
+    "engine": "ngspice 44.2",
+    "note": "see COMPRESSOR_RESEARCH.md section 4B for how far to trust each model"
+  }
+}

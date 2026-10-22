@@ -1,0 +1,86 @@
+{
+  "schema": "source_fitter.preset.v1",
+  "id": "piano_grand_lid_open",
+  "label": "Grand piano, lid open (ASSUMED placeholder)",
+  "category": "keys",
+  "tag": "ASSUMED",
+  "model": "radiation_shelf_plus_soft_one_pole",
+  "level_reference": "on_axis (0 dB when facing the receiver; omni = exact null)",
+  "frame": {
+    "x": "facing (radiation reference axis of the dataset)",
+    "y": "source left",
+    "z": "up",
+    "facing_definition": ""
+  },
+  "params": {
+    "lo_db": -1.5,
+    "hi_db": -9.0,
+    "f0": 900.0,
+    "shelf_s": 0.5,
+    "p": 1.0,
+    "q": 0.0,
+    "b_ud": 0.0,
+    "b_lr": 0.0,
+    "aim_az": -20.0,
+    "aim_el": 25.0,
+    "lp_hz": 24000.0,
+    "lp_mix": 0.0,
+    "p_lo": 1.0,
+    "dip": 0.0
+  },
+  "size": {
+    "a_eq_m": 0.0601,
+    "beaming_onset_hz": 900.0,
+    "rule": "a_eq = c/(2*pi*f0), c=340 m/s as engine (piston ka=1); UI size slider sets size_scale = a_user/a_eq -> f0, lp_hz divided by size_scale"
+  },
+  "di_db": {
+    "125": 0.81,
+    "250": 1.05,
+    "500": 1.71,
+    "1000": 2.84,
+    "2000": 3.73,
+    "4000": 4.1,
+    "8000": 4.21,
+    "16000": 4.24
+  },
+  "diffuse_inject": {
+    "gain_db": -0.8397819851081971,
+    "shelf_f0": 816.0607984951689,
+    "shelf_gain_db": -3.304299600068451,
+    "shelf_s": 0.7,
+    "fit_rmse_db": 0.10219366916838414,
+    "target_db": {
+      "50": -0.742585505406014,
+      "104": -0.7892057355135464,
+      "218": -0.9771407907908776,
+      "455": -1.5891504049974872,
+      "951": -2.752736260404018,
+      "1986": -3.723752074686066,
+      "4148": -4.109575606402261,
+      "8662": -4.213797650855472
+    }
+  },
+  "fit": {
+    "note": "no open measured spherical piano directivity found"
+  },
+  "dsp": {
+    "stages": [
+      "broadband_gain(k_lo*lo_db)",
+      "rbj_high_shelf(f0, k*hi_db, shelf_s)",
+      "soft_beaming_lp(lp_hz/k_hi, lp_mix, lp_order 1|2 cascaded one-poles)"
+    ],
+    "fs_ref_hz": 48000,
+    "k": "k_hi = A*u^p*(1-q*u^8); k_lo = A*((1-dip)*u^p_lo*(1-q*u^8) + dip*4u(1-u)); both 0 on axis",
+    "slot": "FIRST stage of each image's serial cascade (before surfaces/air/mic)"
+  },
+  "provenance": {
+    "dataset": "none",
+    "basis": "qualitative only: lid-open grand radiates mainly upward/out of the open lid side (Meyer, Acoustics and the Performance of Music, Springer 2009, doi:10.1007/978-0-387-09517-2) \u2014 NO numbers taken",
+    "measurement": "ASSUMED"
+  },
+  "tags": {
+    "params": "ASSUMED design values",
+    "model_form": "ASSUMED (engineering model, mirrors mic_fitter v3)",
+    "size_rule": "VERIFIED physics (piston ka=1) applied as ASSUMED mapping"
+  }
+}

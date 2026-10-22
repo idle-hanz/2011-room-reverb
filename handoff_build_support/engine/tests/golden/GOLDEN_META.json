@@ -1,0 +1,13 @@
+{
+ "sw": "/workspace/build_support/snapshot_2026-09-27/software",
+ "when": "2026-09-27 11:51:54",
+ "node": "/usr/bin/node",
+ "python": "/workspace/scratch_er_dropout/venv/bin/python",
+ "sha1": {
+  "engine/live_stereo.c": "6d205bc43746",
+  "static/wasm/live_stereo.wasm": "83ec0920b351",
+  "static/js/fdn_worklet.js": "38432c320c69",
+  "render_pipeline.py": "a3c0d1efa9ff",
+  "engine/fdn.py": "e29654c4a72f"
+ }
+}

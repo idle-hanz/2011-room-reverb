@@ -1,0 +1,41 @@
+{
+  "id": "plywood_panel",
+  "display_name": "Plywood panel",
+  "candidate": "B",
+  "model": "low_shelf_high_shelf",
+  "rmse_r_db": 0.026158095767053018,
+  "absorb_l1": 0.00750199305070432,
+  "candidate_rmse": {
+    "A": 0.41018401552387995,
+    "B": 0.026158095767053018
+  },
+  "params": {
+    "r0_db": -0.21475999345191502,
+    "f_lo": 432.96927706622307,
+    "depth_lo_db": -1.238675288234043,
+    "shelf_slope_lo": 4.3926622559253525,
+    "f0": 2056.9242532963813,
+    "depth_db": -0.3389478699671708,
+    "shelf_slope": 5.737965378937574
+  },
+  "roles": [
+    "wall"
+  ],
+  "banned_on": [
+    "floor",
+    "ceiling"
+  ],
+  "absorb": [
+    0.28,
+    0.22,
+    0.17,
+    0.09,
+    0.1,
+    0.11,
+    0.12
+  ],
+  "extras": {
+    "notes": "Needs LF absorb in fit (low_shelf + high_shelf candidate).",
+    "prefer_lf_candidate": true
+  }
+}

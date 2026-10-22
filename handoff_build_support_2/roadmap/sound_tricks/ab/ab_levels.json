@@ -1,0 +1,28 @@
+{
+ "1_natural_decay": {
+  "A_today_flat": {
+   "DRR_dB_L": 6.7
+  },
+  "B1_air_in_loop": {
+   "DRR_dB_L": 8.9
+  },
+  "B2_air_plus_surfaces": {
+   "DRR_dB_L": 9.8
+  },
+  "shared_gain_guitar_dB": 6.78,
+  "shared_gain_snare_dB": 7.06
+ },
+ "2_direct_level": {
+  "A_today": {
+   "DRR_dB_L": 6.7
+  },
+  "B_direct_minus9dB": {
+   "DRR_dB_L": -2.3
+  },
+  "C_direct_minus18dB_physical": {
+   "DRR_dB_L": -11.3
+  },
+  "shared_gain_guitar_dB": 13.13,
+  "shared_gain_snare_dB": 14.51
+ }
+}

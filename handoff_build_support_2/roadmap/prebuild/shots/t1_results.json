@@ -1,0 +1,22 @@
+{
+ "booted": {
+  "knobs": 13,
+  "typing": 21
+ },
+ "trim_l_after_45px_up": 6,
+ "trim_c_after_shift_45px": 0.5,
+ "trim_l_detent": 0,
+ "trim_r_typed": -4.5,
+ "trim_r_readout": "-4.5 dB",
+ "pan_c_typed": -0.3,
+ "pan_c_readout": "L30",
+ "trim_r_after_dblclick": 0,
+ "trim_r_after_wheel_up": 0.5,
+ "pan_c_after_pageup": -0.2,
+ "app_state_sync": "0.0",
+ "width_l": 12,
+ "width_needle": "70.0deg",
+ "room_W_typed": 7.3,
+ "W_out": "7.3",
+ "page_errors": []
+}

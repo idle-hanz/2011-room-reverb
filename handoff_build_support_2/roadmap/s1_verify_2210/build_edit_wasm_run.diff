@@ -1,0 +1,18 @@
+--- 3_phase_acceptance_tests/harness/lib/wasm_run.js	2026-10-01 16:00:17.219289400 +0100
++++ _incoming/desk2210/handoff_build_support_2/3_phase_acceptance_tests/harness/lib/wasm_run.js	2026-10-01 21:25:36.000000000 +0100
+@@ -42,7 +42,14 @@
+   if (!pr.ready) throw new Error('wasm not ready ' + JSON.stringify(global.__errs));
+   pr.port.onmessage({ data: msgFrom(P, over) });
+   if (global.__errs.length) console.error('worklet errors', JSON.stringify(global.__errs));
+-  if (MODE === 'blob') { const n = pr.api.memory ? 1982 : 1981; fs.writeFileSync(ARGS[0], Buffer.from(Float32Array.from(pr._viewF(pr.api.live_blob_ptr(pr.st), 1982)).buffer)); return; }
++  if (MODE === 'blob') {
++    const head = pr._viewF(pr.api.live_blob_ptr(pr.st), 5);
++    let n = head[0] === 2 ? (head[4] | 0) : 1982;
++    if (n < 16) n = 16;
++    if (n > 16384) n = 16384;
++    fs.writeFileSync(ARGS[0], Buffer.from(Float32Array.from(pr._viewF(pr.api.live_blob_ptr(pr.st), n)).buffer));
++    return;
++  }
+   const inp = [[new Float32Array(BLK), new Float32Array(BLK)]], out = [[new Float32Array(BLK), new Float32Array(BLK)]];
+   let s = 7; const rnd = () => { s = (Math.imul(s, 1103515245) + 12345) >>> 0; return (s / 4294967296) - 0.5; };
+   if (MODE === 'bench') {

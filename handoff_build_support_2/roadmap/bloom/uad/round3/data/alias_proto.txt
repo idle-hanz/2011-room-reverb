@@ -1,0 +1,464 @@
+natural la2as_pr50 7000 -24 1x   | M1 -115.5 dBFS (k15@9000) | M2<16k -115.5 @9000 | M2 peak -107.9 @6998
+natural la2as_pr50 7000 -24 adaa | M1 -115.5 dBFS (k15@9000) | M2<16k -115.5 @9000 | M2 peak -107.9 @6998
+natural la2as_pr50 7000 -24 2x   | M1 -115.5 dBFS (k15@9000) | M2<16k -115.5 @9000 | M2 peak -107.9 @6998
+natural la2as_pr50 7000 -24 4x   | M1 -115.5 dBFS (k15@9000) | M2<16k -115.5 @9000 | M2 peak -107.9 @6998
+natural la2as_pr50 7000 -12 1x   | M1 -101.7 dBFS (k5@13000) | M2<16k -101.7 @13000 | M2 peak -94.2 @6998
+natural la2as_pr50 7000 -12 adaa | M1 -101.7 dBFS (k5@13000) | M2<16k -101.7 @13000 | M2 peak -94.2 @6998
+natural la2as_pr50 7000 -12 2x   | M1 -101.7 dBFS (k5@13000) | M2<16k -101.7 @13000 | M2 peak -94.2 @6998
+natural la2as_pr50 7000 -12 4x   | M1 -101.7 dBFS (k5@13000) | M2<16k -101.7 @13000 | M2 peak -94.2 @6998
+natural la2as_pr50 7000 -6 1x   | M1 -99.9 dBFS (k5@13000) | M2<16k -99.9 @13000 | M2 peak -92.7 @6998
+natural la2as_pr50 7000 -6 adaa | M1 -99.9 dBFS (k5@13000) | M2<16k -99.9 @13000 | M2 peak -92.7 @6998
+natural la2as_pr50 7000 -6 2x   | M1 -99.9 dBFS (k5@13000) | M2<16k -99.9 @13000 | M2 peak -92.7 @6998
+natural la2as_pr50 7000 -6 4x   | M1 -99.9 dBFS (k5@13000) | M2<16k -99.9 @13000 | M2 peak -92.7 @6998
+natural la2as_pr50 7000 +0 1x   | M1 -98.5 dBFS (k5@13000) | M2<16k -98.5 @13000 | M2 peak -93.8 @6998
+natural la2as_pr50 7000 +0 adaa | M1 -98.5 dBFS (k5@13000) | M2<16k -98.5 @13000 | M2 peak -93.8 @6998
+natural la2as_pr50 7000 +0 2x   | M1 -98.5 dBFS (k5@13000) | M2<16k -98.5 @13000 | M2 peak -93.8 @6998
+natural la2as_pr50 7000 +0 4x   | M1 -98.5 dBFS (k5@13000) | M2<16k -98.5 @13000 | M2 peak -93.8 @6998
+natural la2as_pr50 9000 -24 1x   | M1 -103.7 dBFS (k3@21000) | M2<16k -115.7 @15000 | M2 peak -103.7 @21000
+natural la2as_pr50 9000 -24 adaa | M1 -115.5 dBFS (k3@21000) | M2<16k -115.7 @15000 | M2 peak -107.7 @8998
+natural la2as_pr50 9000 -24 2x   | M1 -115.7 dBFS (k7@15000) | M2<16k -115.7 @15000 | M2 peak -107.7 @8998
+natural la2as_pr50 9000 -24 4x   | M1 -115.7 dBFS (k7@15000) | M2<16k -115.7 @15000 | M2 peak -107.7 @8998
+natural la2as_pr50 9000 -12 1x   | M1 -93.4 dBFS (k3@21000) | M2<16k -100.8 @15000 | M2 peak -93.4 @21000
+natural la2as_pr50 9000 -12 adaa | M1 -100.8 dBFS (k7@15000) | M2<16k -100.8 @15000 | M2 peak -96.0 @8998
+natural la2as_pr50 9000 -12 2x   | M1 -100.8 dBFS (k7@15000) | M2<16k -100.8 @15000 | M2 peak -96.0 @8998
+natural la2as_pr50 9000 -12 4x   | M1 -100.8 dBFS (k7@15000) | M2<16k -100.8 @15000 | M2 peak -96.0 @8998
+natural la2as_pr50 9000 -6 1x   | M1 -90.4 dBFS (k3@21000) | M2<16k -98.8 @15000 | M2 peak -90.4 @21000
+natural la2as_pr50 9000 -6 adaa | M1 -98.8 dBFS (k7@15000) | M2<16k -98.8 @15000 | M2 peak -93.9 @8998
+natural la2as_pr50 9000 -6 2x   | M1 -98.9 dBFS (k7@15000) | M2<16k -98.9 @15000 | M2 peak -93.9 @8998
+natural la2as_pr50 9000 -6 4x   | M1 -98.9 dBFS (k7@15000) | M2<16k -98.9 @15000 | M2 peak -93.9 @8998
+natural la2as_pr50 9000 +0 1x   | M1 -86.7 dBFS (k3@21000) | M2<16k -97.2 @15000 | M2 peak -86.7 @21000
+natural la2as_pr50 9000 +0 adaa | M1 -97.2 dBFS (k7@15000) | M2<16k -97.2 @15000 | M2 peak -92.4 @8998
+natural la2as_pr50 9000 +0 2x   | M1 -97.2 dBFS (k7@15000) | M2<16k -97.2 @15000 | M2 peak -92.4 @8998
+natural la2as_pr50 9000 +0 4x   | M1 -97.2 dBFS (k7@15000) | M2<16k -97.2 @15000 | M2 peak -92.4 @8998
+natural la2as_pr50 13000 -24 1x   | M1 -84.8 dBFS (k2@22000) | M2<16k -103.4 @9000 | M2 peak -84.8 @22000
+natural la2as_pr50 13000 -24 adaa | M1 -97.0 dBFS (k2@22000) | M2<16k -112.4 @9000 | M2 peak -97.0 @22000
+natural la2as_pr50 13000 -24 2x   | M1 -103.3 dBFS (k2@22000) | M2<16k -112.5 @9000 | M2 peak -103.3 @22000
+natural la2as_pr50 13000 -24 4x   | M1 -103.2 dBFS (k2@22000) | M2<16k -112.5 @9000 | M2 peak -103.2 @22000
+natural la2as_pr50 13000 -12 1x   | M1 -78.9 dBFS (k2@22000) | M2<16k -92.7 @9000 | M2 peak -78.9 @22000
+natural la2as_pr50 13000 -12 adaa | M1 -91.1 dBFS (k2@22000) | M2<16k -99.1 @9000 | M2 peak -91.1 @22000
+natural la2as_pr50 13000 -12 2x   | M1 -97.4 dBFS (k2@22000) | M2<16k -99.2 @9000 | M2 peak -94.3 @12998
+natural la2as_pr50 13000 -12 4x   | M1 -97.3 dBFS (k2@22000) | M2<16k -99.2 @9000 | M2 peak -94.3 @12998
+natural la2as_pr50 13000 -6 1x   | M1 -76.5 dBFS (k2@22000) | M2<16k -89.9 @9000 | M2 peak -76.5 @22000
+natural la2as_pr50 13000 -6 adaa | M1 -88.6 dBFS (k2@22000) | M2<16k -97.6 @9000 | M2 peak -88.6 @22000
+natural la2as_pr50 13000 -6 2x   | M1 -94.9 dBFS (k2@22000) | M2<16k -97.9 @9000 | M2 peak -92.7 @13002
+natural la2as_pr50 13000 -6 4x   | M1 -94.9 dBFS (k2@22000) | M2<16k -97.9 @9000 | M2 peak -92.7 @13002
+natural la2as_pr50 13000 +0 1x   | M1 -73.6 dBFS (k2@22000) | M2<16k -86.5 @9000 | M2 peak -73.6 @22000
+natural la2as_pr50 13000 +0 adaa | M1 -85.7 dBFS (k2@22000) | M2<16k -96.3 @9000 | M2 peak -85.7 @22000
+natural la2as_pr50 13000 +0 2x   | M1 -92.0 dBFS (k2@22000) | M2<16k -96.8 @9000 | M2 peak -92.0 @22000
+natural la2as_pr50 13000 +0 4x   | M1 -92.0 dBFS (k2@22000) | M2<16k -96.7 @9000 | M2 peak -92.0 @22000
+natural la2as_pr50 17000 -24 1x   | M1 -84.8 dBFS (k2@14000) | M2<16k -84.8 @14000 | M2 peak -84.8 @14000
+natural la2as_pr50 17000 -24 adaa | M1 -107.6 dBFS (k2@14000) | M2<16k -107.6 @14000 | M2 peak -107.6 @14000
+natural la2as_pr50 17000 -24 2x   | M1 -115.5 dBFS (k15@15000) | M2<16k -115.5 @15000 | M2 peak -107.9 @17002
+natural la2as_pr50 17000 -24 4x   | M1 -115.5 dBFS (k15@15000) | M2<16k -115.5 @15000 | M2 peak -107.9 @17002
+natural la2as_pr50 17000 -12 1x   | M1 -78.9 dBFS (k2@14000) | M2<16k -78.9 @14000 | M2 peak -78.9 @14000
+natural la2as_pr50 17000 -12 adaa | M1 -99.1 dBFS (k3@3000) | M2<16k -99.1 @3000 | M2 peak -94.2 @17002
+natural la2as_pr50 17000 -12 2x   | M1 -101.7 dBFS (k5@11000) | M2<16k -101.7 @11000 | M2 peak -94.2 @17002
+natural la2as_pr50 17000 -12 4x   | M1 -101.7 dBFS (k5@11000) | M2<16k -101.7 @11000 | M2 peak -94.2 @17002
+natural la2as_pr50 17000 -6 1x   | M1 -76.5 dBFS (k2@14000) | M2<16k -76.5 @14000 | M2 peak -76.5 @14000
+natural la2as_pr50 17000 -6 adaa | M1 -96.8 dBFS (k3@3000) | M2<16k -96.8 @3000 | M2 peak -92.7 @17002
+natural la2as_pr50 17000 -6 2x   | M1 -99.9 dBFS (k5@11000) | M2<16k -99.9 @11000 | M2 peak -92.7 @17002
+natural la2as_pr50 17000 -6 4x   | M1 -99.9 dBFS (k5@11000) | M2<16k -99.9 @11000 | M2 peak -92.7 @17002
+natural la2as_pr50 17000 +0 1x   | M1 -73.6 dBFS (k2@14000) | M2<16k -73.6 @14000 | M2 peak -73.6 @14000
+natural la2as_pr50 17000 +0 adaa | M1 -94.2 dBFS (k3@3000) | M2<16k -94.2 @3000 | M2 peak -93.8 @17002
+natural la2as_pr50 17000 +0 2x   | M1 -98.5 dBFS (k5@11000) | M2<16k -98.5 @11000 | M2 peak -93.8 @17002
+natural la2as_pr50 17000 +0 4x   | M1 -98.5 dBFS (k5@11000) | M2<16k -98.5 @11000 | M2 peak -93.8 @17002
+natural SWEEP alsw_la2as_pr50_-12 UAD  | worst non-harmonic (f>5k) -170.8 dBFS
+natural SWEEP alsw_la2as_pr50_-12 1x   | worst non-harmonic (f>5k) -153.9 dBFS
+natural SWEEP alsw_la2as_pr50_-12 adaa | worst non-harmonic (f>5k) -164.7 dBFS
+natural SWEEP alsw_la2as_pr50_-12 2x   | worst non-harmonic (f>5k) -164.7 dBFS
+natural SWEEP alsw_la2as_pr50_-12 4x   | worst non-harmonic (f>5k) -164.7 dBFS
+natural SWEEP alsw_la2as_pr50_+0 UAD  | worst non-harmonic (f>5k) -171.9 dBFS
+natural SWEEP alsw_la2as_pr50_+0 1x   | worst non-harmonic (f>5k) -148.6 dBFS
+natural SWEEP alsw_la2as_pr50_+0 adaa | worst non-harmonic (f>5k) -161.7 dBFS
+natural SWEEP alsw_la2as_pr50_+0 2x   | worst non-harmonic (f>5k) -162.2 dBFS
+natural SWEEP alsw_la2as_pr50_+0 4x   | worst non-harmonic (f>5k) -162.2 dBFS
+room_crush fet_all 7000 -24 1x   | M1 -104.6 dBFS (k5@13000) | M2<16k -104.6 @13000 | M2 peak -104.6 @13000
+room_crush fet_all 7000 -24 2x   | M1 -104.6 dBFS (k5@13000) | M2<16k -104.6 @13000 | M2 peak -104.6 @13000
+room_crush fet_all 7000 -24 4x   | M1 -104.6 dBFS (k5@13000) | M2<16k -104.6 @13000 | M2 peak -104.6 @13000
+room_crush fet_all 7000 -12 1x   | M1 -103.8 dBFS (k5@13000) | M2<16k -103.8 @13000 | M2 peak -103.8 @13000
+room_crush fet_all 7000 -12 2x   | M1 -103.8 dBFS (k5@13000) | M2<16k -103.8 @13000 | M2 peak -103.8 @13000
+room_crush fet_all 7000 -12 4x   | M1 -103.8 dBFS (k5@13000) | M2<16k -103.8 @13000 | M2 peak -103.8 @13000
+room_crush fet_all 7000 -6 1x   | M1 -103.5 dBFS (k5@13000) | M2<16k -103.5 @13000 | M2 peak -103.5 @13000
+room_crush fet_all 7000 -6 2x   | M1 -103.5 dBFS (k5@13000) | M2<16k -103.5 @13000 | M2 peak -103.5 @13000
+room_crush fet_all 7000 -6 4x   | M1 -103.5 dBFS (k5@13000) | M2<16k -103.5 @13000 | M2 peak -103.5 @13000
+room_crush fet_all 7000 +0 1x   | M1 -103.3 dBFS (k5@13000) | M2<16k -103.3 @13000 | M2 peak -103.3 @13000
+room_crush fet_all 7000 +0 2x   | M1 -103.3 dBFS (k5@13000) | M2<16k -103.3 @13000 | M2 peak -103.3 @13000
+room_crush fet_all 7000 +0 4x   | M1 -103.3 dBFS (k5@13000) | M2<16k -103.3 @13000 | M2 peak -103.3 @13000
+room_crush fet_all 9000 -24 1x   | M1 -100.4 dBFS (k3@21000) | M2<16k -101.5 @15000 | M2 peak -100.4 @21000
+room_crush fet_all 9000 -24 2x   | M1 -101.5 dBFS (k7@15000) | M2<16k -101.5 @15000 | M2 peak -101.5 @15000
+room_crush fet_all 9000 -24 4x   | M1 -101.5 dBFS (k7@15000) | M2<16k -101.5 @15000 | M2 peak -101.5 @15000
+room_crush fet_all 9000 -12 1x   | M1 -98.4 dBFS (k3@21000) | M2<16k -99.4 @15000 | M2 peak -98.4 @21000
+room_crush fet_all 9000 -12 2x   | M1 -99.4 dBFS (k7@15000) | M2<16k -99.4 @15000 | M2 peak -99.4 @15000
+room_crush fet_all 9000 -12 4x   | M1 -99.4 dBFS (k7@15000) | M2<16k -99.4 @15000 | M2 peak -99.4 @15000
+room_crush fet_all 9000 -6 1x   | M1 -97.3 dBFS (k3@21000) | M2<16k -98.5 @15000 | M2 peak -97.3 @21000
+room_crush fet_all 9000 -6 2x   | M1 -98.5 dBFS (k7@15000) | M2<16k -98.5 @15000 | M2 peak -98.5 @15000
+room_crush fet_all 9000 -6 4x   | M1 -98.5 dBFS (k7@15000) | M2<16k -98.5 @15000 | M2 peak -98.5 @15000
+room_crush fet_all 9000 +0 1x   | M1 -96.8 dBFS (k3@21000) | M2<16k -97.7 @15000 | M2 peak -96.8 @21000
+room_crush fet_all 9000 +0 2x   | M1 -97.7 dBFS (k7@15000) | M2<16k -97.7 @15000 | M2 peak -97.7 @15000
+room_crush fet_all 9000 +0 4x   | M1 -97.7 dBFS (k7@15000) | M2<16k -97.7 @15000 | M2 peak -97.7 @15000
+room_crush fet_all 13000 -24 1x   | M1 -82.0 dBFS (k2@22000) | M2<16k -99.6 @9000 | M2 peak -82.0 @22000
+room_crush fet_all 13000 -24 2x   | M1 -100.5 dBFS (k2@22000) | M2<16k -102.2 @9000 | M2 peak -100.5 @22000
+room_crush fet_all 13000 -24 4x   | M1 -100.4 dBFS (k2@22000) | M2<16k -102.2 @9000 | M2 peak -100.4 @22000
+room_crush fet_all 13000 -12 1x   | M1 -78.3 dBFS (k2@22000) | M2<16k -98.8 @9000 | M2 peak -78.3 @22000
+room_crush fet_all 13000 -12 2x   | M1 -96.8 dBFS (k2@22000) | M2<16k -103.3 @9000 | M2 peak -96.8 @22000
+room_crush fet_all 13000 -12 4x   | M1 -96.7 dBFS (k2@22000) | M2<16k -103.3 @9000 | M2 peak -96.7 @22000
+room_crush fet_all 13000 -6 1x   | M1 -76.8 dBFS (k2@22000) | M2<16k -98.2 @9000 | M2 peak -76.8 @22000
+room_crush fet_all 13000 -6 2x   | M1 -95.3 dBFS (k2@22000) | M2<16k -103.6 @9000 | M2 peak -95.3 @22000
+room_crush fet_all 13000 -6 4x   | M1 -95.3 dBFS (k2@22000) | M2<16k -103.6 @9000 | M2 peak -95.3 @22000
+room_crush fet_all 13000 +0 1x   | M1 -76.4 dBFS (k2@22000) | M2<16k -98.0 @9000 | M2 peak -76.4 @22000
+room_crush fet_all 13000 +0 2x   | M1 -94.9 dBFS (k2@22000) | M2<16k -103.7 @9000 | M2 peak -94.9 @22000
+room_crush fet_all 13000 +0 4x   | M1 -94.9 dBFS (k2@22000) | M2<16k -103.7 @9000 | M2 peak -94.9 @22000
+room_crush fet_all 17000 -24 1x   | M1 -82.0 dBFS (k2@14000) | M2<16k -82.0 @14000 | M2 peak -82.0 @14000
+room_crush fet_all 17000 -24 2x   | M1 -103.6 dBFS (k3@3000) | M2<16k -103.6 @3000 | M2 peak -103.6 @3000
+room_crush fet_all 17000 -24 4x   | M1 -103.6 dBFS (k3@3000) | M2<16k -103.6 @3000 | M2 peak -103.6 @3000
+room_crush fet_all 17000 -12 1x   | M1 -78.3 dBFS (k2@14000) | M2<16k -78.3 @14000 | M2 peak -78.3 @14000
+room_crush fet_all 17000 -12 2x   | M1 -103.8 dBFS (k5@11000) | M2<16k -103.8 @11000 | M2 peak -103.8 @11000
+room_crush fet_all 17000 -12 4x   | M1 -103.7 dBFS (k5@11000) | M2<16k -103.7 @11000 | M2 peak -103.7 @11000
+room_crush fet_all 17000 -6 1x   | M1 -76.8 dBFS (k2@14000) | M2<16k -76.8 @14000 | M2 peak -76.8 @14000
+room_crush fet_all 17000 -6 2x   | M1 -103.5 dBFS (k5@11000) | M2<16k -103.5 @11000 | M2 peak -103.5 @11000
+room_crush fet_all 17000 -6 4x   | M1 -103.5 dBFS (k5@11000) | M2<16k -103.5 @11000 | M2 peak -103.5 @11000
+room_crush fet_all 17000 +0 1x   | M1 -76.4 dBFS (k2@14000) | M2<16k -76.4 @14000 | M2 peak -76.4 @14000
+room_crush fet_all 17000 +0 2x   | M1 -103.3 dBFS (k5@11000) | M2<16k -103.3 @11000 | M2 peak -103.3 @11000
+room_crush fet_all 17000 +0 4x   | M1 -103.3 dBFS (k5@11000) | M2<16k -103.3 @11000 | M2 peak -103.3 @11000
+room_crush SWEEP alsw_fet_all_-12 UAD  | worst non-harmonic (f>5k) -142.2 dBFS
+room_crush SWEEP alsw_fet_all_-12 1x   | worst non-harmonic (f>5k) -153.3 dBFS
+room_crush SWEEP alsw_fet_all_-12 2x   | worst non-harmonic (f>5k) -166.2 dBFS
+room_crush SWEEP alsw_fet_all_-12 4x   | worst non-harmonic (f>5k) -166.2 dBFS
+room_crush SWEEP alsw_fet_all_+0 UAD  | worst non-harmonic (f>5k) -141.6 dBFS
+room_crush SWEEP alsw_fet_all_+0 1x   | worst non-harmonic (f>5k) -151.5 dBFS
+room_crush SWEEP alsw_fet_all_+0 2x   | worst non-harmonic (f>5k) -163.6 dBFS
+room_crush SWEEP alsw_fet_all_+0 4x   | worst non-harmonic (f>5k) -163.6 dBFS
+nuke dis_nuke_room 7000 -24 1x   | M1 -182.1 dBFS (k7@1000) | M2<16k -182.1 @1000 | M2 peak -182.1 @1000
+nuke dis_nuke_room 7000 -24 adaa | M1 -182.1 dBFS (k7@1000) | M2<16k -182.1 @1000 | M2 peak -182.1 @1000
+nuke dis_nuke_room 7000 -24 2x   | M1 -182.1 dBFS (k7@1000) | M2<16k -182.1 @1000 | M2 peak -182.1 @1000
+nuke dis_nuke_room 7000 -24 4x   | M1 -182.1 dBFS (k7@1000) | M2<16k -182.1 @1000 | M2 peak -182.1 @1000
+nuke dis_nuke_room 7000 -12 1x   | M1 -96.2 dBFS (k15@9000) | M2<16k -96.2 @9000 | M2 peak -96.2 @9000
+nuke dis_nuke_room 7000 -12 adaa | M1 -96.2 dBFS (k15@9000) | M2<16k -96.2 @9000 | M2 peak -96.2 @9000
+nuke dis_nuke_room 7000 -12 2x   | M1 -96.2 dBFS (k15@9000) | M2<16k -96.2 @9000 | M2 peak -96.2 @9000
+nuke dis_nuke_room 7000 -12 4x   | M1 -96.2 dBFS (k15@9000) | M2<16k -96.2 @9000 | M2 peak -96.2 @9000
+nuke dis_nuke_room 7000 -6 1x   | M1 -93.6 dBFS (k5@13000) | M2<16k -93.6 @13000 | M2 peak -93.6 @13000
+nuke dis_nuke_room 7000 -6 adaa | M1 -93.6 dBFS (k5@13000) | M2<16k -93.6 @13000 | M2 peak -93.6 @13000
+nuke dis_nuke_room 7000 -6 2x   | M1 -93.6 dBFS (k5@13000) | M2<16k -93.6 @13000 | M2 peak -93.6 @13000
+nuke dis_nuke_room 7000 -6 4x   | M1 -93.6 dBFS (k5@13000) | M2<16k -93.6 @13000 | M2 peak -93.6 @13000
+nuke dis_nuke_room 7000 +0 1x   | M1 -92.3 dBFS (k5@13000) | M2<16k -92.3 @13000 | M2 peak -92.3 @13000
+nuke dis_nuke_room 7000 +0 adaa | M1 -92.3 dBFS (k5@13000) | M2<16k -92.3 @13000 | M2 peak -92.3 @13000
+nuke dis_nuke_room 7000 +0 2x   | M1 -92.3 dBFS (k5@13000) | M2<16k -92.3 @13000 | M2 peak -92.3 @13000
+nuke dis_nuke_room 7000 +0 4x   | M1 -92.3 dBFS (k5@13000) | M2<16k -92.3 @13000 | M2 peak -92.3 @13000
+nuke dis_nuke_room 9000 -24 1x   | M1 -117.7 dBFS (k3@21000) | M2<16k -177.2 @15000 | M2 peak -117.7 @21000
+nuke dis_nuke_room 9000 -24 adaa | M1 -127.6 dBFS (k3@21000) | M2<16k -177.2 @15000 | M2 peak -127.6 @21000
+nuke dis_nuke_room 9000 -24 2x   | M1 -147.8 dBFS (k3@21000) | M2<16k -177.2 @15000 | M2 peak -147.8 @21000
+nuke dis_nuke_room 9000 -24 4x   | M1 -147.8 dBFS (k3@21000) | M2<16k -177.2 @15000 | M2 peak -147.8 @21000
+nuke dis_nuke_room 9000 -12 1x   | M1 -89.2 dBFS (k3@21000) | M2<16k -95.1 @15000 | M2 peak -89.2 @21000
+nuke dis_nuke_room 9000 -12 adaa | M1 -95.1 dBFS (k7@15000) | M2<16k -95.1 @15000 | M2 peak -95.1 @15000
+nuke dis_nuke_room 9000 -12 2x   | M1 -95.1 dBFS (k7@15000) | M2<16k -95.1 @15000 | M2 peak -95.1 @15000
+nuke dis_nuke_room 9000 -12 4x   | M1 -95.1 dBFS (k7@15000) | M2<16k -95.1 @15000 | M2 peak -95.1 @15000
+nuke dis_nuke_room 9000 -6 1x   | M1 -86.3 dBFS (k3@21000) | M2<16k -92.6 @15000 | M2 peak -86.3 @21000
+nuke dis_nuke_room 9000 -6 adaa | M1 -92.6 dBFS (k7@15000) | M2<16k -92.6 @15000 | M2 peak -92.6 @15000
+nuke dis_nuke_room 9000 -6 2x   | M1 -92.6 dBFS (k7@15000) | M2<16k -92.6 @15000 | M2 peak -92.6 @15000
+nuke dis_nuke_room 9000 -6 4x   | M1 -92.6 dBFS (k7@15000) | M2<16k -92.6 @15000 | M2 peak -92.6 @15000
+nuke dis_nuke_room 9000 +0 1x   | M1 -85.9 dBFS (k3@21000) | M2<16k -90.6 @15000 | M2 peak -85.9 @21000
+nuke dis_nuke_room 9000 +0 adaa | M1 -90.6 dBFS (k7@15000) | M2<16k -90.6 @15000 | M2 peak -90.6 @15000
+nuke dis_nuke_room 9000 +0 2x   | M1 -90.6 dBFS (k7@15000) | M2<16k -90.6 @15000 | M2 peak -90.6 @15000
+nuke dis_nuke_room 9000 +0 4x   | M1 -90.6 dBFS (k7@15000) | M2<16k -90.6 @15000 | M2 peak -90.6 @15000
+nuke dis_nuke_room 13000 -24 1x   | M1 -102.1 dBFS (k2@22000) | M2<16k -117.7 @9000 | M2 peak -102.1 @22000
+nuke dis_nuke_room 13000 -24 adaa | M1 -114.3 dBFS (k2@22000) | M2<16k -138.9 @9000 | M2 peak -114.3 @22000
+nuke dis_nuke_room 13000 -24 2x   | M1 -120.6 dBFS (k2@22000) | M2<16k -170.4 @9000 | M2 peak -120.6 @22000
+nuke dis_nuke_room 13000 -24 4x   | M1 -120.6 dBFS (k2@22000) | M2<16k -169.7 @9000 | M2 peak -120.6 @22000
+nuke dis_nuke_room 13000 -12 1x   | M1 -82.9 dBFS (k2@22000) | M2<16k -88.4 @9000 | M2 peak -82.9 @22000
+nuke dis_nuke_room 13000 -12 adaa | M1 -93.1 dBFS (k3@9000) | M2<16k -93.1 @9000 | M2 peak -93.1 @9000
+nuke dis_nuke_room 13000 -12 2x   | M1 -93.2 dBFS (k3@9000) | M2<16k -93.2 @9000 | M2 peak -93.2 @9000
+nuke dis_nuke_room 13000 -12 4x   | M1 -93.2 dBFS (k3@9000) | M2<16k -93.2 @9000 | M2 peak -93.2 @9000
+nuke dis_nuke_room 13000 -6 1x   | M1 -79.0 dBFS (k2@22000) | M2<16k -85.7 @9000 | M2 peak -79.0 @22000
+nuke dis_nuke_room 13000 -6 adaa | M1 -91.2 dBFS (k2@22000) | M2<16k -92.0 @9000 | M2 peak -91.2 @22000
+nuke dis_nuke_room 13000 -6 2x   | M1 -92.2 dBFS (k3@9000) | M2<16k -92.2 @9000 | M2 peak -92.2 @9000
+nuke dis_nuke_room 13000 -6 4x   | M1 -92.2 dBFS (k3@9000) | M2<16k -92.2 @9000 | M2 peak -92.2 @9000
+nuke dis_nuke_room 13000 +0 1x   | M1 -78.9 dBFS (k2@22000) | M2<16k -85.4 @9000 | M2 peak -78.9 @22000
+nuke dis_nuke_room 13000 +0 adaa | M1 -91.1 dBFS (k2@22000) | M2<16k -91.6 @9000 | M2 peak -91.1 @22000
+nuke dis_nuke_room 13000 +0 2x   | M1 -91.9 dBFS (k3@9000) | M2<16k -91.9 @9000 | M2 peak -91.9 @9000
+nuke dis_nuke_room 13000 +0 4x   | M1 -91.9 dBFS (k3@9000) | M2<16k -91.9 @9000 | M2 peak -91.9 @9000
+nuke dis_nuke_room 17000 -24 1x   | M1 -102.1 dBFS (k2@14000) | M2<16k -102.1 @14000 | M2 peak -102.1 @14000
+nuke dis_nuke_room 17000 -24 adaa | M1 -124.9 dBFS (k2@14000) | M2<16k -124.9 @14000 | M2 peak -124.9 @14000
+nuke dis_nuke_room 17000 -24 2x   | M1 -159.7 dBFS (k2@14000) | M2<16k -159.7 @14000 | M2 peak -159.7 @14000
+nuke dis_nuke_room 17000 -24 4x   | M1 -158.4 dBFS (k2@14000) | M2<16k -158.4 @14000 | M2 peak -158.4 @14000
+nuke dis_nuke_room 17000 -12 1x   | M1 -82.9 dBFS (k2@14000) | M2<16k -82.9 @14000 | M2 peak -82.9 @14000
+nuke dis_nuke_room 17000 -12 adaa | M1 -94.2 dBFS (k3@3000) | M2<16k -94.2 @3000 | M2 peak -94.2 @3000
+nuke dis_nuke_room 17000 -12 2x   | M1 -96.0 dBFS (k15@15000) | M2<16k -96.0 @15000 | M2 peak -96.0 @15000
+nuke dis_nuke_room 17000 -12 4x   | M1 -96.0 dBFS (k15@15000) | M2<16k -96.0 @15000 | M2 peak -96.0 @15000
+nuke dis_nuke_room 17000 -6 1x   | M1 -79.0 dBFS (k2@14000) | M2<16k -79.0 @14000 | M2 peak -79.0 @14000
+nuke dis_nuke_room 17000 -6 adaa | M1 -91.6 dBFS (k3@3000) | M2<16k -91.6 @3000 | M2 peak -91.6 @3000
+nuke dis_nuke_room 17000 -6 2x   | M1 -93.5 dBFS (k5@11000) | M2<16k -93.5 @11000 | M2 peak -93.5 @11000
+nuke dis_nuke_room 17000 -6 4x   | M1 -93.5 dBFS (k5@11000) | M2<16k -93.5 @11000 | M2 peak -93.5 @11000
+nuke dis_nuke_room 17000 +0 1x   | M1 -78.9 dBFS (k2@14000) | M2<16k -78.9 @14000 | M2 peak -78.9 @14000
+nuke dis_nuke_room 17000 +0 adaa | M1 -91.0 dBFS (k3@3000) | M2<16k -91.0 @3000 | M2 peak -91.0 @3000
+nuke dis_nuke_room 17000 +0 2x   | M1 -92.3 dBFS (k5@11000) | M2<16k -92.3 @11000 | M2 peak -92.3 @11000
+nuke dis_nuke_room 17000 +0 4x   | M1 -92.3 dBFS (k5@11000) | M2<16k -92.3 @11000 | M2 peak -92.3 @11000
+nuke SWEEP alsw_dis_nuke_room_-12 UAD  | worst non-harmonic (f>5k) -161.1 dBFS
+nuke SWEEP alsw_dis_nuke_room_-12 1x   | worst non-harmonic (f>5k) -156.6 dBFS
+nuke SWEEP alsw_dis_nuke_room_-12 adaa | worst non-harmonic (f>5k) -157.6 dBFS
+nuke SWEEP alsw_dis_nuke_room_-12 2x   | worst non-harmonic (f>5k) -157.6 dBFS
+nuke SWEEP alsw_dis_nuke_room_-12 4x   | worst non-harmonic (f>5k) -157.6 dBFS
+nuke SWEEP alsw_dis_nuke_room_+0 UAD  | worst non-harmonic (f>5k) -156.3 dBFS
+nuke SWEEP alsw_dis_nuke_room_+0 1x   | worst non-harmonic (f>5k) -152.9 dBFS
+nuke SWEEP alsw_dis_nuke_room_+0 adaa | worst non-harmonic (f>5k) -155.0 dBFS
+nuke SWEEP alsw_dis_nuke_room_+0 2x   | worst non-harmonic (f>5k) -155.0 dBFS
+nuke SWEEP alsw_dis_nuke_room_+0 4x   | worst non-harmonic (f>5k) -155.0 dBFS
+swell fc_t5 7000 -24 1x   | M1 -126.1 dBFS (k5@13000) | M2<16k -126.1 @13000 | M2 peak -111.0 @6998
+swell fc_t5 7000 -24 adaa | M1 -126.1 dBFS (k5@13000) | M2<16k -126.1 @13000 | M2 peak -111.0 @6998
+swell fc_t5 7000 -24 2x   | M1 -126.1 dBFS (k5@13000) | M2<16k -126.1 @13000 | M2 peak -111.0 @6998
+swell fc_t5 7000 -24 4x   | M1 -126.1 dBFS (k5@13000) | M2<16k -126.1 @13000 | M2 peak -111.0 @6998
+swell fc_t5 7000 -12 1x   | M1 -105.6 dBFS (k5@13000) | M2<16k -105.6 @13000 | M2 peak -93.3 @6998
+swell fc_t5 7000 -12 adaa | M1 -105.6 dBFS (k5@13000) | M2<16k -105.6 @13000 | M2 peak -93.3 @6998
+swell fc_t5 7000 -12 2x   | M1 -105.6 dBFS (k5@13000) | M2<16k -105.6 @13000 | M2 peak -93.3 @6998
+swell fc_t5 7000 -12 4x   | M1 -105.6 dBFS (k5@13000) | M2<16k -105.6 @13000 | M2 peak -93.3 @6998
+swell fc_t5 7000 -6 1x   | M1 -102.1 dBFS (k5@13000) | M2<16k -102.1 @13000 | M2 peak -89.2 @6998
+swell fc_t5 7000 -6 adaa | M1 -102.2 dBFS (k5@13000) | M2<16k -102.2 @13000 | M2 peak -89.2 @6998
+swell fc_t5 7000 -6 2x   | M1 -102.1 dBFS (k5@13000) | M2<16k -102.1 @13000 | M2 peak -89.2 @7002
+swell fc_t5 7000 -6 4x   | M1 -102.1 dBFS (k5@13000) | M2<16k -102.1 @13000 | M2 peak -89.2 @7002
+swell fc_t5 7000 +0 1x   | M1 -99.3 dBFS (k5@13000) | M2<16k -99.3 @13000 | M2 peak -86.0 @6998
+swell fc_t5 7000 +0 adaa | M1 -99.5 dBFS (k5@13000) | M2<16k -99.5 @13000 | M2 peak -86.1 @6998
+swell fc_t5 7000 +0 2x   | M1 -99.3 dBFS (k5@13000) | M2<16k -99.3 @13000 | M2 peak -86.0 @7002
+swell fc_t5 7000 +0 4x   | M1 -99.3 dBFS (k5@13000) | M2<16k -99.3 @13000 | M2 peak -86.0 @7002
+swell fc_t5 9000 -24 1x   | M1 -108.0 dBFS (k3@21000) | M2<16k -125.3 @15000 | M2 peak -108.0 @21000
+swell fc_t5 9000 -24 adaa | M1 -116.0 dBFS (k3@21000) | M2<16k -125.3 @15000 | M2 peak -110.8 @8998
+swell fc_t5 9000 -24 2x   | M1 -125.3 dBFS (k7@15000) | M2<16k -125.3 @15000 | M2 peak -110.8 @8998
+swell fc_t5 9000 -24 4x   | M1 -125.3 dBFS (k7@15000) | M2<16k -125.3 @15000 | M2 peak -110.8 @8998
+swell fc_t5 9000 -12 1x   | M1 -78.9 dBFS (k3@21000) | M2<16k -103.5 @15000 | M2 peak -78.9 @21000
+swell fc_t5 9000 -12 adaa | M1 -88.0 dBFS (k3@21000) | M2<16k -103.5 @15000 | M2 peak -88.0 @21000
+swell fc_t5 9000 -12 2x   | M1 -103.5 dBFS (k7@15000) | M2<16k -103.5 @15000 | M2 peak -89.1 @8998
+swell fc_t5 9000 -12 4x   | M1 -103.5 dBFS (k7@15000) | M2<16k -103.5 @15000 | M2 peak -89.1 @8998
+swell fc_t5 9000 -6 1x   | M1 -65.5 dBFS (k3@21000) | M2<16k -99.3 @15000 | M2 peak -65.5 @21000
+swell fc_t5 9000 -6 adaa | M1 -75.2 dBFS (k3@21000) | M2<16k -99.3 @15000 | M2 peak -75.2 @21000
+swell fc_t5 9000 -6 2x   | M1 -99.2 dBFS (k7@15000) | M2<16k -99.2 @15000 | M2 peak -84.9 @8998
+swell fc_t5 9000 -6 4x   | M1 -99.2 dBFS (k7@15000) | M2<16k -99.2 @15000 | M2 peak -84.9 @8998
+swell fc_t5 9000 +0 1x   | M1 -52.4 dBFS (k3@21000) | M2<16k -96.5 @15000 | M2 peak -52.4 @21000
+swell fc_t5 9000 +0 adaa | M1 -62.2 dBFS (k3@21000) | M2<16k -96.8 @15000 | M2 peak -62.2 @21000
+swell fc_t5 9000 +0 2x   | M1 -83.6 dBFS (k3@21000) | M2<16k -96.5 @15000 | M2 peak -83.6 @21000
+swell fc_t5 9000 +0 4x   | M1 -83.7 dBFS (k3@21000) | M2<16k -96.5 @15000 | M2 peak -83.7 @21000
+swell fc_t5 13000 -24 1x   | M1 -100.7 dBFS (k2@22000) | M2<16k -107.9 @9000 | M2 peak -100.7 @22000
+swell fc_t5 13000 -24 adaa | M1 -112.9 dBFS (k2@22000) | M2<16k -122.2 @9000 | M2 peak -111.0 @13002
+swell fc_t5 13000 -24 2x   | M1 -119.2 dBFS (k2@22000) | M2<16k -123.6 @9000 | M2 peak -111.0 @12998
+swell fc_t5 13000 -24 4x   | M1 -119.1 dBFS (k2@22000) | M2<16k -123.6 @9000 | M2 peak -111.0 @12998
+swell fc_t5 13000 -12 1x   | M1 -78.8 dBFS (k3@9000) | M2<16k -78.8 @9000 | M2 peak -78.8 @9000
+swell fc_t5 13000 -12 adaa | M1 -96.2 dBFS (k2@22000) | M2<16k -97.8 @9000 | M2 peak -93.4 @13002
+swell fc_t5 13000 -12 2x   | M1 -102.5 dBFS (k2@22000) | M2<16k -102.5 @9000 | M2 peak -93.3 @12998
+swell fc_t5 13000 -12 4x   | M1 -102.4 dBFS (k2@22000) | M2<16k -102.5 @9000 | M2 peak -93.3 @12998
+swell fc_t5 13000 -6 1x   | M1 -65.6 dBFS (k3@9000) | M2<16k -65.6 @9000 | M2 peak -65.6 @9000
+swell fc_t5 13000 -6 adaa | M1 -86.5 dBFS (k3@9000) | M2<16k -86.5 @9000 | M2 peak -86.5 @9000
+swell fc_t5 13000 -6 2x   | M1 -95.4 dBFS (k2@22000) | M2<16k -98.8 @9000 | M2 peak -89.2 @12998
+swell fc_t5 13000 -6 4x   | M1 -95.4 dBFS (k2@22000) | M2<16k -98.9 @9000 | M2 peak -89.2 @12998
+swell fc_t5 13000 +0 1x   | M1 -52.5 dBFS (k3@9000) | M2<16k -52.5 @9000 | M2 peak -52.5 @9000
+swell fc_t5 13000 +0 adaa | M1 -73.7 dBFS (k3@9000) | M2<16k -73.7 @9000 | M2 peak -73.7 @9000
+swell fc_t5 13000 +0 2x   | M1 -88.3 dBFS (k2@22000) | M2<16k -96.5 @9000 | M2 peak -86.0 @12998
+swell fc_t5 13000 +0 4x   | M1 -88.3 dBFS (k2@22000) | M2<16k -96.6 @9000 | M2 peak -86.0 @12998
+swell fc_t5 17000 -24 1x   | M1 -100.7 dBFS (k2@14000) | M2<16k -100.7 @14000 | M2 peak -100.7 @14000
+swell fc_t5 17000 -24 adaa | M1 -121.1 dBFS (k3@3000) | M2<16k -121.1 @3000 | M2 peak -111.0 @17002
+swell fc_t5 17000 -24 2x   | M1 -126.1 dBFS (k5@11000) | M2<16k -126.1 @11000 | M2 peak -111.0 @17002
+swell fc_t5 17000 -24 4x   | M1 -126.1 dBFS (k5@11000) | M2<16k -126.1 @11000 | M2 peak -111.0 @17002
+swell fc_t5 17000 -12 1x   | M1 -78.8 dBFS (k3@3000) | M2<16k -78.8 @3000 | M2 peak -78.8 @3000
+swell fc_t5 17000 -12 adaa | M1 -91.0 dBFS (k3@3000) | M2<16k -91.0 @3000 | M2 peak -91.0 @3000
+swell fc_t5 17000 -12 2x   | M1 -105.6 dBFS (k5@11000) | M2<16k -105.6 @11000 | M2 peak -93.3 @17002
+swell fc_t5 17000 -12 4x   | M1 -105.6 dBFS (k5@11000) | M2<16k -105.6 @11000 | M2 peak -93.3 @17002
+swell fc_t5 17000 -6 1x   | M1 -65.6 dBFS (k3@3000) | M2<16k -65.6 @3000 | M2 peak -65.6 @3000
+swell fc_t5 17000 -6 adaa | M1 -77.2 dBFS (k3@3000) | M2<16k -77.2 @3000 | M2 peak -77.2 @3000
+swell fc_t5 17000 -6 2x   | M1 -102.1 dBFS (k5@11000) | M2<16k -102.1 @11000 | M2 peak -89.2 @17002
+swell fc_t5 17000 -6 4x   | M1 -102.1 dBFS (k5@11000) | M2<16k -102.1 @11000 | M2 peak -89.2 @17002
+swell fc_t5 17000 +0 1x   | M1 -52.5 dBFS (k3@3000) | M2<16k -52.5 @3000 | M2 peak -52.5 @3000
+swell fc_t5 17000 +0 adaa | M1 -63.9 dBFS (k3@3000) | M2<16k -63.9 @3000 | M2 peak -63.9 @3000
+swell fc_t5 17000 +0 2x   | M1 -99.2 dBFS (k5@11000) | M2<16k -99.2 @11000 | M2 peak -86.0 @17002
+swell fc_t5 17000 +0 4x   | M1 -99.2 dBFS (k5@11000) | M2<16k -99.2 @11000 | M2 peak -86.0 @17002
+swell SWEEP alsw_fc_t5_-12 UAD  | worst non-harmonic (f>5k) -186.6 dBFS
+swell SWEEP alsw_fc_t5_-12 1x   | worst non-harmonic (f>5k) -151.9 dBFS
+swell SWEEP alsw_fc_t5_-12 adaa | worst non-harmonic (f>5k) -163.7 dBFS
+swell SWEEP alsw_fc_t5_-12 2x   | worst non-harmonic (f>5k) -170.3 dBFS
+swell SWEEP alsw_fc_t5_-12 4x   | worst non-harmonic (f>5k) -170.3 dBFS
+swell SWEEP alsw_fc_t5_+0 UAD  | worst non-harmonic (f>5k) -176.9 dBFS
+swell SWEEP alsw_fc_t5_+0 1x   | worst non-harmonic (f>5k) -125.6 dBFS
+swell SWEEP alsw_fc_t5_+0 adaa | worst non-harmonic (f>5k) -137.8 dBFS
+swell SWEEP alsw_fc_t5_+0 2x   | worst non-harmonic (f>5k) -164.8 dBFS
+swell SWEEP alsw_fc_t5_+0 4x   | worst non-harmonic (f>5k) -164.8 dBFS
+glue ssl_4_auto 7000 -24 1x   | M1 -114.5 dBFS (k5@13000) | M2<16k -114.5 @13000 | M2 peak -84.0 @6998
+glue ssl_4_auto 7000 -24 adaa | M1 -114.5 dBFS (k5@13000) | M2<16k -114.5 @13000 | M2 peak -84.0 @6998
+glue ssl_4_auto 7000 -24 2x   | M1 -114.5 dBFS (k5@13000) | M2<16k -114.5 @13000 | M2 peak -84.0 @6998
+glue ssl_4_auto 7000 -24 4x   | M1 -114.5 dBFS (k5@13000) | M2<16k -114.5 @13000 | M2 peak -84.0 @6998
+glue ssl_4_auto 7000 -12 1x   | M1 -107.0 dBFS (k5@13000) | M2<16k -107.0 @13000 | M2 peak -68.5 @6998
+glue ssl_4_auto 7000 -12 adaa | M1 -107.0 dBFS (k5@13000) | M2<16k -107.0 @13000 | M2 peak -68.5 @6998
+glue ssl_4_auto 7000 -12 2x   | M1 -107.0 dBFS (k5@13000) | M2<16k -107.0 @13000 | M2 peak -68.5 @6998
+glue ssl_4_auto 7000 -12 4x   | M1 -107.0 dBFS (k5@13000) | M2<16k -107.0 @13000 | M2 peak -68.5 @6998
+glue ssl_4_auto 7000 -6 1x   | M1 -107.3 dBFS (k5@13000) | M2<16k -107.3 @13000 | M2 peak -63.9 @6998
+glue ssl_4_auto 7000 -6 adaa | M1 -107.3 dBFS (k5@13000) | M2<16k -107.3 @13000 | M2 peak -63.9 @6998
+glue ssl_4_auto 7000 -6 2x   | M1 -107.3 dBFS (k5@13000) | M2<16k -107.3 @13000 | M2 peak -63.9 @6998
+glue ssl_4_auto 7000 -6 4x   | M1 -107.3 dBFS (k5@13000) | M2<16k -107.3 @13000 | M2 peak -63.9 @6998
+glue ssl_4_auto 7000 +0 1x   | M1 -106.6 dBFS (k5@13000) | M2<16k -106.6 @13000 | M2 peak -60.9 @6998
+glue ssl_4_auto 7000 +0 adaa | M1 -106.7 dBFS (k5@13000) | M2<16k -106.7 @13000 | M2 peak -60.9 @6998
+glue ssl_4_auto 7000 +0 2x   | M1 -106.7 dBFS (k5@13000) | M2<16k -106.7 @13000 | M2 peak -60.9 @6998
+glue ssl_4_auto 7000 +0 4x   | M1 -106.7 dBFS (k5@13000) | M2<16k -106.7 @13000 | M2 peak -60.9 @6998
+glue ssl_4_auto 9000 -24 1x   | M1 -115.0 dBFS (k7@15000) | M2<16k -115.0 @15000 | M2 peak -85.8 @8998
+glue ssl_4_auto 9000 -24 adaa | M1 -114.4 dBFS (k3@21000) | M2<16k -115.0 @15000 | M2 peak -85.8 @8998
+glue ssl_4_auto 9000 -24 2x   | M1 -115.0 dBFS (k7@15000) | M2<16k -115.0 @15000 | M2 peak -85.8 @8998
+glue ssl_4_auto 9000 -24 4x   | M1 -115.0 dBFS (k7@15000) | M2<16k -115.0 @15000 | M2 peak -85.8 @8998
+glue ssl_4_auto 9000 -12 1x   | M1 -105.6 dBFS (k3@21000) | M2<16k -106.0 @3000 | M2 peak -67.1 @8998
+glue ssl_4_auto 9000 -12 adaa | M1 -98.9 dBFS (k3@21000) | M2<16k -106.0 @3000 | M2 peak -67.1 @8998
+glue ssl_4_auto 9000 -12 2x   | M1 -99.5 dBFS (k3@21000) | M2<16k -106.0 @3000 | M2 peak -67.1 @8998
+glue ssl_4_auto 9000 -12 4x   | M1 -99.5 dBFS (k3@21000) | M2<16k -106.0 @3000 | M2 peak -67.1 @8998
+glue ssl_4_auto 9000 -6 1x   | M1 -101.2 dBFS (k5@3000) | M2<16k -101.2 @3000 | M2 peak -63.5 @8998
+glue ssl_4_auto 9000 -6 adaa | M1 -94.4 dBFS (k3@21000) | M2<16k -101.2 @3000 | M2 peak -63.5 @8998
+glue ssl_4_auto 9000 -6 2x   | M1 -95.1 dBFS (k3@21000) | M2<16k -101.2 @3000 | M2 peak -63.5 @8998
+glue ssl_4_auto 9000 -6 4x   | M1 -95.1 dBFS (k3@21000) | M2<16k -101.2 @3000 | M2 peak -63.5 @8998
+glue ssl_4_auto 9000 +0 1x   | M1 -99.7 dBFS (k5@3000) | M2<16k -99.7 @3000 | M2 peak -61.9 @8998
+glue ssl_4_auto 9000 +0 adaa | M1 -91.8 dBFS (k3@21000) | M2<16k -99.7 @3000 | M2 peak -62.0 @8998
+glue ssl_4_auto 9000 +0 2x   | M1 -92.6 dBFS (k3@21000) | M2<16k -99.7 @3000 | M2 peak -61.9 @8998
+glue ssl_4_auto 9000 +0 4x   | M1 -92.6 dBFS (k3@21000) | M2<16k -99.7 @3000 | M2 peak -61.9 @8998
+glue ssl_4_auto 13000 -24 1x   | M1 -110.8 dBFS (k5@17000) | M2<16k -111.3 @9000 | M2 peak -84.0 @13002
+glue ssl_4_auto 13000 -24 adaa | M1 -109.9 dBFS (k3@9000) | M2<16k -109.9 @9000 | M2 peak -84.0 @13002
+glue ssl_4_auto 13000 -24 2x   | M1 -109.9 dBFS (k3@9000) | M2<16k -109.9 @9000 | M2 peak -84.0 @13002
+glue ssl_4_auto 13000 -24 4x   | M1 -109.9 dBFS (k3@9000) | M2<16k -109.9 @9000 | M2 peak -84.0 @13002
+glue ssl_4_auto 13000 -12 1x   | M1 -97.4 dBFS (k5@17000) | M2<16k -97.6 @9000 | M2 peak -68.5 @13002
+glue ssl_4_auto 13000 -12 adaa | M1 -95.9 dBFS (k3@9000) | M2<16k -95.9 @9000 | M2 peak -68.5 @13002
+glue ssl_4_auto 13000 -12 2x   | M1 -95.8 dBFS (k3@9000) | M2<16k -95.8 @9000 | M2 peak -68.5 @13002
+glue ssl_4_auto 13000 -12 4x   | M1 -95.8 dBFS (k3@9000) | M2<16k -95.8 @9000 | M2 peak -68.5 @13002
+glue ssl_4_auto 13000 -6 1x   | M1 -94.8 dBFS (k5@17000) | M2<16k -95.3 @9000 | M2 peak -63.9 @13002
+glue ssl_4_auto 13000 -6 adaa | M1 -92.9 dBFS (k3@9000) | M2<16k -92.9 @9000 | M2 peak -63.9 @13002
+glue ssl_4_auto 13000 -6 2x   | M1 -92.8 dBFS (k3@9000) | M2<16k -92.8 @9000 | M2 peak -63.9 @13002
+glue ssl_4_auto 13000 -6 4x   | M1 -92.8 dBFS (k3@9000) | M2<16k -92.8 @9000 | M2 peak -63.9 @13002
+glue ssl_4_auto 13000 +0 1x   | M1 -93.1 dBFS (k5@17000) | M2<16k -94.3 @9000 | M2 peak -60.9 @13002
+glue ssl_4_auto 13000 +0 adaa | M1 -90.7 dBFS (k3@9000) | M2<16k -90.7 @9000 | M2 peak -60.9 @13002
+glue ssl_4_auto 13000 +0 2x   | M1 -90.5 dBFS (k3@9000) | M2<16k -90.5 @9000 | M2 peak -60.9 @13002
+glue ssl_4_auto 13000 +0 4x   | M1 -90.5 dBFS (k3@9000) | M2<16k -90.5 @9000 | M2 peak -60.9 @13002
+glue ssl_4_auto 17000 -24 1x   | M1 -114.5 dBFS (k5@11000) | M2<16k -114.5 @11000 | M2 peak -84.0 @17002
+glue ssl_4_auto 17000 -24 adaa | M1 -114.5 dBFS (k5@11000) | M2<16k -114.5 @11000 | M2 peak -84.0 @17002
+glue ssl_4_auto 17000 -24 2x   | M1 -114.5 dBFS (k5@11000) | M2<16k -114.5 @11000 | M2 peak -84.0 @17002
+glue ssl_4_auto 17000 -24 4x   | M1 -114.5 dBFS (k5@11000) | M2<16k -114.5 @11000 | M2 peak -84.0 @17002
+glue ssl_4_auto 17000 -12 1x   | M1 -103.6 dBFS (k3@3000) | M2<16k -103.6 @3000 | M2 peak -68.5 @17002
+glue ssl_4_auto 17000 -12 adaa | M1 -99.8 dBFS (k3@3000) | M2<16k -99.8 @3000 | M2 peak -68.5 @17002
+glue ssl_4_auto 17000 -12 2x   | M1 -98.9 dBFS (k3@3000) | M2<16k -98.9 @3000 | M2 peak -68.5 @17002
+glue ssl_4_auto 17000 -12 4x   | M1 -98.9 dBFS (k3@3000) | M2<16k -98.9 @3000 | M2 peak -68.5 @17002
+glue ssl_4_auto 17000 -6 1x   | M1 -100.2 dBFS (k3@3000) | M2<16k -100.2 @3000 | M2 peak -63.9 @17002
+glue ssl_4_auto 17000 -6 adaa | M1 -96.0 dBFS (k3@3000) | M2<16k -96.0 @3000 | M2 peak -63.9 @17002
+glue ssl_4_auto 17000 -6 2x   | M1 -94.9 dBFS (k3@3000) | M2<16k -94.9 @3000 | M2 peak -63.9 @17002
+glue ssl_4_auto 17000 -6 4x   | M1 -94.9 dBFS (k3@3000) | M2<16k -94.9 @3000 | M2 peak -63.9 @17002
+glue ssl_4_auto 17000 +0 1x   | M1 -98.0 dBFS (k3@3000) | M2<16k -98.0 @3000 | M2 peak -60.9 @17002
+glue ssl_4_auto 17000 +0 adaa | M1 -93.1 dBFS (k3@3000) | M2<16k -93.1 @3000 | M2 peak -60.9 @17002
+glue ssl_4_auto 17000 +0 2x   | M1 -91.7 dBFS (k3@3000) | M2<16k -91.7 @3000 | M2 peak -60.9 @17002
+glue ssl_4_auto 17000 +0 4x   | M1 -91.7 dBFS (k3@3000) | M2<16k -91.7 @3000 | M2 peak -60.9 @17002
+glue SWEEP alsw_ssl_4_auto_-12 UAD  | worst non-harmonic (f>5k) -170.7 dBFS
+glue SWEEP alsw_ssl_4_auto_-12 1x   | worst non-harmonic (f>5k) -168.8 dBFS
+glue SWEEP alsw_ssl_4_auto_-12 adaa | worst non-harmonic (f>5k) -168.6 dBFS
+glue SWEEP alsw_ssl_4_auto_-12 2x   | worst non-harmonic (f>5k) -168.6 dBFS
+glue SWEEP alsw_ssl_4_auto_-12 4x   | worst non-harmonic (f>5k) -168.6 dBFS
+glue SWEEP alsw_ssl_4_auto_+0 UAD  | worst non-harmonic (f>5k) -163.4 dBFS
+glue SWEEP alsw_ssl_4_auto_+0 1x   | worst non-harmonic (f>5k) -162.6 dBFS
+glue SWEEP alsw_ssl_4_auto_+0 adaa | worst non-harmonic (f>5k) -162.3 dBFS
+glue SWEEP alsw_ssl_4_auto_+0 2x   | worst non-harmonic (f>5k) -162.3 dBFS
+glue SWEEP alsw_ssl_4_auto_+0 4x   | worst non-harmonic (f>5k) -162.3 dBFS
+neve neve 7000 -12 1x   | M1 -155.5 dBFS (k7@1000) | M2<16k -155.5 @1000 | M2 peak -106.3 @21000
+neve neve 7000 -12 2x   | M1 -155.5 dBFS (k7@1000) | M2<16k -155.5 @1000 | M2 peak -106.3 @21000
+neve neve 7000 -12 4x   | M1 -155.5 dBFS (k7@1000) | M2<16k -155.5 @1000 | M2 peak -106.3 @21000
+neve neve 7000 -6 1x   | M1 -126.5 dBFS (k5@13000) | M2<16k -126.5 @13000 | M2 peak -100.3 @21000
+neve neve 7000 -6 2x   | M1 -151.9 dBFS (k5@13000) | M2<16k -151.9 @13000 | M2 peak -100.3 @21000
+neve neve 7000 -6 4x   | M1 -152.6 dBFS (k5@13000) | M2<16k -152.6 @13000 | M2 peak -100.3 @21000
+neve neve 7000 +0 1x   | M1 -37.3 dBFS (k5@13000) | M2<16k -37.3 @13000 | M2 peak -37.3 @13000
+neve neve 7000 +0 2x   | M1 -78.3 dBFS (k12@12000) | M2<16k -78.3 @12000 | M2 peak -78.3 @12000
+neve neve 7000 +0 4x   | M1 -86.0 dBFS (k5@13000) | M2<16k -86.0 @13000 | M2 peak -86.0 @13000
+neve neve 7000 +6 1x   | M1 -18.5 dBFS (k5@13000) | M2<16k -18.5 @13000 | M2 peak -18.5 @13000
+neve neve 7000 +6 2x   | M1 -32.5 dBFS (k13@5000) | M2<16k -32.5 @5000 | M2 peak -32.5 @5000
+neve neve 7000 +6 4x   | M1 -52.6 dBFS (k23@17000) | M2<16k -58.4 @10000 | M2 peak -52.6 @17000
+neve neve 9000 -12 1x   | M1 -155.5 dBFS (k7@15000) | M2<16k -155.5 @15000 | M2 peak -116.9 @18000
+neve neve 9000 -12 2x   | M1 -155.5 dBFS (k7@15000) | M2<16k -155.5 @15000 | M2 peak -116.9 @18000
+neve neve 9000 -12 4x   | M1 -155.5 dBFS (k7@15000) | M2<16k -155.5 @15000 | M2 peak -116.9 @18000
+neve neve 9000 -6 1x   | M1 -126.7 dBFS (k5@3000) | M2<16k -126.7 @3000 | M2 peak -110.9 @18000
+neve neve 9000 -6 2x   | M1 -145.1 dBFS (k7@15000) | M2<16k -145.1 @15000 | M2 peak -110.9 @18000
+neve neve 9000 -6 4x   | M1 -148.7 dBFS (k5@3000) | M2<16k -148.7 @3000 | M2 peak -110.9 @18000
+neve neve 9000 +0 1x   | M1 -37.5 dBFS (k5@3000) | M2<16k -37.5 @3000 | M2 peak -37.5 @3000
+neve neve 9000 +0 2x   | M1 -56.3 dBFS (k7@15000) | M2<16k -56.3 @15000 | M2 peak -56.3 @15000
+neve neve 9000 +0 4x   | M1 -84.0 dBFS (k5@3000) | M2<16k -84.0 @3000 | M2 peak -84.0 @3000
+neve neve 9000 +6 1x   | M1 -18.9 dBFS (k5@3000) | M2<16k -18.9 @3000 | M2 peak -18.9 @3000
+neve neve 9000 +6 2x   | M1 -22.6 dBFS (k7@15000) | M2<16k -22.6 @15000 | M2 peak -22.6 @15000
+neve neve 9000 +6 4x   | M1 -49.8 dBFS (k4@12000) | M2<16k -49.8 @12000 | M2 peak -49.8 @12000
+neve neve 13000 -12 1x   | M1 -153.6 dBFS (k2@22000) | M2<16k -155.4 @5000 | M2 peak -120.9 @13000
+neve neve 13000 -12 2x   | M1 -155.4 dBFS (k7@5000) | M2<16k -155.4 @5000 | M2 peak -120.9 @13000
+neve neve 13000 -12 4x   | M1 -155.4 dBFS (k7@5000) | M2<16k -155.4 @5000 | M2 peak -120.9 @13000
+neve neve 13000 -6 1x   | M1 -120.2 dBFS (k3@9000) | M2<16k -120.2 @9000 | M2 peak -114.9 @13000
+neve neve 13000 -6 2x   | M1 -133.5 dBFS (k6@18000) | M2<16k -133.9 @5000 | M2 peak -114.9 @13000
+neve neve 13000 -6 4x   | M1 -150.8 dBFS (k17@19000) | M2<16k -154.7 @5000 | M2 peak -114.9 @13000
+neve neve 13000 +0 1x   | M1 -32.6 dBFS (k3@9000) | M2<16k -32.6 @9000 | M2 peak -32.6 @9000
+neve neve 13000 +0 2x   | M1 -45.2 dBFS (k7@5000) | M2<16k -45.2 @5000 | M2 peak -45.2 @5000
+neve neve 13000 +0 4x   | M1 -80.1 dBFS (k3@9000) | M2<16k -80.1 @9000 | M2 peak -80.1 @9000
+neve neve 13000 +6 1x   | M1 -0.1 dBFS (k3@9000) | M2<16k -0.1 @9000 | M2 peak -0.1 @9000
+neve neve 13000 +6 2x   | M1 -20.1 dBFS (k7@5000) | M2<16k -20.1 @5000 | M2 peak -20.1 @5000
+neve neve 13000 +6 4x   | M1 -37.1 dBFS (k15@3000) | M2<16k -37.1 @3000 | M2 peak -37.1 @3000
+neve neve 17000 -12 1x   | M1 -101.8 dBFS (k2@14000) | M2<16k -101.8 @14000 | M2 peak -101.8 @14000
+neve neve 17000 -12 2x   | M1 -158.7 dBFS (k5@11000) | M2<16k -158.7 @11000 | M2 peak -108.3 @17000
+neve neve 17000 -12 4x   | M1 -158.2 dBFS (k2@14000) | M2<16k -158.2 @14000 | M2 peak -108.3 @17000
+neve neve 17000 -6 1x   | M1 -89.7 dBFS (k2@14000) | M2<16k -89.7 @14000 | M2 peak -89.7 @14000
+neve neve 17000 -6 2x   | M1 -126.5 dBFS (k5@11000) | M2<16k -126.5 @11000 | M2 peak -102.3 @17000
+neve neve 17000 -6 4x   | M1 -145.8 dBFS (k2@14000) | M2<16k -145.8 @14000 | M2 peak -102.3 @17000
+neve neve 17000 +0 1x   | M1 -32.7 dBFS (k3@3000) | M2<16k -32.7 @3000 | M2 peak -32.7 @3000
+neve neve 17000 +0 2x   | M1 -37.3 dBFS (k5@11000) | M2<16k -37.3 @11000 | M2 peak -37.3 @11000
+neve neve 17000 +0 4x   | M1 -78.4 dBFS (k12@12000) | M2<16k -78.4 @12000 | M2 peak -78.4 @12000
+neve neve 17000 +6 1x   | M1 -0.2 dBFS (k3@3000) | M2<16k -0.2 @3000 | M2 peak -0.2 @3000
+neve neve 17000 +6 2x   | M1 -18.6 dBFS (k5@11000) | M2<16k -18.6 @11000 | M2 peak -18.6 @11000
+neve neve 17000 +6 4x   | M1 -41.8 dBFS (k12@12000) | M2<16k -41.8 @12000 | M2 peak -41.8 @12000
+neve SWEEP alsw_neve_+0 UAD  | worst non-harmonic (f>5k) -107.8 dBFS
+neve SWEEP alsw_neve_+0 1x   | worst non-harmonic (f>5k) -104.8 dBFS
+neve SWEEP alsw_neve_+0 2x   | worst non-harmonic (f>5k) -112.6 dBFS
+neve SWEEP alsw_neve_+0 4x   | worst non-harmonic (f>5k) -131.8 dBFS
+neve SWEEP alsw_neve_+6 UAD  | worst non-harmonic (f>5k) -103.5 dBFS
+neve SWEEP alsw_neve_+6 1x   | worst non-harmonic (f>5k) -73.4 dBFS
+neve SWEEP alsw_neve_+6 2x   | worst non-harmonic (f>5k) -93.8 dBFS
+neve SWEEP alsw_neve_+6 4x   | worst non-harmonic (f>5k) -104.9 dBFS
+u610a u610a 7000 -12 1x   | M1 -156.4 dBFS (k4@20000) | M2<16k -157.0 @13000 | M2 peak -129.5 @21000
+u610a u610a 7000 -12 2x   | M1 -181.8 dBFS (k5@13000) | M2<16k -181.8 @13000 | M2 peak -129.5 @21000
+u610a u610a 7000 -12 4x   | M1 -182.4 dBFS (k5@13000) | M2<16k -182.4 @13000 | M2 peak -129.5 @21000
+u610a u610a 7000 -6 1x   | M1 -76.0 dBFS (k4@20000) | M2<16k -76.2 @13000 | M2 peak -76.0 @20000
+u610a u610a 7000 -6 2x   | M1 -119.3 dBFS (k4@20000) | M2<16k -119.8 @13000 | M2 peak -119.3 @20000
+u610a u610a 7000 -6 4x   | M1 -124.4 dBFS (k4@20000) | M2<16k -125.2 @13000 | M2 peak -123.7 @21000
+u610a u610a 7000 +0 1x   | M1 -50.8 dBFS (k7@1000) | M2<16k -50.8 @1000 | M2 peak -50.8 @1000
+u610a u610a 7000 +0 2x   | M1 -65.1 dBFS (k12@12000) | M2<16k -65.1 @12000 | M2 peak -65.1 @12000
+u610a u610a 7000 +0 4x   | M1 -93.6 dBFS (k23@17000) | M2<16k -94.2 @10000 | M2 peak -93.6 @17000
+u610a u610a 7000 +6 1x   | M1 -34.5 dBFS (k5@13000) | M2<16k -34.5 @13000 | M2 peak -34.5 @13000
+u610a u610a 7000 +6 2x   | M1 -54.1 dBFS (k13@5000) | M2<16k -54.1 @5000 | M2 peak -54.1 @5000
+u610a u610a 7000 +6 4x   | M1 -71.0 dBFS (k22@10000) | M2<16k -71.0 @10000 | M2 peak -71.0 @10000
+u610a u610a 9000 -12 1x   | M1 -154.5 dBFS (k4@12000) | M2<16k -154.5 @12000 | M2 peak -137.4 @18000
+u610a u610a 9000 -12 2x   | M1 -172.7 dBFS (k7@15000) | M2<16k -172.7 @15000 | M2 peak -137.4 @18000
+u610a u610a 9000 -12 4x   | M1 -184.6 dBFS (k7@15000) | M2<16k -184.6 @15000 | M2 peak -137.4 @18000
+u610a u610a 9000 -6 1x   | M1 -74.2 dBFS (k4@12000) | M2<16k -74.2 @12000 | M2 peak -74.2 @12000
+u610a u610a 9000 -6 2x   | M1 -96.9 dBFS (k7@15000) | M2<16k -96.9 @15000 | M2 peak -96.9 @15000
+u610a u610a 9000 -6 4x   | M1 -121.8 dBFS (k5@3000) | M2<16k -121.8 @3000 | M2 peak -121.8 @3000
+u610a u610a 9000 +0 1x   | M1 -54.5 dBFS (k4@12000) | M2<16k -54.5 @12000 | M2 peak -54.5 @12000
+u610a u610a 9000 +0 2x   | M1 -64.3 dBFS (k4@12000) | M2<16k -64.3 @12000 | M2 peak -64.3 @12000
+u610a u610a 9000 +0 4x   | M1 -84.3 dBFS (k6@6000) | M2<16k -84.3 @6000 | M2 peak -84.3 @6000
+u610a u610a 9000 +6 1x   | M1 -32.8 dBFS (k5@3000) | M2<16k -32.8 @3000 | M2 peak -32.8 @3000
+u610a u610a 9000 +6 2x   | M1 -56.5 dBFS (k5@3000) | M2<16k -56.5 @3000 | M2 peak -56.5 @3000
+u610a u610a 9000 +6 4x   | M1 -67.0 dBFS (k6@6000) | M2<16k -67.0 @6000 | M2 peak -67.0 @6000
+u610a u610a 13000 -12 1x   | M1 -128.9 dBFS (k2@22000) | M2<16k -152.7 @9000 | M2 peak -128.9 @22000
+u610a u610a 13000 -12 2x   | M1 -147.3 dBFS (k2@22000) | M2<16k -163.1 @5000 | M2 peak -143.4 @13000
+u610a u610a 13000 -12 4x   | M1 -147.3 dBFS (k2@22000) | M2<16k -181.7 @9000 | M2 peak -143.4 @13000
+u610a u610a 13000 -6 1x   | M1 -70.5 dBFS (k3@9000) | M2<16k -70.5 @9000 | M2 peak -70.5 @9000
+u610a u610a 13000 -6 2x   | M1 -82.0 dBFS (k6@18000) | M2<16k -83.3 @5000 | M2 peak -82.0 @18000
+u610a u610a 13000 -6 4x   | M1 -118.2 dBFS (k3@9000) | M2<16k -118.2 @9000 | M2 peak -118.2 @9000
+u610a u610a 13000 +0 1x   | M1 -32.2 dBFS (k3@9000) | M2<16k -32.2 @9000 | M2 peak -32.2 @9000
+u610a u610a 13000 +0 2x   | M1 -51.0 dBFS (k7@5000) | M2<16k -51.0 @5000 | M2 peak -51.0 @5000
+u610a u610a 13000 +0 4x   | M1 -73.8 dBFS (k16@16000) | M2<16k -77.1 @15998 | M2 peak -73.8 @16000
+u610a u610a 13000 +6 1x   | M1 -26.4 dBFS (k3@9000) | M2<16k -26.4 @9000 | M2 peak -26.4 @9000
+u610a u610a 13000 +6 2x   | M1 -41.7 dBFS (k7@5000) | M2<16k -41.7 @5000 | M2 peak -41.7 @5000
+u610a u610a 13000 +6 4x   | M1 -55.8 dBFS (k15@3000) | M2<16k -55.8 @3000 | M2 peak -55.8 @3000
+u610a u610a 17000 -12 1x   | M1 -82.6 dBFS (k2@14000) | M2<16k -82.6 @14000 | M2 peak -82.6 @14000
+u610a u610a 17000 -12 2x   | M1 -140.1 dBFS (k2@14000) | M2<16k -140.1 @14000 | M2 peak -129.7 @17000
+u610a u610a 17000 -12 4x   | M1 -138.9 dBFS (k2@14000) | M2<16k -138.9 @14000 | M2 peak -129.7 @17000
+u610a u610a 17000 -6 1x   | M1 -64.6 dBFS (k2@14000) | M2<16k -64.6 @14000 | M2 peak -64.6 @14000
+u610a u610a 17000 -6 2x   | M1 -75.9 dBFS (k5@11000) | M2<16k -75.9 @11000 | M2 peak -75.9 @11000
+u610a u610a 17000 -6 4x   | M1 -117.6 dBFS (k2@14000) | M2<16k -117.6 @14000 | M2 peak -117.6 @14000
+u610a u610a 17000 +0 1x   | M1 -31.7 dBFS (k3@3000) | M2<16k -31.7 @3000 | M2 peak -31.7 @3000
+u610a u610a 17000 +0 2x   | M1 -53.1 dBFS (k6@6000) | M2<16k -53.1 @6000 | M2 peak -53.1 @6000
+u610a u610a 17000 +0 4x   | M1 -65.2 dBFS (k12@12000) | M2<16k -65.2 @12000 | M2 peak -65.2 @12000
+u610a u610a 17000 +6 1x   | M1 -25.8 dBFS (k3@3000) | M2<16k -25.8 @3000 | M2 peak -25.8 @3000
+u610a u610a 17000 +6 2x   | M1 -34.1 dBFS (k5@11000) | M2<16k -34.1 @11000 | M2 peak -34.1 @11000
+u610a u610a 17000 +6 4x   | M1 -58.0 dBFS (k11@5000) | M2<16k -58.0 @5000 | M2 peak -58.0 @5000
+u610a SWEEP alsw_u610a_+0 UAD  | worst non-harmonic (f>5k) -143.0 dBFS
+u610a SWEEP alsw_u610a_+0 1x   | worst non-harmonic (f>5k) -104.6 dBFS
+u610a SWEEP alsw_u610a_+0 2x   | worst non-harmonic (f>5k) -113.2 dBFS
+u610a SWEEP alsw_u610a_+0 4x   | worst non-harmonic (f>5k) -113.2 dBFS
+u610a SWEEP alsw_u610a_+6 UAD  | worst non-harmonic (f>5k) -132.3 dBFS
+u610a SWEEP alsw_u610a_+6 1x   | worst non-harmonic (f>5k) -99.4 dBFS
+u610a SWEEP alsw_u610a_+6 2x   | worst non-harmonic (f>5k) -107.3 dBFS
+u610a SWEEP alsw_u610a_+6 4x   | worst non-harmonic (f>5k) -107.3 dBFS

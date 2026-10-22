@@ -1,0 +1,72 @@
+{
+  "schema": "surfaces_fitter.material.v1",
+  "id": "absorber_panel_2in",
+  "display_name": "Absorber panel (2 in fiberglass)",
+  "honesty": "ASSUMED_TEXTBOOK",
+  "roles": [
+    "wall"
+  ],
+  "banned_on": [
+    "floor",
+    "ceiling"
+  ],
+  "absorb_hz": [
+    125.0,
+    250.0,
+    500.0,
+    1000.0,
+    2000.0,
+    4000.0,
+    8000.0
+  ],
+  "absorb": [
+    0.28,
+    0.7,
+    0.88,
+    0.92,
+    0.94,
+    0.92,
+    0.9500000000000001
+  ],
+  "alpha_octave": [
+    0.28,
+    0.7,
+    0.88,
+    0.92,
+    0.94,
+    0.92,
+    0.9500000000000001
+  ],
+  "model": "dual_high_shelf",
+  "candidate": "A",
+  "params": {
+    "r0_db": -1.2525801037758997,
+    "f0": 328.7805061085933,
+    "depth_db": -10.313100082085118,
+    "shelf_slope": 5.966252587335083,
+    "f0_hi": 6912.017413172723,
+    "depth_hi_db": -1.601788963810436,
+    "shelf_slope_hi": 11.999999999999998
+  },
+  "rmse_r_db": 0.2712888801446066,
+  "absorb_l1": 0.024407368221129704,
+  "candidate_rmse_r_db": {
+    "A": 0.2712888801446066,
+    "B": 0.4522619418623795
+  },
+  "freq_range_hz": [
+    20.0,
+    16000.0
+  ],
+  "source_note": "~50 mm fiberglass / rigid mineral wool panel typical",
+  "usage": "One bounce: apply R(f); multi-bounce: cascade product along hit list. Do not put curtain/carpet roles on illegal faces.",
+  "fit": {
+    "success": true,
+    "message": "DE success=False; LS success=True cost=7.065"
+  },
+  "locks": {
+    "live_software": "do not import into live software/ engine in this pack",
+    "honesty": "ASSUMED_TEXTBOOK \u2014 not Structure VERIFIED",
+    "depth": "absolute per bounce (not per metre)"
+  }
+}

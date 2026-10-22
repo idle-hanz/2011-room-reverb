@@ -1,0 +1,106 @@
+{
+  "schema": "source_fitter.index.v1",
+  "note": "Shipped set. TU Berlin fits (tu_*, trumpet, violin, cello, singer_soprano, acoustic_guitar) are not in this folder. combo_* stays in the fitter pack.",
+  "presets": [
+    {
+      "id": "omni",
+      "label": "Omni",
+      "category": "reference",
+      "tag": "ASSUMED-EXACT",
+      "rmse_train_db": null,
+      "rmse_holdout_db": null,
+      "fit_bands_hz": null,
+      "a_eq_m": 0.0271,
+      "di_1k_db": -0.0,
+      "di_4k_db": -0.0,
+      "dataset": "none (analytic)"
+    },
+    {
+      "id": "talking_head",
+      "label": "Talking head (average speech, 6 talkers)",
+      "category": "voice",
+      "tag": "MEASURED-FIT",
+      "rmse_train_db": 1.8535074753735086,
+      "rmse_holdout_db": 1.8574478335571092,
+      "fit_bands_hz": [
+        100.0,
+        10000.0
+      ],
+      "a_eq_m": 0.0212,
+      "di_1k_db": 2.54,
+      "di_4k_db": 4.24,
+      "dataset": "BYU ScholarsArchive Spatial Audio Library \u2014 Average Speech Directivity"
+    },
+    {
+      "id": "trumpet_byu",
+      "label": "Trumpet (BYU, 160-3150 Hz)",
+      "category": "brass",
+      "tag": "MEASURED-FIT",
+      "rmse_train_db": 1.8528950860553055,
+      "rmse_holdout_db": 1.8199702417367325,
+      "fit_bands_hz": [
+        160.0,
+        3150.0
+      ],
+      "a_eq_m": 0.0229,
+      "di_1k_db": 3.49,
+      "di_4k_db": 12.63,
+      "dataset": "BYU ScholarsArchive Spatial Audio Library \u2014 Trumpet Directivity"
+    },
+    {
+      "id": "violin_byu",
+      "label": "Violin (BYU, 200-2500 Hz)",
+      "category": "strings",
+      "tag": "MEASURED-FIT",
+      "rmse_train_db": 2.116819063235342,
+      "rmse_holdout_db": 2.108767347740375,
+      "fit_bands_hz": [
+        200.0,
+        2500.0
+      ],
+      "a_eq_m": 0.0045,
+      "di_1k_db": 1.81,
+      "di_4k_db": 3.86,
+      "dataset": "BYU ScholarsArchive Spatial Audio Library \u2014 Violin Directivity"
+    },
+    {
+      "id": "cab_1x12_closed",
+      "label": "Guitar cab 1x12 closed-back (ASSUMED, derived)",
+      "category": "guitar_amp",
+      "tag": "ASSUMED",
+      "rmse_train_db": null,
+      "rmse_holdout_db": null,
+      "fit_bands_hz": null,
+      "a_eq_m": 0.0254,
+      "di_1k_db": 10.33,
+      "di_4k_db": 17.93,
+      "dataset": "none \u2014 derived"
+    },
+    {
+      "id": "cab_4x12_closed",
+      "label": "Guitar cab 4x12 closed-back (ASSUMED, derived)",
+      "category": "guitar_amp",
+      "tag": "ASSUMED",
+      "rmse_train_db": null,
+      "rmse_holdout_db": null,
+      "fit_bands_hz": null,
+      "a_eq_m": 0.0508,
+      "di_1k_db": 13.41,
+      "di_4k_db": 19.39,
+      "dataset": "none \u2014 derived"
+    },
+    {
+      "id": "piano_grand_lid_open",
+      "label": "Grand piano, lid open (ASSUMED placeholder)",
+      "category": "keys",
+      "tag": "ASSUMED",
+      "rmse_train_db": null,
+      "rmse_holdout_db": null,
+      "fit_bands_hz": null,
+      "a_eq_m": 0.0601,
+      "di_1k_db": 2.84,
+      "di_4k_db": 4.1,
+      "dataset": "none"
+    }
+  ]
+}

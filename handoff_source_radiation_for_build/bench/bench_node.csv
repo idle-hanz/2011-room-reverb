@@ -1,0 +1,5 @@
+Node undefined box benchmark, per 128-sample block, lines = 3*N
+N_images,lines,static_us,coef_recompute_us(all lines),x4_multipoint_us
+32,96,50.02,31.39,196.77
+64,192,107.94,58.92,383.68
+128,384,279.69,114.31,770.66

@@ -1,0 +1,219 @@
+{
+  "schema": "air_fitter.preset_index.v1",
+  "preset_schema": "air_fitter.preset.v1",
+  "presets": [
+    {
+      "id": "studio_20C_50RH",
+      "label": "Studio 20 \u00b0C / 50 % RH (PRIMARY)",
+      "honesty": "FITTED_TO_ISO_9613_1",
+      "model": "dual_high_shelf",
+      "candidate": "C",
+      "file": "studio_20C_50RH.json",
+      "joint_rmse_db": 0.006544296681813363,
+      "conditions": {
+        "temperature_c": 20.0,
+        "relative_humidity_pct": 50.0,
+        "pressure_kpa": 101.325
+      }
+    },
+    {
+      "id": "dry_20C_20RH",
+      "label": "Dry 20 \u00b0C / 20 % RH",
+      "honesty": "FITTED_TO_ISO_9613_1",
+      "model": "dual_high_shelf",
+      "candidate": "C",
+      "file": "dry_20C_20RH.json",
+      "joint_rmse_db": 0.005867677974405034,
+      "conditions": {
+        "temperature_c": 20.0,
+        "relative_humidity_pct": 20.0,
+        "pressure_kpa": 101.325
+      }
+    },
+    {
+      "id": "humid_20C_80RH",
+      "label": "Humid 20 \u00b0C / 80 % RH",
+      "honesty": "FITTED_TO_ISO_9613_1",
+      "model": "dual_high_shelf",
+      "candidate": "C",
+      "file": "humid_20C_80RH.json",
+      "joint_rmse_db": 0.005994777117371305,
+      "conditions": {
+        "temperature_c": 20.0,
+        "relative_humidity_pct": 80.0,
+        "pressure_kpa": 101.325
+      }
+    },
+    {
+      "id": "warm_22C_40RH",
+      "label": "Warm 22 \u00b0C / 40 % RH",
+      "honesty": "FITTED_TO_ISO_9613_1",
+      "model": "dual_high_shelf",
+      "candidate": "C",
+      "file": "warm_22C_40RH.json",
+      "joint_rmse_db": 0.006488379092325029,
+      "conditions": {
+        "temperature_c": 22.0,
+        "relative_humidity_pct": 40.0,
+        "pressure_kpa": 101.325
+      }
+    }
+  ],
+  "note": "Geometric 1/r^2 stays. Structure 1-pole Wet/Dis separate. Apply once on early + FDN inject \u2014 not Direct, not feedback. Slider right is drier, down to the 8-16 kHz loss peak, not past it.",
+  "rbj_knots": [
+    {
+      "temperature_c": 20.0,
+      "pressure_kpa": 101.325,
+      "relative_humidity_pct": 90,
+      "f0": 5842.415962447514,
+      "depth_db_per_m": -0.0791842869330335,
+      "f0_hi": 13934.101029847385,
+      "depth_hi_db_per_m": -0.18639333416815027
+    },
+    {
+      "temperature_c": 20.0,
+      "pressure_kpa": 101.325,
+      "relative_humidity_pct": 70,
+      "f0": 5595.59708826417,
+      "depth_db_per_m": -0.08637570172247866,
+      "f0_hi": 14121.747535771708,
+      "depth_hi_db_per_m": -0.2786724078726206
+    },
+    {
+      "temperature_c": 20.0,
+      "pressure_kpa": 101.325,
+      "relative_humidity_pct": 60,
+      "f0": 5750.736259121342,
+      "depth_db_per_m": -0.10156444909255324,
+      "f0_hi": 13677.536487156662,
+      "depth_hi_db_per_m": -0.27344487894363767
+    },
+    {
+      "temperature_c": 20.0,
+      "pressure_kpa": 101.325,
+      "relative_humidity_pct": 40,
+      "f0": 5720.976590364258,
+      "depth_db_per_m": -0.14573951086207398,
+      "f0_hi": 13463.849077825824,
+      "depth_hi_db_per_m": -0.3331972629527645
+    },
+    {
+      "temperature_c": 20.0,
+      "pressure_kpa": 101.325,
+      "relative_humidity_pct": 30,
+      "f0": 4679.012295563656,
+      "depth_db_per_m": -0.13117679187481623,
+      "f0_hi": 11628.986229204587,
+      "depth_hi_db_per_m": -0.35984075681222943
+    },
+    {
+      "temperature_c": 20.0,
+      "pressure_kpa": 101.325,
+      "relative_humidity_pct": 21.7,
+      "f0": 3912.094032781082,
+      "depth_db_per_m": -0.13293062162319236,
+      "f0_hi": 10444.459134652432,
+      "depth_hi_db_per_m": -0.32521519718163505
+    },
+    {
+      "temperature_c": 22.0,
+      "pressure_kpa": 101.325,
+      "relative_humidity_pct": 90,
+      "f0": 3608.0759586283575,
+      "depth_db_per_m": -0.03971527175576276,
+      "f0_hi": 12361.648578273718,
+      "depth_hi_db_per_m": -0.19162346066917585
+    },
+    {
+      "temperature_c": 22.0,
+      "pressure_kpa": 101.325,
+      "relative_humidity_pct": 80,
+      "f0": 3703.9659146514714,
+      "depth_db_per_m": -0.04365301184156316,
+      "f0_hi": 12399.254264586662,
+      "depth_hi_db_per_m": -0.21157340542424713
+    },
+    {
+      "temperature_c": 22.0,
+      "pressure_kpa": 101.325,
+      "relative_humidity_pct": 70,
+      "f0": 3905.3533850370195,
+      "depth_db_per_m": -0.04942041107021402,
+      "f0_hi": 12440.834475904217,
+      "depth_hi_db_per_m": -0.23658114412655074
+    },
+    {
+      "temperature_c": 22.0,
+      "pressure_kpa": 101.325,
+      "relative_humidity_pct": 60,
+      "f0": 4067.7342842382122,
+      "depth_db_per_m": -0.056785193698803665,
+      "f0_hi": 12451.382576520387,
+      "depth_hi_db_per_m": -0.2690564274951246
+    },
+    {
+      "temperature_c": 22.0,
+      "pressure_kpa": 101.325,
+      "relative_humidity_pct": 50,
+      "f0": 4270.462185546849,
+      "depth_db_per_m": -0.06816356022409258,
+      "f0_hi": 12445.339391199692,
+      "depth_hi_db_per_m": -0.31022152163091565
+    },
+    {
+      "temperature_c": 22.0,
+      "pressure_kpa": 101.325,
+      "relative_humidity_pct": 30,
+      "f0": 4657.037586219603,
+      "depth_db_per_m": -0.12109682465115654,
+      "f0_hi": 12385.680742433802,
+      "depth_hi_db_per_m": -0.4061065800538393
+    },
+    {
+      "temperature_c": 22.0,
+      "pressure_kpa": 101.325,
+      "relative_humidity_pct": 19.2,
+      "f0": 3954.646961925472,
+      "depth_db_per_m": -0.1421203518434321,
+      "f0_hi": 10561.791555771975,
+      "depth_hi_db_per_m": -0.3358133481688126
+    },
+    {
+      "temperature_c": 20.0,
+      "pressure_kpa": 101.325,
+      "relative_humidity_pct": 24.0,
+      "f0": 4006.75262403549,
+      "depth_db_per_m": -0.12607103341323544,
+      "f0_hi": 10789.886163290792,
+      "depth_hi_db_per_m": -0.35099027146509654
+    },
+    {
+      "temperature_c": 20.0,
+      "pressure_kpa": 101.325,
+      "relative_humidity_pct": 27.0,
+      "f0": 4147.7349998716045,
+      "depth_db_per_m": -0.12002031597716467,
+      "f0_hi": 11234.000985172348,
+      "depth_hi_db_per_m": -0.3714425307582977
+    },
+    {
+      "temperature_c": 22.0,
+      "pressure_kpa": 101.325,
+      "relative_humidity_pct": 23.0,
+      "f0": 4256.531947729206,
+      "depth_db_per_m": -0.13436634623376043,
+      "f0_hi": 11098.241148977082,
+      "depth_hi_db_per_m": -0.36819037075755956
+    },
+    {
+      "temperature_c": 22.0,
+      "pressure_kpa": 101.325,
+      "relative_humidity_pct": 26.0,
+      "f0": 4192.497200159831,
+      "depth_db_per_m": -0.11532216040395639,
+      "f0_hi": 11467.28328576073,
+      "depth_hi_db_per_m": -0.39571587511226214
+    }
+  ],
+  "provenance": "h is the molar concentration of water vapour in percent (ISO 9613-1 note 3: h = rh_pct * p_sat / p). Refit 2026-10-02. The 23 Sep air_fitter pack used a fraction, so those shelves were about 13x too weak at 8 kHz and the 8-16 kHz humidity direction was inverted."
+}

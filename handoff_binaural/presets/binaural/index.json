@@ -1,0 +1,45 @@
+{
+ "schema": "mic_fitter.binaural_index.v1",
+ "note": "MEASURED dummy-head HRTF colour presets (separate from the 20 mic presets in ../index.json, which are untouched). Per-ear min-phase RBJ SOS per head-relative grid node; ITD handled as delay (geometry + Woodworth correction). Licences differ per preset: see licence fields.",
+ "grid": "G60",
+ "K": 6,
+ "presets": [
+  {
+   "preset_id": "SADIE2_KU100",
+   "display_name": "Neumann KU100 dummy head (SADIE II, subject D1)",
+   "honesty": "MEASURED",
+   "file": "SADIE2_KU100.json",
+   "licence": "Apache-2.0",
+   "share_alike": false,
+   "ear_spacing_m": 0.18,
+   "node_fit_rms_db_median_48k": 0.38056194187632,
+   "node_fit_max_db_p95_48k": 3.0293664283002886,
+   "holdout_rms_db_median_48k": 1.7129294740336458
+  },
+  {
+   "preset_id": "SADIE2_KEMAR",
+   "display_name": "GRAS KEMAR dummy head (SADIE II, subject D2)",
+   "honesty": "MEASURED",
+   "file": "SADIE2_KEMAR.json",
+   "licence": "Apache-2.0",
+   "share_alike": false,
+   "ear_spacing_m": 0.18,
+   "node_fit_rms_db_median_48k": 0.4304226746071438,
+   "node_fit_max_db_p95_48k": 3.328203711984084,
+   "holdout_rms_db_median_48k": 1.8178369450343443
+  },
+  {
+   "preset_id": "THK_KU100_FF",
+   "display_name": "Neumann KU100 far-field 3.25 m (TH Koeln, Bernschuetz)",
+   "honesty": "MEASURED",
+   "file": "THK_KU100_FF.json",
+   "licence": "CC-BY-SA-3.0",
+   "share_alike": true,
+   "ear_spacing_m": 0.175,
+   "node_fit_rms_db_median_48k": 0.47036189115469873,
+   "node_fit_max_db_p95_48k": 3.3545261851464527,
+   "holdout_rms_db_median_48k": 1.6829144116625518
+  }
+ ],
+ "default_preset": "SADIE2_KU100"
+}

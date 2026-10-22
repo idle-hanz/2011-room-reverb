@@ -1,0 +1,41 @@
+{
+  "id": "wood_parquet",
+  "display_name": "Wood parquet",
+  "candidate": "A",
+  "model": "dual_high_shelf",
+  "rmse_r_db": 0.010333224786285313,
+  "absorb_l1": 0.003175739657757405,
+  "candidate_rmse": {
+    "A": 0.010333224786285313,
+    "B": 0.02145430504205311
+  },
+  "params": {
+    "r0_db": -0.1750553216613735,
+    "f0": 316.07450310365675,
+    "depth_db": -0.10806010312204987,
+    "shelf_slope": 11.999999999999998,
+    "f0_hi": 4519.526522721336,
+    "depth_hi_db": -0.07958803549812614,
+    "shelf_slope_hi": 11.275583687298312
+  },
+  "roles": [
+    "floor"
+  ],
+  "banned_on": [
+    "wall",
+    "ceiling"
+  ],
+  "absorb": [
+    0.04,
+    0.04,
+    0.07,
+    0.06,
+    0.06,
+    0.07,
+    0.08
+  ],
+  "extras": {
+    "notes": "Floor only \u2014 not walls or ceiling.",
+    "prefer_lf_candidate": false
+  }
+}

@@ -1,0 +1,46 @@
+--- 3_phase_acceptance_tests/tests/test_p2_air.py	2026-09-28 21:01:17.434718151 +0100
++++ _incoming/desk2210/handoff_build_support_2/3_phase_acceptance_tests/tests/test_p2_air.py	2026-10-01 21:45:39.000000000 +0100
+@@ -88,15 +88,39 @@
+ 
+ 
+ @pytest.mark.phase('P2')
+-def test_p2_iso_air_fit_within_tolerance(sw):
++def test_p2_iso_air_fit_within_tolerance(sw, app):
++    """Analytic dual-shelf vs ISO 9613-1. Bound is the pack's per-distance RMSE, scaled by distance."""
+     PR.need(PR.iso_air, sw)
+-    pytest.xfail('ISO present: wire this to engine/air_iso.py and the air_fitter tolerance at 1, 5, 10, 30 m (interface not known yet)')
++    import json
++    import air_iso
++    preset = json.loads((sw.parent / 'air_fitter' / 'presets' / 'studio_20C_50RH.json').read_text(encoding='utf-8'))
++    tol5 = float(preset['rmse']['per_distance_db']['5m'])
++    freqs = np.geomspace(20.0, 16000.0, 96)
++    for d in (1.0, 5.0, 10.0, 30.0):
++        model = air_iso.model_path_loss_db(freqs, d, 'studio_20C_50RH')
++        iso = air_iso.iso_path_loss_db(freqs, d, 'studio_20C_50RH')
++        rmse = float(np.sqrt(np.mean((model - iso) ** 2)))
++        limit = tol5 * (d / 5.0) * 1.05
++        assert rmse <= limit, f'{d:.0f} m RMSE {rmse:.5f} dB > {limit:.5f}'
+ 
+ 
+ @pytest.mark.phase('P2')
+-def test_p2_air_shelf_zero_nulls_iso_off(sw):
++def test_p2_air_shelf_zero_nulls_iso_off(sw, app):
++    """Early-only: air_shelf=0 matches air_iso False (the shelf is off either way)."""
+     PR.need(PR.iso_air, sw)
+-    pytest.xfail('ISO present: render early-only with air_shelf=0 vs ISO off and assert bit-identical (interface not known yet)')
++    from render_pipeline import render
++    dry = np.zeros(1)
++    dry[0] = 1.0
++    common = dict(
++        W=6.0, H=3.0, L=8.0, sox=0.5, soz=0.4, mz=6.5, my=1.5, sy=1.5,
++        sx=3.0, sz=4.1, mcz=1.5, space=0.17, diverg=1.0, car_omni=1.0,
++        early_wet=1.0, fdn_wet=0.0, direct_wet=0.0, dry_gain=0.0, fdn_g=1.0,
++        humidity=0.6, air_lp=0.25, ir_length_ms=80.0, path_on=False,
++        colour_mode='BYPASS', hadamard_n=32,
++    )
++    aL, aR, _ia = render(dry, 48000, air_shelf=0.0, air_iso=True, **common)
++    bL, bR, _ib = render(dry, 48000, air_shelf=1.0, air_iso=False, **common)
++    assert np.array_equal(aL, bL) and np.array_equal(aR, bR)
+ 
+ 
+ @pytest.mark.phase('P2.2')

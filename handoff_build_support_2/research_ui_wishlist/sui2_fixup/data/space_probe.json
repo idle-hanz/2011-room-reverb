@@ -1,0 +1,44 @@
+{
+ "canvas_box": {
+  "x": 33,
+  "y": 219.609375,
+  "width": 1064.03125,
+  "height": 637.609375
+ },
+ "element_at_canvas_centre": "imageCanvas",
+ "lattice": {
+  "left_drag_changes": false,
+  "right_drag_changes": true,
+  "shift_drag_changes": true,
+  "alt_drag_changes": true,
+  "wheel_out_changes": true,
+  "wheel_out_still_changes_after_40": false,
+  "after_state_change_reset_to_fit": null,
+  "after_state_change_changed": true,
+  "dblclick_changes": true
+ },
+ "paths": {
+  "left_drag_changes": false,
+  "right_drag_changes": true,
+  "shift_drag_changes": true,
+  "alt_drag_changes": true,
+  "wheel_out_changes": true,
+  "wheel_out_still_changes_after_40": false,
+  "after_state_change_reset_to_fit": false,
+  "after_state_change_changed": true,
+  "dblclick_changes": true
+ },
+ "legs": {
+  "left_drag_changes": false,
+  "right_drag_changes": true,
+  "shift_drag_changes": true,
+  "alt_drag_changes": true,
+  "wheel_out_changes": true,
+  "wheel_out_still_changes_after_40": false,
+  "after_state_change_reset_to_fit": false,
+  "after_state_change_changed": true,
+  "dblclick_changes": true
+ },
+ "hint": "Final arrival segment \u00b7 same Front/Back as Floor \u00b7 orbit Alt/RMB",
+ "errors": []
+}

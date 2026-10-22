@@ -1,0 +1,5 @@
+# T7 · Split L/R part 1: state + per-strip room spots (U2). Effort: medium. Needs T2, T3. Decisions: **D-UI37 locked**: one Mirror / Linked / Split control replaces the Split tick + yaw chips.
+Read `handoff_build_support_2\roadmap\prebuild\t7_t8_drag\README.md` "Key finding": the server already takes per-strip positions (app_server.py 609–620), so this is **client-only**. Add `room_<cap>_x/y/z/yaw` (state ~92), `RRDrag.migrateRoomSpots` on load/recall, and read them in heardMix 491–503. In Split, R gets its own preset, pattern, HPF and yaw. T3 kept `ms_a`, `ms_b`, `ms_c` and `ms_classic` (app.js 53-56); Split keeps all four. Copy `tests_py\test_t7_room_spots_draft.py`.
+- **Cut line:** state + migration + D-UI25 acceptance test (L = S, C = M, R = free room mic); typed fields only, no drag. Then the Mirror/Linked/Split control (D-UI37) if green.
+- **Golden impact:** none (Mirror bit-exact; prove it with a before/after null ≤ −120 dB).
+- **Stop if:** Mirror is not bit-exact, or any golden moves.

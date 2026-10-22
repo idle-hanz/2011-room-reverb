@@ -1,0 +1,242 @@
+{
+ "ab_omni": {
+  "pattern": [
+   "omni",
+   "omni"
+  ],
+  "shipped": {
+   "yaw_l": 0.0,
+   "yaw_r": 0.0,
+   "gain_L": 1.0,
+   "gain_R": 1.0,
+   "near_minus_far_db": 0.0,
+   "L_x": 2.6,
+   "R_x": 3.4
+  },
+  "negated": {
+   "yaw_l": -0.0,
+   "yaw_r": -0.0,
+   "gain_L": 1.0,
+   "gain_R": 1.0,
+   "near_minus_far_db": 0.0,
+   "L_x": 2.6,
+   "R_x": 3.4
+  }
+ },
+ "ab_card": {
+  "pattern": [
+   "cardioid",
+   "cardioid"
+  ],
+  "shipped": {
+   "yaw_l": -5.0,
+   "yaw_r": 5.0,
+   "gain_L": 0.928,
+   "gain_R": 0.927,
+   "near_minus_far_db": 0.01,
+   "L_x": 2.6,
+   "R_x": 3.4
+  },
+  "negated": {
+   "yaw_l": 5.0,
+   "yaw_r": -5.0,
+   "gain_L": 0.966,
+   "gain_R": 0.875,
+   "near_minus_far_db": 0.86,
+   "L_x": 2.6,
+   "R_x": 3.4
+  }
+ },
+ "xy_90": {
+  "pattern": [
+   "cardioid",
+   "cardioid"
+  ],
+  "shipped": {
+   "yaw_l": -45.0,
+   "yaw_r": 45.0,
+   "gain_L": 0.616,
+   "gain_R": 0.987,
+   "near_minus_far_db": -4.09,
+   "L_x": 2.995,
+   "R_x": 3.005
+  },
+  "negated": {
+   "yaw_l": 45.0,
+   "yaw_r": -45.0,
+   "gain_L": 0.986,
+   "gain_R": 0.615,
+   "near_minus_far_db": 4.1,
+   "L_x": 2.995,
+   "R_x": 3.005
+  }
+ },
+ "xy_120": {
+  "pattern": [
+   "cardioid",
+   "cardioid"
+  ],
+  "shipped": {
+   "yaw_l": -60.0,
+   "yaw_r": 60.0,
+   "gain_L": 0.487,
+   "gain_R": 0.94,
+   "near_minus_far_db": -5.72,
+   "L_x": 2.995,
+   "R_x": 3.005
+  },
+  "negated": {
+   "yaw_l": 60.0,
+   "yaw_r": -60.0,
+   "gain_L": 0.94,
+   "gain_R": 0.485,
+   "near_minus_far_db": 5.74,
+   "L_x": 2.995,
+   "R_x": 3.005
+  }
+ },
+ "ortf": {
+  "pattern": [
+   "cardioid",
+   "cardioid"
+  ],
+  "shipped": {
+   "yaw_l": -55.0,
+   "yaw_r": 55.0,
+   "gain_L": 0.539,
+   "gain_R": 0.963,
+   "near_minus_far_db": -5.03,
+   "L_x": 2.915,
+   "R_x": 3.085
+  },
+  "negated": {
+   "yaw_l": 55.0,
+   "yaw_r": -55.0,
+   "gain_L": 0.955,
+   "gain_R": 0.52,
+   "near_minus_far_db": 5.28,
+   "L_x": 2.915,
+   "R_x": 3.085
+  }
+ },
+ "nos": {
+  "pattern": [
+   "cardioid",
+   "cardioid"
+  ],
+  "shipped": {
+   "yaw_l": -45.0,
+   "yaw_r": 45.0,
+   "gain_L": 0.632,
+   "gain_R": 0.99,
+   "near_minus_far_db": -3.89,
+   "L_x": 2.85,
+   "R_x": 3.15
+  },
+  "negated": {
+   "yaw_l": 45.0,
+   "yaw_r": -45.0,
+   "gain_L": 0.982,
+   "gain_R": 0.6,
+   "near_minus_far_db": 4.28,
+   "L_x": 2.85,
+   "R_x": 3.15
+  }
+ },
+ "din": {
+  "pattern": [
+   "cardioid",
+   "cardioid"
+  ],
+  "shipped": {
+   "yaw_l": -45.0,
+   "yaw_r": 45.0,
+   "gain_L": 0.627,
+   "gain_R": 0.989,
+   "near_minus_far_db": -3.96,
+   "L_x": 2.9,
+   "R_x": 3.1
+  },
+  "negated": {
+   "yaw_l": 45.0,
+   "yaw_r": -45.0,
+   "gain_L": 0.984,
+   "gain_R": 0.605,
+   "near_minus_far_db": 4.22,
+   "L_x": 2.9,
+   "R_x": 3.1
+  }
+ },
+ "ms": {
+  "pattern": [
+   "cardioid",
+   "cardioid"
+  ],
+  "shipped": {
+   "yaw_l": -90.0,
+   "yaw_r": 90.0,
+   "gain_L": 0.24,
+   "gain_R": 0.764,
+   "near_minus_far_db": -10.05,
+   "L_x": 2.975,
+   "R_x": 3.025
+  },
+  "negated": {
+   "yaw_l": 90.0,
+   "yaw_r": -90.0,
+   "gain_L": 0.76,
+   "gain_R": 0.236,
+   "near_minus_far_db": 10.17,
+   "L_x": 2.975,
+   "R_x": 3.025
+  }
+ },
+ "ms_classic": {
+  "pattern": [
+   "fig8",
+   "fig8"
+  ],
+  "shipped": {
+   "yaw_l": -90.0,
+   "yaw_r": 90.0,
+   "gain_L": 0.519,
+   "gain_R": 0.529,
+   "near_minus_far_db": -0.16,
+   "L_x": 2.975,
+   "R_x": 3.025
+  },
+  "negated": {
+   "yaw_l": 90.0,
+   "yaw_r": -90.0,
+   "gain_L": 0.519,
+   "gain_R": 0.529,
+   "near_minus_far_db": -0.16,
+   "L_x": 2.975,
+   "R_x": 3.025
+  }
+ },
+ "mono_c": {
+  "pattern": [
+   "cardioid",
+   "cardioid"
+  ],
+  "shipped": {
+   "yaw_l": 0.0,
+   "yaw_r": 0.0,
+   "gain_L": 0.926,
+   "gain_R": 0.926,
+   "near_minus_far_db": 0.0,
+   "L_x": 3.0,
+   "R_x": 3.0
+  },
+  "negated": {
+   "yaw_l": -0.0,
+   "yaw_r": -0.0,
+   "gain_L": 0.926,
+   "gain_R": 0.926,
+   "near_minus_far_db": 0.0,
+   "L_x": 3.0,
+   "R_x": 3.0
+  }
+ }
+}

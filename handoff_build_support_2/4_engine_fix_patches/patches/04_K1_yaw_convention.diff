@@ -1,0 +1,193 @@
+--- a/engine/early_field.py
++++ b/engine/early_field.py
+@@ -714,11 +714,17 @@
+ # --- Per-capsule pattern + yaw (modern UI) ------------------------------------
+ # Yaw convention (document + keep consistent everywhere):
+ #   yaw = 0 → look toward +Z (room forward / +look).
+-#   look_xz = (-sin(yaw), cos(yaw)).
+-#   Positive yaw rotates look toward −X.
+-#   L capsule (smaller X): inward toward mid (+X) ⇒ negative yaw (e.g. −90° MS).
+-#   R capsule (larger X): inward toward mid (−X) ⇒ positive yaw (e.g. +90° MS).
+-# Idle Hanz “facing each other” / MS inward = L −90°, R +90°, C forward.
++#   look_xz = (YAW_X_SIGN·sin(yaw), cos(yaw)) with YAW_X_SIGN = +1:
++#   positive yaw rotates look toward +X (the UI's right).
++#   L capsule (smaller X): outward toward −X ⇒ negative yaw (e.g. ORTF −55°, MS −90°).
++#   R capsule (larger X): outward toward +X ⇒ positive yaw (e.g. ORTF +55°, MS +90°).
++#   K1 fix (Idle, 28 Sep 2026): the old convention was YAW_X_SIGN = −1, which aimed
++#   every L-negative/R-positive preset INWARD (crossed capsules). Stored yaw numbers
++#   (presets, saves) are unchanged; only this one sign flipped. JS mirror:
++#   RoomMath.YAW_X_SIGN (static/js/room_math.js). Keep both equal.
++YAW_X_SIGN = 1.0
++# (Superseded note, kept for history: "Idle Hanz 'facing each other' / MS inward =
++#  L −90°, R +90°" described the old −1 convention. Locked decision K1 = outward.)
+ PATTERN_OMNI = "omni"
+ PATTERN_CARDIOID = "cardioid"
+ PATTERN_SUPER = "supercardioid"
+@@ -1015,7 +1021,7 @@
+     dx = to_image[0] - from_mic[0]
+     dy = to_image[1] - from_mic[1]
+     dz = to_image[2] - from_mic[2]
+-    c, s = math.cos(-yaw_rad), math.sin(-yaw_rad)
++    c, s = math.cos(yaw_rad), YAW_X_SIGN * math.sin(yaw_rad)
+     rx = c * dx - s * dz
+     rz = s * dx + c * dz
+     ry = dy
+@@ -1037,14 +1043,14 @@
+     hyp = math.hypot(dx, dz)
+     if hyp <= 1e-12:
+         return 1.0
+-    c, s = math.cos(-yaw_rad), math.sin(-yaw_rad)
++    c, s = math.cos(yaw_rad), YAW_X_SIGN * math.sin(yaw_rad)
+     rz = s * dx + c * dz
+     return max(-1.0, min(1.0, rz / hyp))
+ 
+ 
+ def look_vector(yaw_rad: float) -> Vec3:
+-    """Horizontal aim. Yaw 0 looks toward +Z: (−sin yaw, 0, cos yaw). No tilt."""
+-    return (-math.sin(yaw_rad), 0.0, math.cos(yaw_rad))
++    """Horizontal aim. Yaw 0 looks toward +Z: (YAW_X_SIGN·sin yaw, 0, cos yaw). No tilt."""
++    return (YAW_X_SIGN * math.sin(yaw_rad), 0.0, math.cos(yaw_rad))
+ 
+ 
+ def arrival_cos_ray(from_mic: Vec3, to_image: Vec3, yaw_rad: float) -> float:
+--- a/engine/selfcheck.py
++++ b/engine/selfcheck.py
+@@ -1012,23 +1012,24 @@
+     t_a = int(np.argmax(np.abs(hard_a_l)))
+     t_b = int(np.argmax(np.abs(left_b)))
+     assert t_a != t_b
+-    # ORTF toe-in: the source on the visual left is hotter in the right capsule.
++    # K1 locked 28 Sep 2026 (YAW_X_SIGN = +1): ORTF capsules aim OUTWARD, so the source on the
++    # visual left is hotter in the LEFT capsule (was: right capsule, crossed).
+     a_l_e = float(np.dot(hard_a_l, hard_a_l))
+     a_r_e = float(np.dot(hard_a_r, hard_a_r))
+     b_l_e = float(np.dot(left_b, left_b))
+     b_r_e = float(np.dot(_right_b, _right_b))
+-    assert a_r_e > a_l_e * 1.05
+-    assert b_l_e > b_r_e * 1.05
++    assert a_l_e > a_r_e * 1.05
++    assert b_r_e > b_l_e * 1.05
+     assert "direct_gain" not in off["buses"]["l"]
+-    assert on["buses"]["r"]["direct_gain"] > on["buses"]["l"]["direct_gain"]
+-    assert on["buses"]["l"]["b"]["direct_gain"] > on["buses"]["r"]["b"]["direct_gain"]
++    assert on["buses"]["l"]["direct_gain"] > on["buses"]["r"]["direct_gain"]
++    assert on["buses"]["r"]["b"]["direct_gain"] > on["buses"]["l"]["b"]["direct_gain"]
+     assert len(on["buses"]["l"]["b"]["dffs"]) == 32
+     aimed = live_fdn_params(dict(
+         p, two_sources=True, mirror_b=True, source_balance=0.0,
+         yaw_l_deg=-55.0, yaw_c_deg=0.0, yaw_r_deg=55.0,
+     ))
+-    assert aimed["buses"]["r"]["direct_gain"] > aimed["buses"]["l"]["direct_gain"] * 1.5
+-    assert aimed["buses"]["l"]["b"]["direct_gain"] > aimed["buses"]["r"]["b"]["direct_gain"] * 1.5
++    assert aimed["buses"]["l"]["direct_gain"] > aimed["buses"]["r"]["direct_gain"] * 1.5
++    assert aimed["buses"]["r"]["b"]["direct_gain"] > aimed["buses"]["l"]["b"]["direct_gain"] * 1.5  # K1: mirrored B (right) hotter in R
+     tail = dict(common, direct_wet=0.0, fdn_wet=1.0, ir_length_ms=60.0)
+     ta_l, ta_r, _info = render(
+         impulse, sr, dry_l=impulse, dry_r=silence, source_balance=-1.0, **tail,
+@@ -1041,8 +1042,9 @@
+     )
+     assert float(np.max(np.abs(quiet_l))) < 1e-8
+     assert float(np.max(np.abs(quiet_r))) < 1e-8
+-    assert float(np.dot(ta_r, ta_r)) > float(np.dot(ta_l, ta_l))
+-    assert float(np.dot(tb_l, tb_l)) > float(np.dot(tb_r, tb_r))
++    # K1 (28 Sep 2026): FDN tail follows the outward-aimed capsules too (was crossed).
++    assert float(np.dot(ta_l, ta_l)) > float(np.dot(ta_r, ta_r))
++    assert float(np.dot(tb_r, tb_r)) > float(np.dot(tb_l, tb_l))
+ 
+ 
+ def _mic_colour_tests():
+--- a/mic_display.py
++++ b/mic_display.py
+@@ -22,8 +22,12 @@
+ 
+ 
+ def look_xz(yaw_rad: float) -> Tuple[float, float]:
+-    """Mic look in XZ for Prepare yaw. yaw=0 faces +Z."""
+-    return (-math.sin(yaw_rad), math.cos(yaw_rad))
++    """Mic look in XZ for Prepare yaw. yaw=0 faces +Z. One convention: early_field.YAW_X_SIGN (K1)."""
++    try:
++        from early_field import YAW_X_SIGN
++    except ImportError:  # pragma: no cover
++        YAW_X_SIGN = 1.0
++    return (YAW_X_SIGN * math.sin(yaw_rad), math.cos(yaw_rad))
+ 
+ 
+ def dist3(a: Vec3, b: Vec3) -> float:
+--- a/polar_field.py
++++ b/polar_field.py
+@@ -31,6 +31,7 @@
+ if str(_ENGINE) not in sys.path:
+     sys.path.insert(0, str(_ENGINE))
+ 
++from early_field import look_vector as _look_vector  # noqa: E402  (K1: single yaw convention)
+ from early_field import (  # noqa: E402
+     MicStand,
+     PATTERN_CARDIOID,
+@@ -345,8 +346,8 @@
+ 
+ def _basis_from_yaw(yaw_rad: float, normal: Vec3) -> Tuple[Vec3, Vec3]:
+     """e_fwd = capsule look (yaw 0 = +Z) projected into plane; e_right = n × e_fwd."""
+-    # look_xz = (-sin(yaw), cos(yaw)) → 3D look (x, 0, z)
+-    look = (-math.sin(yaw_rad), 0.0, math.cos(yaw_rad))
++    # look_xz = (YAW_X_SIGN·sin(yaw), cos(yaw)) → 3D look (x, 0, z); one convention (early_field)
++    look = _look_vector(yaw_rad)
+     look = _vsub(look, _vmul(normal, _vdot(look, normal)))
+     e_fwd = _vunit(look, (0.0, 0.0, 1.0))
+     e_right = _vunit(_vcross(normal, e_fwd), (1.0, 0.0, 0.0))
+--- a/static/js/mic_desk.js
++++ b/static/js/mic_desk.js
+@@ -555,9 +555,10 @@
+     function polarFrontPx(canvas, yawDeg) {
+       var lay = polarLayout(canvas);
+       var yaw = ((Number(yawDeg) || 0) * Math.PI) / 180;
+-      /* Match lookFromYaw: screen ( −sin yaw, −cos yaw ) so +Z is up. */
++      /* Match lookFromYaw: screen ( S·sin yaw, −cos yaw ) so +Z is up, S = RoomMath.YAW_X_SIGN. */
++      var S = (typeof RoomMath !== "undefined" && RoomMath.YAW_X_SIGN) ? RoomMath.YAW_X_SIGN : 1;
+       return {
+-        px: lay.cx - lay.R * Math.sin(yaw),
++        px: lay.cx + S * lay.R * Math.sin(yaw),
+         py: lay.cy - lay.R * Math.cos(yaw),
+         cx: lay.cx, cy: lay.cy, R: lay.R
+       };
+@@ -862,12 +863,13 @@
+     }
+ 
+     function applyYawFromPointer(kind, px, py, originPx) {
+-      /* Aim on screen is (−sin yaw, −cos yaw), so +Z is up.
+-         atan2(−dx, −dy) keeps the handle under the pointer.
++      /* Aim on screen is (S·sin yaw, −cos yaw), so +Z is up (S = RoomMath.YAW_X_SIGN).
++         atan2(S·dx, −dy) keeps the handle under the pointer.
+          Dragging right moves the handle right. */
++      var S = (typeof RoomMath !== "undefined" && RoomMath.YAW_X_SIGN) ? RoomMath.YAW_X_SIGN : 1;
+       var dx = px - originPx.px;
+       var dy = py - originPx.py;
+-      var deg = Math.atan2(-dx, -dy) * 180 / Math.PI;
++      var deg = Math.atan2(S * dx, -dy) * 180 / Math.PI;
+       var st = Object.assign({}, getState());
+       var link = !!st.link_lr_yaw;
+       if (kind === "yawL" || kind === "polarL") {
+--- a/static/js/room_math.js
++++ b/static/js/room_math.js
+@@ -96,8 +96,12 @@
+     return side === "l" ? mid - 0.25 : mid + 0.25;
+   }
+ 
++  /* K1 (28 Sep 2026): one yaw convention. +yaw aims toward +X (screen right).
++     Must equal early_field.YAW_X_SIGN in Python. Was -1 (crossed capsules). */
++  const YAW_X_SIGN = 1;
++
+   function lookFromYaw(yawRad) {
+-    return { x: -Math.sin(yawRad), z: Math.cos(yawRad) };
++    return { x: YAW_X_SIGN * Math.sin(yawRad), z: Math.cos(yawRad) };
+   }
+ 
+   function compute(state) {
+@@ -142,7 +146,7 @@
+ 
+   return {
+     clamp, maxSpace, clampRoom, prepareFromMetres, compute,
+-    lookFromYaw, polarA, polarGain, polarLabel, derivePattern,
++    lookFromYaw, YAW_X_SIGN, polarA, polarGain, polarLabel, derivePattern,
+     polarFromPattern, familyFromPattern, CENTRE_DZ_MAX
+   };
+ })();

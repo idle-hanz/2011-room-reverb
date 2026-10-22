@@ -1,0 +1,192 @@
+{
+  "schema": "source_fitter.preset.v1",
+  "id": "tu_timpani",
+  "label": "Timpani (TU Berlin)",
+  "category": "library_tu",
+  "tag": "MEASURED-FIT",
+  "model": "radiation_shelf_plus_soft_one_pole",
+  "level_reference": "on_axis (0 dB when facing the receiver; omni = exact null)",
+  "frame": {
+    "x": "facing (radiation reference axis of the dataset)",
+    "y": "source left",
+    "z": "up",
+    "facing_definition": "Mic#13 direction (from SourceView text; VERIFIED text, mapping ASSUMED where 'between' / 'slightly')"
+  },
+  "params": {
+    "lp_order": 1.0,
+    "lo_db": 3.99991,
+    "hi_db": -5.05853,
+    "f0": 715.40409,
+    "shelf_s": 0.99996,
+    "p": 2.62486,
+    "q": 0.00128,
+    "b_ud": 0.61941,
+    "b_lr": 0.79993,
+    "aim_az": 7.1529,
+    "aim_el": 7.83283,
+    "lp_hz": 454.11152,
+    "lp_mix": 0.20437,
+    "p_lo": 0.30423,
+    "dip": 0.99999
+  },
+  "size": {
+    "a_eq_m": 0.0756,
+    "beaming_onset_hz": 715.4,
+    "rule": "a_eq = c/(2*pi*f0), c=340 m/s as engine (piston ka=1); UI size slider sets size_scale = a_user/a_eq -> f0, lp_hz divided by size_scale"
+  },
+  "di_db": {
+    "125": -3.3,
+    "250": -3.23,
+    "500": -2.85,
+    "1000": -1.97,
+    "2000": -1.56,
+    "4000": -1.33,
+    "8000": -1.15,
+    "16000": -1.05
+  },
+  "diffuse_inject": {
+    "gain_db": 2.9999999999999996,
+    "shelf_f0": 1005.6729533990925,
+    "shelf_gain_db": -1.799886039401959,
+    "shelf_s": 0.7,
+    "fit_rmse_db": 0.19871975788273935,
+    "target_db": {
+      "50": 3.3221207857793416,
+      "104": 3.3101286082075316,
+      "218": 3.2544734722252278,
+      "455": 2.94260463838308,
+      "951": 2.0203818655020647,
+      "1986": 1.5661930671038813,
+      "4148": 1.3193848327319069,
+      "8662": 1.1384398261873852
+    }
+  },
+  "fit": {
+    "rmse_train_db": 3.9866479963640877,
+    "rmse_holdout_db": 3.754172562174799,
+    "rmse_per_band_db": {
+      "80": 2.563333590625618,
+      "160": 5.200422440762375,
+      "200": 8.741077633460195,
+      "315": 7.254953443167177,
+      "400": 4.852254904613967,
+      "500": 4.479063196870935,
+      "630": 4.530260644637623,
+      "800": 4.191208775380777,
+      "1000": 2.7070258842722548,
+      "1250": 3.185217233774615,
+      "1600": 2.2163384095194893,
+      "2000": 3.0733179372412063,
+      "2500": 2.0703501909555024,
+      "3150": 2.422570954874922,
+      "4000": 2.4421355164110996,
+      "5000": 2.0380278105659126,
+      "6300": 1.747165814520206,
+      "8000": 2.0439691262912563,
+      "10000": 2.443633056119093,
+      "12500": 2.6685466382989262,
+      "16000": 3.1458602849076893
+    },
+    "n_dirs": 32,
+    "n_train": 26,
+    "n_holdout": 6,
+    "fit_bands_hz": [
+      80.0,
+      16000.0
+    ],
+    "n_bands": 21,
+    "free_params": [
+      "lo_db",
+      "hi_db",
+      "f0",
+      "shelf_s",
+      "p",
+      "q",
+      "b_ud",
+      "b_lr",
+      "aim_az",
+      "aim_el",
+      "lp_hz",
+      "lp_mix",
+      "p_lo",
+      "dip"
+    ],
+    "fixed_params": {
+      "lp_order": 1.0
+    },
+    "di_data_db": {
+      "80": -2.42547575775981,
+      "160": -6.578640051488959,
+      "200": -16.68570094667349,
+      "315": -10.967564629825466,
+      "400": -14.611531000133105,
+      "500": -5.4619893475903805,
+      "630": -7.743023312362057,
+      "800": -0.4288914812438489,
+      "1000": -0.8648083162829727,
+      "1250": -5.656551477578391,
+      "1600": -3.905678815139789,
+      "2000": -4.156694359648988,
+      "2500": -2.4996566738627317,
+      "3150": -0.8237866829673779,
+      "4000": -1.817205452419783,
+      "5000": -3.7671288191469,
+      "6300": -1.8408502238835913,
+      "8000": -3.076575068751432,
+      "10000": -1.2749407790111595,
+      "12500": -1.2376610779915653,
+      "16000": -2.4881249271919232
+    },
+    "di_model_db": {
+      "80": -3.3165822574855093,
+      "160": -3.288539514016206,
+      "200": -3.266460554689234,
+      "315": -3.1645094241095717,
+      "400": -3.0434661841425594,
+      "500": -2.8509980276322535,
+      "630": -2.560810426182557,
+      "800": -2.2264809387349667,
+      "1000": -1.9698162994524298,
+      "1250": -1.7920063807710318,
+      "1600": -1.657410917341822,
+      "2000": -1.5634842339479387,
+      "2500": -1.4816338563993083,
+      "3150": -1.404064940422034,
+      "4000": -1.3300662167408754,
+      "5000": -1.2667795695977428,
+      "6300": -1.207768218379575,
+      "8000": -1.154390443413907,
+      "10000": -1.1119964857396305,
+      "12500": -1.077195560484744,
+      "16000": -1.048111501977799
+    }
+  },
+  "dsp": {
+    "stages": [
+      "broadband_gain(k_lo*lo_db)",
+      "rbj_high_shelf(f0, k*hi_db, shelf_s)",
+      "soft_beaming_lp(lp_hz/k_hi, lp_mix, lp_order 1|2 cascaded one-poles)"
+    ],
+    "fs_ref_hz": 48000,
+    "k": "k_hi = A*u^p*(1-q*u^8); k_lo = A*((1-dip)*u^p_lo*(1-q*u^8) + dip*4u(1-u)); both 0 on axis",
+    "slot": "FIRST stage of each image's serial cascade (before surfaces/air/mic)"
+  },
+  "provenance": {
+    "dataset": "TU Berlin \u2014 A Database of Anechoic Microphone Array Measurements of Musical Instruments (1b_Directivities3rdOctave_SOFA)",
+    "url": "https://depositonce.tu-berlin.de/items/b194da8b-e98c-4761-9100-2b0bb6ba93e8",
+    "doi": "10.14279/depositonce-19858 ; paper 10.17743/jaes.2022.0128",
+    "file": "Timpani_3rdOctave.sofa",
+    "license": "cc by-nc-sa 4.0 (file attribute; NC = non-commercial)",
+    "source_type": "Timpani et",
+    "manufacturer": "Instrument: 21st century (copy of instrument from 18th century)",
+    "source_view": "Drumhead aiming at Mic#13",
+    "forward_axis": "Mic#13 direction (from SourceView text; VERIFIED text, mapping ASSUMED where 'between' / 'slightly')",
+    "grid": "32-mic pentakis dodecahedron r=2.06 m; equal quadrature weights ASSUMED",
+    "measurement": "MEASURED (anechoic, 3rd-octave band average of partials)"
+  },
+  "tags": {
+    "params": "VERIFIED fit output (this code) of MEASURED data",
+    "model_form": "ASSUMED (engineering model, mirrors mic_fitter v3)",
+    "size_rule": "VERIFIED physics (piston ka=1) applied as ASSUMED mapping"
+  }
+}

@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html><head><meta charset="utf-8"/><title>mic_fitter gallery v3</title>
+<style>
+body{font-family:system-ui,sans-serif;margin:24px;background:#111;color:#eee}
+.tag{background:#664;padding:2px 8px;border-radius:4px}
+.card{border:1px solid #444;border-radius:8px;padding:16px;margin:16px 0;background:#1a1a1a}
+img{background:#222;border-radius:4px}
+a{color:#8cf}
+</style></head><body>
+<h1>mic_fitter v3 — mic gallery</h1>
+<p>Polar (20 Hz–8 kHz panels) + colour (20 Hz–16 kHz) + 3D solids. Optional HPF schema default off. Structure LP separate. 20 MEASURED mics (17 original + Røde NT2-A Cardioid/Omni/Bidirect). Røde NT5 and sE SE2200A: no measured data available; not planned.</p>
+<div class="card">
+  <h3>AKG C414 Bidirect — LDC fig-8</h3>
+  <p><b>id:</b> <code>AKGC414Bidirect</code> · <b>type:</b> fig8 ·
+     <b>honesty:</b> <span class="tag">MEASURED</span></p>
+  <p><b>source:</b> Franco et al. Zenodo 10.5281/zenodo.4633508 (Raw_IRs, 5m, 24-bit, selected angles)<br>
+     train RMSE 7.227 dB · hold-out RMSE 2.746 dB</p>
+  <p><img src="../plots/polars/AKGC414Bidirect_polar.png" alt="polar" style="max-width:100%"/></p>
+  <p><img src="../plots/colour/AKGC414Bidirect_colour.png" alt="colour" style="max-width:100%"/></p>
+  <p><img src="../plots/polar3d/AKGC414Bidirect_polar3d.png" alt="polar3d" style="max-width:100%"/></p>
+  <p><a href="../presets/AKGC414Bidirect.json">preset JSON</a></p>
+</div><div class="card">
+  <h3>AKG C414 Cardioid — LDC multipattern</h3>
+  <p><b>id:</b> <code>AKGC414Cardioid</code> · <b>type:</b> ldc_cardioid ·
+     <b>honesty:</b> <span class="tag">MEASURED</span></p>
+  <p><b>source:</b> Franco et al. Zenodo 10.5281/zenodo.4633508 (Raw_IRs, 5m, 24-bit, selected angles)<br>
+     train RMSE 3.501 dB · hold-out RMSE 3.318 dB</p>
+  <p><img src="../plots/polars/AKGC414Cardioid_polar.png" alt="polar" style="max-width:100%"/></p>
+  <p><img src="../plots/colour/AKGC414Cardioid_colour.png" alt="colour" style="max-width:100%"/></p>
+  <p><img src="../plots/polar3d/AKGC414Cardioid_polar3d.png" alt="polar3d" style="max-width:100%"/></p>
+  <p><a href="../presets/AKGC414Cardioid.json">preset JSON</a></p>
+</div><div class="card">
+  <h3>AKG C414 Hyper — LDC multipattern</h3>
+  <p><b>id:</b> <code>AKGC414Hyper</code> · <b>type:</b> hypercardioid ·
+     <b>honesty:</b> <span class="tag">MEASURED</span></p>
+  <p><b>source:</b> Franco et al. Zenodo 10.5281/zenodo.4633508 (Raw_IRs, 5m, 24-bit, selected angles)<br>
+     train RMSE 3.659 dB · hold-out RMSE 2.630 dB</p>
+  <p><img src="../plots/polars/AKGC414Hyper_polar.png" alt="polar" style="max-width:100%"/></p>
+  <p><img src="../plots/colour/AKGC414Hyper_colour.png" alt="colour" style="max-width:100%"/></p>
+  <p><img src="../plots/polar3d/AKGC414Hyper_polar3d.png" alt="polar3d" style="max-width:100%"/></p>
+  <p><a href="../presets/AKGC414Hyper.json">preset JSON</a></p>
+</div><div class="card">
+  <h3>AKG C414 Omni — LDC multipattern</h3>
+  <p><b>id:</b> <code>AKGC414Omni</code> · <b>type:</b> omni ·
+     <b>honesty:</b> <span class="tag">MEASURED</span></p>
+  <p><b>source:</b> Franco et al. Zenodo 10.5281/zenodo.4633508 (Raw_IRs, 5m, 24-bit, selected angles)<br>
+     train RMSE 2.988 dB · hold-out RMSE 2.638 dB</p>
+  <p><img src="../plots/polars/AKGC414Omni_polar.png" alt="polar" style="max-width:100%"/></p>
+  <p><img src="../plots/colour/AKGC414Omni_colour.png" alt="colour" style="max-width:100%"/></p>
+  <p><img src="../plots/polar3d/AKGC414Omni_polar3d.png" alt="polar3d" style="max-width:100%"/></p>
+  <p><a href="../presets/AKGC414Omni.json">preset JSON</a></p>
+</div><div class="card">
+  <h3>Coles 4038 — fig-8 ribbon</h3>
+  <p><b>id:</b> <code>Coles4038</code> · <b>type:</b> fig8_ribbon ·
+     <b>honesty:</b> <span class="tag">MEASURED</span></p>
+  <p><b>source:</b> Franco et al. Zenodo 10.5281/zenodo.4633508 (Raw_IRs, 5m, 24-bit, selected angles)<br>
+     train RMSE 6.194 dB · hold-out RMSE 3.057 dB</p>
+  <p><img src="../plots/polars/Coles4038_polar.png" alt="polar" style="max-width:100%"/></p>
+  <p><img src="../plots/colour/Coles4038_colour.png" alt="colour" style="max-width:100%"/></p>
+  <p><img src="../plots/polar3d/Coles4038_polar3d.png" alt="polar3d" style="max-width:100%"/></p>
+  <p><a href="../presets/Coles4038.json">preset JSON</a></p>
+</div><div class="card">
+  <h3>DPA 4006 — measurement omni</h3>
+  <p><b>id:</b> <code>DPA4006</code> · <b>type:</b> omni ·
+     <b>honesty:</b> <span class="tag">MEASURED</span></p>
+  <p><b>source:</b> Franco et al. Zenodo 10.5281/zenodo.4633508 (Raw_IRs, 5m, 24-bit, selected angles)<br>
+     train RMSE 0.874 dB · hold-out RMSE 0.931 dB</p>
+  <p><img src="../plots/polars/DPA4006_polar.png" alt="polar" style="max-width:100%"/></p>
+  <p><img src="../plots/colour/DPA4006_colour.png" alt="colour" style="max-width:100%"/></p>
+  <p><img src="../plots/polar3d/DPA4006_polar3d.png" alt="polar3d" style="max-width:100%"/></p>
+  <p><a href="../presets/DPA4006.json">preset JSON</a></p>
+</div><div class="card">
+  <h3>Electro-Voice RE20 — dynamic cardioid</h3>
+  <p><b>id:</b> <code>ElectroVoiceRE20</code> · <b>type:</b> dynamic_cardioid ·
+     <b>honesty:</b> <span class="tag">MEASURED</span></p>
+  <p><b>source:</b> Franco et al. Zenodo 10.5281/zenodo.4633508 (Raw_IRs, 5m, 24-bit, selected angles)<br>
+     train RMSE 3.328 dB · hold-out RMSE 3.532 dB</p>
+  <p><img src="../plots/polars/ElectroVoiceRE20_polar.png" alt="polar" style="max-width:100%"/></p>
+  <p><img src="../plots/colour/ElectroVoiceRE20_colour.png" alt="colour" style="max-width:100%"/></p>
+  <p><img src="../plots/polar3d/ElectroVoiceRE20_polar3d.png" alt="polar3d" style="max-width:100%"/></p>
+  <p><a href="../presets/ElectroVoiceRE20.json">preset JSON</a></p>
+</div><div class="card">
+  <h3>Neumann U87 Ai Bidirect — LDC fig-8</h3>
+  <p><b>id:</b> <code>NeumannU87AiBidirect</code> · <b>type:</b> fig8 ·
+     <b>honesty:</b> <span class="tag">MEASURED</span></p>
+  <p><b>source:</b> Franco et al. Zenodo 10.5281/zenodo.4633508 (Raw_IRs, 5m, 24-bit, selected angles)<br>
+     train RMSE 5.738 dB · hold-out RMSE 2.626 dB</p>
+  <p><img src="../plots/polars/NeumannU87AiBidirect_polar.png" alt="polar" style="max-width:100%"/></p>
+  <p><img src="../plots/colour/NeumannU87AiBidirect_colour.png" alt="colour" style="max-width:100%"/></p>
+  <p><img src="../plots/polar3d/NeumannU87AiBidirect_polar3d.png" alt="polar3d" style="max-width:100%"/></p>
+  <p><a href="../presets/NeumannU87AiBidirect.json">preset JSON</a></p>
+</div><div class="card">
+  <h3>Neumann U87 Ai Cardioid — LDC</h3>
+  <p><b>id:</b> <code>NeumannU87AiCardioid</code> · <b>type:</b> ldc_cardioid ·
+     <b>honesty:</b> <span class="tag">MEASURED</span></p>
+  <p><b>source:</b> Franco et al. Zenodo 10.5281/zenodo.4633508 (Raw_IRs, 5m, 24-bit, selected angles)<br>
+     train RMSE 3.401 dB · hold-out RMSE 4.150 dB</p>
+  <p><img src="../plots/polars/NeumannU87AiCardioid_polar.png" alt="polar" style="max-width:100%"/></p>
+  <p><img src="../plots/colour/NeumannU87AiCardioid_colour.png" alt="colour" style="max-width:100%"/></p>
+  <p><img src="../plots/polar3d/NeumannU87AiCardioid_polar3d.png" alt="polar3d" style="max-width:100%"/></p>
+  <p><a href="../presets/NeumannU87AiCardioid.json">preset JSON</a></p>
+</div><div class="card">
+  <h3>Neumann U87 Ai Omni — LDC</h3>
+  <p><b>id:</b> <code>NeumannU87AiOmni</code> · <b>type:</b> omni ·
+     <b>honesty:</b> <span class="tag">MEASURED</span></p>
+  <p><b>source:</b> Franco et al. Zenodo 10.5281/zenodo.4633508 (Raw_IRs, 5m, 24-bit, selected angles)<br>
+     train RMSE 2.464 dB · hold-out RMSE 2.319 dB</p>
+  <p><img src="../plots/polars/NeumannU87AiOmni_polar.png" alt="polar" style="max-width:100%"/></p>
+  <p><img src="../plots/colour/NeumannU87AiOmni_colour.png" alt="colour" style="max-width:100%"/></p>
+  <p><img src="../plots/polar3d/NeumannU87AiOmni_polar3d.png" alt="polar3d" style="max-width:100%"/></p>
+  <p><a href="../presets/NeumannU87AiOmni.json">preset JSON</a></p>
+</div><div class="card">
+  <h3>Røde NT2-A Bidirect (fig-8)</h3>
+  <p><b>id:</b> <code>RodeNT2ABidirect</code> · <b>type:</b> fig8 ·
+     <b>honesty:</b> <span class="tag">MEASURED</span></p>
+  <p><b>source:</b> Franco et al. Zenodo 10.5281/zenodo.4633508 (Raw_IRs, 5m, 24-bit, selected angles)<br>
+     train RMSE 4.461 dB · hold-out RMSE 2.260 dB</p>
+  <p><img src="../plots/polars/RodeNT2ABidirect_polar.png" alt="polar" style="max-width:100%"/></p>
+  <p><img src="../plots/colour/RodeNT2ABidirect_colour.png" alt="colour" style="max-width:100%"/></p>
+  <p><img src="../plots/polar3d/RodeNT2ABidirect_polar3d.png" alt="polar3d" style="max-width:100%"/></p>
+  <p><a href="../presets/RodeNT2ABidirect.json">preset JSON</a></p>
+</div><div class="card">
+  <h3>Røde NT2-A Cardioid</h3>
+  <p><b>id:</b> <code>RodeNT2ACardioid</code> · <b>type:</b> ldc_cardioid ·
+     <b>honesty:</b> <span class="tag">MEASURED</span></p>
+  <p><b>source:</b> Franco et al. Zenodo 10.5281/zenodo.4633508 (Raw_IRs, 5m, 24-bit, selected angles)<br>
+     train RMSE 3.600 dB · hold-out RMSE 4.100 dB</p>
+  <p><img src="../plots/polars/RodeNT2ACardioid_polar.png" alt="polar" style="max-width:100%"/></p>
+  <p><img src="../plots/colour/RodeNT2ACardioid_colour.png" alt="colour" style="max-width:100%"/></p>
+  <p><img src="../plots/polar3d/RodeNT2ACardioid_polar3d.png" alt="polar3d" style="max-width:100%"/></p>
+  <p><a href="../presets/RodeNT2ACardioid.json">preset JSON</a></p>
+</div><div class="card">
+  <h3>Røde NT2-A Omni</h3>
+  <p><b>id:</b> <code>RodeNT2AOmni</code> · <b>type:</b> omni ·
+     <b>honesty:</b> <span class="tag">MEASURED</span></p>
+  <p><b>source:</b> Franco et al. Zenodo 10.5281/zenodo.4633508 (Raw_IRs, 5m, 24-bit, selected angles)<br>
+     train RMSE 1.955 dB · hold-out RMSE 1.373 dB</p>
+  <p><img src="../plots/polars/RodeNT2AOmni_polar.png" alt="polar" style="max-width:100%"/></p>
+  <p><img src="../plots/colour/RodeNT2AOmni_colour.png" alt="colour" style="max-width:100%"/></p>
+  <p><img src="../plots/polar3d/RodeNT2AOmni_polar3d.png" alt="polar3d" style="max-width:100%"/></p>
+  <p><a href="../presets/RodeNT2AOmni.json">preset JSON</a></p>
+</div><div class="card">
+  <h3>Royer R-121 — fig-8 ribbon</h3>
+  <p><b>id:</b> <code>RoyerR121</code> · <b>type:</b> fig8_ribbon ·
+     <b>honesty:</b> <span class="tag">MEASURED</span></p>
+  <p><b>source:</b> Franco et al. Zenodo 10.5281/zenodo.4633508 (Raw_IRs, 5m, 24-bit, selected angles)<br>
+     train RMSE 9.462 dB · hold-out RMSE 3.911 dB</p>
+  <p><img src="../plots/polars/RoyerR121_polar.png" alt="polar" style="max-width:100%"/></p>
+  <p><img src="../plots/colour/RoyerR121_colour.png" alt="colour" style="max-width:100%"/></p>
+  <p><img src="../plots/polar3d/RoyerR121_polar3d.png" alt="polar3d" style="max-width:100%"/></p>
+  <p><a href="../presets/RoyerR121.json">preset JSON</a></p>
+</div><div class="card">
+  <h3>Schoeps CMC5-U Bidirect — SDC fig-8</h3>
+  <p><b>id:</b> <code>SchoepsCMC5UBidirect</code> · <b>type:</b> fig8 ·
+     <b>honesty:</b> <span class="tag">MEASURED</span></p>
+  <p><b>source:</b> Franco et al. Zenodo 10.5281/zenodo.4633508 (Raw_IRs, 5m, 24-bit, selected angles)<br>
+     train RMSE 4.125 dB · hold-out RMSE 2.084 dB</p>
+  <p><img src="../plots/polars/SchoepsCMC5UBidirect_polar.png" alt="polar" style="max-width:100%"/></p>
+  <p><img src="../plots/colour/SchoepsCMC5UBidirect_colour.png" alt="colour" style="max-width:100%"/></p>
+  <p><img src="../plots/polar3d/SchoepsCMC5UBidirect_polar3d.png" alt="polar3d" style="max-width:100%"/></p>
+  <p><a href="../presets/SchoepsCMC5UBidirect.json">preset JSON</a></p>
+</div><div class="card">
+  <h3>Schoeps CMC5-U Cardioid — SDC</h3>
+  <p><b>id:</b> <code>SchoepsCMC5UCardioid</code> · <b>type:</b> sdc_cardioid ·
+     <b>honesty:</b> <span class="tag">MEASURED</span></p>
+  <p><b>source:</b> Franco et al. Zenodo 10.5281/zenodo.4633508 (Raw_IRs, 5m, 24-bit, selected angles)<br>
+     train RMSE 3.547 dB · hold-out RMSE 4.316 dB</p>
+  <p><img src="../plots/polars/SchoepsCMC5UCardioid_polar.png" alt="polar" style="max-width:100%"/></p>
+  <p><img src="../plots/colour/SchoepsCMC5UCardioid_colour.png" alt="colour" style="max-width:100%"/></p>
+  <p><img src="../plots/polar3d/SchoepsCMC5UCardioid_polar3d.png" alt="polar3d" style="max-width:100%"/></p>
+  <p><a href="../presets/SchoepsCMC5UCardioid.json">preset JSON</a></p>
+</div><div class="card">
+  <h3>Schoeps CMC5-U Omni — SDC</h3>
+  <p><b>id:</b> <code>SchoepsCMC5UOmni</code> · <b>type:</b> omni ·
+     <b>honesty:</b> <span class="tag">MEASURED</span></p>
+  <p><b>source:</b> Franco et al. Zenodo 10.5281/zenodo.4633508 (Raw_IRs, 5m, 24-bit, selected angles)<br>
+     train RMSE 1.031 dB · hold-out RMSE 1.350 dB</p>
+  <p><img src="../plots/polars/SchoepsCMC5UOmni_polar.png" alt="polar" style="max-width:100%"/></p>
+  <p><img src="../plots/colour/SchoepsCMC5UOmni_colour.png" alt="colour" style="max-width:100%"/></p>
+  <p><img src="../plots/polar3d/SchoepsCMC5UOmni_polar3d.png" alt="polar3d" style="max-width:100%"/></p>
+  <p><a href="../presets/SchoepsCMC5UOmni.json">preset JSON</a></p>
+</div><div class="card">
+  <h3>Sennheiser MD 441 — dynamic hypercardioid</h3>
+  <p><b>id:</b> <code>SennheiserMD441</code> · <b>type:</b> hypercardioid ·
+     <b>honesty:</b> <span class="tag">MEASURED</span></p>
+  <p><b>source:</b> Franco et al. Zenodo 10.5281/zenodo.4633508 (Raw_IRs, 5m, 24-bit, selected angles)<br>
+     train RMSE 3.275 dB · hold-out RMSE 5.664 dB</p>
+  <p><img src="../plots/polars/SennheiserMD441_polar.png" alt="polar" style="max-width:100%"/></p>
+  <p><img src="../plots/colour/SennheiserMD441_colour.png" alt="colour" style="max-width:100%"/></p>
+  <p><img src="../plots/polar3d/SennheiserMD441_polar3d.png" alt="polar3d" style="max-width:100%"/></p>
+  <p><a href="../presets/SennheiserMD441.json">preset JSON</a></p>
+</div><div class="card">
+  <h3>Shure SM57 — dynamic cardioid</h3>
+  <p><b>id:</b> <code>ShureSM57</code> · <b>type:</b> dynamic_cardioid ·
+     <b>honesty:</b> <span class="tag">MEASURED</span></p>
+  <p><b>source:</b> Franco et al. Zenodo 10.5281/zenodo.4633508 (Raw_IRs, 5m, 24-bit, selected angles)<br>
+     train RMSE 3.341 dB · hold-out RMSE 2.848 dB</p>
+  <p><img src="../plots/polars/ShureSM57_polar.png" alt="polar" style="max-width:100%"/></p>
+  <p><img src="../plots/colour/ShureSM57_colour.png" alt="colour" style="max-width:100%"/></p>
+  <p><img src="../plots/polar3d/ShureSM57_polar3d.png" alt="polar3d" style="max-width:100%"/></p>
+  <p><a href="../presets/ShureSM57.json">preset JSON</a></p>
+</div><div class="card">
+  <h3>Shure SM58 — dynamic cardioid</h3>
+  <p><b>id:</b> <code>ShureSM58</code> · <b>type:</b> dynamic_cardioid ·
+     <b>honesty:</b> <span class="tag">MEASURED</span></p>
+  <p><b>source:</b> Franco et al. Zenodo 10.5281/zenodo.4633508 (Raw_IRs, 5m, 24-bit, selected angles)<br>
+     train RMSE 4.190 dB · hold-out RMSE 4.801 dB</p>
+  <p><img src="../plots/polars/ShureSM58_polar.png" alt="polar" style="max-width:100%"/></p>
+  <p><img src="../plots/colour/ShureSM58_colour.png" alt="colour" style="max-width:100%"/></p>
+  <p><img src="../plots/polar3d/ShureSM58_polar3d.png" alt="polar3d" style="max-width:100%"/></p>
+  <p><a href="../presets/ShureSM58.json">preset JSON</a></p>
+</div>
+</body></html>

@@ -1,0 +1,36 @@
+--- box copy prebuild_app/software/render_pipeline.py (build 51)
++++ D19 prototype
+@@ -1047,6 +1047,13 @@
+ LIVE_DIRECT_FOLD = 0.55
+ 
+ 
++def has_side_strip(weights) -> bool:
++    """D19: a strip folded with opposite signs into L and R (route s) is a Side capsule."""
++    if not weights:
++        return False
++    return any(float(weights[a + "l"]) * float(weights[a + "r"]) < -1e-12 for a in "lcr")
++
++
+ def direct_capsule_spikes(tap) -> Tuple[float, float, float]:
+     """ASSUMED two-source direct level. Hottest capsule stays 1.
+ 
+@@ -1080,6 +1087,8 @@
+     if di >= len(taps):
+         return Ld, Rd
+     t = taps[di]
++    if spikes is None and has_side_strip(weights):
++        spikes = direct_capsule_spikes(t)
+     def _at(ms):
+         i = int(round(float(ms) * 0.001 * float(sr)))
+         return max(0, min(n_samp - 1, i))
+@@ -2212,6 +2221,10 @@
+             buses[ch]["direct_gain"] = sp[idx]
+             buses[ch]["b"]["direct_gain"] = spb[idx]
+         source_b_out = {"x": sx_b, "y": sy_b, "z": sz_b}
++    if not (two and taps_b is not None) and has_side_strip(mk_w):
++        sp = direct_capsule_spikes(taps[di % len(taps)])
++        for ch, idx in (("l", 0), ("c", 1), ("r", 2)):
++            buses[ch]["direct_gain"] = sp[idx]
+     if binaural_on:
+         colour_bank = mic_colour.bank_for(taps, taps_b, n_had, int(di))
+     else:

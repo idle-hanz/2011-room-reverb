@@ -1,0 +1,9 @@
+nclip_emph             train 54.9639 (lin 66.6927) | held-out gain vs linear: median -0.01 dB, worst +2.88 | 984s
+    {'vc_db': 9.8356, 'p0': 30.0, 'p1': 0.119, 'p2': 0.0002, 'emph_fc': 355.5141, 'emph_db': -2.6993}
+    {'pnz_neve_-6': (-12.34, -17.91), 'pprog_neve_vocal_+0': (-40.45, -37.57), 'pprog_neve_vocal_-6': (-53.91, -53.91), 'pprog_neve_mix_+0': (-49.59, -52.53), 'pprog_neve_mix_-6': (-54.98, -54.97), 'pprog_neve_wetmix_+0': (-49.86, -50.05), 'pprog_neve_wetmix_-6': (-55.13, -55.13), 'pprog_neve_drums_+0': (-48.32, -49.75), 'pprog_neve_drums_-6': (-55.61, -55.62)}
+nclip_flux             train 52.5037 (lin 66.6927) | held-out gain vs linear: median -1.08 dB, worst -0.27 | 770s
+    {'vc_db': 12.146, 'p0': 14.1123, 'p1': 0.0451, 'p2': 0.0001, 'phi_fc': 200.0, 'phi_db': 18.601, 'phi_c': 0.0337}
+    {'pnz_neve_-6': (-12.34, -14.53), 'pprog_neve_vocal_+0': (-40.45, -43.35), 'pprog_neve_vocal_-6': (-53.91, -54.99), 'pprog_neve_mix_+0': (-49.59, -51.2), 'pprog_neve_mix_-6': (-54.98, -55.5), 'pprog_neve_wetmix_+0': (-49.86, -53.09), 'pprog_neve_wetmix_-6': (-55.13, -55.7), 'pprog_neve_drums_+0': (-48.32, -48.59), 'pprog_neve_drums_-6': (-55.61, -55.93)}
+nclip_emph_flux        train 50.2993 (lin 66.6927) | held-out gain vs linear: median -0.49 dB, worst +3.29 | 2338s
+    {'vc_db': 9.8041, 'p0': 29.9998, 'p1': 0.1144, 'p2': 0.0001, 'emph_fc': 358.1384, 'emph_db': -2.5657, 'phi_fc': 200.0, 'phi_db': 16.6781, 'phi_c': 0.0185}
+    {'pnz_neve_-6': (-12.34, -17.86), 'pprog_neve_vocal_+0': (-40.45, -37.16), 'pprog_neve_vocal_-6': (-53.91, -54.84), 'pprog_neve_mix_+0': (-49.59, -53.46), 'pprog_neve_mix_-6': (-54.98, -55.42), 'pprog_neve_wetmix_+0': (-49.86, -50.1), 'pprog_neve_wetmix_-6': (-55.13, -55.62), 'pprog_neve_drums_+0': (-48.32, -49.99), 'pprog_neve_drums_-6': (-55.61, -55.89)}

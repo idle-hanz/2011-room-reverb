@@ -1,0 +1,242 @@
+{
+ "delays": [
+  920,
+  1017,
+  1366,
+  1337,
+  994,
+  1283,
+  1574,
+  1675,
+  1366,
+  982,
+  460,
+  1696,
+  1633,
+  1005,
+  594,
+  1442,
+  1106,
+  651,
+  1073,
+  1817,
+  1207,
+  1581,
+  907,
+  1855,
+  1264,
+  1764,
+  1640,
+  2734,
+  1618,
+  1804,
+  1442,
+  2695
+ ],
+ "rooms": {
+  "default_cards": {
+   "T_oct": [
+    2.559,
+    2.113,
+    1.571,
+    1.245,
+    0.874,
+    0.638,
+    0.433
+   ],
+   "avg_S1": {
+    "max_oct_pct": 10.5,
+    "median_oct_pct": 10.38,
+    "max_third_pct": 12.9
+   },
+   "avg_S1P1": {
+    "max_oct_pct": 10.4,
+    "median_oct_pct": 3.0,
+    "max_third_pct": 12.58
+   },
+   "avg_S1P2": {
+    "max_oct_pct": 10.32,
+    "median_oct_pct": 2.35,
+    "max_third_pct": 12.36
+   },
+   "avg_GEQ": {
+    "max_oct_pct": 3.02,
+    "median_oct_pct": 2.91,
+    "max_third_pct": 3.02
+   },
+   "dir_S1": {
+    "max_oct_pct": 28.62,
+    "median_oct_pct": 10.46,
+    "max_third_pct": 29.86
+   },
+   "dir_S1P1": {
+    "max_oct_pct": 13.27,
+    "median_oct_pct": 3.85,
+    "max_third_pct": 15.33
+   },
+   "dir_S1P2": {
+    "max_oct_pct": 9.67,
+    "median_oct_pct": 2.68,
+    "max_third_pct": 9.67
+   },
+   "dir_GEQ": {
+    "max_oct_pct": 4.5,
+    "median_oct_pct": 3.15,
+    "max_third_pct": 4.5
+   }
+  },
+  "real_default": {
+   "T_oct": [
+    1.554,
+    1.851,
+    2.254,
+    2.654,
+    2.15,
+    1.525,
+    0.857
+   ],
+   "avg_S1": {
+    "max_oct_pct": 12.1,
+    "median_oct_pct": 12.01,
+    "max_third_pct": 12.1
+   },
+   "avg_S1P1": {
+    "max_oct_pct": 12.23,
+    "median_oct_pct": 3.7,
+    "max_third_pct": 12.23
+   },
+   "avg_S1P2": {
+    "max_oct_pct": 5.83,
+    "median_oct_pct": 2.91,
+    "max_third_pct": 5.83
+   },
+   "avg_GEQ": {
+    "max_oct_pct": 0.91,
+    "median_oct_pct": 0.86,
+    "max_third_pct": 1.41
+   },
+   "dir_S1": {
+    "max_oct_pct": 41.19,
+    "median_oct_pct": 13.4,
+    "max_third_pct": 41.19
+   },
+   "dir_S1P1": {
+    "max_oct_pct": 10.52,
+    "median_oct_pct": 4.01,
+    "max_third_pct": 10.52
+   },
+   "dir_S1P2": {
+    "max_oct_pct": 8.31,
+    "median_oct_pct": 2.78,
+    "max_third_pct": 8.31
+   },
+   "dir_GEQ": {
+    "max_oct_pct": 5.6,
+    "median_oct_pct": 1.76,
+    "max_third_pct": 5.6
+   }
+  },
+  "studio_panelled": {
+   "T_oct": [
+    1.012,
+    1.047,
+    1.016,
+    0.924,
+    0.69,
+    0.588,
+    0.441
+   ],
+   "avg_S1": {
+    "max_oct_pct": 14.31,
+    "median_oct_pct": 14.22,
+    "max_third_pct": 14.31
+   },
+   "avg_S1P1": {
+    "max_oct_pct": 14.14,
+    "median_oct_pct": 2.71,
+    "max_third_pct": 14.14
+   },
+   "avg_S1P2": {
+    "max_oct_pct": 14.11,
+    "median_oct_pct": 3.11,
+    "max_third_pct": 14.11
+   },
+   "avg_GEQ": {
+    "max_oct_pct": 2.11,
+    "median_oct_pct": 2.05,
+    "max_third_pct": 2.11
+   },
+   "dir_S1": {
+    "max_oct_pct": 46.2,
+    "median_oct_pct": 19.65,
+    "max_third_pct": 46.45
+   },
+   "dir_S1P1": {
+    "max_oct_pct": 15.43,
+    "median_oct_pct": 6.5,
+    "max_third_pct": 16.72
+   },
+   "dir_S1P2": {
+    "max_oct_pct": 10.33,
+    "median_oct_pct": 2.73,
+    "max_third_pct": 10.33
+   },
+   "dir_GEQ": {
+    "max_oct_pct": 7.26,
+    "median_oct_pct": 3.1,
+    "max_third_pct": 7.8
+   }
+  },
+  "bare_brick_plaster": {
+   "T_oct": [
+    6.582,
+    6.367,
+    4.404,
+    3.408,
+    2.643,
+    1.816,
+    0.996
+   ],
+   "avg_S1": {
+    "max_oct_pct": 13.88,
+    "median_oct_pct": 13.75,
+    "max_third_pct": 14.81
+   },
+   "avg_S1P1": {
+    "max_oct_pct": 13.63,
+    "median_oct_pct": 7.41,
+    "max_third_pct": 14.34
+   },
+   "avg_S1P2": {
+    "max_oct_pct": 6.77,
+    "median_oct_pct": 5.36,
+    "max_third_pct": 6.77
+   },
+   "avg_GEQ": {
+    "max_oct_pct": 1.5,
+    "median_oct_pct": 1.44,
+    "max_third_pct": 1.5
+   },
+   "dir_S1": {
+    "max_oct_pct": 25.89,
+    "median_oct_pct": 16.94,
+    "max_third_pct": 25.89
+   },
+   "dir_S1P1": {
+    "max_oct_pct": 19.93,
+    "median_oct_pct": 7.5,
+    "max_third_pct": 20.03
+   },
+   "dir_S1P2": {
+    "max_oct_pct": 13.39,
+    "median_oct_pct": 4.93,
+    "max_third_pct": 14.0
+   },
+   "dir_GEQ": {
+    "max_oct_pct": 3.21,
+    "median_oct_pct": 1.72,
+    "max_third_pct": 3.21
+   }
+  }
+ }
+}

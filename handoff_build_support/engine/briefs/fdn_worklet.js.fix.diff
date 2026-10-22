@@ -1,0 +1,19 @@
+--- a/static/js/fdn_worklet.js	2026-09-26 08:26:36.000000000 +0100
++++ b/static/js/fdn_worklet.js	2026-09-27 11:42:16.763636055 +0100
+@@ -6,7 +6,7 @@
+  * This thread has no fetch.
+  */
+ 
+-var BLOB_LEN = 1981;
++var BLOB_LEN = 1982;
+ var ROUTE_LEN = 230;
+ var MAX_AUDIO = 2048;
+ var MAX_IR_FLOATS = 64 * 8192;
+@@ -76,6 +76,7 @@
+     pushSide(a, bus, di);
+     pushSide(a, bus && bus.b, di);
+   }
++  a.push(num(data.line_t60, 0));
+   return a;
+ }
+ 

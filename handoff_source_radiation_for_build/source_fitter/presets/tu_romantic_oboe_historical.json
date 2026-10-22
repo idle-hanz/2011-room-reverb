@@ -1,0 +1,186 @@
+{
+  "schema": "source_fitter.preset.v1",
+  "id": "tu_romantic_oboe_historical",
+  "label": "Romantic oboe historical (TU Berlin)",
+  "category": "library_tu",
+  "tag": "MEASURED-FIT",
+  "model": "radiation_shelf_plus_soft_one_pole",
+  "level_reference": "on_axis (0 dB when facing the receiver; omni = exact null)",
+  "frame": {
+    "x": "facing (radiation reference axis of the dataset)",
+    "y": "source left",
+    "z": "up",
+    "facing_definition": "Mic#06 direction (from SourceView text; VERIFIED text, mapping ASSUMED where 'between' / 'slightly')"
+  },
+  "params": {
+    "lp_order": 2.0,
+    "lo_db": -4.33765,
+    "hi_db": -14.97107,
+    "f0": 2944.53131,
+    "shelf_s": 1.0,
+    "p": 0.51094,
+    "q": 0.0,
+    "b_ud": -0.35328,
+    "b_lr": -0.00576,
+    "aim_az": -6.70704,
+    "aim_el": 19.5926,
+    "lp_hz": 1394.32738,
+    "lp_mix": 0.44115,
+    "p_lo": 4.0,
+    "dip": 0.29473
+  },
+  "size": {
+    "a_eq_m": 0.0184,
+    "beaming_onset_hz": 2944.5,
+    "rule": "a_eq = c/(2*pi*f0), c=340 m/s as engine (piston ka=1); UI size slider sets size_scale = a_user/a_eq -> f0, lp_hz divided by size_scale"
+  },
+  "di_db": {
+    "125": 1.42,
+    "250": 1.5,
+    "500": 1.78,
+    "1000": 2.72,
+    "2000": 5.48,
+    "4000": 10.34,
+    "8000": 12.32,
+    "16000": 12.75
+  },
+  "diffuse_inject": {
+    "gain_db": -1.4575638624448397,
+    "shelf_f0": 2498.3260131168527,
+    "shelf_gain_db": -11.42894418301242,
+    "shelf_s": 0.7,
+    "fit_rmse_db": 0.08188883071350062,
+    "target_db": {
+      "50": -1.3990086233263643,
+      "104": -1.412953520283061,
+      "218": -1.472901074998747,
+      "455": -1.7195720237879568,
+      "951": -2.612239130508636,
+      "1986": -5.431409515137187,
+      "4148": -10.528385527852084,
+      "8662": -12.410053323437753
+    }
+  },
+  "fit": {
+    "rmse_train_db": 2.9522902423983606,
+    "rmse_holdout_db": 2.7120077013175443,
+    "rmse_per_band_db": {
+      "250": 0.824320119910419,
+      "315": 1.190145191860639,
+      "400": 2.6590970650412458,
+      "500": 1.473230474839462,
+      "630": 2.552276006018784,
+      "800": 2.0454428963163367,
+      "1000": 1.740609877509119,
+      "1250": 3.398399317646288,
+      "1600": 2.464069174225102,
+      "2000": 4.5784942543884215,
+      "2500": 3.9604862156553957,
+      "3150": 2.6993964958416408,
+      "4000": 3.5434191784777167,
+      "5000": 2.7200645599469193,
+      "6300": 2.9727659340287267,
+      "8000": 2.8901716661606964,
+      "10000": 3.014957369604139,
+      "12500": 3.7862977848231685,
+      "16000": 3.6829684965025726
+    },
+    "n_dirs": 32,
+    "n_train": 26,
+    "n_holdout": 6,
+    "fit_bands_hz": [
+      250.0,
+      16000.0
+    ],
+    "n_bands": 19,
+    "free_params": [
+      "lo_db",
+      "hi_db",
+      "f0",
+      "shelf_s",
+      "p",
+      "q",
+      "b_ud",
+      "b_lr",
+      "aim_az",
+      "aim_el",
+      "lp_hz",
+      "lp_mix",
+      "p_lo",
+      "dip"
+    ],
+    "fixed_params": {
+      "lp_order": 2.0
+    },
+    "di_data_db": {
+      "250": 1.3744174571114307,
+      "315": 0.4059264662098041,
+      "400": 1.3938711756116788,
+      "500": 3.415241134113046,
+      "630": 0.4542971867854355,
+      "800": 1.8476254205862048,
+      "1000": 1.8339048201336716,
+      "1250": -2.7836079169928603,
+      "1600": 2.615502532550222,
+      "2000": 3.834041884644625,
+      "2500": 3.029873803598008,
+      "3150": 7.226937778524489,
+      "4000": 6.528664549141968,
+      "5000": 7.710905616481481,
+      "6300": 8.839761271617974,
+      "8000": 9.355504976760777,
+      "10000": 6.612330090220404,
+      "12500": 6.590059493439242,
+      "16000": 3.656970843047212
+    },
+    "di_model_db": {
+      "250": 1.4969601265222918,
+      "315": 1.5551492593320133,
+      "400": 1.6487483528315985,
+      "500": 1.781778701833052,
+      "630": 1.9866695131010736,
+      "800": 2.2994270740028284,
+      "1000": 2.719889800283886,
+      "1250": 3.3134246592814742,
+      "1600": 4.260734284516506,
+      "2000": 5.475051372159326,
+      "2500": 7.038484628755935,
+      "3150": 8.79708379926248,
+      "4000": 10.338330549345454,
+      "5000": 11.319335125682272,
+      "6300": 11.942006460887157,
+      "8000": 12.321877339796961,
+      "10000": 12.535620358980326,
+      "12500": 12.667529039745926,
+      "16000": 12.753287761952896
+    }
+  },
+  "dsp": {
+    "stages": [
+      "broadband_gain(k_lo*lo_db)",
+      "rbj_high_shelf(f0, k*hi_db, shelf_s)",
+      "soft_beaming_lp(lp_hz/k_hi, lp_mix, lp_order 1|2 cascaded one-poles)"
+    ],
+    "fs_ref_hz": 48000,
+    "k": "k_hi = A*u^p*(1-q*u^8); k_lo = A*((1-dip)*u^p_lo*(1-q*u^8) + dip*4u(1-u)); both 0 on axis",
+    "slot": "FIRST stage of each image's serial cascade (before surfaces/air/mic)"
+  },
+  "provenance": {
+    "dataset": "TU Berlin \u2014 A Database of Anechoic Microphone Array Measurements of Musical Instruments (1b_Directivities3rdOctave_SOFA)",
+    "url": "https://depositonce.tu-berlin.de/items/b194da8b-e98c-4761-9100-2b0bb6ba93e8",
+    "doi": "10.14279/depositonce-19858 ; paper 10.17743/jaes.2022.0128",
+    "file": "Romantic_oboe_historical_3rdOctave.sofa",
+    "license": "cc by-nc-sa 4.0 (file attribute; NC = non-commercial)",
+    "source_type": "Romantic oboe historical",
+    "manufacturer": "Instrument: Jean-Louis Tulou (Paris, 1851)",
+    "source_view": "Bell aiming at Mic#06, normal of the top of the pipe aiming at Mic#29",
+    "forward_axis": "Mic#06 direction (from SourceView text; VERIFIED text, mapping ASSUMED where 'between' / 'slightly')",
+    "grid": "32-mic pentakis dodecahedron r=2.06 m; equal quadrature weights ASSUMED",
+    "measurement": "MEASURED (anechoic, 3rd-octave band average of partials)"
+  },
+  "tags": {
+    "params": "VERIFIED fit output (this code) of MEASURED data",
+    "model_form": "ASSUMED (engineering model, mirrors mic_fitter v3)",
+    "size_rule": "VERIFIED physics (piston ka=1) applied as ASSUMED mapping"
+  }
+}

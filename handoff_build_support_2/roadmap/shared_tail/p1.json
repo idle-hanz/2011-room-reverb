@@ -1,0 +1,18 @@
+{
+ "sw": "C:\\Users\\IdleHanz\\Desktop\\2011 Room Reverb\\software",
+ "summary": {
+  "PASS": 1,
+  "FAIL": 0,
+  "XFAIL": 0,
+  "SKIP": 0
+ },
+ "results": [
+  {
+   "test": "test_shared_tail::test_sh_p1_off_bit_exact",
+   "status": "PASS",
+   "secs": 15.7,
+   "detail": ""
+  }
+ ],
+ "pytest_tail": ".                                                                        [100%]\n1 passed, 135 deselected in 15.98s\n"
+}

@@ -1,0 +1,8 @@
+b2f7fea5bebf6e5a498c4644f2219335  LISTENING_CHECKLIST.md
+c51d1549ef85dfc5a5e3fe4ce2c00dc9  analyse.py
+d23dca317da505b38c45b471c928e289  default_guitar_before.wav
+cea0e6e0588ae0e9ee3f153da3e46410  default_guitar_rot10.wav
+3a1a1447016a234e3b46ca4502fdc1f7  default_guitar_rot5.wav
+7b175570f5f714b3413a95b19a6cba0f  fdn_rot_proto.diff
+d79898f361c12be6e450bdca78ce7ac5  proto_rot.json
+3f9f7fc24974cc4f847862f8f43d4929  run.sh

@@ -1,0 +1,41 @@
+{
+  "id": "carpet_on_foam",
+  "display_name": "Carpet on foam",
+  "candidate": "A",
+  "model": "dual_high_shelf",
+  "rmse_r_db": 0.04711941661815814,
+  "absorb_l1": 0.010069743137844424,
+  "candidate_rmse": {
+    "A": 0.04711941661815814,
+    "B": 0.16174434873178176
+  },
+  "params": {
+    "r0_db": -0.33071835211074346,
+    "f0": 416.66733175327096,
+    "depth_db": -5.013739833157151,
+    "shelf_slope": 6.643352935485745,
+    "f0_hi": 4468.208217738681,
+    "depth_hi_db": -0.9122447485757454,
+    "shelf_slope_hi": 6.989562049587113
+  },
+  "roles": [
+    "floor"
+  ],
+  "banned_on": [
+    "wall",
+    "ceiling"
+  ],
+  "absorb": [
+    0.08,
+    0.24,
+    0.57,
+    0.69,
+    0.71,
+    0.73,
+    0.76
+  ],
+  "extras": {
+    "notes": "FLOOR ONLY. Stronger LF absorb than carpet-on-concrete.",
+    "prefer_lf_candidate": true
+  }
+}

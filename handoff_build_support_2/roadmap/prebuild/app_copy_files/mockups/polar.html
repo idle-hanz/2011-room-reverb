@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><title>Mockup · Polar (redesign)</title>
+<link rel="stylesheet" href="/static/css/app.css"><link rel="stylesheet" href="mock_common.css">
+<style>
+.pol-grid{grid-template-columns:repeat(3,minmax(0,1fr))}
+.pol-grid2{grid-template-columns:repeat(2,minmax(0,1fr)) minmax(0,1.1fr)}
+.pp{display:flex;flex-direction:column;align-items:center}
+.pp h3{margin:0;font-size:.82rem}
+.pp .sub{font-size:.68rem;color:var(--muted);margin-bottom:2px}
+.pp.off{opacity:.4}
+.flegend{display:flex;gap:10px;font-size:.7rem;color:var(--muted);align-items:center;flex-wrap:wrap}
+.flegend i{display:inline-block;width:16px;height:3px;border-radius:2px;margin-right:4px;vertical-align:middle}
+.chip.on{border-color:var(--accent);color:var(--text);background:var(--accent-dim)}
+</style></head><body>
+<div class="mk-top"><h1>Polar</h1><span class="mk-note">Mockup · static design for T10 · curves are first‑order stand‑ins, the real page draws /api/polar</span></div>
+<div class="view-switch" style="margin-bottom:10px"><button class="view-tab">Room</button><button class="view-tab">Source</button><button class="view-tab">Mic</button><button class="view-tab">Mix</button><button class="view-tab">Space</button><button class="view-tab">Surfaces</button><button class="view-tab active">Polar</button></div>
+<div class="panel" style="padding:10px 12px;margin-bottom:12px">
+ <div style="display:flex;justify-content:space-between;gap:16px;align-items:center;flex-wrap:wrap">
+  <div class="mk-cap" style="margin:0;max-width:760px"><b style="color:var(--text)">How loud each mic hears a sound from each direction</b>, per frequency band, seen from above with the front of the stand at the top. 0 dB = straight ahead at 1 kHz. Same data as the pickup shapes drawn on the Mic tab (that tab draws only the 1 kHz curve, on the room plan).</div>
+  <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap"><span style="font-size:.7rem;color:var(--faint)">Bands</span>
+   <button class="chip on">All</button><button class="chip">125</button><button class="chip">500</button><button class="chip">1k</button><button class="chip">4k</button><button class="chip">8k</button></div>
+ </div>
+ <div class="flegend" id="leg" style="margin-top:8px"></div>
+</div>
+<div class="panel" style="padding:12px;margin-bottom:12px">
+ <div class="panel-head"><h2>Each mic <span class="tag">example: cardioid ×3, ORTF</span></h2><span style="font-size:.7rem;color:var(--muted)">C is drawn when the desk sends it (MS Mid, Decca centre, mono). Here: <b style="color:var(--text)">C muted on the desk → shown faint</b></span></div>
+ <div class="mk-grid pol-grid" id="each"></div>
+</div>
+<div class="panel" style="padding:12px">
+ <div class="panel-head"><h2>At the speakers</h2><span style="font-size:.7rem;color:var(--muted)">mics × desk routing (pan, both, side, polarity) · what Play and Render hear from the direct and early field</span></div>
+ <div class="mk-grid pol-grid2" id="spk"></div>
+</div>
+<script>
+var HZ=[125,250,500,1000,2000,4000,8000], HCOL=["#ef4444","#f97316","#eab308","#22c55e","#06b6d4","#3b82f6","#8b5cf6"];
+var leg=document.getElementById("leg");leg.innerHTML=HZ.map(function(f,i){return '<span><i style="background:'+HCOL[i]+'"></i>'+(f>=1000?f/1000+" kHz":f+" Hz")+'</span>';}).join("")+'<span style="margin-left:10px;color:var(--faint)">low = red → high = violet · rings every 6 dB down to −24</span>';
+// stand-in: cardioid that narrows and loses rear level with frequency (like the U87 Ai measurements)
+function capsule(beta,fi,aim){var a=[.40,.43,.46,.5,.5,.5,.5][fi];var d=(beta-aim)*Math.PI/180;var g=(1-a)+a*Math.cos(d);var hf=[1,1,1,1,.8,.6,.45][fi];return g*(1-(1-hf)*(1-Math.cos(d))/2);}
+function plot(cv,fn,opts){var c=cv.getContext("2d"),W=cv.width,H=cv.height,cx=W/2,cy=H/2+4,R=Math.min(W,H)*0.42;c.clearRect(0,0,W,H);
+ c.strokeStyle="#2a2f3d";c.lineWidth=1;for(var i=0;i<4;i++){c.beginPath();c.arc(cx,cy,R*(1-i/4),0,7);c.stroke();}
+ for(var k=0;k<8;k++){var t=k*Math.PI/4;c.beginPath();c.moveTo(cx,cy);c.lineTo(cx+R*Math.sin(t),cy-R*Math.cos(t));c.stroke();}
+ c.fillStyle="#5c6478";c.font="10px sans-serif";c.fillText("front",cx-12,cy-R-5);c.fillText("left",cx-R-22,cy+3);c.fillText("right",cx+R+3,cy+3);c.fillText("−6",cx+3,cy-R*0.75+10);c.fillText("−12",cx+3,cy-R*0.5+10);
+ for(var fi=0;fi<7;fi++){c.strokeStyle=HCOL[fi];c.lineWidth=fi===3?2.2:1.3;c.beginPath();
+  for(var b=0;b<=360;b+=3){var v=Math.abs(fn(b,fi));var db=20*Math.log10(Math.max(v,1e-4));var r=R*Math.max(0,1+db/24);var th=b*Math.PI/180;var x=cx-r*Math.sin(th),y=cy-r*Math.cos(th);c[b?"lineTo":"moveTo"](x,y);}c.stroke();}
+ if(opts&&opts.aim!=null){var th=opts.aim*Math.PI/180;c.strokeStyle="#e9ecf3";c.setLineDash([2,3]);c.beginPath();c.moveTo(cx,cy);c.lineTo(cx-R*1.05*Math.sin(th),cy-R*1.05*Math.cos(th));c.stroke();c.setLineDash([]);}}
+function card(host,title,sub,col,fn,opts,off){var d=document.createElement("div");d.className="pp"+(off?" off":"");d.innerHTML='<h3 style="color:'+col+'">'+title+'</h3><div class="sub">'+sub+'</div><canvas width="420" height="300"></canvas>';host.appendChild(d);plot(d.querySelector("canvas"),fn,opts);}
+var each=document.getElementById("each");
+card(each,"L mic","aimed 55° left (ORTF)","#a78bfa",function(b,f){return capsule(b,f,55);},{aim:55});
+card(each,"C mic","aimed front · muted on the desk","#2dd4bf",function(b,f){return capsule(b,f,0);},{aim:0},true);
+card(each,"R mic","aimed 55° right (ORTF)","#34d399",function(b,f){return capsule(b,f,-55);},{aim:-55});
+var spk=document.getElementById("spk");
+card(spk,"Left speaker","= L mic (pan hard left)","#a78bfa",function(b,f){return capsule(b,f,55);},null);
+card(spk,"Right speaker","= R mic (pan hard right)","#34d399",function(b,f){return capsule(b,f,-55);},null);
+var note=document.createElement("div");note.className="mk-cap";note.style.alignSelf="center";
+note.innerHTML='<b style="color:var(--text)">Reading it</b><br>• A sound 30° to the left is about <b style="color:var(--text)">5 dB louder</b> in the left speaker than the right at 1 kHz — that level difference is most of the stereo image for a near-coincident pair.<br>• Rear pickup sinks as the bands go up (violet inside red): sound from behind the stand is duller.<br>• With MS or polarity flips, a lobe can be negative; it is drawn dashed (not in this ORTF example).<br>• Spacing between capsules (time difference) is not shown here; the Mic tab shows it.<br><br><span class="tag ms">Measured</span> shapes come from the mic preset; <span class="tag tb">Model</span> shapes are first‑order patterns.';
+spk.appendChild(note);
+</script></body></html>

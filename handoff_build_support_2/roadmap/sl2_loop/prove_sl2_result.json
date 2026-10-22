@@ -1,0 +1,46 @@
+{
+  "port": 51730,
+  "idle_7860_before": false,
+  "page_errors": [],
+  "info": {
+    "stage": 2,
+    "surfDisabled": false,
+    "surfTitle": "",
+    "natDisabled": true,
+    "flatPressed": "true",
+    "hint": "Surfaces = the materials and treatment set the decay per band. Render only. Play: Render only until SL3.",
+    "treatHidden": true,
+    "autoHidden": true,
+    "scroll": 1280
+  },
+  "phone": {
+    "stage": 2,
+    "surfDisabled": false,
+    "surfTitle": "",
+    "natDisabled": true,
+    "flatPressed": "true",
+    "hint": "Surfaces = the materials and treatment set the decay per band. Render only. Play: Render only until SL3.",
+    "treatHidden": true,
+    "autoHidden": true,
+    "scroll": 390
+  },
+  "notes": [
+    "stage 2",
+    "Surfaces chip is live",
+    "title ''",
+    "hint 'Surfaces = the materials and treatment set the decay per band. Render only. Play: Render only until SL3.'",
+    "Natural stays disabled",
+    "Flat is pressed at boot",
+    "Treatment hidden",
+    "Auto-treat hidden",
+    "scrollWidth 1280 at 1280",
+    "scrollWidth 390 at 390",
+    "Surfaces click posted /api/room_result",
+    "decay_mode 'surfaces'",
+    "live_params posts 0 -> 0",
+    "Surfaces pressed 'true'"
+  ],
+  "errors": [],
+  "idle_7860_after": false,
+  "ok": true
+}

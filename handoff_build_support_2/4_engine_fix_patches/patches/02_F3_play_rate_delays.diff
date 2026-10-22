@@ -1,0 +1,34 @@
+--- a/render_pipeline.py
++++ b/render_pipeline.py
+@@ -1408,14 +1408,18 @@
+     dff_per_tap = [tap_dff(t.n, surfaces, master=diffusion_master) for t in taps]
+     diffusion = diffusion_scale_from_room(room)
+     peaking = live_peaking_banks(room, sr, c, DEFAULT_DEPTH)
++    # Line lengths are rounded at the rate Play runs at. Rounding at 44.1 kHz and
++    # reading at 48 kHz leaves fractional delays, and Play's linear-interp read is
++    # then an in-loop low-pass (HF T60 far below the dial).
++    dsr = colour_sr_i if colour_sr_i >= 8000 else int(sr)
+     buses = {}
+     mean_ms_acc = 0.0
+     mean_ms_n = 0
+     for ch in ("l", "c", "r"):
+-        dly = fdn_delays_from_taps(taps, sr=sr, c=c, n=n_had, channel=ch)
++        dly = fdn_delays_from_taps(taps, sr=dsr, c=c, n=n_had, channel=ch)
+         dffs = dffs_from_taps(taps, dff_per_tap, diffusion, n=n_had, channel=ch)
+         mic_g = mic_g_from_taps(taps, n_had, ch, sr, res_hz=mic_response_hz)
+-        delay_ms = [1000.0 * float(d) / float(sr) for d in dly]
++        delay_ms = [1000.0 * float(d) / float(dsr) for d in dly]
+         inject = []
+         air_g = []
+         shelf = []
+@@ -1510,8 +1514,8 @@
+         )
+         dff_b = [tap_dff(t.n, surfaces, master=diffusion_master) for t in taps_b]
+         for ch in ("l", "c", "r"):
+-            dly_b = fdn_delays_from_taps(taps_b, sr=sr, c=c, n=n_had, channel=ch)
+-            delay_ms_b = [1000.0 * float(d) / float(sr) for d in dly_b]
++            dly_b = fdn_delays_from_taps(taps_b, sr=dsr, c=c, n=n_had, channel=ch)
++            delay_ms_b = [1000.0 * float(d) / float(dsr) for d in dly_b]
+             inject_b = []
+             air_g_b = []
+             shelf_b = []

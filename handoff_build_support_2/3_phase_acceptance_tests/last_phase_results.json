@@ -1,0 +1,762 @@
+{
+ "sw": "C:\\Users\\IdleHanz\\Desktop\\2011 Room Reverb\\software",
+ "summary": {
+  "PASS": 105,
+  "FAIL": 5,
+  "XFAIL": 14,
+  "SKIP": 1
+ },
+ "results": [
+  {
+   "test": "test_binaural_play_and_gaps::test_binaural_play_tail_coherence_matches_head",
+   "status": "FAIL",
+   "secs": 2.4,
+   "detail": "AssertionError: (array([ 0.92,  0.88,  0.85,  0.78,  0.46,  0.07, -0.03, -0.05, -0.1 ,          -0.05, -0.  , -0.03, -0.  , -0.01, -0.01...0.47,  0.22,  0.01, -0.13, -0.11,           0.01,  0.04, -0.04,  0.01, -0.01,  0.01, -0.  , -0.  ,  0.  ,           0.  ])) assert (np.float64(0.1507836482386772"
+  },
+  {
+   "test": "test_binaural_play_and_gaps::test_binaural_play_direct_left_source_left_ear_first_and_louder",
+   "status": "PASS",
+   "secs": 0.7,
+   "detail": ""
+  },
+  {
+   "test": "test_binaural_play_and_gaps::test_binaural_play_direct_is_mirror_exact",
+   "status": "PASS",
+   "secs": 1.4,
+   "detail": ""
+  },
+  {
+   "test": "test_binaural_play_and_gaps::test_gap_hrtf_tables_vendored_in_software",
+   "status": "PASS",
+   "secs": 0.0,
+   "detail": ""
+  },
+  {
+   "test": "test_binaural_play_and_gaps::test_gap_floor_head_rotate_handle",
+   "status": "XFAIL",
+   "secs": 0.0,
+   "detail": "BINAURAL gap: no head-yaw rotate handle on the Floor view (only a look arrow)"
+  },
+  {
+   "test": "test_binaural_play_and_gaps::test_gap_head_with_ears_drawing_and_3d",
+   "status": "XFAIL",
+   "secs": 0.0,
+   "detail": "BINAURAL gap: no head-with-ears drawing (room_3d.js / mic_desk.js have no binaural branch)"
+  },
+  {
+   "test": "test_binaural_play_and_gaps::test_gap_hrtf_polar_and_ild_panel",
+   "status": "XFAIL",
+   "secs": 0.0,
+   "detail": "BINAURAL gap: no HRTF polar / ILD panel"
+  },
+  {
+   "test": "test_binaural_play_and_gaps::test_gap_play_shows_unsupported_rate_notice",
+   "status": "XFAIL",
+   "secs": 0.0,
+   "detail": "BINAURAL gap: Play does not display colour_notice (e.g. 96 kHz device: colour OFF silently)"
+  },
+  {
+   "test": "test_colour_sos::test_colour_tables_match_presets",
+   "status": "PASS",
+   "secs": 0.4,
+   "detail": ""
+  },
+  {
+   "test": "test_colour_sos::test_colour_at_c1_48k_within_0p5db",
+   "status": "PASS",
+   "secs": 0.0,
+   "detail": ""
+  },
+  {
+   "test": "test_colour_sos::test_colour_at_c4_44k1_within_0p6db",
+   "status": "PASS",
+   "secs": 0.1,
+   "detail": ""
+  },
+  {
+   "test": "test_colour_sos::test_colour_44k1_tables_match_presets",
+   "status": "PASS",
+   "secs": 0.0,
+   "detail": ""
+  },
+  {
+   "test": "test_colour_sos::test_colour_unsupported_rate_disabled_with_notice[32000]",
+   "status": "PASS",
+   "secs": 0.0,
+   "detail": ""
+  },
+  {
+   "test": "test_colour_sos::test_colour_unsupported_rate_disabled_with_notice[88200]",
+   "status": "PASS",
+   "secs": 0.0,
+   "detail": ""
+  },
+  {
+   "test": "test_colour_sos::test_colour_unsupported_rate_disabled_with_notice[96000]",
+   "status": "PASS",
+   "secs": 0.0,
+   "detail": ""
+  },
+  {
+   "test": "test_colour_sos::test_colour_sos_stable[44100]",
+   "status": "PASS",
+   "secs": 0.1,
+   "detail": ""
+  },
+  {
+   "test": "test_colour_sos::test_colour_sos_stable[48000]",
+   "status": "PASS",
+   "secs": 0.1,
+   "detail": ""
+  },
+  {
+   "test": "test_colour_sos::test_colour_hpf_on_low_end[44100]",
+   "status": "PASS",
+   "secs": 0.0,
+   "detail": ""
+  },
+  {
+   "test": "test_colour_sos::test_colour_hpf_on_low_end[48000]",
+   "status": "PASS",
+   "secs": 0.0,
+   "detail": ""
+  },
+  {
+   "test": "test_colour_sos::test_colour_play_bank_fits_two_sources_apart",
+   "status": "PASS",
+   "secs": 0.6,
+   "detail": ""
+  },
+  {
+   "test": "test_colour_sos::test_colour_cpu_active",
+   "status": "PASS",
+   "secs": 8.8,
+   "detail": ""
+  },
+  {
+   "test": "test_colour_sos::test_colour_numpy_sos_matches_loop",
+   "status": "PASS",
+   "secs": 0.0,
+   "detail": ""
+  },
+  {
+   "test": "test_decisions_2026_09_28::test_k1_single_yaw_convention",
+   "status": "PASS",
+   "secs": 0.0,
+   "detail": ""
+  },
+  {
+   "test": "test_decisions_2026_09_28::test_k1_left_source_L_louder_and_earlier_play[xy_90]",
+   "status": "PASS",
+   "secs": 1.5,
+   "detail": ""
+  },
+  {
+   "test": "test_decisions_2026_09_28::test_k1_left_source_L_louder_and_earlier_play[xy_120]",
+   "status": "PASS",
+   "secs": 1.5,
+   "detail": ""
+  },
+  {
+   "test": "test_decisions_2026_09_28::test_k1_left_source_L_louder_and_earlier_play[ortf]",
+   "status": "PASS",
+   "secs": 1.5,
+   "detail": ""
+  },
+  {
+   "test": "test_decisions_2026_09_28::test_k1_left_source_L_louder_and_earlier_play[nos]",
+   "status": "PASS",
+   "secs": 1.5,
+   "detail": ""
+  },
+  {
+   "test": "test_decisions_2026_09_28::test_k1_left_source_L_louder_and_earlier_play[din]",
+   "status": "PASS",
+   "secs": 1.5,
+   "detail": ""
+  },
+  {
+   "test": "test_decisions_2026_09_28::test_k1_left_source_L_louder_and_earlier_play[ms]",
+   "status": "PASS",
+   "secs": 1.5,
+   "detail": ""
+  },
+  {
+   "test": "test_decisions_2026_09_28::test_k1_left_source_L_louder_and_earlier_render[ortf]",
+   "status": "PASS",
+   "secs": 4.6,
+   "detail": ""
+  },
+  {
+   "test": "test_decisions_2026_09_28::test_k1_left_source_L_louder_and_earlier_render[xy_90]",
+   "status": "PASS",
+   "secs": 4.0,
+   "detail": ""
+  },
+  {
+   "test": "test_decisions_2026_09_28::test_k1_left_source_L_louder_and_earlier_render[ms]",
+   "status": "PASS",
+   "secs": 4.0,
+   "detail": ""
+  },
+  {
+   "test": "test_decisions_2026_09_28::test_k2_air_1pole_default_zero",
+   "status": "PASS",
+   "secs": 0.0,
+   "detail": ""
+  },
+  {
+   "test": "test_decisions_2026_09_28::test_k3_default_source_29_distinct_delays",
+   "status": "PASS",
+   "secs": 0.0,
+   "detail": ""
+  },
+  {
+   "test": "test_decisions_2026_09_28::test_k3_client_default_matches",
+   "status": "PASS",
+   "secs": 0.0,
+   "detail": ""
+  },
+  {
+   "test": "test_decisions_2026_09_28::test_k4_fdn_first_defaults",
+   "status": "PASS",
+   "secs": 0.0,
+   "detail": ""
+  },
+  {
+   "test": "test_decisions_2026_09_28::test_k4_raise_early_fader_no_stale_replay",
+   "status": "PASS",
+   "secs": 2.5,
+   "detail": ""
+  },
+  {
+   "test": "test_decisions_2026_09_28::test_headroom_trim_table",
+   "status": "PASS",
+   "secs": 0.0,
+   "detail": ""
+  },
+  {
+   "test": "test_decisions_2026_09_28::test_headroom_t14_fdn_level_matches_pre_f2",
+   "status": "PASS",
+   "secs": 5.1,
+   "detail": ""
+  },
+  {
+   "test": "test_decisions_2026_09_28::test_headroom_t14_whole_mix_informational",
+   "status": "XFAIL",
+   "secs": 3.9,
+   "detail": "whole mix +1.44 dB vs pre-F2 (peak 0.548 vs 0.512): direct/early not trimmed - DECISION"
+  },
+  {
+   "test": "test_locks::test_lock_unscaled_pm1_hadamard_render",
+   "status": "PASS",
+   "secs": 0.0,
+   "detail": ""
+  },
+  {
+   "test": "test_locks::test_lock_unscaled_pm1_hadamard_play",
+   "status": "FAIL",
+   "secs": 0.0,
+   "detail": "AssertionError: fwht32 is not the constant-size unscaled body assert 'static void fwht32(double *a) { FWHT_BODY(32); }' in '/* live_stereo \u2014 the Play block, one function.\\n *\\n * 32 lines stay 32 lines. The room loop is the worklet loop: dif...   for (i = outI; i < n; i++) { outL[i] = 0; outR[i] = 0"
+  },
+  {
+   "test": "test_locks::test_lock_geometric_level_inverse_square",
+   "status": "PASS",
+   "secs": 0.0,
+   "detail": ""
+  },
+  {
+   "test": "test_locks::test_lock_early_images_excite_fdn",
+   "status": "PASS",
+   "secs": 0.0,
+   "detail": ""
+  },
+  {
+   "test": "test_locks::test_lock_two_diffusion_layers_separate_keys",
+   "status": "PASS",
+   "secs": 0.0,
+   "detail": ""
+  },
+  {
+   "test": "test_mirror_symmetry::test_mirror_image_set_is_mirror_symmetric",
+   "status": "PASS",
+   "secs": 0.0,
+   "detail": ""
+  },
+  {
+   "test": "test_mirror_symmetry::test_mirror_play_one_source",
+   "status": "PASS",
+   "secs": 3.9,
+   "detail": ""
+  },
+  {
+   "test": "test_mirror_symmetry::test_mirror_play_two_sources_hard[fdn-MEASURED_SHELF]",
+   "status": "PASS",
+   "secs": 6.4,
+   "detail": ""
+  },
+  {
+   "test": "test_mirror_symmetry::test_mirror_play_two_sources_hard[fdn-BYPASS]",
+   "status": "PASS",
+   "secs": 5.7,
+   "detail": ""
+  },
+  {
+   "test": "test_mirror_symmetry::test_mirror_play_two_sources_hard[early-MEASURED_SHELF]",
+   "status": "PASS",
+   "secs": 4.1,
+   "detail": ""
+  },
+  {
+   "test": "test_mirror_symmetry::test_mirror_play_two_sources_hard[early-BYPASS]",
+   "status": "PASS",
+   "secs": 3.8,
+   "detail": ""
+  },
+  {
+   "test": "test_mirror_symmetry::test_mirror_play_two_sources_hard[direct-MEASURED_SHELF]",
+   "status": "PASS",
+   "secs": 3.3,
+   "detail": ""
+  },
+  {
+   "test": "test_mirror_symmetry::test_mirror_play_two_sources_hard[direct-BYPASS]",
+   "status": "PASS",
+   "secs": 3.1,
+   "detail": ""
+  },
+  {
+   "test": "test_mirror_symmetry::test_mirror_play_two_sources_centre_is_self_mirror",
+   "status": "PASS",
+   "secs": 3.7,
+   "detail": ""
+  },
+  {
+   "test": "test_mirror_symmetry::test_mirror_render_one_source",
+   "status": "PASS",
+   "secs": 73.8,
+   "detail": ""
+  },
+  {
+   "test": "test_p0_engine::test_p0_1_denormal_guard_in_source",
+   "status": "PASS",
+   "secs": 0.0,
+   "detail": ""
+  },
+  {
+   "test": "test_p0_engine::test_p0_1_silence_cost[colour_off-over0-0.5]",
+   "status": "PASS",
+   "secs": 4.0,
+   "detail": ""
+  },
+  {
+   "test": "test_p0_engine::test_p0_1_silence_cost[colour_on-over1-0.75]",
+   "status": "PASS",
+   "secs": 5.0,
+   "detail": ""
+  },
+  {
+   "test": "test_p0_engine::test_p0_2_t60_play_within_8pct[std_lock18]",
+   "status": "PASS",
+   "secs": 1.3,
+   "detail": ""
+  },
+  {
+   "test": "test_p0_engine::test_p0_2_t60_play_within_8pct[small_lock08]",
+   "status": "PASS",
+   "secs": 1.8,
+   "detail": ""
+  },
+  {
+   "test": "test_p0_engine::test_p0_2_t60_play_within_8pct[hall_lock40]",
+   "status": "PASS",
+   "secs": 3.4,
+   "detail": ""
+  },
+  {
+   "test": "test_p0_engine::test_p0_2_t60_play_independent_of_dffs[0.0]",
+   "status": "FAIL",
+   "secs": 1.3,
+   "detail": "AssertionError: Dffs 0.0: Play T30 {500: 1.655, 1000: 1.777, 2000: 1.763, 4000: 1.805, 8000: 1.806} vs 1.8 s; out: {500: 1.655} assert not {500: 1.655}"
+  },
+  {
+   "test": "test_p0_engine::test_p0_2_t60_play_independent_of_dffs[-0.5]",
+   "status": "PASS",
+   "secs": 1.3,
+   "detail": ""
+  },
+  {
+   "test": "test_p0_engine::test_p0_2_t60_play_independent_of_dffs[-0.9]",
+   "status": "PASS",
+   "secs": 1.3,
+   "detail": ""
+  },
+  {
+   "test": "test_p0_engine::test_p0_2_hf_residue_play",
+   "status": "PASS",
+   "secs": 1.2,
+   "detail": ""
+  },
+  {
+   "test": "test_p0_engine::test_p0_2_t60_render_within_8pct",
+   "status": "PASS",
+   "secs": 62.0,
+   "detail": ""
+  },
+  {
+   "test": "test_p0_engine::test_p0_2_decay_lock_off_unchanged",
+   "status": "PASS",
+   "secs": 0.6,
+   "detail": ""
+  },
+  {
+   "test": "test_p0_engine::test_p0_3_two_diffusion_layers_independent",
+   "status": "PASS",
+   "secs": 0.6,
+   "detail": ""
+  },
+  {
+   "test": "test_p0_engine::test_p0_4_fdn_tail_null_play_vs_render",
+   "status": "XFAIL",
+   "secs": 0.0,
+   "detail": "P0.4 loop semantics not decided/landed (no build_mix / loop_semantics / packed loop_mix) - F5 is DECISION FOR IDLE"
+  },
+  {
+   "test": "test_p0_engine::test_p0_5_server_defaults_equal_client_state",
+   "status": "PASS",
+   "secs": 0.1,
+   "detail": ""
+  },
+  {
+   "test": "test_p0_engine::test_p0_5_scipy_in_requirements",
+   "status": "PASS",
+   "secs": 0.0,
+   "detail": ""
+  },
+  {
+   "test": "test_p0_engine::test_p0_5_loop_mix_not_dead_payload",
+   "status": "PASS",
+   "secs": 0.0,
+   "detail": ""
+  },
+  {
+   "test": "test_p0_engine::test_p0_5_diffusion_master_clamped",
+   "status": "PASS",
+   "secs": 0.0,
+   "detail": ""
+  },
+  {
+   "test": "test_p0_engine::test_p0_5_diffusion_master_single_value",
+   "status": "PASS",
+   "secs": 0.0,
+   "detail": ""
+  },
+  {
+   "test": "test_p1_blob::test_p1_worklet_ver_consistent_everywhere",
+   "status": "FAIL",
+   "secs": 0.0,
+   "detail": "AssertionError: tests/test_mic_colour_relative.py pins WORKLET_VER {41}, code has 43 assert {41} <= {43}      Extra items in the left set:   41"
+  },
+  {
+   "test": "test_p1_blob::test_p1_blob_len_matches_packer",
+   "status": "PASS",
+   "secs": 0.1,
+   "detail": ""
+  },
+  {
+   "test": "test_p1_blob::test_p1_wasm_matches_source",
+   "status": "SKIP",
+   "secs": 0.0,
+   "detail": "no gcc/clang"
+  },
+  {
+   "test": "test_p1_blob::test_p1_blob_v2_header_and_sections",
+   "status": "PASS",
+   "secs": 0.0,
+   "detail": ""
+  },
+  {
+   "test": "test_p1_blob::test_p1_max_blob_raised",
+   "status": "PASS",
+   "secs": 0.0,
+   "detail": ""
+  },
+  {
+   "test": "test_p1_blob::test_p1_old_wasm_silent_on_v2_blob",
+   "status": "XFAIL",
+   "secs": 0.0,
+   "detail": "needs the pre-P1 wasm as a fixture: keep a copy of static/wasm/live_stereo.wasm from before P1 and play a v2 blob through it with harness/lib/wasm_run.js (WASM=<old>) -> expect all-zero output"
+  },
+  {
+   "test": "test_p2_air::test_lock_direct_is_air_free_play",
+   "status": "PASS",
+   "secs": 1.5,
+   "detail": ""
+  },
+  {
+   "test": "test_p2_air::test_lock_direct_is_air_free_render",
+   "status": "PASS",
+   "secs": 6.1,
+   "detail": ""
+  },
+  {
+   "test": "test_p2_air::test_lock_no_air_on_fdn_return_play",
+   "status": "PASS",
+   "secs": 0.0,
+   "detail": ""
+  },
+  {
+   "test": "test_p2_air::test_lock_no_air_on_fdn_return_render",
+   "status": "PASS",
+   "secs": 0.0,
+   "detail": ""
+  },
+  {
+   "test": "test_p2_air::test_lock_humidity_one_pole_separate_from_shelf",
+   "status": "PASS",
+   "secs": 0.0,
+   "detail": ""
+  },
+  {
+   "test": "test_p2_air::test_lock_render_stage_order",
+   "status": "PASS",
+   "secs": 0.0,
+   "detail": ""
+  },
+  {
+   "test": "test_p2_air::test_p2_iso_air_fit_within_tolerance",
+   "status": "PASS",
+   "secs": 0.0,
+   "detail": ""
+  },
+  {
+   "test": "test_p2_air::test_p2_air_shelf_zero_nulls_iso_off",
+   "status": "PASS",
+   "secs": 4.6,
+   "detail": ""
+  },
+  {
+   "test": "test_p2_air::test_p2_play_render_early_null",
+   "status": "XFAIL",
+   "secs": 0.0,
+   "detail": "needs the P4 per-hit cascade in Play before an early-only null <= -60 dB is possible"
+  },
+  {
+   "test": "test_p3_p4_surfaces::test_lock_per_hit_cascade_is_serial_render",
+   "status": "PASS",
+   "secs": 0.1,
+   "detail": ""
+  },
+  {
+   "test": "test_p3_p4_surfaces::test_lock_render_passes_every_hit",
+   "status": "PASS",
+   "secs": 0.0,
+   "detail": ""
+  },
+  {
+   "test": "test_p3_p4_surfaces::test_p3a_curtain_wall_only_real_materials",
+   "status": "PASS",
+   "secs": 0.0,
+   "detail": ""
+  },
+  {
+   "test": "test_p3_p4_surfaces::test_p3b_mute_all_panels_leaves_direct_and_fdn",
+   "status": "PASS",
+   "secs": 0.0,
+   "detail": ""
+  },
+  {
+   "test": "test_p3_p4_surfaces::test_p4_play_render_early_null",
+   "status": "XFAIL",
+   "secs": 0.0,
+   "detail": "P4 present: Play vs Render early-only null <= -60 dB with default and extreme cards (wire when SURF section lands)"
+  },
+  {
+   "test": "test_p3_p4_surfaces::test_p4_flat_cards_bit_exact_bypass",
+   "status": "XFAIL",
+   "secs": 0.0,
+   "detail": "P4 present: all-flat cards -> Play output bit-identical to cascade-off"
+  },
+  {
+   "test": "test_p3_p4_surfaces::test_p4_cpu_budget",
+   "status": "XFAIL",
+   "secs": 0.0,
+   "detail": "P4 present: CPU <= +0.15 ms/block with 1 source (ASSUMED budget) via wasm_run.js bench"
+  },
+  {
+   "test": "test_p5_p6::test_lock_no_scattering_inside_fdn_loop",
+   "status": "FAIL",
+   "secs": 0.0,
+   "detail": "AssertionError: fwht32 missing assert 'static void fwht32(double *a) { FWHT_BODY(32); }' in '/* live_stereo \u2014 the Play block, one function.\\n *\\n * 32 lines stay 32 lines. The room loop is the worklet loop: dif...   for (i = outI; i < n; i++) { outL[i] = 0; outR[i] = 0; }\\n            break;\\n      "
+  },
+  {
+   "test": "test_p5_p6::test_p5_scatter_zero_is_bit_identical",
+   "status": "XFAIL",
+   "secs": 0.0,
+   "detail": "P5 scattering (Track C) not in tree"
+  },
+  {
+   "test": "test_p5_p6::test_p5_scatter_after_air",
+   "status": "XFAIL",
+   "secs": 0.0,
+   "detail": "P5 scattering (Track C) not in tree"
+  },
+  {
+   "test": "test_p5_p6::test_p5_energy_and_feed_forward",
+   "status": "XFAIL",
+   "secs": 0.0,
+   "detail": "P5 scattering (Track C) not in tree"
+  },
+  {
+   "test": "test_p5_p6::test_p6_omni_source_bit_identical",
+   "status": "PASS",
+   "secs": 1.2,
+   "detail": ""
+  },
+  {
+   "test": "test_p5_p6::test_p6_tail_invariant_to_source_yaw",
+   "status": "PASS",
+   "secs": 2.8,
+   "detail": ""
+  },
+  {
+   "test": "test_p5_p6::test_p6_two_source_cpu",
+   "status": "PASS",
+   "secs": 8.4,
+   "detail": ""
+  },
+  {
+   "test": "test_s1_followups::test_p2_realised_rbj_pair_close_to_iso",
+   "status": "PASS",
+   "secs": 0.0,
+   "detail": ""
+  },
+  {
+   "test": "test_s1_followups::test_gap_air_presets_vendored_in_software",
+   "status": "PASS",
+   "secs": 0.0,
+   "detail": ""
+  },
+  {
+   "test": "test_s1_followups::test_gap_new_air_keys_in_defaults_and_parameters",
+   "status": "PASS",
+   "secs": 0.0,
+   "detail": ""
+  },
+  {
+   "test": "test_s1_followups::test_d8_humidity_sets_iso_rh",
+   "status": "PASS",
+   "secs": 0.0,
+   "detail": ""
+  },
+  {
+   "test": "test_s1_followups::test_iso_alpha_matches_iso9613_table1",
+   "status": "PASS",
+   "secs": 0.0,
+   "detail": ""
+  },
+  {
+   "test": "test_s1_followups::test_d8_treble_loss_monotonic_across_slider",
+   "status": "PASS",
+   "secs": 0.0,
+   "detail": ""
+  },
+  {
+   "test": "test_s3_source_b::test_s3_mirror_b_follows_a_directivity",
+   "status": "PASS",
+   "secs": 31.2,
+   "detail": ""
+  },
+  {
+   "test": "test_s3_source_b::test_s3_b_pose_single_rule",
+   "status": "PASS",
+   "secs": 0.1,
+   "detail": ""
+  },
+  {
+   "test": "test_s4_followups::test_s4_mute_all_render_early_silent",
+   "status": "PASS",
+   "secs": 18.6,
+   "detail": ""
+  },
+  {
+   "test": "test_s4_followups::test_s4_mute_play_render_early_agree",
+   "status": "PASS",
+   "secs": 37.5,
+   "detail": ""
+  },
+  {
+   "test": "test_s4_followups::test_s4_solo_mute_direct_untouched",
+   "status": "PASS",
+   "secs": 0.0,
+   "detail": ""
+  },
+  {
+   "test": "test_s4_followups::test_s4_two_diffusion_layers_independent_on_audio",
+   "status": "PASS",
+   "secs": 20.0,
+   "detail": ""
+  },
+  {
+   "test": "test_s4b_tail_solo_runaway::test_s4b_solo_mute_leave_play_tail_untouched",
+   "status": "PASS",
+   "secs": 3.5,
+   "detail": ""
+  },
+  {
+   "test": "test_s4b_tail_solo_runaway::test_s4b_solo_mute_leave_render_tail_untouched",
+   "status": "PASS",
+   "secs": 65.1,
+   "detail": ""
+  },
+  {
+   "test": "test_s4b_tail_solo_runaway::test_s4b_play_solo_left_wall_is_left",
+   "status": "PASS",
+   "secs": 2.3,
+   "detail": ""
+  },
+  {
+   "test": "test_s4b_tail_solo_runaway::test_s4b_render_solo_left_wall_is_left",
+   "status": "PASS",
+   "secs": 15.7,
+   "detail": ""
+  },
+  {
+   "test": "test_s4b_tail_solo_runaway::test_s4b_long_decay_no_runaway[hall_2src_decay8-extra0]",
+   "status": "PASS",
+   "secs": 14.6,
+   "detail": ""
+  },
+  {
+   "test": "test_s4b_tail_solo_runaway::test_s4b_long_decay_no_runaway[hall_binaural_decay4-extra1]",
+   "status": "PASS",
+   "secs": 9.7,
+   "detail": ""
+  },
+  {
+   "test": "test_s4b_tail_solo_runaway::test_s4b_long_decay_no_runaway[hall_binaural_decay8-extra2]",
+   "status": "PASS",
+   "secs": 9.9,
+   "detail": ""
+  },
+  {
+   "test": "test_s4b_tail_solo_runaway::test_s4b_play_tail_has_no_line0_comb",
+   "status": "PASS",
+   "secs": 1.2,
+   "detail": ""
+  },
+  {
+   "test": "test_s4b_tail_solo_runaway::test_s4b_render_tail_has_no_line0_comb",
+   "status": "PASS",
+   "secs": 26.2,
+   "detail": ""
+  },
+  {
+   "test": "test_s4b_tail_solo_runaway::test_s4b_symmetric_scene_tail_stays_exact_mono",
+   "status": "PASS",
+   "secs": 1.1,
+   "detail": ""
+  }
+ ],
+ "pytest_tail": "dex.html ?v= for live_fdn.js == the value the repo tests pin.\"\"\"\n        v = _ver(src)\n        page = re.search(r'live_fdn\\.js\\?v=(\\d+)', src('static/index.html'))\n        assert page and int(page.group(1)) == v, f'index.html live_fdn.js?v={page and page.group(1)} vs WORKLET_VER {v}'\n        for t in ('tests/test_live_stereo.py', 'tests/test_mic_colour_relative.py'):\n            pins = set(int(x) for x in re.findall(r'WORKLET_VER = (\\d+)', src(t)))\n>           assert pins <= {v}, f'{t} pins WORKLET_VER {pins}, code has {v}'\nE           AssertionError: tests/test_mic_colour_relative.py pins WORKLET_VER {41}, code has 43\nE           assert {41} <= {43}\nE             \nE             Extra items in the left set:\nE             41\n\n..\\handoff_build_support_2\\3_phase_acceptance_tests\\tests\\test_p1_blob.py:24: AssertionError\n___________________ test_lock_no_scattering_inside_fdn_loop ___________________\n\nsw = WindowsPath('C:/Users/IdleHanz/Desktop/2011 Room Reverb/software')\nsrc = <function src.<locals>.read at 0x000001460D2C24B0>\n\n    @pytest.mark.phase('LOCK')\n    def test_lock_no_scattering_inside_fdn_loop(sw, src):\n        \"\"\"Scatter/cluster code must never appear in the FDN loop (Play diffuse/read_peaked/fwht, Render FDN class).\n        Passes trivially while scattering does not exist; it is a guard for P5.\n        Play sizes the loop with fwht8/16/32 and diffuse8/16/32.\"\"\"\n        c = src('engine/live_stereo.c')\n        def macro(header_re):\n            mm = re.search(r'(?m)^' + header_re + r'[^\\n]*', c)\n            assert mm, header_re\n            end = mm.end()\n            line = mm.group(0)\n            while line.rstrip('\\r').endswith('\\\\'):\n                nl = c.find('\\n', end)\n                if nl < 0:\n                    break\n                nxt = c.find('\\n', nl + 1)\n                if nxt < 0:\n                    nxt = len(c)\n                end = nxt\n                line = c[nl + 1:nxt]\n            return c[mm.start():end]\n    \n        chunks = []\n        m = re.search(r'static[^{;]*\\bread_peaked\\([^)]*\\)\\s*\\{', c)\n        assert m, 'read_peaked() not found in live_stereo.c'\n        chunks.append(('read_peaked', c[m.end(): c.find('\\n}\\n', m.end())]))\n        chunks.append(('fwht', macro(r'#define\\s+FWHT_BODY\\(NFIX\\)')))\n        chunks.append(('diffuse', macro(r'#define\\s+DIFFUSE_FN\\(name,\\s*HN,\\s*FW\\)')))\n        for n in (8, 16, 32):\n>           assert f'static void fwht{n}(double *a) {{ FWHT_BODY({n}); }}' in c, f'fwht{n} missing'\nE           AssertionError: fwht32 missing\nE           assert 'static void fwht32(double *a) { FWHT_BODY(32); }' in '/* live_stereo \u2014 the Play block, one function.\\n *\\n * 32 lines stay 32 lines. The room loop is the worklet loop: dif...   for (i = outI; i < n; i++) { outL[i] = 0; outR[i] = 0; }\\n            break;\\n        }\\n        break;\\n    }\\n}\\n'\n\n..\\handoff_build_support_2\\3_phase_acceptance_tests\\tests\\test_p5_p6.py:38: AssertionError\n5 failed, 105 passed, 1 skipped, 14 xfailed in 521.28s (0:08:41)\n"
+}

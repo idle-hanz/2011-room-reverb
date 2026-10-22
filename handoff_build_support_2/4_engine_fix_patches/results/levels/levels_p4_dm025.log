@@ -1,0 +1,4 @@
+p4 std_lock18 fdn {'play_db': np.float64(-4.35), 'render_db': np.float64(-5.71)}
+p4 small_lock08 fdn {'play_db': np.float64(-4.71), 'render_db': np.float64(-3.25)}
+p4 hall_lock40 fdn {'play_db': np.float64(-4.7), 'render_db': np.float64(-5.07)}
+p4 t14 {'play_peak': 0.7273, 'play_rms_db': np.float64(-13.52)} {'play_peak': 0.6739, 'play_rms_db': np.float64(-13.84)}

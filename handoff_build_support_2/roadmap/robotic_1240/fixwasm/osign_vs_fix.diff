@@ -1,0 +1,13 @@
+1875a1876,1881
+> #ifdef OSIGN
+> /* Output signs: near-bent ±1 vector (max |H s| = 8 of 32; invariant under the mirror line map (b0 b4)(b1 b3)). The all-ones output
+>  * sum of a Sylvester Hadamard FDN funnels every line into line 0 (1ᵀH = 32 e0ᵀ),
+>  * which makes a comb at line 0's delay. Loop untouched; output tap only. */
+> static const double OSIGN_S[32] = {1.0, -1.0, -1.0, -1.0, -1.0, -1.0, 1.0, -1.0, -1.0, 1.0, -1.0, 1.0, 1.0, 1.0, 1.0, 1.0, -1.0, 1.0, 1.0, 1.0, -1.0, 1.0, 1.0, 1.0, -1.0, 1.0, 1.0, 1.0, -1.0, 1.0, 1.0, 1.0};
+> #endif
+1881a1888,1892
+> #ifdef OSIGN
+>     if (!st->icOn) for (b = 0; b < 3; b++) for (i = 0; i < N; i++) if (OSIGN_S[i] < 0.0) {
+>         for (t = 0; t < PART; t++) { st->yBlk[b][i][t] = -st->yBlk[b][i][t]; st->yBlkB[b][i][t] = -st->yBlkB[b][i][t]; }
+>     }
+> #endif

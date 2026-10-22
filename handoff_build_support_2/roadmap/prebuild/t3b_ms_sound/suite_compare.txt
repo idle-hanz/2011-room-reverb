@@ -1,0 +1,48 @@
+Full suite, box build-51 copy, before vs after d19_render_pipeline.diff (4 Oct 2026 ~16:55 BST)
+Most failures/errors are box-environment gaps (missing 'analyze' module, wasm/node/browser files), identical in both runs.
+before: 21 failed, 38 passed, 15 errors in 91.13s (0:01:31)
+after:  21 failed, 38 passed, 15 errors in 91.71s (0:01:31)
+failing/erroring test ids identical: yes
+selfcheck.py: 1/45 fail before and after (test_two_source_balance_mirror_and_split)
+
+ERROR tests/test_b2_render_length.py
+ERROR tests/test_s5_surf_tail.py
+ERROR tests/test_s_audit_api.py
+ERROR tests/test_s_audit_ui.py::test_a10_header_status_on_every_tab
+ERROR tests/test_s_audit_ui.py::test_a11_source_labels_omni_and_stale_reply
+ERROR tests/test_s_audit_ui.py::test_a12_visible_controls_post_or_are_ui_only
+ERROR tests/test_s_audit_ui.py::test_a1_place_orders_match_fresh
+ERROR tests/test_s_audit_ui.py::test_a2_phone_tabs
+ERROR tests/test_s_audit_ui.py::test_a4_binaural_hides_dead_rows
+ERROR tests/test_s_audit_ui.py::test_a5_stop_suspends_and_play_resumes
+ERROR tests/test_s_audit_ui.py::test_a9_focus_mic_screenshot
+ERROR tests/test_s_audit_ui.py::test_b1_chrome_plays_24bit_wav
+ERROR tests/test_s_audit_ui.py::test_b3_limiter_message_in_play_and_render
+ERROR tests/test_s_audit_ui.py::test_b5_mono_strips_disabled_and_restored
+ERROR tests/test_s_audit_ui.py::test_b6_side_view_readout_and_drag
+FAILED tests/test_b3_limiter.py::test_b3_quiet_identical_and_hot_rms
+FAILED tests/test_b4_ramps.py::test_b4_fdn_unmute_keeps_tail
+FAILED tests/test_b4_ramps.py::test_b4_phase_and_fader_steps
+FAILED tests/test_b6_heights.py::test_b6_gate1_flat_is_bit_identical
+FAILED tests/test_b6_heights.py::test_b6_gate3_tilt_tail_and_early
+FAILED tests/test_b6_heights.py::test_b6_gate4_play_matches_render_tail
+FAILED tests/test_live_stereo.py::test_air_pole_and_no_gain_cap
+FAILED tests/test_live_stereo.py::test_colour_stays_finite_and_realtime
+FAILED tests/test_live_stereo.py::test_direct_fir_then_fold
+FAILED tests/test_live_stereo.py::test_direct_fold_and_not_written_back
+FAILED tests/test_live_stereo.py::test_direct_sos_identity_then_fold
+FAILED tests/test_live_stereo.py::test_early_centre_plain_and_lr_shares_fdn_filter
+FAILED tests/test_live_stereo.py::test_early_lane_written_while_fader_down
+FAILED tests/test_live_stereo.py::test_fdn_fir_not_written_back_and_line_31
+FAILED tests/test_live_stereo.py::test_numpy_fir_and_inject_scale
+FAILED tests/test_live_stereo.py::test_silence_after_air_stays_finite
+FAILED tests/test_live_stereo.py::test_soft_knee
+FAILED tests/test_live_stereo.py::test_source_b_uses_its_own_colour
+FAILED tests/test_live_stereo.py::test_two_tanks_added_before_colour
+FAILED tests/test_smix_desk.py::test_golden_sha1_prefixes
+FAILED tests/test_smix_desk.py::test_spectrum_hue_monotonic
+
+Render hashes (400 ms IR, harness bodies), before -> after:
+  default_body 832d2100... -> 832d2100... (bit-exact)
+  ortf_full    06dbb721... -> 06dbb721... (bit-exact)
+  ms_full      0bf915e9... -> 89dcb5a3... (changes, as intended)

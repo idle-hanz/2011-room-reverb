@@ -1,0 +1,189 @@
+{
+  "schema": "source_fitter.preset.v1",
+  "id": "violin",
+  "label": "Violin (modern, TU Berlin)",
+  "category": "strings",
+  "tag": "MEASURED-FIT",
+  "model": "radiation_shelf_plus_soft_one_pole",
+  "level_reference": "on_axis (0 dB when facing the receiver; omni = exact null)",
+  "frame": {
+    "x": "facing (radiation reference axis of the dataset)",
+    "y": "source left",
+    "z": "up",
+    "facing_definition": "Mic#25 direction (from SourceView text; VERIFIED text, mapping ASSUMED where 'between' / 'slightly')"
+  },
+  "params": {
+    "lp_order": 1.0,
+    "lo_db": 0.41385,
+    "hi_db": -18.65586,
+    "f0": 1005.22414,
+    "shelf_s": 0.69861,
+    "p": 4.0,
+    "q": 0.54489,
+    "b_ud": -0.68071,
+    "b_lr": -0.34452,
+    "aim_az": 12.57395,
+    "aim_el": -5.11156,
+    "lp_hz": 6597.8513,
+    "lp_mix": 0.08405,
+    "p_lo": 0.3,
+    "dip": 0.0
+  },
+  "size": {
+    "a_eq_m": 0.0538,
+    "beaming_onset_hz": 1005.2,
+    "rule": "a_eq = c/(2*pi*f0), c=340 m/s as engine (piston ka=1); UI size slider sets size_scale = a_user/a_eq -> f0, lp_hz divided by size_scale"
+  },
+  "di_db": {
+    "125": -0.27,
+    "250": -0.2,
+    "500": 0.1,
+    "1000": 0.85,
+    "2000": 1.38,
+    "4000": 1.51,
+    "8000": 1.53,
+    "16000": 1.54
+  },
+  "diffuse_inject": {
+    "gain_db": 0.285216725747871,
+    "shelf_f0": 826.7234166735566,
+    "shelf_gain_db": -1.824410228895673,
+    "shelf_s": 0.7,
+    "fit_rmse_db": 0.00903243809266672,
+    "target_db": {
+      "50": 0.29306932040698574,
+      "104": 0.28028695299844614,
+      "218": 0.22291348272889594,
+      "455": -0.03534509760526095,
+      "951": -0.7900011771023513,
+      "1986": -1.3750675048962548,
+      "4148": -1.509135640771488,
+      "8662": -1.5365815504159508
+    }
+  },
+  "fit": {
+    "rmse_train_db": 2.165125810365221,
+    "rmse_holdout_db": 2.666534275707373,
+    "rmse_per_band_db": {
+      "200": 1.4576597793890544,
+      "250": 1.5900212670838871,
+      "315": 1.50679826355575,
+      "400": 1.8967481871468128,
+      "500": 2.0460366231022444,
+      "630": 2.2739915838960356,
+      "800": 2.8201783811194625,
+      "1000": 3.515282525053798,
+      "1250": 1.9651904969318326,
+      "1600": 2.089292981565145,
+      "2000": 2.0043593259443213,
+      "2500": 1.7904974834922032,
+      "3150": 2.4946138803649562,
+      "4000": 2.7468374909808575,
+      "5000": 2.2659111520075075,
+      "6300": 2.124587841665849,
+      "8000": 2.3015479738082925,
+      "10000": 2.5084654639708654,
+      "12500": 2.622349658769568,
+      "16000": 2.3061189970048614
+    },
+    "n_dirs": 32,
+    "n_train": 26,
+    "n_holdout": 6,
+    "fit_bands_hz": [
+      200.0,
+      16000.0
+    ],
+    "n_bands": 20,
+    "free_params": [
+      "lo_db",
+      "hi_db",
+      "f0",
+      "shelf_s",
+      "p",
+      "q",
+      "b_ud",
+      "b_lr",
+      "aim_az",
+      "aim_el",
+      "lp_hz",
+      "lp_mix",
+      "p_lo",
+      "dip"
+    ],
+    "fixed_params": {
+      "lp_order": 1.0
+    },
+    "di_data_db": {
+      "200": 0.43957549714202315,
+      "250": 0.46849855767547766,
+      "315": -0.04257424511782659,
+      "400": 2.51261521222634,
+      "500": 1.91125945201361,
+      "630": -2.573629624587081,
+      "800": 1.5695403737287776,
+      "1000": -1.4463101436808365,
+      "1250": 2.4187931405917915,
+      "1600": 1.3631354536583373,
+      "2000": 1.5961278580281935,
+      "2500": 1.991352912817085,
+      "3150": 3.884876057490832,
+      "4000": 5.047878395841057,
+      "5000": 3.6024901064880055,
+      "6300": 1.9328787595997987,
+      "8000": 2.178177229773283,
+      "10000": 0.5207628001982947,
+      "12500": -0.8019247125294804,
+      "16000": 0.4222203688299082
+    },
+    "di_model_db": {
+      "200": -0.23491542087255185,
+      "250": -0.1989519658861534,
+      "315": -0.1393407157934536,
+      "400": -0.040380821744339615,
+      "500": 0.10145937218612254,
+      "630": 0.3096559442747365,
+      "800": 0.5810689753364748,
+      "1000": 0.8488555743577535,
+      "1250": 1.0829108318789213,
+      "1600": 1.270384931401118,
+      "2000": 1.3776885994023118,
+      "2500": 1.4427775156371145,
+      "3150": 1.4825098860102501,
+      "4000": 1.5064829673311066,
+      "5000": 1.5200030420037973,
+      "6300": 1.5289022902921625,
+      "8000": 1.5349971496687609,
+      "10000": 1.539052045289033,
+      "12500": 1.5421311380936586,
+      "16000": 1.544683197467652
+    }
+  },
+  "dsp": {
+    "stages": [
+      "broadband_gain(k_lo*lo_db)",
+      "rbj_high_shelf(f0, k*hi_db, shelf_s)",
+      "soft_beaming_lp(lp_hz/k_hi, lp_mix, lp_order 1|2 cascaded one-poles)"
+    ],
+    "fs_ref_hz": 48000,
+    "k": "k_hi = A*u^p*(1-q*u^8); k_lo = A*((1-dip)*u^p_lo*(1-q*u^8) + dip*4u(1-u)); both 0 on axis",
+    "slot": "FIRST stage of each image's serial cascade (before surfaces/air/mic)"
+  },
+  "provenance": {
+    "dataset": "TU Berlin \u2014 A Database of Anechoic Microphone Array Measurements of Musical Instruments (1b_Directivities3rdOctave_SOFA)",
+    "url": "https://depositonce.tu-berlin.de/items/b194da8b-e98c-4761-9100-2b0bb6ba93e8",
+    "doi": "10.14279/depositonce-19858 ; paper 10.17743/jaes.2022.0128",
+    "file": "Violin_modern_3rdOctave.sofa",
+    "license": "cc by-nc-sa 4.0 (file attribute; NC = non-commercial)",
+    "source_type": "Violin modern",
+    "manufacturer": "Instrument: Leandro Bisiach da Milano (Milan, 1902), Copy of Stradivari; Bow: Eug\u00e8ne Sartory",
+    "source_view": "Normal of the soundboard aiming at Mic#25, Scroll aiming at between Mic#02 and Mic#03",
+    "forward_axis": "Mic#25 direction (from SourceView text; VERIFIED text, mapping ASSUMED where 'between' / 'slightly')",
+    "grid": "32-mic pentakis dodecahedron r=2.06 m; equal quadrature weights ASSUMED",
+    "measurement": "MEASURED (anechoic, 3rd-octave band average of partials)"
+  },
+  "tags": {
+    "params": "VERIFIED fit output (this code) of MEASURED data",
+    "model_form": "ASSUMED (engineering model, mirrors mic_fitter v3)",
+    "size_rule": "VERIFIED physics (piston ka=1) applied as ASSUMED mapping"
+  }
+}

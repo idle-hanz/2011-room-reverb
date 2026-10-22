@@ -1,0 +1,129 @@
+{
+  "reason": "D-SRC-DIST-LEVEL",
+  "room_m": [
+    24.0,
+    6.0,
+    32.0
+  ],
+  "stand_m": [
+    12.0,
+    1.5,
+    8.0
+  ],
+  "rows": [
+    {
+      "dist_m": 0.3,
+      "makeup": {
+        "makeup": 2.107852491654653,
+        "makeup_db": 6.4768,
+        "g_decay": 0.11564273921923159,
+        "g": 0.17677669529663687
+      },
+      "render": {
+        "peak_db": -0.0,
+        "rms_db": -18.1544,
+        "limiter_db": 4.0805,
+        "limiter_samples": 372,
+        "peak_before_db": 4.0805
+      },
+      "peak_step_db": null,
+      "peak_before_step_db": null
+    },
+    {
+      "dist_m": 0.5,
+      "makeup": {
+        "makeup": 2.1067206871814377,
+        "makeup_db": 6.4721,
+        "g_decay": 0.11572569166711236,
+        "g": 0.17677669529663687
+      },
+      "render": {
+        "peak_db": -0.1048,
+        "rms_db": -21.6606,
+        "limiter_db": 0.1034,
+        "limiter_samples": 2,
+        "peak_before_db": -0.0014
+      },
+      "peak_step_db": -0.1048,
+      "peak_before_step_db": -4.0819
+    },
+    {
+      "dist_m": 1.0,
+      "makeup": {
+        "makeup": 2.103923041096257,
+        "makeup_db": 6.4606,
+        "g_decay": 0.11593029186530682,
+        "g": 0.17677669529663687
+      },
+      "render": {
+        "peak_db": -4.2781,
+        "rms_db": -27.0672,
+        "limiter_db": 0.0,
+        "limiter_samples": 0,
+        "peak_before_db": -4.2781
+      },
+      "peak_step_db": -4.1733,
+      "peak_before_step_db": -4.2767
+    },
+    {
+      "dist_m": 2.0,
+      "makeup": {
+        "makeup": 2.098707151686835,
+        "makeup_db": 6.439,
+        "g_decay": 0.1163100614414888,
+        "g": 0.17677669529663687
+      },
+      "render": {
+        "peak_db": -9.9059,
+        "rms_db": -32.5615,
+        "limiter_db": 0.0,
+        "limiter_samples": 0,
+        "peak_before_db": -9.9059
+      },
+      "peak_step_db": -5.6278,
+      "peak_before_step_db": -5.6278
+    },
+    {
+      "dist_m": 4.0,
+      "makeup": {
+        "makeup": 2.089638875096853,
+        "makeup_db": 6.4014,
+        "g_decay": 0.11696516054265521,
+        "g": 0.17677669529663687
+      },
+      "render": {
+        "peak_db": -15.215,
+        "rms_db": -37.8234,
+        "limiter_db": 0.0,
+        "limiter_samples": 0,
+        "peak_before_db": -15.215
+      },
+      "peak_step_db": -5.3091,
+      "peak_before_step_db": -5.3091
+    },
+    {
+      "dist_m": 8.0,
+      "makeup": {
+        "makeup": 2.076034374255219,
+        "makeup_db": 6.3447,
+        "g_decay": 0.11793587430233753,
+        "g": 0.17677669529663687
+      },
+      "render": {
+        "peak_db": -20.8924,
+        "rms_db": -43.068,
+        "limiter_db": 0.0,
+        "limiter_samples": 0,
+        "peak_before_db": -20.8924
+      },
+      "peak_step_db": -5.6774,
+      "peak_before_step_db": -5.6774
+    }
+  ],
+  "empty_makeup": {
+    "makeup": 1.0591793324608707,
+    "makeup_db": 0.4994,
+    "g_decay": 0.15802191792070114,
+    "g": 0.17677669529663687
+  }
+}

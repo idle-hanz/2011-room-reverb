@@ -1,0 +1,3 @@
+N=257 two FIRs: 132.380 ns/sample, 0.64% of one core at 48 kHz (acc -3.08e+05)
+N=513 two FIRs: 263.423 ns/sample, 1.26% of one core at 48 kHz (acc -3.49e+05)
+N=1025 two FIRs: 531.578 ns/sample, 2.55% of one core at 48 kHz (acc -3.9e+05)

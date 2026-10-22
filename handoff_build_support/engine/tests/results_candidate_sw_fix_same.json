@@ -1,0 +1,230 @@
+{
+ "meta": {
+  "sw": "/workspace/build_support/engine/work/sw_fix_same/software",
+  "when": "2026-09-27 12:10:52",
+  "node": "/usr/bin/node",
+  "python": "/workspace/scratch_er_dropout/venv/bin/python",
+  "sha1": {
+   "engine/live_stereo.c": "4fab9d2635b7",
+   "static/wasm/live_stereo.wasm": "585fc1d1c058",
+   "static/js/fdn_worklet.js": "eab32a219d6e",
+   "render_pipeline.py": "1c41b1ba6c41",
+   "engine/fdn.py": "c9101eaa655d"
+  }
+ },
+ "results": [
+  {
+   "test": "t01_pack_matches_worklet",
+   "status": "PASS",
+   "secs": 0.6,
+   "detail": {
+    "blob_len": 1982,
+    "max_diff": 0.0
+   },
+   "doc": "Harness sanity: the Python packer (lib/pack.py) and the real fdn_worklet.js packRoom agree."
+  },
+  {
+   "test": "t02_wasm_matches_source",
+   "status": "PASS",
+   "secs": 2.7,
+   "detail": {
+    "max_diff": 0.0
+   },
+   "doc": "static/wasm/live_stereo.wasm is built from engine/live_stereo.c (native build IR == wasm IR, bit-exact)."
+  },
+  {
+   "test": "t03_golden_play_features_off",
+   "status": "FAIL",
+   "secs": 1.1,
+   "detail": "play_std_unlocked_byp: differs from golden (null -6.8 dB > -100.0 dB, max diff 0.579). If the change is intended, regenerate goldens and record why.",
+   "doc": "Play IR with new features off equals the golden baseline (null <= -100 dB)."
+  },
+  {
+   "test": "t04_golden_render_features_off",
+   "status": "PASS",
+   "secs": 5.5,
+   "detail": {
+    "null_db": -3005.0,
+    "max_abs_diff": 0.0,
+    "tol_db": -100.0
+   },
+   "doc": "Render IR (BYPASS colour, 0.5 s) equals the golden baseline (null <= -100 dB)."
+  },
+  {
+   "test": "t05_omni_source_identity",
+   "status": "PENDING",
+   "secs": 0.0,
+   "detail": "source radiation not in this tree (no source_pattern/radiation key)",
+   "doc": "Source radiation OMNI must reproduce today's golden (Play + Render)."
+  },
+  {
+   "test": "t06_scattering_zero_identity",
+   "status": "PENDING",
+   "secs": 0.0,
+   "detail": "scattering (Track C) not in this tree",
+   "doc": "Per-reflection scattering amount 0 must reproduce today's golden (Play)."
+  },
+  {
+   "test": "t07_tail_yaw_invariance",
+   "status": "PENDING",
+   "secs": 0.0,
+   "detail": "source yaw not in this tree",
+   "doc": "Tail energy (80 ms-1 s) invariant (<=0.5 dB) under source yaw 0/90/180 (source radiation)."
+  },
+  {
+   "test": "t08_fdn_stability",
+   "status": "PASS",
+   "secs": 33.4,
+   "detail": {
+    "dffs0": {
+     "peak": 0.6908754706382751,
+     "silence_5s_db": -34.6,
+     "silence_last5s_db": -105.7
+    },
+    "dffs+0.98": {
+     "peak": 1.0,
+     "silence_5s_db": -5.7,
+     "silence_last5s_db": -72.2
+    },
+    "dffs-0.98": {
+     "peak": 1.0,
+     "silence_5s_db": -5.9,
+     "silence_last5s_db": -70.1
+    },
+    "dffs_as_is": {
+     "peak": 0.9999996423721313,
+     "silence_5s_db": -25.5,
+     "silence_last5s_db": -81.0
+    }
+   },
+   "doc": "No NaN/Inf/growth across the full Dffs range and max decay (8 s) / max loop gain; 15 s noise then 15 s silence."
+  },
+  {
+   "test": "t09_silence_cpu",
+   "status": "PASS",
+   "secs": 10.8,
+   "detail": {
+    "byp": {
+     "play_mean_ms": 0.82,
+     "silence_late_mean_ms": 0.744
+    },
+    "col": {
+     "play_mean_ms": 1.552,
+     "silence_late_mean_ms": 0.897
+    }
+   },
+   "doc": "WASM cost after input stops stays near the playing cost (no denormal blow-up): silence <= 1.3x play and <= 50% budget (colour off)."
+  },
+  {
+   "test": "t10_t60_play",
+   "status": "PASS",
+   "secs": 7.0,
+   "detail": {
+    "std_lock18": {
+     "dial": 1.8,
+     "t30": {
+      "500": 1.75,
+      "1000": 1.8,
+      "2000": 1.78,
+      "4000": 1.81,
+      "8000": 1.8
+     }
+    },
+    "small_lock08": {
+     "dial": 0.8,
+     "t30": {
+      "500": 0.8,
+      "1000": 0.8,
+      "2000": 0.78,
+      "4000": 0.81,
+      "8000": 0.8
+     }
+    },
+    "hall_lock40": {
+     "dial": 4.0,
+     "t30": {
+      "500": 3.94,
+      "1000": 3.93,
+      "2000": 3.99,
+      "4000": 4.0,
+      "8000": 3.99
+     }
+    }
+   },
+   "doc": "Play FDN T30 per octave (500 Hz-8 kHz) within +-15 % of the dialled decay (decay lock)."
+  },
+  {
+   "test": "t11_hf_residue_play",
+   "status": "PASS",
+   "secs": 1.4,
+   "detail": {
+    "9000": 1.79,
+    "11000": 1.79
+   },
+   "doc": "No slow HF residue: 9-11 kHz late decay (0.6-0.8 x dial after onset) T60 <= 1.25 x dial."
+  },
+  {
+   "test": "t12_t60_render",
+   "status": "PASS",
+   "secs": 39.4,
+   "detail": {
+    "500": 1.75,
+    "1000": 1.8,
+    "2000": 1.78,
+    "4000": 1.81,
+    "8000": 1.8
+   },
+   "doc": "[slow] Render FDN T30 per octave within +-15 % of the dialled decay (std room, 1.8 s)."
+  },
+  {
+   "test": "t13_parity_play_render",
+   "status": "XFAIL",
+   "secs": 63.1,
+   "detail": "tail/direct parity OK; early field differs (known gap: no per-hit surface cascade in Play) {'L': {'energy_db': np.float64(4.51), 'max_dt_ms': 1.75, 'med_dlevel_db': 5.86}, 'R': {'energy_db': np.float64(4.72), 'max_dt_ms': 2.08, 'med_dlevel_db': 6.39}}",
+   "doc": "[slow] Play vs Render, same scene, colour off & on: tail T30 +-10 %/band, tail octave balance +-1.5 dB,\ntail level +-1 dB, stereo tail corr +-0.1, direct level +-0.5 dB. Early field: XFAIL until Play gets the per-hit cascade."
+  },
+  {
+   "test": "t14_level_sanity",
+   "status": "FAIL",
+   "secs": 2.4,
+   "detail": "Play peak 0.997 (soft limit starts at 0.95) {'play_peak': 0.997, 'play_rms_db': np.float64(-12.2)}",
+   "doc": "Nominal scene, colour on, noise at -18 dBFS RMS: Play peak < 0.95 (limiter idle), finite. [slow] Render: no clip_guard."
+  },
+  {
+   "test": "t15_perf_active",
+   "status": "PASS",
+   "secs": 10.9,
+   "detail": {
+    "1src_col": 1.448,
+    "2src_col": 2.024
+   },
+   "doc": "Active cost on this machine: 1 source + colour <= 60 % budget, 2 sources + colour <= 85 % (x --perf-scale)."
+  },
+  {
+   "test": "t16_diffusion_layers_separate",
+   "status": "PENDING",
+   "secs": 0.0,
+   "detail": "single \"diffusion\" card key still drives both layers (t16 re-run after regex fix)",
+   "doc": "Lock: Surfaces \u0394d jitter and Structure Dffs are separate controls (one key must not drive both)."
+  },
+  {
+   "test": "t17_play_hadamard_n",
+   "status": "PENDING",
+   "secs": 0.5,
+   "detail": "Play N fixed at 32 (render_pipeline.live_fdn_params n_had=32)",
+   "doc": "Play follows hadamard_n (8..128) like Render."
+  },
+  {
+   "test": "t18_tail_null_play_render",
+   "status": "PASS",
+   "secs": 16.9,
+   "detail": {
+    "null_db": [
+     -47.5,
+     -48.3
+    ]
+   },
+   "doc": "[slow] FDN-only Play tail nulls Render (same-sample loop solve, integer delays): residual <= -30 dB over 0-2 s."
+  }
+ ]
+}

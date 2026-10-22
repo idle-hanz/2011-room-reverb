@@ -1,0 +1,24 @@
+== build tests
+......................................                                   [100%]
+38 passed in 8.70s
+== selfcheck
+PASS  test_polar_uses_fitter_radius_not_lf_morph
+PASS  test_stock_ortf_direct_and_makeup
+PASS  test_sos_accuracy_against_relative_db
+PASS  test_live_colour_parity
+
+All 44 checks passed
+== binaural test_binaural_mode_acceptance
+XXXXXXXXXXXXXXXXXxXXXX                                                   [100%]
+1 xfailed, 21 xpassed in 20.14s
+== binaural test_binaural_locked
+..........................                                               [100%]
+26 passed in 21.30s
+== binaural test_binaural_presets
+...................................                                      [100%]
+35 passed in 0.65s
+== run_all quick
+FAIL     t19_two_source_radiation_cpu          9.2s  two-source radiation 2.20 ms > 2.13 ms (80% of 2.667 ms) {'play_mean_ms': 2.197, 'silence_late_mean_ms': 2.03, 'limit_ms': 2.133}
+
+11 pass, 4 fail/error, 3 skip, 1 pending, 0 xfail
+DONE

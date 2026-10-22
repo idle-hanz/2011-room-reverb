@@ -1,0 +1,194 @@
+{
+ "Box 6 x 4.5 x 3 m": {
+  "N": 6,
+  "convex": true,
+  "candidates": [
+   1,
+   6,
+   30,
+   150,
+   750
+  ],
+  "after_validity": [
+   1.0,
+   6.0,
+   30.0,
+   126.0,
+   462.0
+  ],
+  "audible": [
+   1.0,
+   6.0,
+   18.0,
+   38.0,
+   66.0
+  ],
+  "hidden_with_audible_child_pct": 35.8,
+  "ms_tree": 2.3791588318999857,
+  "ms_audibility": 20.21165640229204,
+  "walk_events_order3": {
+   "events": 0,
+   "metres": 2.0
+  }
+ },
+ "Hexagon booth (R 1.6 m, 2.7 m)": {
+  "N": 8,
+  "convex": true,
+  "candidates": [
+   1,
+   8,
+   56,
+   392,
+   2744
+  ],
+  "after_validity": [
+   1.0,
+   8.0,
+   50.0,
+   270.0,
+   1338.0
+  ],
+  "audible": [
+   1.0,
+   7.766666666666667,
+   23.766666666666666,
+   48.36666666666667,
+   80.8
+  ],
+  "hidden_with_audible_child_pct": 23.283622195351338,
+  "ms_tree": 5.933408598260333,
+  "ms_audibility": 49.408644234063104,
+  "walk_events_order3": {
+   "events": 22,
+   "metres": 0.73
+  }
+ },
+ "Splayed control room (4->6 m, sloped ceiling)": {
+  "N": 6,
+  "convex": true,
+  "candidates": [
+   1,
+   6,
+   30,
+   150,
+   750
+  ],
+  "after_validity": [
+   1.0,
+   6.0,
+   29.566666666666666,
+   121.06666666666666,
+   436.73333333333335
+  ],
+  "audible": [
+   1.0,
+   6.0,
+   17.866666666666667,
+   37.9,
+   62.93333333333333
+  ],
+  "hidden_with_audible_child_pct": 35.45326774420239,
+  "ms_tree": 2.0436504322181768,
+  "ms_audibility": 19.11959196731914,
+  "walk_events_order3": {
+   "events": 14,
+   "metres": 2.0
+  }
+ },
+ "LEDE-style (splayed front)": {
+  "N": 8,
+  "convex": true,
+  "candidates": [
+   1,
+   8,
+   56,
+   392,
+   2744
+  ],
+  "after_validity": [
+   1.0,
+   8.0,
+   50.0,
+   266.6666666666667,
+   1288.2333333333333
+  ],
+  "audible": [
+   1.0,
+   6.633333333333334,
+   20.9,
+   45.36666666666667,
+   78.83333333333333
+  ],
+  "hidden_with_audible_child_pct": 21.157156096915134,
+  "ms_tree": 5.806889296703351,
+  "ms_audibility": 47.22437513410114,
+  "walk_events_order3": {
+   "events": 23,
+   "metres": 2.0
+  }
+ },
+ "Gable-ceiling vocal booth": {
+  "N": 7,
+  "convex": true,
+  "candidates": [
+   1,
+   7,
+   42,
+   252,
+   1512
+  ],
+  "after_validity": [
+   1.0,
+   7.0,
+   39.333333333333336,
+   185.66666666666666,
+   790.5666666666667
+  ],
+  "audible": [
+   1.0,
+   6.566666666666666,
+   19.3,
+   39.833333333333336,
+   67.96666666666667
+  ],
+  "hidden_with_audible_child_pct": 30.086189617157746,
+  "ms_tree": 3.504802300206696,
+  "ms_audibility": 30.568426164488,
+  "walk_events_order3": {
+   "events": 27,
+   "metres": 0.7000000000000001
+  }
+ },
+ "L-shaped live room (non-convex)": {
+  "N": 8,
+  "convex": false,
+  "candidates": [
+   1,
+   8,
+   56,
+   392,
+   2744
+  ],
+  "after_validity": [
+   1.0,
+   7.433333333333334,
+   47.2,
+   259.0,
+   1261.3333333333333
+  ],
+  "audible": [
+   0.8666666666666667,
+   5.066666666666666,
+   14.866666666666667,
+   30.9,
+   53.233333333333334
+  ],
+  "hidden_with_audible_child_pct": 15.58853373921867,
+  "ms_tree": 5.410018468198056,
+  "ms_audibility": 63.23783043286918,
+  "walk_events_order3": {
+   "events": 5,
+   "metres": 2.0
+  }
+ }
+}

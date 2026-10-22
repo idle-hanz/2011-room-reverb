@@ -1,0 +1,189 @@
+{
+  "schema": "source_fitter.preset.v1",
+  "id": "talking_head",
+  "label": "Talking head (average speech, 6 talkers)",
+  "category": "voice",
+  "tag": "MEASURED-FIT",
+  "model": "radiation_shelf_plus_soft_one_pole",
+  "level_reference": "on_axis (0 dB when facing the receiver; omni = exact null)",
+  "frame": {
+    "x": "facing (radiation reference axis of the dataset)",
+    "y": "source left",
+    "z": "up",
+    "facing_definition": "theta=0 column (VERIFIED dataset note for BYU instruments/speech)"
+  },
+  "params": {
+    "aim_az": 0.0,
+    "b_lr": 0.0,
+    "lp_order": 2.0,
+    "lo_db": -2.51406,
+    "hi_db": -29.29454,
+    "f0": 2551.19683,
+    "shelf_s": 0.36306,
+    "p": 1.99794,
+    "q": 0.12931,
+    "b_ud": -0.24228,
+    "aim_el": 6.61291,
+    "lp_hz": 15896.2775,
+    "lp_mix": 0.09037,
+    "p_lo": 1.38989,
+    "dip": 0.0926
+  },
+  "size": {
+    "a_eq_m": 0.0212,
+    "beaming_onset_hz": 2551.2,
+    "rule": "a_eq = c/(2*pi*f0), c=340 m/s as engine (piston ka=1); UI size slider sets size_scale = a_user/a_eq -> f0, lp_hz divided by size_scale"
+  },
+  "di_db": {
+    "125": 1.09,
+    "250": 1.26,
+    "500": 1.71,
+    "1000": 2.54,
+    "2000": 3.47,
+    "4000": 4.24,
+    "8000": 4.78,
+    "16000": 5.02
+  },
+  "diffuse_inject": {
+    "gain_db": -1.223568081587016,
+    "shelf_f0": 1348.8798113671992,
+    "shelf_gain_db": -3.436981139975767,
+    "shelf_s": 0.7,
+    "fit_rmse_db": 0.22521471189625278,
+    "target_db": {
+      "50": -1.0417471703576955,
+      "104": -1.075967951068367,
+      "218": -1.2105973253363747,
+      "455": -1.6299699990270873,
+      "951": -2.4706769950654865,
+      "1986": -3.4616197186381563,
+      "4148": -4.274905031455134,
+      "8662": -4.821093926619701
+    }
+  },
+  "fit": {
+    "rmse_train_db": 1.8535074753735086,
+    "rmse_holdout_db": 1.8574478335571092,
+    "rmse_per_band_db": {
+      "100": 0.612688983997381,
+      "125": 0.503139253647572,
+      "160": 0.4098598769952854,
+      "200": 0.43731533974516773,
+      "250": 0.9199807695818869,
+      "315": 1.3317670541360527,
+      "400": 1.4983594593963727,
+      "500": 1.4475393120081634,
+      "630": 2.14970457304399,
+      "800": 1.8320738362801654,
+      "1000": 1.5975433451225802,
+      "1250": 1.7541122165856822,
+      "1600": 2.032437790714971,
+      "2000": 2.134449517443075,
+      "2500": 2.1055342468009,
+      "3150": 2.399694217040887,
+      "4000": 2.598760547205631,
+      "5000": 2.556560990349138,
+      "6300": 2.3226700172727504,
+      "8000": 2.3284245478744516,
+      "10000": 2.7689997870777425
+    },
+    "n_dirs": 684,
+    "n_train": 547,
+    "n_holdout": 137,
+    "fit_bands_hz": [
+      100.0,
+      10000.0
+    ],
+    "n_bands": 21,
+    "free_params": [
+      "lo_db",
+      "hi_db",
+      "f0",
+      "shelf_s",
+      "p",
+      "q",
+      "b_ud",
+      "aim_el",
+      "lp_hz",
+      "lp_mix",
+      "p_lo",
+      "dip"
+    ],
+    "fixed_params": {
+      "aim_az": 0.0,
+      "b_lr": 0.0,
+      "lp_order": 2.0
+    },
+    "di_data_db": {
+      "100": 0.011829914604561564,
+      "125": 0.46964204152775973,
+      "160": 1.2496191678464812,
+      "200": 1.811944305011287,
+      "250": 2.6734075276684544,
+      "315": 3.0250443428007543,
+      "400": 2.3964872298267563,
+      "500": 1.085724238751085,
+      "630": 0.92366485550167,
+      "800": -0.2303633995012202,
+      "1000": 0.714054946590478,
+      "1250": 3.8985794996412633,
+      "1600": 5.554974787404015,
+      "2000": 3.6980966050272475,
+      "2500": 2.699196822314408,
+      "3150": 3.825020336981769,
+      "4000": 4.839906847065627,
+      "5000": 3.8321456183930724,
+      "6300": 3.1982444572259685,
+      "8000": 5.834855956537921,
+      "10000": 5.783361187644057
+    },
+    "di_model_db": {
+      "100": 1.0723575299358763,
+      "125": 1.0945901353221086,
+      "160": 1.1326023202233524,
+      "200": 1.184579874998482,
+      "250": 1.2598357462342389,
+      "315": 1.36986381141023,
+      "400": 1.5255645054347848,
+      "500": 1.7141302319454836,
+      "630": 1.9535829290791382,
+      "800": 2.2423884744329956,
+      "1000": 2.5389226079456324,
+      "1250": 2.846702962378181,
+      "1600": 3.1825821056450265,
+      "2000": 3.4703201188885497,
+      "2500": 3.738426424643136,
+      "3150": 3.9956587491923234,
+      "4000": 4.239926627808262,
+      "5000": 4.444929882145933,
+      "6300": 4.627526251874144,
+      "8000": 4.7792305336524254,
+      "10000": 4.886258705718426
+    }
+  },
+  "dsp": {
+    "stages": [
+      "broadband_gain(k_lo*lo_db)",
+      "rbj_high_shelf(f0, k*hi_db, shelf_s)",
+      "soft_beaming_lp(lp_hz/k_hi, lp_mix, lp_order 1|2 cascaded one-poles)"
+    ],
+    "fs_ref_hz": 48000,
+    "k": "k_hi = A*u^p*(1-q*u^8); k_lo = A*((1-dip)*u^p_lo*(1-q*u^8) + dip*4u(1-u)); both 0 on axis",
+    "slot": "FIRST stage of each image's serial cascade (before surfaces/air/mic)"
+  },
+  "provenance": {
+    "dataset": "BYU ScholarsArchive Spatial Audio Library \u2014 Average Speech Directivity",
+    "url": "https://scholarsarchive.byu.edu/directivity/1/",
+    "citation": "S. D. Bellows, C. M. Pincock, J. K. Whiting, T. W. Leishman, 'Average Speech Directivity', BYU ScholarsArchive Directivity 1 (2019); T. W. Leishman et al., JASA 149(3) 1507-1523 (2021) doi:10.1121/10.0003363",
+    "license": "free & open access; cite as requested (no explicit licence text found)",
+    "grid": "5 deg dual-equiangular 72x37 (SH-resampled, 1/3 octave)",
+    "measurement": "MEASURED (anechoic, rotating semicircular array)",
+    "note": "median-plane symmetrised by authors (VERIFIED); seated talker incl. chair/torso",
+    "front_axis": "theta=0 column (VERIFIED dataset note for BYU instruments/speech)"
+  },
+  "tags": {
+    "params": "VERIFIED fit output (this code) of MEASURED data",
+    "model_form": "ASSUMED (engineering model, mirrors mic_fitter v3)",
+    "size_rule": "VERIFIED physics (piston ka=1) applied as ASSUMED mapping"
+  }
+}

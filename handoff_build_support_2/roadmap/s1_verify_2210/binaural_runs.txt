@@ -1,0 +1,7 @@
+Box, 1 Oct 22:20-22:40 BST, snapshot_2026-10-01_2210 (each file run in its own pytest process):
+handoff_binaural/tests/test_binaural_mode_acceptance.py (Build's un-xfailed copy) : 22 passed
+handoff_binaural/tests/test_binaural_locked.py                                    : 26 passed
+handoff_binaural/tests/test_binaural_presets.py                                   : 35 passed
+3_phase_acceptance_tests/tests/test_binaural_play_and_gaps.py                     : 4 passed, 4 xfailed (vendoring gap now PASS)
+3_phase_acceptance_tests/tests/test_s1_followups.py                               : 1 passed, 2 xfailed
+Build tests (native .so shim): 29 passed. selfcheck: 44/44.

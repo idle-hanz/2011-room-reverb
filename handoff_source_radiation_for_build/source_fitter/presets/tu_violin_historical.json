@@ -1,0 +1,189 @@
+{
+  "schema": "source_fitter.preset.v1",
+  "id": "tu_violin_historical",
+  "label": "Violin historical (TU Berlin)",
+  "category": "library_tu",
+  "tag": "MEASURED-FIT",
+  "model": "radiation_shelf_plus_soft_one_pole",
+  "level_reference": "on_axis (0 dB when facing the receiver; omni = exact null)",
+  "frame": {
+    "x": "facing (radiation reference axis of the dataset)",
+    "y": "source left",
+    "z": "up",
+    "facing_definition": "Mic#25 direction (from SourceView text; VERIFIED text, mapping ASSUMED where 'between' / 'slightly')"
+  },
+  "params": {
+    "lp_order": 1.0,
+    "lo_db": -4.54044,
+    "hi_db": -5.48249,
+    "f0": 1010.45962,
+    "shelf_s": 0.70473,
+    "p": 2.3019,
+    "q": 0.18121,
+    "b_ud": -0.63994,
+    "b_lr": -0.8,
+    "aim_az": 2.18729,
+    "aim_el": -3.34104,
+    "lp_hz": 2697.1157,
+    "lp_mix": 0.47666,
+    "p_lo": 2.58016,
+    "dip": 0.05351
+  },
+  "size": {
+    "a_eq_m": 0.0536,
+    "beaming_onset_hz": 1010.5,
+    "rule": "a_eq = c/(2*pi*f0), c=340 m/s as engine (piston ka=1); UI size slider sets size_scale = a_user/a_eq -> f0, lp_hz divided by size_scale"
+  },
+  "di_db": {
+    "125": 1.1,
+    "250": 1.13,
+    "500": 1.24,
+    "1000": 1.6,
+    "2000": 1.94,
+    "4000": 2.11,
+    "8000": 2.29,
+    "16000": 2.44
+  },
+  "diffuse_inject": {
+    "gain_db": -1.1147906620435186,
+    "shelf_f0": 1223.8722157075995,
+    "shelf_gain_db": -1.1436646752582635,
+    "shelf_s": 0.7,
+    "fit_rmse_db": 0.06836616604404125,
+    "target_db": {
+      "50": -1.0949010913507813,
+      "104": -1.099143840062688,
+      "218": -1.1185399677424583,
+      "455": -1.2134437758352254,
+      "951": -1.5654497707386141,
+      "1986": -1.9346570465567985,
+      "4148": -2.1216027668596693,
+      "8662": -2.305372595292467
+    }
+  },
+  "fit": {
+    "rmse_train_db": 2.151294615888503,
+    "rmse_holdout_db": 3.0776446796771912,
+    "rmse_per_band_db": {
+      "200": 1.5594309834086548,
+      "250": 1.6589735885782897,
+      "315": 1.4970760956891371,
+      "400": 1.8976216502797827,
+      "500": 2.036839157009907,
+      "630": 1.887359864390597,
+      "800": 2.3320355115743556,
+      "1000": 2.814382011018439,
+      "1250": 2.3563650320045437,
+      "1600": 1.9034968668050118,
+      "2000": 2.2841681428986167,
+      "2500": 2.1273796233512248,
+      "3150": 2.2584229284524726,
+      "4000": 2.6537323700052964,
+      "5000": 2.673104698641088,
+      "6300": 1.9194352061071955,
+      "8000": 2.3974795346350075,
+      "10000": 2.872814889696574,
+      "12500": 2.9463455497674023,
+      "16000": 3.7491580980107324
+    },
+    "n_dirs": 32,
+    "n_train": 26,
+    "n_holdout": 6,
+    "fit_bands_hz": [
+      200.0,
+      16000.0
+    ],
+    "n_bands": 20,
+    "free_params": [
+      "lo_db",
+      "hi_db",
+      "f0",
+      "shelf_s",
+      "p",
+      "q",
+      "b_ud",
+      "b_lr",
+      "aim_az",
+      "aim_el",
+      "lp_hz",
+      "lp_mix",
+      "p_lo",
+      "dip"
+    ],
+    "fixed_params": {
+      "lp_order": 1.0
+    },
+    "di_data_db": {
+      "200": 3.794093720953189,
+      "250": 1.9186651910683388,
+      "315": 1.1618885110377342,
+      "400": 1.5390175956571035,
+      "500": 1.3946175904299523,
+      "630": -0.49303105902729527,
+      "800": -0.33506999768644263,
+      "1000": 3.1020585614080787,
+      "1250": 5.65590588447769,
+      "1600": 2.422785098036794,
+      "2000": 0.48368088817820976,
+      "2500": 3.949934758212919,
+      "3150": 4.182703681372988,
+      "4000": 4.560125362235226,
+      "5000": 5.258936657152109,
+      "6300": 0.06838542751419396,
+      "8000": -1.1558532816634504,
+      "10000": 0.11572144044479771,
+      "12500": 0.5423434295735312,
+      "16000": 0.09908654863954425
+    },
+    "di_model_db": {
+      "200": 1.114433925689418,
+      "250": 1.126815956640854,
+      "315": 1.1478657914227133,
+      "400": 1.184294455398409,
+      "500": 1.2398057205345994,
+      "630": 1.3284157021710774,
+      "800": 1.456723859030398,
+      "1000": 1.5976903440782442,
+      "1250": 1.7337482435341587,
+      "1600": 1.8553719809611815,
+      "2000": 1.9368745802920297,
+      "2500": 2.000220445672184,
+      "3150": 2.0567849422065008,
+      "4000": 2.1129934696618577,
+      "5000": 2.1667646717320537,
+      "6300": 2.2245190188452817,
+      "8000": 2.2853062628135588,
+      "10000": 2.3408421068458933,
+      "12500": 2.3921832205879836,
+      "16000": 2.439688149853039
+    }
+  },
+  "dsp": {
+    "stages": [
+      "broadband_gain(k_lo*lo_db)",
+      "rbj_high_shelf(f0, k*hi_db, shelf_s)",
+      "soft_beaming_lp(lp_hz/k_hi, lp_mix, lp_order 1|2 cascaded one-poles)"
+    ],
+    "fs_ref_hz": 48000,
+    "k": "k_hi = A*u^p*(1-q*u^8); k_lo = A*((1-dip)*u^p_lo*(1-q*u^8) + dip*4u(1-u)); both 0 on axis",
+    "slot": "FIRST stage of each image's serial cascade (before surfaces/air/mic)"
+  },
+  "provenance": {
+    "dataset": "TU Berlin \u2014 A Database of Anechoic Microphone Array Measurements of Musical Instruments (1b_Directivities3rdOctave_SOFA)",
+    "url": "https://depositonce.tu-berlin.de/items/b194da8b-e98c-4761-9100-2b0bb6ba93e8",
+    "doi": "10.14279/depositonce-19858 ; paper 10.17743/jaes.2022.0128",
+    "file": "Violin_historical_3rdOctave.sofa",
+    "license": "cc by-nc-sa 4.0 (file attribute; NC = non-commercial)",
+    "source_type": "Violin historical",
+    "manufacturer": "Instrument: Neil Krist\u00f3v \u00c9rtz (1998, rev. 2003), Copy of Guaneri; Bow: Violin Bow (50 g), Ren\u00e9 Groppe (Metz, 1997), Copy of baroque model (17th century); Strings: E String: Catgut (Damian Dlugolecki, 0.62 mm); A String: Catgut (Nicholas Baldock, Kathedrale Strings, 0.74 mm); D String: Catgut (+0.25 mm Silver, 1.12mm, Nicholas Baldock, Lux-Line); G String: Catgut, Silver, diameter unknown",
+    "source_view": "Normal of the soundboard aiming at Mic#25, Scroll aiming at between Mic#02 and Mic#03",
+    "forward_axis": "Mic#25 direction (from SourceView text; VERIFIED text, mapping ASSUMED where 'between' / 'slightly')",
+    "grid": "32-mic pentakis dodecahedron r=2.06 m; equal quadrature weights ASSUMED",
+    "measurement": "MEASURED (anechoic, 3rd-octave band average of partials)"
+  },
+  "tags": {
+    "params": "VERIFIED fit output (this code) of MEASURED data",
+    "model_form": "ASSUMED (engineering model, mirrors mic_fitter v3)",
+    "size_rule": "VERIFIED physics (piston ka=1) applied as ASSUMED mapping"
+  }
+}

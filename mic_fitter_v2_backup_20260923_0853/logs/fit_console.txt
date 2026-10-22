@@ -1,0 +1,24 @@
+2026-09-22 23:05:59,650 INFO === mic_fitter run start ===
+2026-09-22 23:05:59,652 INFO ASSUMED DEMO DATA — synthetic curves mimicking published off-axis shapes. Found zip(s): ['Microphone_Impulse_Responses.zip'] — extract selected mic WAVs into data/zenodo/ When available, drop Franco et al. WAVs into /workspace/mic_fitter/data/zenodo and re-run.
+2026-09-22 23:05:59,652 INFO Mics to fit: ['proxy_dynamic_cardioid', 'proxy_sdc_cardioid', 'proxy_ldc_cardioid', 'proxy_fig8_ribbon', 'proxy_supercardioid_dynamic', 'proxy_omni_sdc']
+2026-09-22 23:05:59,652 INFO Fitting proxy_dynamic_cardioid (ASSUMED / dynamic_cardioid) …
+2026-09-22 23:05:59,935 INFO   done in 0.3s | train RMSE=0.653 dB | holdout RMSE=0.865 dB | DE success=False nit=40 fun=0.428624; LS success=True cost=109.429903
+2026-09-22 23:05:59,935 INFO   params={'f0': 1450.9395744832543, 'depth_max_db': -23.999999999999996, 'res_hz': 9725.431112344228, 'lp_mix': 0.9999999999999999, 'fc_floor': 1470.1188366104998, 'p': 0.9340477729111533}
+2026-09-22 23:06:01,830 INFO Fitting proxy_sdc_cardioid (ASSUMED / sdc_cardioid) …
+2026-09-22 23:06:02,117 INFO   done in 0.3s | train RMSE=0.485 dB | holdout RMSE=0.517 dB | DE success=False nit=40 fun=0.239396; LS success=True cost=60.431935
+2026-09-22 23:06:02,117 INFO   params={'f0': 1472.2267418846038, 'depth_max_db': -19.215432489529775, 'res_hz': 13901.757355293903, 'lp_mix': 0.9999999999999999, 'fc_floor': 3733.8730027684073, 'p': 0.8283799974970113}
+2026-09-22 23:06:03,612 INFO Fitting proxy_ldc_cardioid (ASSUMED / ldc_cardioid) …
+2026-09-22 23:06:03,879 INFO   done in 0.3s | train RMSE=0.422 dB | holdout RMSE=0.467 dB | DE success=False nit=40 fun=0.181290; LS success=True cost=45.779202
+2026-09-22 23:06:03,879 INFO   params={'f0': 1640.8938766703477, 'depth_max_db': -20.921080516277787, 'res_hz': 13135.448967779857, 'lp_mix': 0.9999999999999999, 'fc_floor': 3755.7917690796135, 'p': 1.00144540790127}
+2026-09-22 23:06:05,412 INFO Fitting proxy_fig8_ribbon (ASSUMED / fig8_ribbon) …
+2026-09-22 23:06:05,686 INFO   done in 0.3s | train RMSE=3.521 dB | holdout RMSE=1.855 dB | DE success=False nit=40 fun=12.447712; LS success=True cost=3174.829845
+2026-09-22 23:06:05,686 INFO   params={'f0': 1783.193255792595, 'depth_max_db': -23.9999999999996, 'res_hz': 1500.0000000013783, 'lp_mix': 0.9999999999643195, 'fc_floor': 2391.9792679644024, 'p': 0.6000000000000002}
+2026-09-22 23:06:07,427 INFO Fitting proxy_supercardioid_dynamic (ASSUMED / supercardioid) …
+2026-09-22 23:06:07,727 INFO   done in 0.3s | train RMSE=1.109 dB | holdout RMSE=1.575 dB | DE success=False nit=40 fun=1.249071; LS success=True cost=315.067225
+2026-09-22 23:06:07,727 INFO   params={'f0': 1449.5755591485974, 'depth_max_db': -23.999999999999996, 'res_hz': 9670.125933492895, 'lp_mix': 0.9999999999999999, 'fc_floor': 800.0000000000001, 'p': 0.8950432302976326}
+2026-09-22 23:06:09,155 INFO Fitting proxy_omni_sdc (ASSUMED / omni) …
+2026-09-22 23:06:09,428 INFO   done in 0.3s | train RMSE=0.164 dB | holdout RMSE=0.175 dB | DE success=False nit=40 fun=0.028521; LS success=True cost=7.111253
+2026-09-22 23:06:09,429 INFO   params={'f0': 944.7093541701709, 'depth_max_db': -2.706663241981331, 'res_hz': 8100.343269973271, 'lp_mix': 0.9999999999999999, 'fc_floor': 4581.111897034283, 'p': 0.6087802661504005}
+2026-09-22 23:06:10,891 INFO All fits complete in 11.2s
+2026-09-22 23:06:10,892 INFO MORNING_REPORT.md written
+2026-09-22 23:06:10,892 INFO Wrote MORNING_REPORT.md and reports/

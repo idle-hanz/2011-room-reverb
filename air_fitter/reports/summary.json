@@ -1,0 +1,42 @@
+{
+  "generated": "2026-09-23T17:02:46.221626+01:00",
+  "primary": "studio_20C_50RH",
+  "winner_candidate": "C",
+  "winner_model": "dual_high_shelf",
+  "studio_params": {
+    "f0": 500.00000000012307,
+    "depth_db_per_m": -0.00655233332616923,
+    "shelf_slope": 1.1217329192186143,
+    "f0_hi": 15999.999999999645,
+    "depth_hi_db_per_m": -0.07448108131080945,
+    "shelf_slope_hi": 7.053415484505896
+  },
+  "studio_joint_rmse_db": 0.01120658692869966,
+  "studio_flat_rmse_db": 0.2223575363315409,
+  "climates": [
+    {
+      "id": "studio_20C_50RH",
+      "candidate": "C",
+      "model": "dual_high_shelf",
+      "joint_rmse_db": 0.01120658692869966
+    },
+    {
+      "id": "dry_20C_20RH",
+      "candidate": "C",
+      "model": "dual_high_shelf",
+      "joint_rmse_db": 0.009656719280139165
+    },
+    {
+      "id": "humid_20C_80RH",
+      "candidate": "C",
+      "model": "dual_high_shelf",
+      "joint_rmse_db": 0.014184033741276232
+    },
+    {
+      "id": "warm_22C_40RH",
+      "candidate": "C",
+      "model": "dual_high_shelf",
+      "joint_rmse_db": 0.011036253822536408
+    }
+  ]
+}

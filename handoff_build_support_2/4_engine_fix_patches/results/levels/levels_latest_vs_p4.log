@@ -1,0 +1,26 @@
+latest std_lock18 fdn {'play_db': np.float64(-8.83), 'render_db': np.float64(-7.87)}
+latest std_lock18 direct {'play_db': np.float64(-2.41), 'render_db': np.float64(0.03)}
+latest std_lock18 early {'play_db': np.float64(-10.9)}
+latest std_lock18 all {'play_db': np.float64(1.87), 'render_db': np.float64(2.73)}
+latest small_lock08 fdn {'play_db': np.float64(-9.33), 'render_db': np.float64(-7.5)}
+latest small_lock08 direct {'play_db': np.float64(-2.98), 'render_db': np.float64(-2.74)}
+latest small_lock08 early {'play_db': np.float64(-11.19)}
+latest small_lock08 all {'play_db': np.float64(1.69), 'render_db': np.float64(1.54)}
+latest hall_lock40 fdn {'play_db': np.float64(-7.72), 'render_db': np.float64(-5.36)}
+latest hall_lock40 direct {'play_db': np.float64(-4.09), 'render_db': np.float64(0.03)}
+latest hall_lock40 early {'play_db': np.float64(-9.4)}
+latest hall_lock40 all {'play_db': np.float64(1.39), 'render_db': np.float64(3.63)}
+latest t14 {'play_peak': 0.4983, 'play_rms_db': np.float64(-16.37)} {'play_peak': 0.4983, 'play_rms_db': np.float64(-16.37)}
+p4 std_lock18 fdn {'play_db': np.float64(-2.36), 'render_db': np.float64(3.36)}
+p4 std_lock18 direct {'play_db': np.float64(0.03), 'render_db': np.float64(0.03)}
+p4 std_lock18 early {'play_db': np.float64(-9.57)}
+p4 std_lock18 all {'play_db': np.float64(4.02), 'render_db': np.float64(5.65)}
+p4 small_lock08 fdn {'play_db': np.float64(0.1), 'render_db': np.float64(9.43)}
+p4 small_lock08 direct {'play_db': np.float64(-2.74), 'render_db': np.float64(-2.74)}
+p4 small_lock08 early {'play_db': np.float64(-10.59)}
+p4 small_lock08 all {'play_db': np.float64(3.88), 'render_db': np.float64(9.64)}
+p4 hall_lock40 fdn {'play_db': np.float64(-4.28), 'render_db': np.float64(-5.32)}
+p4 hall_lock40 direct {'play_db': np.float64(0.03), 'render_db': np.float64(0.03)}
+p4 hall_lock40 early {'play_db': np.float64(-6.99)}
+p4 hall_lock40 all {'play_db': np.float64(4.01), 'render_db': np.float64(3.45)}
+p4 t14 {'play_peak': 0.7273, 'play_rms_db': np.float64(-13.52)} {'play_peak': 0.7273, 'play_rms_db': np.float64(-13.52)}

@@ -1,0 +1,58 @@
+{
+ "p6": {
+  "std_lock18": {
+   "fdn": {
+    "play_db": -8.72,
+    "render_db": -8.88
+   }
+  },
+  "small_lock08": {
+   "fdn": {
+    "play_db": -9.07,
+    "render_db": -7.11
+   }
+  },
+  "hall_lock40": {
+   "fdn": {
+    "play_db": -9.16,
+    "render_db": -8.0
+   }
+  },
+  "t14": {
+   "play_peak": 0.5364,
+   "play_rms_db": -16.95
+  },
+  "t14_pinned_src": {
+   "play_peak": 0.5602,
+   "play_rms_db": -14.76
+  }
+ },
+ "new1001": {
+  "std_lock18": {
+   "fdn": {
+    "play_db": -5.83,
+    "render_db": -8.52
+   }
+  },
+  "small_lock08": {
+   "fdn": {
+    "play_db": -7.75,
+    "render_db": -9.85
+   }
+  },
+  "hall_lock40": {
+   "fdn": {
+    "play_db": -4.28,
+    "render_db": -4.65
+   }
+  },
+  "t14": {
+   "play_peak": 0.6239,
+   "play_rms_db": -13.96
+  },
+  "t14_pinned_src": {
+   "play_peak": 0.6358,
+   "play_rms_db": -13.96
+  }
+ }
+}

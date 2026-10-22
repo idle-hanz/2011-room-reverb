@@ -1,0 +1,6 @@
+PASS     t15_perf_active                       8.5s  {'1src_col': 0.937, '2src_col': 1.582}
+PASS     t19_two_source_radiation_cpu          8.9s  {'play_mean_ms': 2.058, 'silence_late_mean_ms': 2.031, 'limit_ms': 2.133}
+PASS     t15_perf_active                       9.8s  {'1src_col': 1.125, '2src_col': 1.827}
+FAIL     t19_two_source_radiation_cpu          8.3s  silence 2.52 ms vs play 1.84 (limit 1.3x and 2.13 ms) {'play_mean_ms': 1.841, 'silence_late_mean_ms': 2.518, 'limit_ms': 2.133}
+PASS     t15_perf_active                       9.2s  {'1src_col': 0.945, '2src_col': 1.807}
+PASS     t19_two_source_radiation_cpu          8.7s  {'play_mean_ms': 1.952, 'silence_late_mean_ms': 1.791, 'limit_ms': 2.133}

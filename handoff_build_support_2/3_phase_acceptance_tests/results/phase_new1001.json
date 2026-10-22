@@ -1,0 +1,516 @@
+{
+ "sw": "/workspace/build_support_2/work/new1001/software",
+ "summary": {
+  "PASS": 36,
+  "FAIL": 1,
+  "XFAIL": 47,
+  "SKIP": 0
+ },
+ "results": [
+  {
+   "test": "test_colour_sos::test_colour_tables_match_presets",
+   "status": "PASS",
+   "secs": 0.3,
+   "detail": ""
+  },
+  {
+   "test": "test_colour_sos::test_colour_at_c1_48k_within_0p5db",
+   "status": "PASS",
+   "secs": 0.0,
+   "detail": ""
+  },
+  {
+   "test": "test_colour_sos::test_colour_at_c4_44k1_within_0p6db",
+   "status": "PASS",
+   "secs": 0.0,
+   "detail": ""
+  },
+  {
+   "test": "test_colour_sos::test_colour_44k1_tables_match_presets",
+   "status": "PASS",
+   "secs": 0.0,
+   "detail": ""
+  },
+  {
+   "test": "test_colour_sos::test_colour_unsupported_rate_disabled_with_notice[32000]",
+   "status": "PASS",
+   "secs": 0.0,
+   "detail": ""
+  },
+  {
+   "test": "test_colour_sos::test_colour_unsupported_rate_disabled_with_notice[88200]",
+   "status": "PASS",
+   "secs": 0.0,
+   "detail": ""
+  },
+  {
+   "test": "test_colour_sos::test_colour_unsupported_rate_disabled_with_notice[96000]",
+   "status": "PASS",
+   "secs": 0.0,
+   "detail": ""
+  },
+  {
+   "test": "test_colour_sos::test_colour_sos_stable[44100]",
+   "status": "PASS",
+   "secs": 0.0,
+   "detail": ""
+  },
+  {
+   "test": "test_colour_sos::test_colour_sos_stable[48000]",
+   "status": "PASS",
+   "secs": 0.0,
+   "detail": ""
+  },
+  {
+   "test": "test_colour_sos::test_colour_hpf_on_low_end[44100]",
+   "status": "PASS",
+   "secs": 0.5,
+   "detail": ""
+  },
+  {
+   "test": "test_colour_sos::test_colour_hpf_on_low_end[48000]",
+   "status": "PASS",
+   "secs": 0.0,
+   "detail": ""
+  },
+  {
+   "test": "test_colour_sos::test_colour_play_bank_fits_two_sources_apart",
+   "status": "PASS",
+   "secs": 0.4,
+   "detail": ""
+  },
+  {
+   "test": "test_colour_sos::test_colour_cpu_active",
+   "status": "PASS",
+   "secs": 4.3,
+   "detail": ""
+  },
+  {
+   "test": "test_colour_sos::test_colour_numpy_sos_matches_loop",
+   "status": "PASS",
+   "secs": 0.1,
+   "detail": ""
+  },
+  {
+   "test": "test_decisions_2026_09_28::test_k1_single_yaw_convention",
+   "status": "XFAIL",
+   "secs": 0.0,
+   "detail": "K1 not landed: no YAW_X_SIGN in engine/early_field.py / static/js/room_math.js"
+  },
+  {
+   "test": "test_decisions_2026_09_28::test_k1_left_source_L_louder_and_earlier_play[xy_90]",
+   "status": "XFAIL",
+   "secs": 0.9,
+   "detail": "K1 not landed (capsules crossed): xy_90: direct L-R -8.09 dB, early L-R -8.26 dB, arrival L/R [538, 539] samples"
+  },
+  {
+   "test": "test_decisions_2026_09_28::test_k1_left_source_L_louder_and_earlier_play[xy_120]",
+   "status": "XFAIL",
+   "secs": 1.0,
+   "detail": "K1 not landed (capsules crossed): xy_120: direct L-R -8.85 dB, early L-R -8.19 dB, arrival L/R [538, 539] samples"
+  },
+  {
+   "test": "test_decisions_2026_09_28::test_k1_left_source_L_louder_and_earlier_play[ortf]",
+   "status": "XFAIL",
+   "secs": 1.0,
+   "detail": "K1 not landed (capsules crossed): ortf: direct L-R -8.63 dB, early L-R -8.23 dB, arrival L/R [533, 545] samples"
+  },
+  {
+   "test": "test_decisions_2026_09_28::test_k1_left_source_L_louder_and_earlier_play[nos]",
+   "status": "XFAIL",
+   "secs": 1.0,
+   "detail": "K1 not landed (capsules crossed): nos: direct L-R -7.94 dB, early L-R -7.83 dB, arrival L/R [528, 550] samples"
+  },
+  {
+   "test": "test_decisions_2026_09_28::test_k1_left_source_L_louder_and_earlier_play[din]",
+   "status": "XFAIL",
+   "secs": 1.0,
+   "detail": "K1 not landed (capsules crossed): din: direct L-R -8.00 dB, early L-R -7.99 dB, arrival L/R [531, 546] samples"
+  },
+  {
+   "test": "test_decisions_2026_09_28::test_k1_left_source_L_louder_and_earlier_play[ms]",
+   "status": "XFAIL",
+   "secs": 1.0,
+   "detail": "K1 not landed (capsules crossed): ms: direct L-R -3.33 dB, early L-R -1.29 dB, arrival L/R [537, 539] samples"
+  },
+  {
+   "test": "test_decisions_2026_09_28::test_k1_left_source_L_louder_and_earlier_render[ortf]",
+   "status": "XFAIL",
+   "secs": 3.9,
+   "detail": "K1 not landed (capsules crossed): ortf Render: direct L-R -8.63 dB, arrival L/R [533, 545]"
+  },
+  {
+   "test": "test_decisions_2026_09_28::test_k1_left_source_L_louder_and_earlier_render[xy_90]",
+   "status": "XFAIL",
+   "secs": 3.4,
+   "detail": "K1 not landed (capsules crossed): xy_90 Render: direct L-R -8.09 dB, arrival L/R [538, 539]"
+  },
+  {
+   "test": "test_decisions_2026_09_28::test_k1_left_source_L_louder_and_earlier_render[ms]",
+   "status": "XFAIL",
+   "secs": 3.5,
+   "detail": "K1 not landed (capsules crossed): ms Render: direct L-R -3.33 dB, arrival L/R [537, 539]"
+  },
+  {
+   "test": "test_decisions_2026_09_28::test_k2_air_1pole_default_zero",
+   "status": "XFAIL",
+   "secs": 0.0,
+   "detail": "K2 default not landed: {'server': 0.25, 'app.js': 0.25, 'index.html': 0.25}"
+  },
+  {
+   "test": "test_decisions_2026_09_28::test_k3_default_source_29_distinct_delays",
+   "status": "XFAIL",
+   "secs": 0.0,
+   "detail": "K3 default not landed: sx 3.0 sy 1.5, distinct delays {'l': 20, 'c': 12, 'r': 20}"
+  },
+  {
+   "test": "test_decisions_2026_09_28::test_k3_client_default_matches",
+   "status": "XFAIL",
+   "secs": 0.0,
+   "detail": "K3 client default not landed: app.js sx/sy (3.0, 1.5)"
+  },
+  {
+   "test": "test_decisions_2026_09_28::test_k4_fdn_first_defaults",
+   "status": "XFAIL",
+   "secs": 0.0,
+   "detail": "K4 defaults not landed: {'fader_fdn': 0.5, 'fader_direct': 0.5, 'fader_early': 0.0, 'early_wet': 0.0} (want {'fader_fdn': 0.5, 'fader_direct': 0.0, 'fader_early': 0.0, 'early_wet': 1.0})"
+  },
+  {
+   "test": "test_decisions_2026_09_28::test_k4_raise_early_fader_no_stale_replay",
+   "status": "PASS",
+   "secs": 1.5,
+   "detail": ""
+  },
+  {
+   "test": "test_decisions_2026_09_28::test_headroom_trim_table",
+   "status": "XFAIL",
+   "secs": 0.0,
+   "detail": "headroom trim table not in tree (engine/fdn.py LOOP_LEVEL_TRIM_DB)"
+  },
+  {
+   "test": "test_decisions_2026_09_28::test_headroom_t14_fdn_level_matches_pre_f2",
+   "status": "XFAIL",
+   "secs": 3.1,
+   "detail": "headroom trim not landed: FDN bus +3.00 dB vs pre-F2 (limit +-0.5 dB, decision 6) {'play_peak': 0.624, 'play_rms_db': np.float64(-14.0), 'pinned_fdn_peak': 0.284, 'pinned_fdn_rms_db': np.float64(-24.18), 'pinned_fdn_delta_db': np.float64(3.0), 'pinned_mix_peak': 0.636, 'pinned_mix_rms_db': np.float6"
+  },
+  {
+   "test": "test_decisions_2026_09_28::test_headroom_t14_whole_mix_informational",
+   "status": "FAIL",
+   "secs": 2.4,
+   "detail": "AssertionError: FDN bus +3.00 dB vs pre-F2 (limit +-0.5 dB, decision 6) {'play_peak': 0.624, 'play_rms_db': np.float64(-14.0), 'pinned_fdn_peak': 0.284, 'pinned_fdn_rms_db': np.float64(-24.18), 'pinned_fdn_delta_db': np.float64(3.0), 'pinned_mix_peak': 0.636, 'pinned_mix_rms_db': np.float64(-13.96),"
+  },
+  {
+   "test": "test_locks::test_lock_unscaled_pm1_hadamard_render",
+   "status": "PASS",
+   "secs": 0.0,
+   "detail": ""
+  },
+  {
+   "test": "test_locks::test_lock_unscaled_pm1_hadamard_play",
+   "status": "PASS",
+   "secs": 0.0,
+   "detail": ""
+  },
+  {
+   "test": "test_locks::test_lock_geometric_level_inverse_square",
+   "status": "PASS",
+   "secs": 0.0,
+   "detail": ""
+  },
+  {
+   "test": "test_locks::test_lock_early_images_excite_fdn",
+   "status": "PASS",
+   "secs": 0.0,
+   "detail": ""
+  },
+  {
+   "test": "test_locks::test_lock_two_diffusion_layers_separate_keys",
+   "status": "XFAIL",
+   "secs": 0.0,
+   "detail": "P0.3 diffusion key split not in tree (card \"diffusion\" still feeds both layers)"
+  },
+  {
+   "test": "test_p0_engine::test_p0_1_denormal_guard_in_source",
+   "status": "PASS",
+   "secs": 0.0,
+   "detail": ""
+  },
+  {
+   "test": "test_p0_engine::test_p0_1_silence_cost[colour_off-over0-0.5]",
+   "status": "PASS",
+   "secs": 2.1,
+   "detail": ""
+  },
+  {
+   "test": "test_p0_engine::test_p0_1_silence_cost[colour_on-over1-0.75]",
+   "status": "PASS",
+   "secs": 2.5,
+   "detail": ""
+  },
+  {
+   "test": "test_p0_engine::test_p0_2_t60_play_within_8pct[std_lock18]",
+   "status": "XFAIL",
+   "secs": 0.0,
+   "detail": "F2 (per-line loss, line_t60) not in tree (P0.2)"
+  },
+  {
+   "test": "test_p0_engine::test_p0_2_t60_play_within_8pct[small_lock08]",
+   "status": "XFAIL",
+   "secs": 0.0,
+   "detail": "F2 (per-line loss, line_t60) not in tree (P0.2)"
+  },
+  {
+   "test": "test_p0_engine::test_p0_2_t60_play_within_8pct[hall_lock40]",
+   "status": "XFAIL",
+   "secs": 0.0,
+   "detail": "F2 (per-line loss, line_t60) not in tree (P0.2)"
+  },
+  {
+   "test": "test_p0_engine::test_p0_2_t60_play_independent_of_dffs[0.0]",
+   "status": "XFAIL",
+   "secs": 0.0,
+   "detail": "F2 (per-line loss, line_t60) not in tree (P0.2)"
+  },
+  {
+   "test": "test_p0_engine::test_p0_2_t60_play_independent_of_dffs[-0.5]",
+   "status": "XFAIL",
+   "secs": 0.0,
+   "detail": "F2 (per-line loss, line_t60) not in tree (P0.2)"
+  },
+  {
+   "test": "test_p0_engine::test_p0_2_t60_play_independent_of_dffs[-0.9]",
+   "status": "XFAIL",
+   "secs": 0.0,
+   "detail": "F2 (per-line loss, line_t60) not in tree (P0.2)"
+  },
+  {
+   "test": "test_p0_engine::test_p0_2_hf_residue_play",
+   "status": "XFAIL",
+   "secs": 0.0,
+   "detail": "F2 (per-line loss, line_t60) not in tree (P0.2)"
+  },
+  {
+   "test": "test_p0_engine::test_p0_2_t60_render_within_8pct",
+   "status": "XFAIL",
+   "secs": 0.0,
+   "detail": "F2 (per-line loss, line_t60) not in tree (P0.2)"
+  },
+  {
+   "test": "test_p0_engine::test_p0_2_decay_lock_off_unchanged",
+   "status": "PASS",
+   "secs": 0.3,
+   "detail": ""
+  },
+  {
+   "test": "test_p0_engine::test_p0_3_two_diffusion_layers_independent",
+   "status": "XFAIL",
+   "secs": 0.0,
+   "detail": "P0.3 diffusion key split not in tree (card \"diffusion\" still feeds both layers)"
+  },
+  {
+   "test": "test_p0_engine::test_p0_4_fdn_tail_null_play_vs_render",
+   "status": "XFAIL",
+   "secs": 0.0,
+   "detail": "P0.4 loop semantics not decided/landed (no build_mix / loop_semantics / packed loop_mix) - F5 is DECISION FOR IDLE"
+  },
+  {
+   "test": "test_p0_engine::test_p0_5_server_defaults_equal_client_state",
+   "status": "XFAIL",
+   "secs": 0.1,
+   "detail": "P0.5b: client does not load /api/defaults (hard-coded state in app.js); 9 shared-key mismatches: decay_lock False/True, decay_s 0.0/1.8, humidity 0.0/0.35, mic_proximity 0.0/0.25, mirror_b False/True, space 0.25/0.17, toe_half_deg None/55, yaw_l_deg None/-55, yaw_r_deg None/55"
+  },
+  {
+   "test": "test_p0_engine::test_p0_5_scipy_in_requirements",
+   "status": "PASS",
+   "secs": 0.0,
+   "detail": ""
+  },
+  {
+   "test": "test_p0_engine::test_p0_5_loop_mix_not_dead_payload",
+   "status": "XFAIL",
+   "secs": 0.0,
+   "detail": "P0.5a: loop_mix still computed in render_pipeline.py but never packed/used by Play (dead payload); delete it or consume it with F5 (DECISION FOR IDLE with the loop-semantics choice)"
+  },
+  {
+   "test": "test_p0_engine::test_p0_5_diffusion_master_clamped",
+   "status": "XFAIL",
+   "secs": 0.0,
+   "detail": "P0.5e/K6 clamp not landed: +0.7 -> 0.7, -5 -> -5.0"
+  },
+  {
+   "test": "test_p0_engine::test_p0_5_diffusion_master_single_value",
+   "status": "XFAIL",
+   "secs": 0.0,
+   "detail": "P0.5e: diffusion_master values differ {'fdn.DIFFUSION_MASTER_DEFAULT': -0.25, 'fdn.DIFFUSION_MASTER_LIVE': -0.5, 'server default': -0.5, 'app.js state': -0.5} - decision 5 (-0.25 everywhere) not landed"
+  },
+  {
+   "test": "test_p1_blob::test_p1_worklet_ver_consistent_everywhere",
+   "status": "PASS",
+   "secs": 0.0,
+   "detail": ""
+  },
+  {
+   "test": "test_p1_blob::test_p1_blob_len_matches_packer",
+   "status": "PASS",
+   "secs": 0.1,
+   "detail": ""
+  },
+  {
+   "test": "test_p1_blob::test_p1_wasm_matches_source",
+   "status": "PASS",
+   "secs": 1.9,
+   "detail": ""
+  },
+  {
+   "test": "test_p1_blob::test_p1_blob_v2_header_and_sections",
+   "status": "XFAIL",
+   "secs": 0.0,
+   "detail": "P1 blob v2 header/section table not in tree (magic 1 only)"
+  },
+  {
+   "test": "test_p1_blob::test_p1_max_blob_raised",
+   "status": "XFAIL",
+   "secs": 0.0,
+   "detail": "P1 blob v2 header/section table not in tree (magic 1 only)"
+  },
+  {
+   "test": "test_p1_blob::test_p1_old_wasm_silent_on_v2_blob",
+   "status": "XFAIL",
+   "secs": 0.0,
+   "detail": "P1 blob v2 header/section table not in tree (magic 1 only)"
+  },
+  {
+   "test": "test_p2_air::test_lock_direct_is_air_free_play",
+   "status": "PASS",
+   "secs": 0.9,
+   "detail": ""
+  },
+  {
+   "test": "test_p2_air::test_lock_direct_is_air_free_render",
+   "status": "PASS",
+   "secs": 3.2,
+   "detail": ""
+  },
+  {
+   "test": "test_p2_air::test_lock_no_air_on_fdn_return_play",
+   "status": "PASS",
+   "secs": 0.0,
+   "detail": ""
+  },
+  {
+   "test": "test_p2_air::test_lock_no_air_on_fdn_return_render",
+   "status": "PASS",
+   "secs": 0.0,
+   "detail": ""
+  },
+  {
+   "test": "test_p2_air::test_lock_humidity_one_pole_separate_from_shelf",
+   "status": "PASS",
+   "secs": 0.0,
+   "detail": ""
+  },
+  {
+   "test": "test_p2_air::test_lock_render_stage_order",
+   "status": "PASS",
+   "secs": 0.0,
+   "detail": ""
+  },
+  {
+   "test": "test_p2_air::test_p2_iso_air_fit_within_tolerance",
+   "status": "XFAIL",
+   "secs": 0.0,
+   "detail": "P2 ISO 9613-1 air not in tree (no engine/air_iso.py, no air_climate)"
+  },
+  {
+   "test": "test_p2_air::test_p2_air_shelf_zero_nulls_iso_off",
+   "status": "XFAIL",
+   "secs": 0.0,
+   "detail": "P2 ISO 9613-1 air not in tree (no engine/air_iso.py, no air_climate)"
+  },
+  {
+   "test": "test_p2_air::test_p2_play_render_early_null",
+   "status": "XFAIL",
+   "secs": 0.0,
+   "detail": "P2 ISO 9613-1 air not in tree (no engine/air_iso.py, no air_climate)"
+  },
+  {
+   "test": "test_p3_p4_surfaces::test_lock_per_hit_cascade_is_serial_render",
+   "status": "PASS",
+   "secs": 0.0,
+   "detail": ""
+  },
+  {
+   "test": "test_p3_p4_surfaces::test_lock_render_passes_every_hit",
+   "status": "PASS",
+   "secs": 0.0,
+   "detail": ""
+  },
+  {
+   "test": "test_p3_p4_surfaces::test_p3a_curtain_wall_only_real_materials",
+   "status": "XFAIL",
+   "secs": 0.0,
+   "detail": "P3A Track A materials/role bans not in tree"
+  },
+  {
+   "test": "test_p3_p4_surfaces::test_p3b_mute_all_panels_leaves_direct_and_fdn",
+   "status": "XFAIL",
+   "secs": 0.0,
+   "detail": "P3B surfaces Solo/Mute not in tree"
+  },
+  {
+   "test": "test_p3_p4_surfaces::test_p4_play_render_early_null",
+   "status": "XFAIL",
+   "secs": 0.0,
+   "detail": "P4 Play per-hit surface cascade not in tree"
+  },
+  {
+   "test": "test_p3_p4_surfaces::test_p4_flat_cards_bit_exact_bypass",
+   "status": "XFAIL",
+   "secs": 0.0,
+   "detail": "P4 Play per-hit surface cascade not in tree"
+  },
+  {
+   "test": "test_p3_p4_surfaces::test_p4_cpu_budget",
+   "status": "XFAIL",
+   "secs": 0.0,
+   "detail": "P4 Play per-hit surface cascade not in tree"
+  },
+  {
+   "test": "test_p5_p6::test_lock_no_scattering_inside_fdn_loop",
+   "status": "PASS",
+   "secs": 0.0,
+   "detail": ""
+  },
+  {
+   "test": "test_p5_p6::test_p5_scatter_zero_is_bit_identical",
+   "status": "XFAIL",
+   "secs": 0.0,
+   "detail": "P5 scattering (Track C) not in tree"
+  },
+  {
+   "test": "test_p5_p6::test_p5_scatter_after_air",
+   "status": "XFAIL",
+   "secs": 0.0,
+   "detail": "P5 scattering (Track C) not in tree"
+  },
+  {
+   "test": "test_p5_p6::test_p5_energy_and_feed_forward",
+   "status": "XFAIL",
+   "secs": 0.0,
+   "detail": "P5 scattering (Track C) not in tree"
+  },
+  {
+   "test": "test_p5_p6::test_p6_omni_source_bit_identical",
+   "status": "XFAIL",
+   "secs": 0.0,
+   "detail": "P6 source radiation not in tree"
+  },
+  {
+   "test": "test_p5_p6::test_p6_tail_invariant_to_source_yaw",
+   "status": "XFAIL",
+   "secs": 0.0,
+   "detail": "P6 source radiation not in tree"
+  }
+ ],
+ "pytest_tail": "_all.py'>\n\n    @pytest.mark.phase('HEADROOM')\n    def test_headroom_t14_whole_mix_informational(sw, ctx, RA):\n        \"\"\"Whole t14 mix (direct + early + FDN at unity) vs the pre-F2 reference (peak 0.512, RMS -16.37 dB at T14_PIN).\n        Not trimmed on purpose: F3 removed a fractional-delay loss on Play direct/early (Play direct now equals\n        Render direct). XFAIL (with numbers) when outside +-0.5 dB, so Idle can decide whether to trim those buses too.\"\"\"\n>       r = call_harness(RA, RA.t14_level_sanity, ctx)\n            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n\ntests/test_decisions_2026_09_28.py:209: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \ntests/conftest.py:112: in call_harness\n    return fn(ctx)\n           ^^^^^^^\n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\nctx = <run_all.Ctx object at 0x7f5052b78980>\n\n    def t14_level_sanity(ctx):\n        \"\"\"Nominal scene, colour on, uniform noise +-0.3 (-15.2 dBFS RMS, hot): Play peak < 0.95 (limiter idle), finite.\n        Headroom decision 6: with the fixed loop trim the FDN bus (FDN only, source/air pinned to the old defaults,\n        diffusion at the locked -0.25) must sit within +-0.5 dB of the pre-F2 level. Whole-mix delta is reported (direct/early moved\n        with F3's Play/Render parity fix, not trimmed).\"\"\"\n        p = ctx.params('std_lock18')\n        out = ctx.work / 'lvl.f32'\n        ctx.play(p, {}, 'noise', 3, 4, out)  # wasm_run noise is uniform +-0.3 (-15.2 dBFS rms)\n        x = np.fromfile(out, np.float32).reshape(-1, 2)\n        pk = float(np.max(np.abs(x)))\n        res = {'play_peak': round(pk, 3), 'play_rms_db': round(rms_db(x[:3 * SR]), 1)}\n        if not np.all(np.isfinite(x)) or pk >= 0.95: raise AssertionError(f'Play peak {pk:.3f} (soft limit starts at 0.95) {res}')\n        for tag, ex in (('fdn', {\"fdn_wet\": 1.0, \"direct_wet\": 0.0, \"early_wet\": 0.0}), ('mix', {})):\n            body = dict(SCENES['std_lock18'], **T14_PIN, **ex)\n            ctx.play(ctx.params(body), {}, 'noise', 3, 4, out)\n            y = np.fromfile(out, np.float32).reshape(-1, 2)\n            res[f'pinned_{tag}_peak'] = round(float(np.max(np.abs(y))), 3)\n            res[f'pinned_{tag}_rms_db'] = round(rms_db(y[:3 * SR]), 2)\n            res[f'pinned_{tag}_delta_db'] = round(res[f'pinned_{tag}_rms_db'] - T14_REF[f'{tag}_rms_db'], 2)\n        if abs(res['pinned_fdn_delta_db']) > 0.5:\n>           raise AssertionError(f\"FDN bus {res['pinned_fdn_delta_db']:+.2f} dB vs pre-F2 (limit +-0.5 dB, decision 6) {res}\")\nE           AssertionError: FDN bus +3.00 dB vs pre-F2 (limit +-0.5 dB, decision 6) {'play_peak': 0.624, 'play_rms_db': np.float64(-14.0), 'pinned_fdn_peak': 0.284, 'pinned_fdn_rms_db': np.float64(-24.18), 'pinned_fdn_delta_db': np.float64(3.0), 'pinned_mix_peak': 0.636, 'pinned_mix_rms_db': np.float64(-13.96), 'pinned_mix_delta_db': np.float64(2.41)}\n\nharness/run_all.py:322: AssertionError\n1 failed, 36 passed, 47 xfailed in 41.00s\n"
+}

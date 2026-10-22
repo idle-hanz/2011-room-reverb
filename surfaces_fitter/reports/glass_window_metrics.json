@@ -1,0 +1,41 @@
+{
+  "id": "glass_window",
+  "display_name": "Glass window",
+  "candidate": "B",
+  "model": "low_shelf_high_shelf",
+  "rmse_r_db": 0.05502483743205957,
+  "absorb_l1": 0.010798160327111965,
+  "candidate_rmse": {
+    "A": 0.698101989520212,
+    "B": 0.05502483743205957
+  },
+  "params": {
+    "r0_db": -6.805433166879811e-34,
+    "f_lo": 387.3655498335804,
+    "depth_lo_db": -1.9066540976774806,
+    "shelf_slope_lo": 3.423072387976545,
+    "f0": 408.26172039492246,
+    "depth_db": -0.2205796467467608,
+    "shelf_slope": 0.9267629649474936
+  },
+  "roles": [
+    "wall"
+  ],
+  "banned_on": [
+    "floor",
+    "ceiling"
+  ],
+  "absorb": [
+    0.35,
+    0.25,
+    0.18,
+    0.12,
+    0.07,
+    0.04,
+    0.04
+  ],
+  "extras": {
+    "notes": "WALL ONLY. HF reflective; LF panel absorb.",
+    "prefer_lf_candidate": true
+  }
+}

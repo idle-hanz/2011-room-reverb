@@ -1,0 +1,44 @@
+{
+  "mic_id": "AKGC414Hyper",
+  "display_name": "AKG C414 Hyper \u2014 LDC multipattern",
+  "honesty": "MEASURED",
+  "family": "hypercardioid",
+  "source": "Franco et al. Zenodo 10.5281/zenodo.4633508 (Raw_IRs, 5m, 24-bit, selected angles)",
+  "params": {
+    "f0": 200.00000000000315,
+    "depth_max_db": -17.786634428706712,
+    "shelf_slope": 1.4793735187528014,
+    "f_lo": 223.29493413898527,
+    "depth_lo_db": -0.02844526970196577,
+    "res_hz": 1500.0001664193776,
+    "lp_mix": 0.3055629569964796,
+    "fc_floor": 5403.097363984535,
+    "p": 0.6000000000000001
+  },
+  "train_rmse_db": 3.6593389007182338,
+  "holdout_rmse_db": 2.629788423836835,
+  "train_mse_db": 13.390761190309732,
+  "holdout_mse_db": 6.915787154146225,
+  "holdout_angles_deg": [
+    45.0,
+    135.0
+  ],
+  "train_angles_deg": [
+    0.0,
+    15.0,
+    30.0,
+    60.0,
+    90.0,
+    120.0,
+    150.0,
+    180.0
+  ],
+  "fit_message": "DE success=False nit=70 fun=13.653874; LS success=True cost=3480.009711",
+  "preset": "AKGC414Hyper.json",
+  "plots": {
+    "polar": "plots/polars/AKGC414Hyper_polar.png",
+    "colour": "plots/colour/AKGC414Hyper_colour.png",
+    "fit_train": "plots/fit/AKGC414Hyper_train.png",
+    "fit_holdout": "plots/fit/AKGC414Hyper_holdout.png"
+  }
+}

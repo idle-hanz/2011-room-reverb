@@ -1,0 +1,72 @@
+[
+  {
+    "deg": 0,
+    "fc_A_structure_rad": 10000.0,
+    "fc_B_dir_norm": 10000.0,
+    "shelf_C_db": -0.0,
+    "shelf_D_db": -0.0,
+    "fc_D_soft": 10000.0,
+    "gain_A": 1.0,
+    "gain_B": 1.0
+  },
+  {
+    "deg": 30,
+    "fc_A_structure_rad": 8.2,
+    "fc_B_dir_norm": 935.1,
+    "shelf_C_db": -0.8,
+    "shelf_D_db": -0.54,
+    "fc_D_soft": 3852.6,
+    "gain_A": 0.0,
+    "gain_B": 0.6667
+  },
+  {
+    "deg": 60,
+    "fc_A_structure_rad": 8.2,
+    "fc_B_dir_norm": 87.4,
+    "shelf_C_db": -3.0,
+    "shelf_D_db": -2.0,
+    "fc_D_soft": 3450.0,
+    "gain_A": 0.0,
+    "gain_B": 0.3333
+  },
+  {
+    "deg": 90,
+    "fc_A_structure_rad": 8.2,
+    "fc_B_dir_norm": 8.2,
+    "shelf_C_db": -6.0,
+    "shelf_D_db": -4.0,
+    "fc_D_soft": 2900.0,
+    "gain_A": 0.0,
+    "gain_B": 0.0
+  },
+  {
+    "deg": 120,
+    "fc_A_structure_rad": 8.2,
+    "fc_B_dir_norm": 8.2,
+    "shelf_C_db": -9.0,
+    "shelf_D_db": -6.0,
+    "fc_D_soft": 2350.0,
+    "gain_A": 0.0,
+    "gain_B": 0.0
+  },
+  {
+    "deg": 150,
+    "fc_A_structure_rad": 8.2,
+    "fc_B_dir_norm": 8.2,
+    "shelf_C_db": -11.2,
+    "shelf_D_db": -7.46,
+    "fc_D_soft": 1947.4,
+    "gain_A": 0.0,
+    "gain_B": 0.0
+  },
+  {
+    "deg": 180,
+    "fc_A_structure_rad": 8.2,
+    "fc_B_dir_norm": 8.2,
+    "shelf_C_db": -12.0,
+    "shelf_D_db": -8.0,
+    "fc_D_soft": 1800.0,
+    "gain_A": 0.0,
+    "gain_B": 0.0
+  }
+]

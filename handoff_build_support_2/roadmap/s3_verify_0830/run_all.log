@@ -1,0 +1,21 @@
+PASS     t01_pack_matches_worklet              0.6s  {'blob_len': 3166, 'max_diff': 0.0}
+PASS     t02_wasm_matches_source               3.5s  {'max_diff': 0.0}
+PASS     t03_golden_play_features_off          4.4s  {'std_unlocked_byp': {'null_db': np.float64(-3005.8), 'max_abs_diff': 0.0, 'tol_db': -100.0}, 'std_unlocked_col': {'null_db': np.float64(-3004.3), 'max_abs_diff': 0.0, 'tol_db': -100.0}, 'std_lock18_byp': {'null_db': np.
+PASS     t04_golden_render_features_off        8.4s  {'null_db': np.float64(-238.3), 'max_abs_diff': 1.8189894035458565e-12, 'tol_db': -100.0}
+PASS     t05_omni_source_identity              1.0s  {'key': 'source_radiation', 'play': {'null_db': np.float64(-3005.8), 'max_abs_diff': 0.0, 'tol_db': -100.0}}
+PENDING  t06_scattering_zero_identity          0.0s  scattering (Track C) not in this tree
+PASS     t07_tail_yaw_invariance               2.6s  {'key': 'source_yaw', 'tail_db': [np.float64(-75.38197608060712), np.float64(-75.38197608060712), np.float64(-75.38197608060712)], 'spread_db': np.float64(0.0)}
+PASS     t08_fdn_stability                    35.8s  {'dffs0': {'peak': 0.5417811274528503, 'silence_5s_db': np.float64(-37.7), 'silence_last5s_db': np.float64(-109.5)}, 'dffs+0.98': {'peak': 1.0, 'silence_5s_db': np.float64(-26.0), 'silence_last5s_db': np.float64(-96.8)},
+PASS     t09_silence_cpu                      11.1s  {'byp': {'play_mean_ms': 0.89, 'silence_late_mean_ms': 0.834}, 'col': {'play_mean_ms': 1.054, 'silence_late_mean_ms': 0.996}}
+PASS     t10_t60_play                          7.8s  {'std_lock18': {'dial': 1.8, 't30': {'500': np.float64(1.84), '1000': np.float64(1.78), '2000': np.float64(1.77), '4000': np.float64(1.77), '8000': np.float64(1.79)}}, 'small_lock08': {'dial': 0.8, 't30': {'500': np.floa
+PASS     t11_hf_residue_play                   1.6s  {9000: np.float64(1.8), 11000: np.float64(1.81)}
+SKIP     t12_t60_render                        0.0s  --quick
+SKIP     t13_parity_play_render                0.0s  --quick
+PASS     t14_level_sanity                      5.9s  {'play_peak': 0.511, 'play_rms_db': np.float64(-17.2), 'pinned_fdn_peak': 0.201, 'pinned_fdn_rms_db': np.float64(-27.68), 'pinned_fdn_delta_db': np.float64(-0.5), 'pinned_mix_peak': 0.528, 'pinned_mix_rms_db': np.float64
+PASS     t15_perf_active                       9.7s  {'1src_col': 1.012, '2src_col': 2.022}
+PENDING  t16_diffusion_layers_separate         0.0s  single "diffusion" card key still drives both tap_dff (Dffs) and Δd jitter; no separate key yet
+PASS     t17_play_hadamard_n                   0.4s  {'n': 16}
+SKIP     t18_tail_null_play_render             0.0s  --quick
+PASS     t19_two_source_radiation_cpu          7.8s  {'play_mean_ms': 1.959, 'silence_late_mean_ms': 1.846, 'limit_ms': 2.133}
+
+14 pass, 0 fail/error, 3 skip, 2 pending, 0 xfail

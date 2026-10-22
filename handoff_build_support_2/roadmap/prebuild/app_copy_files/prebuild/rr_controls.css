@@ -1,0 +1,14 @@
+/* T1 prebuild styles. Uses the app's tokens (app.css :root). */
+.rr-knob { width: 40px; height: 40px; cursor: ns-resize; touch-action: none; }
+.rr-knob input { cursor: ns-resize; touch-action: none; }
+.rr-knob.rr-dragging { border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent-dim); }
+.rr-knob.rr-detent { border-color: var(--warn); }
+.rr-knob input:focus-visible { outline: none; }
+.rr-knob:focus-within { box-shadow: 0 0 0 2px var(--accent-dim); }
+.rr-knob-read { display: block; min-width: 40px; text-align: center; font: 600 0.62rem/1.2 var(--mono); color: var(--muted); margin-top: 1px; }
+.rr-typable { cursor: text; border-bottom: 1px dotted var(--faint); }
+.rr-typable:hover { color: var(--text); border-bottom-color: var(--accent); }
+.rr-type-bad { color: var(--danger) !important; }
+.rr-type-box { width: 64px; font: 600 0.72rem/1.2 var(--mono); color: var(--text); background: var(--panel2); border: 1px solid var(--accent); border-radius: 6px; padding: 1px 4px; }
+.desk-strip.is-pan-locked .rr-knob { opacity: 0.45; cursor: default; }
+.ctrl > .rr-type-box { grid-column: 2; grid-row: 1; justify-self: end; text-align: right; }

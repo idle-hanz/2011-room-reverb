@@ -1,0 +1,61 @@
+unit,preset,model,program,level,null_db,n_records
+ssl_4_auto,glue,volterra_ham1,mix,base,-22.9,4
+ssl_4_auto,glue,volterra_ham1,mix,+8 dB,-16.6,4
+ssl_4_auto,glue,volterra_ham1,drums,base,-14.0,4
+ssl_4_auto,glue,volterra_ham1,drums,+8 dB,-13.5,4
+ssl_4_auto,glue,volterra_ham1,vocal,base,-18.8,4
+ssl_4_auto,glue,volterra_ham1,vocal,+8 dB,-10.4,4
+ssl_4_auto,glue,volterra_ham5,mix,base,-20.2,4
+ssl_4_auto,glue,volterra_ham5,mix,+8 dB,-12.3,4
+ssl_4_auto,glue,volterra_ham5,drums,base,-15.6,4
+ssl_4_auto,glue,volterra_ham5,drums,+8 dB,-12.1,4
+ssl_4_auto,glue,volterra_ham5,vocal,base,-15.2,4
+ssl_4_auto,glue,volterra_ham5,vocal,+8 dB,-6.9,4
+la2as_pr50,natural,volterra_ham1,mix,base,-17.1,4
+la2as_pr50,natural,volterra_ham1,mix,+8 dB,-12.9,4
+la2as_pr50,natural,volterra_ham1,drums,base,-14.9,4
+la2as_pr50,natural,volterra_ham1,drums,+8 dB,-12.5,4
+la2as_pr50,natural,volterra_ham1,vocal,base,-10.3,4
+la2as_pr50,natural,volterra_ham1,vocal,+8 dB,-6.4,4
+la2as_pr50,natural,volterra_ham5,mix,base,-14.8,4
+la2as_pr50,natural,volterra_ham5,mix,+8 dB,-8.1,4
+la2as_pr50,natural,volterra_ham5,drums,base,-14.8,4
+la2as_pr50,natural,volterra_ham5,drums,+8 dB,-8.5,4
+la2as_pr50,natural,volterra_ham5,vocal,base,-8.4,4
+la2as_pr50,natural,volterra_ham5,vocal,+8 dB,-3.5,4
+fet_all,room_crush,volterra_ham1,mix,base,-7.8,4
+fet_all,room_crush,volterra_ham1,mix,+8 dB,-6.1,4
+fet_all,room_crush,volterra_ham1,drums,base,-2.0,4
+fet_all,room_crush,volterra_ham1,drums,+8 dB,-1.8,4
+fet_all,room_crush,volterra_ham1,vocal,base,-9.9,4
+fet_all,room_crush,volterra_ham1,vocal,+8 dB,-4.4,4
+fet_all,room_crush,volterra_ham5,mix,base,-13.9,4
+fet_all,room_crush,volterra_ham5,mix,+8 dB,-8.2,4
+fet_all,room_crush,volterra_ham5,drums,base,-12.2,4
+fet_all,room_crush,volterra_ham5,drums,+8 dB,-7.8,4
+fet_all,room_crush,volterra_ham5,vocal,base,-9.4,4
+fet_all,room_crush,volterra_ham5,vocal,+8 dB,-3.6,4
+fc_t5,swell,volterra_ham1,mix,base,-19.0,4
+fc_t5,swell,volterra_ham1,mix,+8 dB,-15.4,4
+fc_t5,swell,volterra_ham1,drums,base,-17.4,4
+fc_t5,swell,volterra_ham1,drums,+8 dB,-15.4,4
+fc_t5,swell,volterra_ham1,vocal,base,-12.1,4
+fc_t5,swell,volterra_ham1,vocal,+8 dB,-6.2,4
+fc_t5,swell,volterra_ham5,mix,base,-15.0,4
+fc_t5,swell,volterra_ham5,mix,+8 dB,-9.4,4
+fc_t5,swell,volterra_ham5,drums,base,-15.9,4
+fc_t5,swell,volterra_ham5,drums,+8 dB,-10.9,4
+fc_t5,swell,volterra_ham5,vocal,base,-9.8,4
+fc_t5,swell,volterra_ham5,vocal,+8 dB,-3.4,4
+dis_nuke_room,nuke,volterra_ham1,mix,base,-9.5,4
+dis_nuke_room,nuke,volterra_ham1,mix,+8 dB,-8.6,4
+dis_nuke_room,nuke,volterra_ham1,drums,base,-9.5,4
+dis_nuke_room,nuke,volterra_ham1,drums,+8 dB,-6.5,4
+dis_nuke_room,nuke,volterra_ham1,vocal,base,-4.6,4
+dis_nuke_room,nuke,volterra_ham1,vocal,+8 dB,-3.8,4
+dis_nuke_room,nuke,volterra_ham5,mix,base,-8.2,4
+dis_nuke_room,nuke,volterra_ham5,mix,+8 dB,-0.4,4
+dis_nuke_room,nuke,volterra_ham5,drums,base,-8.2,4
+dis_nuke_room,nuke,volterra_ham5,drums,+8 dB,-1.1,4
+dis_nuke_room,nuke,volterra_ham5,vocal,base,-3.9,4
+dis_nuke_room,nuke,volterra_ham5,vocal,+8 dB,-1.1,4

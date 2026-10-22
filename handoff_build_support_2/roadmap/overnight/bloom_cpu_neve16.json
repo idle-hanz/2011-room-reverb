@@ -1,0 +1,57 @@
+{
+ "rounds": "4 warmup + 12",
+ "colour_mic": "on (empty over)",
+ "shared_tail": "off",
+ "off": {
+  "play_mean_ms": 1.758,
+  "play_median_ms": 1.747,
+  "play_p90_ms": 1.773,
+  "silence_late_mean_ms": 1.739,
+  "silence_late_median_ms": 1.737,
+  "play_spikes": 0,
+  "limit_ms": 2.4,
+  "tag": "off",
+  "bloom_n": 0,
+  "pre_n": 0,
+  "predelay_n": null
+ },
+ "follower": {
+  "play_mean_ms": 1.782,
+  "play_median_ms": 1.776,
+  "play_p90_ms": 1.8,
+  "silence_late_mean_ms": 1.788,
+  "silence_late_median_ms": 1.786,
+  "play_spikes": 0,
+  "limit_ms": 2.4,
+  "tag": "follower",
+  "bloom_n": 40,
+  "pre_n": 0,
+  "predelay_n": null
+ },
+ "colour": {
+  "play_mean_ms": 1.827,
+  "play_median_ms": 1.825,
+  "play_p90_ms": 1.837,
+  "silence_late_mean_ms": 1.822,
+  "silence_late_median_ms": 1.82,
+  "play_spikes": 0,
+  "limit_ms": 2.4,
+  "tag": "colour",
+  "bloom_n": 65,
+  "pre_n": 0,
+  "predelay_n": null
+ },
+ "full_neve16": {
+  "play_mean_ms": 2.938,
+  "play_median_ms": 2.934,
+  "play_p90_ms": 2.958,
+  "silence_late_mean_ms": 2.987,
+  "silence_late_median_ms": 2.979,
+  "play_spikes": 0,
+  "limit_ms": 2.4,
+  "tag": "full_neve16",
+  "bloom_n": 65,
+  "pre_n": 25,
+  "predelay_n": 4800.0
+ }
+}

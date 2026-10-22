@@ -1,0 +1,3 @@
+X = C (demo_C_omni_cube)
+Y = A (demo_A_binaural)
+Z = B (demo_B_omni_at_speakers)

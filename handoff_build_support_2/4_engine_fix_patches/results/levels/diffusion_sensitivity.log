@@ -1,0 +1,11 @@
+# FDN-only IR energy dB, std_lock18, source 3.0/1.5 pinned (box, 28 Sep ~22:10 BST). Script: tools/diffusion_sensitivity.py
+# tree   diffusion_master air_lp  play    render
+latest   -0.5   0.25   -8.83   -7.87
+latest   -0.25  0.25   -8.86   -8.52
+p4       -0.5   0.25   -2.36   +3.36
+p4       -0.25  0.25   -4.35   -5.71
+p5*      -0.5   0.25   -8.54   -7.38
+p5*      -0.5   0.0    -6.13   -4.91
+p5*      -0.25  0.25   -10.68  -17.30
+p5*      -0.25  0.0    -8.23   -14.85
+# p5* = first-cut trim (f2 play -4.77 / render -11.23, derived at -0.5), superseded by -2.81/-2.81 derived at -0.25.

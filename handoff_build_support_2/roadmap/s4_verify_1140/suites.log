@@ -1,0 +1,42 @@
+== build tests
+...................................                                      [100%]
+35 passed in 8.80s
+== selfcheck
+PASS  test_sos_accuracy_against_relative_db
+PASS  test_live_colour_parity
+
+All 44 checks passed
+== binaural test_binaural_mode_acceptance
+XXXXXXXXXXXXXXXXXxXXXX                                                   [100%]
+1 xfailed, 21 xpassed in 19.63s
+== binaural test_binaural_locked
+..........................                                               [100%]
+26 passed in 20.22s
+== binaural test_binaural_presets
+...................................                                      [100%]
+35 passed in 0.59s
+== phase-alone test_binaural_play_and_gaps
+....xxxx                                                                 [100%]
+4 passed, 4 xfailed in 5.27s
+== phase-alone test_s1_followups
+......                                                                   [100%]
+6 passed in 0.35s
+== phase-alone test_s3_source_b
+..                                                                       [100%]
+2 passed in 20.04s
+== phase-alone test_p3_p4_surfaces
+....xxx                                                                  [100%]
+4 passed, 3 xfailed in 0.44s
+== phase-alone test_locks
+.....                                                                    [100%]
+5 passed in 0.81s
+== phase p0_4 after probe fix
+x                                                                        [100%]
+=========================== short test summary info ============================
+XFAIL 3_phase_acceptance_tests/tests/test_p0_engine.py::test_p0_4_fdn_tail_null_play_vs_render - P0.4 loop semantics not decided/landed (no build_mix / loop_semantics / packed loop_mix) - F5 is DECISION FOR IDLE
+18 deselected, 1 xfailed in 0.09s
+== run_all quick
+PASS     t19_two_source_radiation_cpu          7.6s  {'play_mean_ms': 1.853, 'silence_late_mean_ms': 1.831, 'limit_ms': 2.133}
+
+15 pass, 0 fail/error, 3 skip, 1 pending, 0 xfail
+DONE

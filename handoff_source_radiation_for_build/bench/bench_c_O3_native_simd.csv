@@ -1,0 +1,5 @@
+C box benchmark (per 128-sample block, 3 buses => lines = 3*N)
+N_images,lines,static_us,ramp_us,coef_recompute_us(all lines),x4_multipoint_static_us
+32,96,29.17,55.93,5.49,115.81
+64,192,57.25,111.24,10.43,231.35
+128,384,132.82,222.37,20.72,464.05

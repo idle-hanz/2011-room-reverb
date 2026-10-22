@@ -1,0 +1,46 @@
+{
+  "honesty": "MEASURED",
+  "note": "MEASURED from Franco et al. Zenodo extract (6 mics, DOI 10.5281/zenodo.4633508). WAVs under /workspace/mic_fitter/data/zenodo. Angles held out: 45\u00b0, 135\u00b0.",
+  "zenodo": "https://zenodo.org/records/4633508",
+  "doi": "10.5281/zenodo.4633508",
+  "mic_ids": [
+    "ShureSM57",
+    "SchoepsCMC5UCardioid",
+    "NeumannU87AiCardioid",
+    "RoyerR121",
+    "ElectroVoiceRE20",
+    "AKGC414Cardioid"
+  ],
+  "preferred_mics": [
+    {
+      "id": "ShureSM57",
+      "family": "dynamic_cardioid",
+      "display": "Shure SM57 \u2014 dynamic cardioid"
+    },
+    {
+      "id": "SchoepsCMC5UCardioid",
+      "family": "sdc_cardioid",
+      "display": "Schoeps CMC5-U Cardioid \u2014 SDC"
+    },
+    {
+      "id": "NeumannU87AiCardioid",
+      "family": "ldc_cardioid",
+      "display": "Neumann U87 Ai Cardioid \u2014 LDC"
+    },
+    {
+      "id": "RoyerR121",
+      "family": "fig8_ribbon",
+      "display": "Royer R-121 \u2014 fig-8 ribbon"
+    },
+    {
+      "id": "ElectroVoiceRE20",
+      "family": "dynamic_cardioid",
+      "display": "Electro-Voice RE20 \u2014 dynamic cardioid"
+    },
+    {
+      "id": "AKGC414Cardioid",
+      "family": "ldc_cardioid",
+      "display": "AKG C414 Cardioid \u2014 LDC multipattern"
+    }
+  ]
+}

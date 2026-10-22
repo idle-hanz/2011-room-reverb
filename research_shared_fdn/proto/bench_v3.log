@@ -1,0 +1,31 @@
+def_1src m0 vs shipped max diff 0.0
+def_2src m0 vs shipped max diff 0.0
+big_1src m0 vs shipped max diff 0.0
+big_2src m0 vs shipped max diff 0.0
+bin_def_2src m0 vs shipped max diff 0.0
+round 0
+round 1
+round 2
+round 3
+round 4
+round 5
+def_1src|m0            min 1.114 med 1.191
+def_1src|m1            min 0.958 med 0.985
+def_1src|cand          min 0.906 med 0.943
+def_1src|fx            min 0.945 med 0.969
+def_2src|m0            min 1.792 med 1.868
+def_2src|m1            min 1.368 med 1.418
+def_2src|cand          min 1.361 med 1.448
+def_2src|fx            min 1.387 med 1.404
+big_1src|m0            min 1.193 med 1.217
+big_1src|m1            min 1.053 med 1.112
+big_1src|cand          min 1.058 med 1.095
+big_1src|fx            min 1.074 med 1.089
+big_2src|m0            min 1.926 med 2.010
+big_2src|m1            min 1.496 med 1.581
+big_2src|cand          min 1.497 med 1.552
+big_2src|fx            min 1.516 med 1.612
+bin_def_2src|m0        min 1.676 med 1.742
+bin_def_2src|m1        min 1.389 med 1.424
+bin_def_2src|cand      min 1.365 med 1.422
+bin_def_2src|fx        min 1.354 med 1.403

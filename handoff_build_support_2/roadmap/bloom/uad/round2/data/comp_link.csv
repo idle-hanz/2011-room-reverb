@@ -1,0 +1,15 @@
+test,L_gr_db,R_gr_while_L_compresses_db,L_to_R_1k_leak_db
+dbx_4_def,10.03,10.01,-100.4
+dis_6_detectLink,4.6,4.52,-101.6
+dis_6_detectNorm,9.99,-0.0,-218.0
+fc_t2_agcmatLV,10.02,9.96,-74.9
+fc_t2_def,9.78,9.86,-103.0
+fc_t2_sclinkUnlink_ctrlliUnlink,9.99,0.0,-159.8
+fet_all_def,8.32,8.29,-64.7
+la2as_pr50_def,10.01,9.97,-92.0
+la3a_pr5_def,9.9,9.9,-89.5
+ln_4_def,9.76,9.75,-115.3
+mvm_lim_def,9.32,9.33,-124.4
+mvm_lim_inmatrMS_outmatMS,9.99,9.99,-116.5
+mvm_lim_sclinkUnlink_ctrlliUnlink,9.99,0.0,-175.0
+ssl_4_auto_def,9.76,9.76,-107.2

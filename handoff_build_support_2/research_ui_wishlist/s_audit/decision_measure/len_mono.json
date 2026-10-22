@@ -1,0 +1,71 @@
+{
+ "mono_c": {
+  "total_db": -10.66,
+  "early_db": -10.74,
+  "tail_db": -9.54,
+  "peak_db": -10.76,
+  "corr_LR_after": 1.0,
+  "early_3oct_delta": [
+   -12.3,
+   -10.76,
+   -11.21,
+   -11.03,
+   -11.04,
+   -11.08,
+   -11.13,
+   -11.04,
+   -10.97,
+   -10.88,
+   -10.81,
+   -10.65,
+   -10.49
+  ],
+  "tail_3oct_delta": [
+   -9.54,
+   -9.54,
+   -9.54,
+   -9.54,
+   -9.54,
+   -9.54,
+   -9.54,
+   -9.54,
+   -9.54,
+   -9.54,
+   -9.54,
+   -9.54,
+   -9.54
+  ]
+ },
+ "default_1p8": {
+  "old_ms": 1500,
+  "new_ms": 2800,
+  "render_s_old_new": [
+   23.3,
+   45.5
+  ],
+  "added_energy_db_of_total": -58.08,
+  "total_level_change_db": 0.0,
+  "level_at_old_cut_rel_peak_db": -93.0,
+  "level_last50ms_new_rel_peak_db": -136.2,
+  "T30_old": 1.755,
+  "T30_new": 1.756,
+  "set_decay": 1.8,
+  "first_1500ms_max_abs_diff": 0.0
+ },
+ "decay_4": {
+  "old_ms": 1500,
+  "new_ms": 6100,
+  "render_s_old_new": [
+   24.2,
+   95.5
+  ],
+  "added_energy_db_of_total": -29.76,
+  "total_level_change_db": 0.005,
+  "level_at_old_cut_rel_peak_db": -68.3,
+  "level_last50ms_new_rel_peak_db": -137.3,
+  "T30_old": 3.398,
+  "T30_new": 3.983,
+  "set_decay": 4.0,
+  "first_1500ms_max_abs_diff": 0.0
+ }
+}

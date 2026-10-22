@@ -1,0 +1,2 @@
+base RENDER N=16 one A vs B-pos measured       null   -29.2 dB | band max  0.33 dB @100 rms 0.08 | early80 -0.01/+0.06 | T30 max 23.6% | ILDdiff 0.38 ICdiff 0.020 | lvl -0.00
+base RENDER N=64 one A vs B-pos measured       null   -55.5 dB | band max  0.01 dB @126 rms 0.00 | early80 -0.00/+0.00 | T30 max  1.6% | ILDdiff 0.01 ICdiff 0.001 | lvl -0.00

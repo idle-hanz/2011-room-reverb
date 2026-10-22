@@ -1,0 +1,286 @@
+ZIP software_backup_2026-10-19_preOVERNIGHT.zip
+ZIP_SHA1 4f9b93e6526461e7fd8b9727f3527fc4691b228c
+ZIP_BYTES 95286342
+FILE_COUNT 251
+TESTZIP ok
+SAMPLE 23 ok
+SCOPE software/ excluding .venv and __pycache__; golden/ is harness/golden
+STALE handoff_build_support/engine/tests/golden was not included. Its hashes are the old tree. The Current pin hashes match harness/golden only.
+PINS
+WORKLET_VER 59
+pack_room.js?v=52
+live_fdn.js?v=59
+app.js?v=62
+sl_room_result.js?v=3
+wasm 843a6eb8c91a9278ba927f643481f3260766a08c 279668
+live_stereo.c bbdf57994e0996e2c9b77eb8a634550bb71ef3cf 136434
+temp_dll dcde61dfa8ccc17244595244bd3cb7077c7f8433 285184
+GOLDEN_META a362cf5e490089807b39346ba207633b88511548
+play_std_lock18_byp d011bafca80f4e46ae768db40becd762e78dcada
+play_std_lock18_col d9470bfad67211180fedc1a07cd2352eaf4b14c7
+play_std_unlocked_byp 91738c70220b4edce512aebe3548dfdbd894cc41
+play_std_unlocked_col a0ae72d9fb690cb7b3bbd54632abc466cefa0d24
+render_std_unlocked_byp 2a806e334e06cc475868d4c3da3fc78431c9a0aa
+empty_md5 b6c55d429fa63d6d0d3cd1fcc7d23e88
+centre_md5 b3e6bcd9dfa13ad737d2b15d561f7d30
+explicit_false_empty ce009a4ccc3d85f87aa6547f59eda0e4
+explicit_false_centre 35972c29a63dbe5b33d228b68e6e575b
+two_absent a5dcacc67a269c234c4b5745899b038e
+two_false 0e94bd03d899b76b43adf31ae87f0cd2
+wasm_run.js c505825f5dbbd5ec74780696ecbfd7217ebacf59 harness/lib/wasm_run.js
+render_pipeline.py 5fb71ad02be38dfb6a7d771e0032d6c959431434
+app_server.py 77ed1542be77105b62fdc29bd4e037536acf7a0b
+fdn_worklet.js b39ccd9178c7ecf7145b3e267283b0b07aa6749d
+live_fdn.js a936a5f1bfaf62d648c4e8da22d3808a8c73ac11
+FILES
+a362cf5e490089807b39346ba207633b88511548  664  golden/GOLDEN_META.json
+d011bafca80f4e46ae768db40becd762e78dcada  576512  golden/play_std_lock18_byp.f32
+d9470bfad67211180fedc1a07cd2352eaf4b14c7  576512  golden/play_std_lock18_col.f32
+91738c70220b4edce512aebe3548dfdbd894cc41  576512  golden/play_std_unlocked_byp.f32
+a0ae72d9fb690cb7b3bbd54632abc466cefa0d24  576512  golden/play_std_unlocked_col.f32
+2a806e334e06cc475868d4c3da3fc78431c9a0aa  192008  golden/render_std_unlocked_byp.f32
+cc9aa9dc139ca3d797f2c9c27f4a912b2461098b  37  software/.pytest_cache/.gitignore
+74a33d12cf1d479b4901bc0a0dd1cf02df998f0b  191  software/.pytest_cache/CACHEDIR.TAG
+54be9e578952c88d983b7d92c5f96579869575a3  302  software/.pytest_cache/README.md
+bf21a9e8fbc5a3846fb05b4fa0859e0917b2202f  2  software/.pytest_cache/v/cache/lastfailed
+ff2dde5f0bb15c763204914296a999e780d1b9cf  11487  software/.pytest_cache/v/cache/nodeids
+82f93ce64a6059861b3fb78a646193d675082a10  1427  software/Launch Tweak App.bat
+be75eedd0ac6626e1a1123066064477e8a7f52d2  658  software/README.txt
+b9a2c3875733b38a0951babda1fe0cde3ff9be7e  2851  software/SYNC.md
+d243bea25416829d8a011b67f27a7fc8621be046  13699  software/UI_NOTES.md
+77ed1542be77105b62fdc29bd4e037536acf7a0b  59269  software/app_server.py
+90f41a06827af708129b71ba541e7481fd337bf8  228  software/engine/ENGINE.txt
+36d6f44b3def2bd66829076a6f3e27f4cd6efef5  85  software/engine/__init__.py
+38994bc33421870ed7abd3d6d46c5f8bc9db143a  1379  software/engine/absorb_masks.py
+b13764a7ee8824ea4f2814a737abf78c499c7815  16178  software/engine/air_iso.py
+55d363a2456540e3611cad65836296e80ae54bd4  13183  software/engine/desk_matrix.py
+bfb522aee725478d9b2c301d0953c657fc0ed5d5  92537  software/engine/early_field.py
+0cc01f6a10b6237600ea853cb6f25d29b029487a  60105  software/engine/fdn.py
+1f8e3853ed1144f49fa4055bdcc3c83ca1f021db  2268  software/engine/fdn_core.c
+c915ee9bb0b84ff5a46324f04f9e675a52095377  1602  software/engine/fdn_stub.py
+bbdf57994e0996e2c9b77eb8a634550bb71ef3cf  136434  software/engine/live_stereo.c
+a73325d28e0ea05d42707ad70bbb1fdaee7185e5  54751  software/engine/live_stereo.c.orig
+09ba7e22f69334da54e54fa9b5b37ce7fc5f329d  3333  software/engine/mic_pattern.py
+b4931aad432343160d90bea20d17c13cc1661f93  13540  software/engine/moving_room_demo.py
+f8f2f1d45df3b0c62db6905e46a63e67c348242a  8307  software/engine/polygonal_stub.py
+b47fa2fe740c0d3a466e826cff566d9b4cd14066  1583  software/engine/presets/air/README.md
+e94daeb0dde1fb7077abc6c7b86ed035b3356148  2529  software/engine/presets/air/dry_20C_20RH.json
+e39b72d1cb93163f1f83bf6be33a59cdbace8f0c  2545  software/engine/presets/air/humid_20C_80RH.json
+5c43eb0ec1a5570347f7166d140cf09604bc152a  7005  software/engine/presets/air/index.json
+1b4dd6fdc78c2487f6db09bd04a409b4737eb5ab  2551  software/engine/presets/air/studio_20C_50RH.json
+e1aebcc29c8859ce281fe8997ee8bd2fd8255b54  2547  software/engine/presets/air/warm_22C_40RH.json
+78da4446e10f14fceccbcd64cfa2478ad5ea1c5a  7910  software/engine/prox.py
+c75708f28cd84244ed271a6e757411d6f50abc31  49106  software/engine/selfcheck.py
+c4f694d77202b51e3e4841f261b74abad2e53fd0  21098  software/engine/source_radiation.py
+e739fbf9d95d2444c75614165e9540d4721515e7  17933  software/engine/surf_loop.py
+6ec7fe3c682a84ead79d7832aba53f51b5755112  12545  software/engine/surf_panels.py
+6311411d13b74e6ad0a5772621c9d13c12af092e  9869  software/engine/surf_target.py
+bad691705afac8f3109428238898a3488f90f36a  2659  software/engine/to_v_tables.py
+e7e37b3195c96820b9e41ad9727555f96ec89a58  3122  software/engine/voice_table_32.md
+60b39395e4e03fb57d3999ac3d61c17447900865  2779  software/engine/voice_table_32.py
+b790ad0106f7dec983d51bb85a3d1f2dd36e7e79  10463  software/image_geometry.py
+ffcc55343b43934b90956b55b26bd730e7347028  305  software/launch_tweak_app.sh
+d9e44630ab0ffc8faa2feaf3343e031b1a39dc31  3469  software/mic_colour/HOOKS.md
+721d1459a4a041cc8a1e21ce74d429659c54bd15  225  software/mic_colour/__init__.py
+e1a657f3828b51015a6a53b63dccaae9184b7240  6469  software/mic_colour/binaural.py
+1b66581fb13878095732d02b5ca7aa365b6ca34a  4988  software/mic_colour/colour.py
+a6fc75a13cd81eb1549d94134dd433abe6aa600d  2708  software/mic_colour/design.py
+d6b2f04a592b35b9f86fba9abb34d54e57bc5fa5  614  software/mic_colour/hpf.py
+98dfb401aee52ac79de374e17c26af32dd4ff03d  5520  software/mic_colour/live_bank.py
+ef70b7412e2405493be51e3a8db2c02ac773ed2b  2459  software/mic_colour/model.py
+219ef194dbb84347980e4a2ab612b3e50bcccdda  1525  software/mic_colour/modes.py
+89a8bcb763b9ae2a5015afd4f39cddf8c565a3fa  1067  software/mic_colour/pattern_map.py
+e6c0910bf9115980380e6715f909a2ffa03c516b  5077  software/mic_colour/preset_store.py
+a11b1d15bef2ca44a9cc1e2fcc690e7898e09d33  3957  software/mic_colour/presets/binaural/LICENSES/DATA_LICENCES.md
+782948aaf8991e07f62c0a8c81fa45df5b430786  985  software/mic_colour/presets/binaural/LICENSES/NOTICE_SADIE_II.txt
+c8bc7df08db9dd3b39c2c2259a163a36cf2f6808  11558  software/mic_colour/presets/binaural/LICENSES/SADIE_II_Apache-2.0.txt
+a4dfb290e8388f0eeff7bd50ad12f82fd373babb  1944  software/mic_colour/presets/binaural/LICENSES/THK_KU100_CC-BY-SA-3.0.md
+8447c06288dd57880e6f86d9af547ebb13d8b39d  200373  software/mic_colour/presets/binaural/SADIE2_KEMAR.json
+bfd6f1a3d92e6c6a19d38dec386867f2dce15a5e  200207  software/mic_colour/presets/binaural/SADIE2_KU100.json
+39f8781ba3338e30c72e0fc28ac45624a3a7e0a0  200022  software/mic_colour/presets/binaural/THK_KU100_FF.json
+7ed33a5e3c69e95dd4762b8e1f20ebaa269a35fd  1617  software/mic_colour/presets/binaural/index.json
+5dcd4728f2c6c74d8868b94422000c59be75ff51  58483  software/mic_colour/presets/binaural/sos_tables/44100/SADIE2_KEMAR.K3.json
+42e00fd215485de313f375017b43d2243f8614c6  114583  software/mic_colour/presets/binaural/sos_tables/44100/SADIE2_KEMAR.json
+d09318a1fea555af62f3230da9562c41321acdde  58566  software/mic_colour/presets/binaural/sos_tables/44100/SADIE2_KU100.K3.json
+44982ddd5eb8c42fbdaadcbacaf619d52d840dd5  114445  software/mic_colour/presets/binaural/sos_tables/44100/SADIE2_KU100.json
+f6061f5aa47b4ea0b33a02b8618b6aad77a460e6  58623  software/mic_colour/presets/binaural/sos_tables/44100/THK_KU100_FF.K3.json
+07e1f25e65aa63f592b0e3ddfc512e72440034d5  114494  software/mic_colour/presets/binaural/sos_tables/44100/THK_KU100_FF.json
+ab44084a6b8e9cc30611b751bb28a7249ff95b5f  58423  software/mic_colour/presets/binaural/sos_tables/48000/SADIE2_KEMAR.K3.json
+0c28c9df72d6ad92811827c84b00ead5daedf2e0  114727  software/mic_colour/presets/binaural/sos_tables/48000/SADIE2_KEMAR.json
+e11324bbd66b650d7050fdf8227c5c5a919c8b6d  58506  software/mic_colour/presets/binaural/sos_tables/48000/SADIE2_KU100.K3.json
+cbdceb7354750c2ec64a3fb6febb82fa564a1168  114507  software/mic_colour/presets/binaural/sos_tables/48000/SADIE2_KU100.json
+e904e796db2a765270ac271406222a6fb7549020  58585  software/mic_colour/presets/binaural/sos_tables/48000/THK_KU100_FF.K3.json
+13cdb771b538f451200f3db8db43af6eaa8a5a26  114421  software/mic_colour/presets/binaural/sos_tables/48000/THK_KU100_FF.json
+fddd130a6ce7b62f3a59cfdbe3e31e3cae6fba4d  53971  software/mic_colour/presets/binaural/tail_ic/SADIE2_KEMAR.json
+c9926f195e418185824038acc8942a2faf622783  54171  software/mic_colour/presets/binaural/tail_ic/SADIE2_KU100.json
+7015f31d2e40e4dab76c757a2a6ba6f136c6fa08  54104  software/mic_colour/presets/binaural/tail_ic/THK_KU100_FF.json
+728800da51f9b2a55863a40112729c135fd11072  5741  software/mic_colour/sos_fit.py
+dee05d6ac6236d7057933f902840eeabf743aaf4  4943  software/mic_colour/sos_table.py
+dedd0a7eae8ed40d38066ddd05e134524ce806e1  12049  software/mic_colour/sos_tables/44100/AKGC414Bidirect.json
+20b877a6f7a9d80e51d9a77bd9362cd859660e76  13574  software/mic_colour/sos_tables/44100/AKGC414Cardioid.json
+b0446390ad5404def071709fde22a93c09ee01fb  15024  software/mic_colour/sos_tables/44100/AKGC414Hyper.json
+5bd4154d38956ac49d7d21a11eadd2d4dcb5ad44  12187  software/mic_colour/sos_tables/44100/AKGC414Omni.json
+de884964e2d1466d9094f300969d5cb8b86de2d6  12843  software/mic_colour/sos_tables/44100/Coles4038.json
+05c0ce968473e3d8c51732e8e5fdfba44cb56fc8  12096  software/mic_colour/sos_tables/44100/DPA4006.json
+7c3d651fbf07f5e4edad38b44cb067307ef28bfd  11996  software/mic_colour/sos_tables/44100/ElectroVoiceRE20.json
+01ef6f280790f08e6b92e55fc06e0ca9d6f8436d  12019  software/mic_colour/sos_tables/44100/NeumannU87AiBidirect.json
+ffb4ac6a1b069630f54704f4772cbb16e06de757  12089  software/mic_colour/sos_tables/44100/NeumannU87AiCardioid.json
+4387c87b0c75c4934845a733652cf623918bed56  29866  software/mic_colour/sos_tables/44100/NeumannU87AiOmni.json
+ef1196fffbb3a2f933a9fde06a29fb83b6760fdd  12053  software/mic_colour/sos_tables/44100/RodeNT2ABidirect.json
+aa9b8b7032aa2429e0d481a8d8ce86029353bec3  12042  software/mic_colour/sos_tables/44100/RodeNT2ACardioid.json
+cff9770e5eeb5e9c42d3f00b0199c93d7ece39a9  12076  software/mic_colour/sos_tables/44100/RodeNT2AOmni.json
+40865f3f92e55e84d1a8d51dc3090df1c7543305  21956  software/mic_colour/sos_tables/44100/RoyerR121.json
+222005732e6845ff31faae0fe3c97830cf1ded15  12036  software/mic_colour/sos_tables/44100/SchoepsCMC5UBidirect.json
+f008add1b932118164d21962af1505199ddf7157  13530  software/mic_colour/sos_tables/44100/SchoepsCMC5UCardioid.json
+f5c58072fef2c63ae97f7bbb8ced39b94441e335  13595  software/mic_colour/sos_tables/44100/SchoepsCMC5UOmni.json
+b81223cf5da7e80dae7bb701077f13d9f11294ab  12760  software/mic_colour/sos_tables/44100/SennheiserMD441.json
+2c9780c3088ab4234fad748f9a86dc6bf7b7b5ba  14250  software/mic_colour/sos_tables/44100/ShureSM57.json
+6a294d48088b6d8a480075b682a5871346c311ff  11984  software/mic_colour/sos_tables/44100/ShureSM58.json
+7a31f15fa59e55d8ddd6f3711abea3d2fb1d0f13  12050  software/mic_colour/sos_tables/AKGC414Bidirect.json
+2f7a1d63d229324e7cfcea8ee48d9dbc2c814b2e  12054  software/mic_colour/sos_tables/AKGC414Cardioid.json
+3db04bf7cd2dad3c9cbf3eb4ca439b7a9e3e96ed  12019  software/mic_colour/sos_tables/AKGC414Hyper.json
+aa17db36db950028b293ccb9281ef97312d380b1  12167  software/mic_colour/sos_tables/AKGC414Omni.json
+b25079ddc253846937fa9699904041f7ddc7e527  12792  software/mic_colour/sos_tables/Coles4038.json
+386ed755c625e5d2b92b81c467952a1ccb41e1aa  12148  software/mic_colour/sos_tables/DPA4006.json
+a8986a2afc6b8c1bb0aa3c4a86ea5a585554fd74  11980  software/mic_colour/sos_tables/ElectroVoiceRE20.json
+f94a773e501de8188f9f42c06552bd0143ff166f  12035  software/mic_colour/sos_tables/NeumannU87AiBidirect.json
+efc20cd61a78b2ad379fd4ba91f5338bacd169c9  12084  software/mic_colour/sos_tables/NeumannU87AiCardioid.json
+e632a6acc291765671b8f48c75194657c7d22bd3  29942  software/mic_colour/sos_tables/NeumannU87AiOmni.json
+e9259e01f7f350fd3c717fc1b6424d18a96e274d  12072  software/mic_colour/sos_tables/RodeNT2ABidirect.json
+fb39df41e3f96918a26e2a28f3c7377b9fcc91fe  12050  software/mic_colour/sos_tables/RodeNT2ACardioid.json
+ff847d2496edd375fcc2243c65ed81c97544f892  12098  software/mic_colour/sos_tables/RodeNT2AOmni.json
+acf1cd6215232ba4df7397e432f8e75298e0e116  21966  software/mic_colour/sos_tables/RoyerR121.json
+adc3c60c718b1767b0cc177d57cc1324e4423785  12036  software/mic_colour/sos_tables/SchoepsCMC5UBidirect.json
+49c1834c396b1594202048433d64413ea9274952  13541  software/mic_colour/sos_tables/SchoepsCMC5UCardioid.json
+6dc39d8eec2a3b72e46100c6ccdcc656c1d32a54  13612  software/mic_colour/sos_tables/SchoepsCMC5UOmni.json
+bcdb11304c22b9d168452b46e18ee75176702622  12744  software/mic_colour/sos_tables/SennheiserMD441.json
+b13e13850f1fd864954b1cb62270eb5994f015f8  14237  software/mic_colour/sos_tables/ShureSM57.json
+0301b62c7f1f9a0e4f0a4b1e6beb2d93de9e4d2b  12729  software/mic_colour/sos_tables/ShureSM58.json
+bfabbbeaca781fca77ff2d3e2b21836e853283b1  6341  software/mic_display.py
+af07bbb347aad01445da91242b0a57f7a0751573  3393  software/parameters.csv
+1ba8db525a414040a01431ebd78f7c9cb4d03513  30008  software/polar_field.py
+bf411aea4879fdc8346f18f120e0bdb5b2e49e9f  1252  software/presets/source/README.md
+cb0608099a2c8b35e634209e9e9b80dff1559c8c  2710  software/presets/source/cab_1x12_closed.json
+42e5ef104685aa55bc12c16096fe43d97254517f  2728  software/presets/source/cab_4x12_closed.json
+e6bf350ac2e69fe350f65967628012eb3fb9b513  3094  software/presets/source/index.json
+af1f59313b829cfe6af44c957f060d3dda18dbcb  2250  software/presets/source/omni.json
+2a64e9d32e91ff023f5a34939f1caae7bddce3e6  2573  software/presets/source/piano_grand_lid_open.json
+25caada37a42a71dddeb32ff30c5d532fc5338ae  5872  software/presets/source/talking_head.json
+3e941e590872a490c3ebb6e302e808884e6d5778  4959  software/presets/source/trumpet_byu.json
+c3064779de7f8cf3fe9fc9718b5404bac7547875  4757  software/presets/source/violin_byu.json
+f62f301ae6c36b4dc4228049cae07ddad07b9868  2117  software/presets/surfaces/absorber_panel_1in_gap1in.json
+5f7f35ea00ab9b08a628037f9331eacaf9a01e5b  1597  software/presets/surfaces/absorber_panel_2in.json
+27ecdc140a0044b34930a53a7739a2f6e0dc883d  2114  software/presets/surfaces/absorber_panel_2in_gap2in.json
+0b56457d9e830e62b7349dcef7d41cfa8a034ec3  2119  software/presets/surfaces/absorber_panel_4in_gap4in.json
+ef483e211a81ce9d234e6426432ebed7f4ee2d0d  1557  software/presets/surfaces/acoustic_ceiling_tile.json
+71c5679eb0b41b0b63ee625009c91481b99a4e70  1560  software/presets/surfaces/brick_unglazed.json
+b71657dedb835b712f6deb5394e226d0727143b5  1563  software/presets/surfaces/carpet_on_concrete.json
+2a41420c0b68c70380bde7945759f6cb7cb92f73  1555  software/presets/surfaces/carpet_on_foam.json
+a5a93d0b37bdd8ab24946a4c40158e7e61a07210  1561  software/presets/surfaces/concrete_painted.json
+d3b1198dbb8cc9863ab0d7c866afb29e732d0440  1552  software/presets/surfaces/glass_window.json
+26d55e48f25a5cdd2135f6b6535bac4a2719bafe  1605  software/presets/surfaces/gypsum_painted.json
+ea3b758a343eb55f5e9862777e250ac5f4339fa6  1559  software/presets/surfaces/heavy_curtain.json
+a7463c36e0a50cca49a51d9d088eaaca6db54c14  6871  software/presets/surfaces/index.json
+02fbadda9324ece0384ebc6e10e28671b7ba9aa2  1567  software/presets/surfaces/plaster_smooth.json
+c756dfa2e94aeaf278d9134e91340e246d6d918c  1557  software/presets/surfaces/plywood_panel.json
+c729e9e0ba5fe6be7103c5002ed5fd41e24029b2  1549  software/presets/surfaces/wood_parquet.json
+5fb71ad02be38dfb6a7d771e0032d6c959431434  130954  software/render_pipeline.py
+f18b5a85987aaa8d6d6d664de1603a254880f8e5  961964  software/renders/out.wav
+7365f08b96981de3b7d0085de7117382471564e9  86032844  software/renders/out_20261013_115900.wav
+40d6b6615ea7c4cf005bde5aa1bdc8749b4d16f8  961964  software/renders/out_20261013_212748.wav
+40d6b6615ea7c4cf005bde5aa1bdc8749b4d16f8  961964  software/renders/out_20261016_212748.wav
+40d6b6615ea7c4cf005bde5aa1bdc8749b4d16f8  961964  software/renders/out_20261017_072718.wav
+40d6b6615ea7c4cf005bde5aa1bdc8749b4d16f8  961964  software/renders/out_20261017_141019.wav
+6bed0c0afe7f02d9764494d824eabbb26b2441c3  961964  software/renders/out_20261018_210140.wav
+f18b5a85987aaa8d6d6d664de1603a254880f8e5  961964  software/renders/out_20261019_095102.wav
+f18b5a85987aaa8d6d6d664de1603a254880f8e5  961964  software/renders/out_20261019_110224.wav
+f18b5a85987aaa8d6d6d664de1603a254880f8e5  961964  software/renders/out_20261019_144510.wav
+f18b5a85987aaa8d6d6d664de1603a254880f8e5  961964  software/renders/out_20261019_181810.wav
+cbb285c75118c6a47c78fd11bd852d22f2bc1aec  35987  software/renders/ui_preview/ui_3d.png
+bc0be6ba5af4c9ba361fddc1f39aa1e034481243  178977  software/renders/ui_preview/ui_after_drag.png
+a55f0c9e81e2dd883673f345ffc4e496d4406465  17610  software/renders/ui_preview/ui_floor.png
+7267c80be3134548f5f53ff1118de2f6fbc45073  169734  software/renders/ui_preview/ui_lattice.png
+57049423f777f62115256234fd3d04fdb568fff9  56531  software/renders/ui_preview/ui_legs.png
+b9c0138c0800cdc322848bbf2bbc192a0ecd6cdb  178431  software/renders/ui_preview/ui_overview.png
+1616299771e61b5535a8370d9a71b2a62f0dec51  86641  software/renders/ui_preview/ui_paths.png
+425772777a5eb2e1cb22a91ca5f4921c47816db7  87  software/requirements.txt
+109c5607b50041adbfe54eab880bdca283d2cf69  59525  software/static/css/app.css
+8ae4fea62a8f41408e40d86ec7b7caf3763c57d8  1150  software/static/css/rr_controls.css
+0c0bad472f10717092c822deb0b4d7f583cddb8b  1803  software/static/css/sl_room_result.css
+d8cfa0bd65bd7c9f6003382e51ddbe6e79213d56  269  software/static/favicon.svg
+b9cd686dc012d0c8269ad029a925b69d6e9f9e1d  67933  software/static/index.html
+2a4f2d3e0750c476a19d2c50edd032fc9f34cb4a  42066  software/static/index.html.orig
+fba5c3a7aaf1ff9428c4936e49ad2fb3ca6237e2  142364  software/static/js/app.js
+71298fa0cf45d0d9e562509cdd14ebea4e5b0dac  46519  software/static/js/colour_surfaces.js
+054c151b208c04dace778440a8f16c3276037efd  14636  software/static/js/drag_model.js
+b39ccd9178c7ecf7145b3e267283b0b07aa6749d  9645  software/static/js/fdn_worklet.js
+92caa8eb85bad7d7c0c32092c96ec3096e0cfc11  2634  software/static/js/freq_palette.js
+b1510127bfd47258d64167e570da8cde43f11daa  22817  software/static/js/image_views.js
+a936a5f1bfaf62d648c4e8da22d3808a8c73ac11  16794  software/static/js/live_fdn.js
+a9328bb0d748a1534c27fdf6e02fad40c5978c50  5617  software/static/js/lr_buttons.js
+fe4fadffd6e79e9f87d91170ce771a3ba85dd456  60107  software/static/js/mic_desk.js
+67e201efa44f492825806a92c1dfd01304ac7591  5897  software/static/js/ms_presets.js
+d69b4729ad52ca65145f9b6a6d900b3a3524d868  5011  software/static/js/pack_room.js
+8818691c6cce9ef3aeadab86854ac60afcb7660e  14428  software/static/js/polar_field.js
+2f6ab9ae895fa61c90dae78033503be032a8cf17  36364  software/static/js/room_3d.js
+bf559b1850d60e1695616a746bd17d5ef21e1b0b  47716  software/static/js/room_editor.js
+2e5282b5f291fb7960e5f157a939fa17c0c93f6a  7209  software/static/js/room_math.js
+8728648f9ca66b05b112e65a57ad3c8859b173bb  3978  software/static/js/room_view_pose.js
+dbee9f5539c6455e4f8c7fed438ad3bef417c8d1  1122  software/static/js/room_window_math.js
+5368661d2e3b7f73318b945fa62aaaf1ef62af0e  11583  software/static/js/rr_controls.js
+2810b2076dfec7f02a7caaa84d273ca9e2c2deee  1115  software/static/js/rr_controls_boot.js
+8c1250916ee2a7f47ffbf87ffcc5f75473357dfc  23830  software/static/js/sl_room_result.js
+1f1031ff33447a65e99c1a5abca9be4f2336e79a  16696  software/static/js/source_desk.js
+6b00c6f3f6ee3a410814c6158eb4fd3e246f0742  2205  software/static/js/spectrum_colors.js
+ccabb6c3b0fe669a2a571546e109bbb43ec31fa6  669884  software/static/js/vendor/three.min.js
+843a6eb8c91a9278ba927f643481f3260766a08c  279668  software/static/wasm/live_stereo.wasm
+7eac4895723564292741893e2f54d9c0b5576960  37743  software/surface_colour.py
+cc9aa9dc139ca3d797f2c9c27f4a912b2461098b  37  software/tests/.pytest_cache/.gitignore
+74a33d12cf1d479b4901bc0a0dd1cf02df998f0b  191  software/tests/.pytest_cache/CACHEDIR.TAG
+54be9e578952c88d983b7d92c5f96579869575a3  302  software/tests/.pytest_cache/README.md
+6461439ea0cb4e46063b95da387a1285e51df9e6  552  software/tests/.pytest_cache/v/cache/nodeids
+da39a3ee5e6b4b0d3255bfef95601890afd80709  0  software/tests/__init__.py
+9d8fcf350e7d8c6788df03ffd76a1836ec88c982  3318  software/tests/_harness.py
+d9580f3bbb879ec01354360741cfc1545aefab4f  1635  software/tests/_sl_harness.py
+1f8151695e2126961a71d0a10873618e7d613d9e  2153  software/tests/_sl_render.py
+3a4acf7d93544ab8abec56f3e7cc2b23de80b4e8  107  software/tests/conftest.py
+20157160b098c74f3eeb061fb7bc34042ebd9a3a  457  software/tests/fixture_box_targets.json
+0cfcb1fcbe7271962950a5c4f4d6a82918974571  5800  software/tests/fixture_ui_default_body.json
+3795207c823aeca26e9697e0a5e7b6bf6b30c71b  6485  software/tests/fixtures/ui_body_ms_classic.json
+9c8b64f13d8eed3dae5faa3f855ee7b2d1b4e3db  6480  software/tests/fixtures/ui_body_ortf.json
+3c44b9fef1fa1de780ff2f535dc47b598c1bddd2  2250  software/tests/hash_scenes.py
+112930c7c02d01adb25e62dca75b67f66ad3232d  9290  software/tests/test_b2_render_length.py
+94575de843a499cb5a42f944fc1addd9fbeb43e1  10435  software/tests/test_b3_limiter.py
+c15ef14dc6f3221ac22440111d3c34965c1df419  5531  software/tests/test_b4_ramps.py
+8db511f0a95845d153625828c5f5aad1c9d52b0f  6545  software/tests/test_b5_mono.py
+e27ba53150ac61221744697154c77f4927a916e3  16741  software/tests/test_b6_heights.py
+b28e7132d096f296cdef8fec861ecfe114056aa0  2115  software/tests/test_f13_hall_no_runaway.py
+5be0287d38939ff93ba60ae349fc0c8633eb007c  6044  software/tests/test_f13_hall_render_play.py
+1b0d92986c9f35f83e8c7c626f34011a9482c321  751  software/tests/test_f13_phys_preview.py
+4a2840337c6ec31fd5c015b4892ec4988004d5f1  3303  software/tests/test_f13_surfaces_mirror.py
+fe70fc3991763aa8ba75df514177a059d8adce7f  3341  software/tests/test_fdn_passivity.py
+b632a0437c222f9011557b353602825aba57c026  4994  software/tests/test_fix_a_pose.mjs
+251f21646750a2fc3b7d2b40ec00576de7cd2b87  23850  software/tests/test_live_stereo.py
+c13a4abcd013ee90daf6f04ea55a4f2ec9ef6822  5367  software/tests/test_lr_buttons.mjs
+aa9e143e1f63c3d847d575bdc36379e8256022d3  45714  software/tests/test_mic_colour_relative.py
+0fa3a8a213626364c5d77a79fd49b521dddd1226  43330  software/tests/test_mic_colour_relative.py.orig
+89be50b694165f5a2f18749f9a5619cfbee5c29a  4122  software/tests/test_ms_presets.mjs
+3715b3f54410d4a28ba41eaeb404c6d69412dffe  2034  software/tests/test_physdefault_t30.py
+67c6291ef63c4be4f82490be1e1f113de4231577  3913  software/tests/test_physdefault_two_source.py
+f9cc0cd42d13c7bf76ba76c11e57bc3a7e020ce2  2594  software/tests/test_quick_pins.py
+df1b4209d43ab49780f86714949f6ddab94db4fa  23534  software/tests/test_s5_surf_tail.py
+f1f14294f1ea5d94f672eef3bae2e0b1d2b2dcca  10952  software/tests/test_s_audit_api.py
+fdbd1d308bfc74041b536386396cedadb2fe592c  45026  software/tests/test_s_audit_ui.py
+e3f911537363b1fdac864f9f3453aabe7317b559  2794  software/tests/test_sl1_room_target.py
+924a30290e74d0ccf27b7bc6aec1927fb177809f  5488  software/tests/test_sl2_loop.py
+0be8e7a1bbbfff011548d5d163b5420fccd740c3  21308  software/tests/test_smix_desk.py
+7fd9c6dd85cbabb221882b9da46816c85db2d4a5  4360  software/tests/test_surfaces_s4.py
+78af7688d3c35bba9f51b8daf0ff7afc7ebf5ab2  2375  software/tests/test_t2_lr_null_draft.py
+29250cabaea39e9f35f7d56c24e2958bd7c3a124  1813  software/tests/test_t3_ms_presets_draft.py
+0bdecc3124868059ce952bf25c0f3964802f2a99  1714  software/tests/test_t3b_ms_sound_draft.py
+f91669e4436bd03bb56bb6795ff3c5d44a2d399a  2143  software/tests/test_t4b_ortf_c_off_draft.py
+78e079858d669ca44164204a0ce05ac0bdce86f5  2493  software/tests/test_t7_room_spots.mjs
+b2a49af18148a67da86d856031ef9c2eb76d300b  4835  software/tests/test_t7_room_spots_draft.py
+3016563c1f1067aa999b38a2a446cf9d61d27522  3034  software/tests/test_t8_room_mic_drag.mjs
+fe2e5d47ef1e1bba793cdcf85a053052e0845688  1218  software/tests/test_t9_room_window.mjs
+da48e1bbaedfc8f69a36e5b0049e4988cb280d31  25979  software/tweak_app.py

@@ -1,0 +1,633 @@
+[
+ {
+  "id": "lat_fc670",
+  "plugin": "uaudio_fairchild_670",
+  "params": {
+   "l_input": 0.0,
+   "r_input": 0.0,
+   "l_thresh": 5.0,
+   "r_thresh": 5.0,
+   "l_timecnst": 1.0,
+   "r_timecnst": 1.0
+  },
+  "sig": {
+   "kind": "noise",
+   "level_db": -50,
+   "dur_s": 2.0
+  }
+ },
+ {
+  "id": "st0_fc670",
+  "plugin": "uaudio_fairchild_670",
+  "params": {
+   "l_input": 0.0,
+   "r_input": 0.0,
+   "l_thresh": 5.0,
+   "r_thresh": 5.0,
+   "l_timecnst": 1.0,
+   "r_timecnst": 1.0
+  },
+  "sig": {
+   "kind": "stair",
+   "levels": [
+    -40,
+    -38,
+    -36,
+    -34,
+    -32,
+    -30,
+    -28,
+    -26,
+    -24,
+    -22,
+    -20,
+    -18,
+    -16,
+    -14,
+    -12,
+    -10,
+    -8,
+    -6,
+    -4,
+    -2,
+    0,
+    2,
+    4,
+    6,
+    8,
+    10
+   ],
+   "step_s": 1.0
+  }
+ },
+ {
+  "id": "lat_sslg",
+  "plugin": "uaudio_ssl_g_bus_compressor",
+  "params": {
+   "thresh": 0.0,
+   "make_up": 0.0,
+   "ratio": "4:1",
+   "attack": 10.0,
+   "release": "0.1 s"
+  },
+  "sig": {
+   "kind": "noise",
+   "level_db": -50,
+   "dur_s": 2.0
+  }
+ },
+ {
+  "id": "st0_sslg",
+  "plugin": "uaudio_ssl_g_bus_compressor",
+  "params": {
+   "thresh": 0.0,
+   "make_up": 0.0,
+   "ratio": "4:1",
+   "attack": 10.0,
+   "release": "0.1 s"
+  },
+  "sig": {
+   "kind": "stair",
+   "levels": [
+    -40,
+    -38,
+    -36,
+    -34,
+    -32,
+    -30,
+    -28,
+    -26,
+    -24,
+    -22,
+    -20,
+    -18,
+    -16,
+    -14,
+    -12,
+    -10,
+    -8,
+    -6,
+    -4,
+    -2,
+    0,
+    2,
+    4,
+    6,
+    8,
+    10
+   ],
+   "step_s": 1.0
+  }
+ },
+ {
+  "id": "lat_la2a_s",
+  "plugin": "uaudio_teletronix_la-2a_silver",
+  "params": {
+   "peak_reduct": "50",
+   "gain": "30",
+   "comp_limit": "Comp"
+  },
+  "sig": {
+   "kind": "noise",
+   "level_db": -50,
+   "dur_s": 2.0
+  }
+ },
+ {
+  "id": "st0_la2a_s",
+  "plugin": "uaudio_teletronix_la-2a_silver",
+  "params": {
+   "peak_reduct": "50",
+   "gain": "30",
+   "comp_limit": "Comp"
+  },
+  "sig": {
+   "kind": "stair",
+   "levels": [
+    -40,
+    -38,
+    -36,
+    -34,
+    -32,
+    -30,
+    -28,
+    -26,
+    -24,
+    -22,
+    -20,
+    -18,
+    -16,
+    -14,
+    -12,
+    -10,
+    -8,
+    -6,
+    -4,
+    -2,
+    0,
+    2,
+    4,
+    6,
+    8,
+    10
+   ],
+   "step_s": 1.0
+  }
+ },
+ {
+  "id": "lat_la2a_g",
+  "plugin": "uaudio_teletronix_la-2a_gray",
+  "params": {
+   "peak_reduct": "50",
+   "gain": "30",
+   "comp_limit": "Comp"
+  },
+  "sig": {
+   "kind": "noise",
+   "level_db": -50,
+   "dur_s": 2.0
+  }
+ },
+ {
+  "id": "st0_la2a_g",
+  "plugin": "uaudio_teletronix_la-2a_gray",
+  "params": {
+   "peak_reduct": "50",
+   "gain": "30",
+   "comp_limit": "Comp"
+  },
+  "sig": {
+   "kind": "stair",
+   "levels": [
+    -40,
+    -38,
+    -36,
+    -34,
+    -32,
+    -30,
+    -28,
+    -26,
+    -24,
+    -22,
+    -20,
+    -18,
+    -16,
+    -14,
+    -12,
+    -10,
+    -8,
+    -6,
+    -4,
+    -2,
+    0,
+    2,
+    4,
+    6,
+    8,
+    10
+   ],
+   "step_s": 1.0
+  }
+ },
+ {
+  "id": "lat_la2",
+  "plugin": "uaudio_teletronix_la-2",
+  "params": {
+   "peak_reduct": "50",
+   "gain": "30"
+  },
+  "sig": {
+   "kind": "noise",
+   "level_db": -50,
+   "dur_s": 2.0
+  }
+ },
+ {
+  "id": "st0_la2",
+  "plugin": "uaudio_teletronix_la-2",
+  "params": {
+   "peak_reduct": "50",
+   "gain": "30"
+  },
+  "sig": {
+   "kind": "stair",
+   "levels": [
+    -40,
+    -38,
+    -36,
+    -34,
+    -32,
+    -30,
+    -28,
+    -26,
+    -24,
+    -22,
+    -20,
+    -18,
+    -16,
+    -14,
+    -12,
+    -10,
+    -8,
+    -6,
+    -4,
+    -2,
+    0,
+    2,
+    4,
+    6,
+    8,
+    10
+   ],
+   "step_s": 1.0
+  }
+ },
+ {
+  "id": "lat_u1176ln",
+  "plugin": "uaudio_ua_1176ln_rev_e",
+  "params": {
+   "input": -20.0,
+   "output": -20.0,
+   "ratio": "4:1",
+   "attack": 4.0,
+   "release": 7.0
+  },
+  "sig": {
+   "kind": "noise",
+   "level_db": -50,
+   "dur_s": 2.0
+  }
+ },
+ {
+  "id": "st0_u1176ln",
+  "plugin": "uaudio_ua_1176ln_rev_e",
+  "params": {
+   "input": -20.0,
+   "output": -20.0,
+   "ratio": "4:1",
+   "attack": 4.0,
+   "release": 7.0
+  },
+  "sig": {
+   "kind": "stair",
+   "levels": [
+    -40,
+    -38,
+    -36,
+    -34,
+    -32,
+    -30,
+    -28,
+    -26,
+    -24,
+    -22,
+    -20,
+    -18,
+    -16,
+    -14,
+    -12,
+    -10,
+    -8,
+    -6,
+    -4,
+    -2,
+    0,
+    2,
+    4,
+    6,
+    8,
+    10
+   ],
+   "step_s": 1.0
+  }
+ },
+ {
+  "id": "lat_u1176a",
+  "plugin": "uaudio_ua_1176_rev_a",
+  "params": {
+   "input": -20.0,
+   "output": -20.0,
+   "ratio": "4:1",
+   "attack": 4.0,
+   "release": 7.0
+  },
+  "sig": {
+   "kind": "noise",
+   "level_db": -50,
+   "dur_s": 2.0
+  }
+ },
+ {
+  "id": "st0_u1176a",
+  "plugin": "uaudio_ua_1176_rev_a",
+  "params": {
+   "input": -20.0,
+   "output": -20.0,
+   "ratio": "4:1",
+   "attack": 4.0,
+   "release": 7.0
+  },
+  "sig": {
+   "kind": "stair",
+   "levels": [
+    -40,
+    -38,
+    -36,
+    -34,
+    -32,
+    -30,
+    -28,
+    -26,
+    -24,
+    -22,
+    -20,
+    -18,
+    -16,
+    -14,
+    -12,
+    -10,
+    -8,
+    -6,
+    -4,
+    -2,
+    0,
+    2,
+    4,
+    6,
+    8,
+    10
+   ],
+   "step_s": 1.0
+  }
+ },
+ {
+  "id": "lat_dist",
+  "plugin": "uaudio_distressor",
+  "params": {
+   "input": 5.0,
+   "ratio": "6:1",
+   "attack": 5.0,
+   "release": 0.0,
+   "output": 5.0
+  },
+  "sig": {
+   "kind": "noise",
+   "level_db": -50,
+   "dur_s": 2.0
+  }
+ },
+ {
+  "id": "st0_dist",
+  "plugin": "uaudio_distressor",
+  "params": {
+   "input": 5.0,
+   "ratio": "6:1",
+   "attack": 5.0,
+   "release": 0.0,
+   "output": 5.0
+  },
+  "sig": {
+   "kind": "stair",
+   "levels": [
+    -40,
+    -38,
+    -36,
+    -34,
+    -32,
+    -30,
+    -28,
+    -26,
+    -24,
+    -22,
+    -20,
+    -18,
+    -16,
+    -14,
+    -12,
+    -10,
+    -8,
+    -6,
+    -4,
+    -2,
+    0,
+    2,
+    4,
+    6,
+    8,
+    10
+   ],
+   "step_s": 1.0
+  }
+ },
+ {
+  "id": "lat_dbx160",
+  "plugin": "uaudio_dbx_160",
+  "params": {
+   "thresh": -30.0,
+   "compress": " 4.0:1",
+   "gain": 0.0
+  },
+  "sig": {
+   "kind": "noise",
+   "level_db": -50,
+   "dur_s": 2.0
+  }
+ },
+ {
+  "id": "st0_dbx160",
+  "plugin": "uaudio_dbx_160",
+  "params": {
+   "thresh": -30.0,
+   "compress": " 4.0:1",
+   "gain": 0.0
+  },
+  "sig": {
+   "kind": "stair",
+   "levels": [
+    -40,
+    -38,
+    -36,
+    -34,
+    -32,
+    -30,
+    -28,
+    -26,
+    -24,
+    -22,
+    -20,
+    -18,
+    -16,
+    -14,
+    -12,
+    -10,
+    -8,
+    -6,
+    -4,
+    -2,
+    0,
+    2,
+    4,
+    6,
+    8,
+    10
+   ],
+   "step_s": 1.0
+  }
+ },
+ {
+  "id": "lat_mvm",
+  "plugin": "uaudio_manley_variable_mu",
+  "params": {
+   "dual_input": 5.0,
+   "l_thresh": 5.0,
+   "r_thresh": 5.0,
+   "l_recovery": "Fast",
+   "r_recovery": "Fast",
+   "l_comp_lim": "Comp",
+   "r_comp_lim": "Comp"
+  },
+  "sig": {
+   "kind": "noise",
+   "level_db": -50,
+   "dur_s": 2.0
+  }
+ },
+ {
+  "id": "st0_mvm",
+  "plugin": "uaudio_manley_variable_mu",
+  "params": {
+   "dual_input": 5.0,
+   "l_thresh": 5.0,
+   "r_thresh": 5.0,
+   "l_recovery": "Fast",
+   "r_recovery": "Fast",
+   "l_comp_lim": "Comp",
+   "r_comp_lim": "Comp"
+  },
+  "sig": {
+   "kind": "stair",
+   "levels": [
+    -40,
+    -38,
+    -36,
+    -34,
+    -32,
+    -30,
+    -28,
+    -26,
+    -24,
+    -22,
+    -20,
+    -18,
+    -16,
+    -14,
+    -12,
+    -10,
+    -8,
+    -6,
+    -4,
+    -2,
+    0,
+    2,
+    4,
+    6,
+    8,
+    10
+   ],
+   "step_s": 1.0
+  }
+ },
+ {
+  "id": "lat_la3a",
+  "plugin": "uaudio_la3a",
+  "params": {
+   "peak_reduction": 5.0,
+   "gain": 5.0
+  },
+  "sig": {
+   "kind": "noise",
+   "level_db": -50,
+   "dur_s": 2.0
+  }
+ },
+ {
+  "id": "st0_la3a",
+  "plugin": "uaudio_la3a",
+  "params": {
+   "peak_reduction": 5.0,
+   "gain": 5.0
+  },
+  "sig": {
+   "kind": "stair",
+   "levels": [
+    -40,
+    -38,
+    -36,
+    -34,
+    -32,
+    -30,
+    -28,
+    -26,
+    -24,
+    -22,
+    -20,
+    -18,
+    -16,
+    -14,
+    -12,
+    -10,
+    -8,
+    -6,
+    -4,
+    -2,
+    0,
+    2,
+    4,
+    6,
+    8,
+    10
+   ],
+   "step_s": 1.0
+  }
+ }
+]

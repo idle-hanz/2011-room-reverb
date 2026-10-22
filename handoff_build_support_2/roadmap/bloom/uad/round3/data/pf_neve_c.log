@@ -1,0 +1,3 @@
+nclip_emph_flux_mem    train 48.9025 (lin 66.6927) | held-out gain vs linear: median -3.28 dB, worst -0.28 | 2530s
+    {'vc_db': 9.188, 'p0': 30.0, 'p1': 0.1193, 'p2': 0.0001, 'emph_fc': 811.8628, 'emph_db': -2.7985, 'phi_fc': 200.0, 'phi_db': 21.2109, 'phi_c': 0.0529, 'mem_m': 0.5751, 'mem_tau': 0.0189}
+    {'pnz_neve_-6': (-12.34, -18.27), 'pprog_neve_vocal_+0': (-40.45, -44.98), 'pprog_neve_vocal_-6': (-53.91, -54.84), 'pprog_neve_mix_+0': (-49.59, -54.49), 'pprog_neve_mix_-6': (-54.98, -55.43), 'pprog_neve_wetmix_+0': (-49.86, -53.49), 'pprog_neve_wetmix_-6': (-55.13, -55.62), 'pprog_neve_drums_+0': (-48.32, -51.6), 'pprog_neve_drums_-6': (-55.61, -55.89)}

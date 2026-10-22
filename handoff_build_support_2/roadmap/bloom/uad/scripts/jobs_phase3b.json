@@ -1,0 +1,705 @@
+[
+ {
+  "id": "ess_neve_nom",
+  "plugin": "uaudio_neve_1073",
+  "params": {
+   "input_select": "Mic",
+   "impedance": "Hi",
+   "pad": 0.0,
+   "mic_gain": "M -50 dB",
+   "eql": "Out",
+   "hp_filt": "Off",
+   "output": 0.0
+  },
+  "sig": {
+   "kind": "ess",
+   "level_db": -67,
+   "dur_s": 4.0,
+   "pad_s": 1.0
+  }
+ },
+ {
+  "id": "ess_neve_hot",
+  "plugin": "uaudio_neve_1073",
+  "params": {
+   "input_select": "Mic",
+   "impedance": "Hi",
+   "pad": 0.0,
+   "mic_gain": "M -50 dB",
+   "eql": "Out",
+   "hp_filt": "Off",
+   "output": 0.0
+  },
+  "sig": {
+   "kind": "ess",
+   "level_db": -41,
+   "dur_s": 4.0,
+   "pad_s": 1.0
+  }
+ },
+ {
+  "id": "ess_neve_vlow",
+  "plugin": "uaudio_neve_1073",
+  "params": {
+   "input_select": "Mic",
+   "impedance": "Hi",
+   "pad": 0.0,
+   "mic_gain": "M -50 dB",
+   "eql": "Out",
+   "hp_filt": "Off",
+   "output": 0.0
+  },
+  "sig": {
+   "kind": "ess",
+   "level_db": -87,
+   "dur_s": 4.0,
+   "pad_s": 1.0
+  }
+ },
+ {
+  "id": "ts_neve_mid_40",
+  "plugin": "uaudio_neve_1073",
+  "params": {
+   "input_select": "Mic",
+   "impedance": "Hi",
+   "pad": 0.0,
+   "mic_gain": "M -50 dB",
+   "eql": "Out",
+   "hp_filt": "Off",
+   "output": 0.0
+  },
+  "sig": {
+   "kind": "tonestair",
+   "levels": [
+    -90,
+    -87,
+    -84,
+    -81,
+    -78,
+    -75,
+    -72,
+    -69,
+    -66,
+    -63,
+    -60,
+    -57,
+    -54,
+    -51,
+    -48,
+    -45,
+    -42,
+    -39,
+    -36,
+    -33,
+    -30,
+    -27,
+    -24,
+    -21,
+    -18,
+    -15,
+    -12,
+    -9,
+    -6,
+    -3,
+    0
+   ],
+   "step_s": 1.25,
+   "f": 40.0
+  }
+ },
+ {
+  "id": "ess_api_nom",
+  "plugin": "uaudio_api_vision_channel_strip",
+  "params": {
+   "input_select": "Mic",
+   "mic_gain": 45.0,
+   "pad": false,
+   "cut_filter": "Off",
+   "215_on": false,
+   "235_on": false,
+   "225_on": false,
+   "eq_on": false
+  },
+  "sig": {
+   "kind": "ess",
+   "level_db": -61,
+   "dur_s": 4.0,
+   "pad_s": 1.0
+  }
+ },
+ {
+  "id": "ess_api_hot",
+  "plugin": "uaudio_api_vision_channel_strip",
+  "params": {
+   "input_select": "Mic",
+   "mic_gain": 45.0,
+   "pad": false,
+   "cut_filter": "Off",
+   "215_on": false,
+   "235_on": false,
+   "225_on": false,
+   "eq_on": false
+  },
+  "sig": {
+   "kind": "ess",
+   "level_db": -41,
+   "dur_s": 4.0,
+   "pad_s": 1.0
+  }
+ },
+ {
+  "id": "ess_api_vlow",
+  "plugin": "uaudio_api_vision_channel_strip",
+  "params": {
+   "input_select": "Mic",
+   "mic_gain": 45.0,
+   "pad": false,
+   "cut_filter": "Off",
+   "215_on": false,
+   "235_on": false,
+   "225_on": false,
+   "eq_on": false
+  },
+  "sig": {
+   "kind": "ess",
+   "level_db": -81,
+   "dur_s": 4.0,
+   "pad_s": 1.0
+  }
+ },
+ {
+  "id": "ts_api_mid_40",
+  "plugin": "uaudio_api_vision_channel_strip",
+  "params": {
+   "input_select": "Mic",
+   "mic_gain": 45.0,
+   "pad": false,
+   "cut_filter": "Off",
+   "215_on": false,
+   "235_on": false,
+   "225_on": false,
+   "eq_on": false
+  },
+  "sig": {
+   "kind": "tonestair",
+   "levels": [
+    -90,
+    -87,
+    -84,
+    -81,
+    -78,
+    -75,
+    -72,
+    -69,
+    -66,
+    -63,
+    -60,
+    -57,
+    -54,
+    -51,
+    -48,
+    -45,
+    -42,
+    -39,
+    -36,
+    -33,
+    -30,
+    -27,
+    -24,
+    -21,
+    -18,
+    -15,
+    -12,
+    -9,
+    -6,
+    -3,
+    0
+   ],
+   "step_s": 1.25,
+   "f": 40.0
+  }
+ },
+ {
+  "id": "ess_sslE_nom",
+  "plugin": "uaudio_ssl_e_channel_strip",
+  "params": {
+   "input_select": "Mic",
+   "mic_gain": 40.0,
+   "pad": false,
+   "transformer": true,
+   "dyn_in": "Out",
+   "eq_in": "Out",
+   "hp_freq": "Out",
+   "lp_freq": "Out"
+  },
+  "sig": {
+   "kind": "ess",
+   "level_db": -49,
+   "dur_s": 4.0,
+   "pad_s": 1.0
+  }
+ },
+ {
+  "id": "ess_sslE_hot",
+  "plugin": "uaudio_ssl_e_channel_strip",
+  "params": {
+   "input_select": "Mic",
+   "mic_gain": 40.0,
+   "pad": false,
+   "transformer": true,
+   "dyn_in": "Out",
+   "eq_in": "Out",
+   "hp_freq": "Out",
+   "lp_freq": "Out"
+  },
+  "sig": {
+   "kind": "ess",
+   "level_db": -29,
+   "dur_s": 4.0,
+   "pad_s": 1.0
+  }
+ },
+ {
+  "id": "ess_sslE_vlow",
+  "plugin": "uaudio_ssl_e_channel_strip",
+  "params": {
+   "input_select": "Mic",
+   "mic_gain": 40.0,
+   "pad": false,
+   "transformer": true,
+   "dyn_in": "Out",
+   "eq_in": "Out",
+   "hp_freq": "Out",
+   "lp_freq": "Out"
+  },
+  "sig": {
+   "kind": "ess",
+   "level_db": -69,
+   "dur_s": 4.0,
+   "pad_s": 1.0
+  }
+ },
+ {
+  "id": "ts_sslE_mid_40",
+  "plugin": "uaudio_ssl_e_channel_strip",
+  "params": {
+   "input_select": "Mic",
+   "mic_gain": 40.0,
+   "pad": false,
+   "transformer": true,
+   "dyn_in": "Out",
+   "eq_in": "Out",
+   "hp_freq": "Out",
+   "lp_freq": "Out"
+  },
+  "sig": {
+   "kind": "tonestair",
+   "levels": [
+    -90,
+    -87,
+    -84,
+    -81,
+    -78,
+    -75,
+    -72,
+    -69,
+    -66,
+    -63,
+    -60,
+    -57,
+    -54,
+    -51,
+    -48,
+    -45,
+    -42,
+    -39,
+    -36,
+    -33,
+    -30,
+    -27,
+    -24,
+    -21,
+    -18,
+    -15,
+    -12,
+    -9,
+    -6,
+    -3,
+    0
+   ],
+   "step_s": 1.25,
+   "f": 40.0
+  }
+ },
+ {
+  "id": "ess_manley_nom",
+  "plugin": "uaudio_manley_preamp",
+  "params": {
+   "source_select": "Mic",
+   "low_cut": "Off",
+   "pad": 0.0,
+   "gain": 50.0,
+   "input": 10.0,
+   "transformer": "In",
+   "output": 0.0
+  },
+  "sig": {
+   "kind": "ess",
+   "level_db": -55,
+   "dur_s": 4.0,
+   "pad_s": 1.0
+  }
+ },
+ {
+  "id": "ess_manley_hot",
+  "plugin": "uaudio_manley_preamp",
+  "params": {
+   "source_select": "Mic",
+   "low_cut": "Off",
+   "pad": 0.0,
+   "gain": 50.0,
+   "input": 10.0,
+   "transformer": "In",
+   "output": 0.0
+  },
+  "sig": {
+   "kind": "ess",
+   "level_db": -29,
+   "dur_s": 4.0,
+   "pad_s": 1.0
+  }
+ },
+ {
+  "id": "ess_manley_vlow",
+  "plugin": "uaudio_manley_preamp",
+  "params": {
+   "source_select": "Mic",
+   "low_cut": "Off",
+   "pad": 0.0,
+   "gain": 50.0,
+   "input": 10.0,
+   "transformer": "In",
+   "output": 0.0
+  },
+  "sig": {
+   "kind": "ess",
+   "level_db": -75,
+   "dur_s": 4.0,
+   "pad_s": 1.0
+  }
+ },
+ {
+  "id": "ts_manley_mid_40",
+  "plugin": "uaudio_manley_preamp",
+  "params": {
+   "source_select": "Mic",
+   "low_cut": "Off",
+   "pad": 0.0,
+   "gain": 50.0,
+   "input": 10.0,
+   "transformer": "In",
+   "output": 0.0
+  },
+  "sig": {
+   "kind": "tonestair",
+   "levels": [
+    -90,
+    -87,
+    -84,
+    -81,
+    -78,
+    -75,
+    -72,
+    -69,
+    -66,
+    -63,
+    -60,
+    -57,
+    -54,
+    -51,
+    -48,
+    -45,
+    -42,
+    -39,
+    -36,
+    -33,
+    -30,
+    -27,
+    -24,
+    -21,
+    -18,
+    -15,
+    -12,
+    -9,
+    -6,
+    -3,
+    0
+   ],
+   "step_s": 1.25,
+   "f": 40.0
+  }
+ },
+ {
+  "id": "ess_u610a_nom",
+  "plugin": "uaudio_610_a",
+  "params": {
+   "input_select": "Mic",
+   "input_pad": "Off",
+   "input_gain": "Hi",
+   "level": "0.0 dB",
+   "output": "0.00 dB",
+   "low_eq_gain": 0.0,
+   "hi_eq_gain": 0.0
+  },
+  "sig": {
+   "kind": "ess",
+   "level_db": -64,
+   "dur_s": 4.0,
+   "pad_s": 1.0
+  }
+ },
+ {
+  "id": "ess_u610a_hot",
+  "plugin": "uaudio_610_a",
+  "params": {
+   "input_select": "Mic",
+   "input_pad": "Off",
+   "input_gain": "Hi",
+   "level": "0.0 dB",
+   "output": "0.00 dB",
+   "low_eq_gain": 0.0,
+   "hi_eq_gain": 0.0
+  },
+  "sig": {
+   "kind": "ess",
+   "level_db": -60,
+   "dur_s": 4.0,
+   "pad_s": 1.0
+  }
+ },
+ {
+  "id": "ess_u610a_vlow",
+  "plugin": "uaudio_610_a",
+  "params": {
+   "input_select": "Mic",
+   "input_pad": "Off",
+   "input_gain": "Hi",
+   "level": "0.0 dB",
+   "output": "0.00 dB",
+   "low_eq_gain": 0.0,
+   "hi_eq_gain": 0.0
+  },
+  "sig": {
+   "kind": "ess",
+   "level_db": -84,
+   "dur_s": 4.0,
+   "pad_s": 1.0
+  }
+ },
+ {
+  "id": "ess_u610b_nom",
+  "plugin": "uaudio_610_b",
+  "params": {
+   "input_select": "(Mic) 500",
+   "input_pad": "Off",
+   "input_gain": 0.0,
+   "level": 10.0,
+   "lo_eq_gain": 0.0,
+   "hi_eq_gain": 0.0
+  },
+  "sig": {
+   "kind": "ess",
+   "level_db": -56,
+   "dur_s": 4.0,
+   "pad_s": 1.0
+  }
+ },
+ {
+  "id": "ess_u610b_hot",
+  "plugin": "uaudio_610_b",
+  "params": {
+   "input_select": "(Mic) 500",
+   "input_pad": "Off",
+   "input_gain": 0.0,
+   "level": 10.0,
+   "lo_eq_gain": 0.0,
+   "hi_eq_gain": 0.0
+  },
+  "sig": {
+   "kind": "ess",
+   "level_db": -50,
+   "dur_s": 4.0,
+   "pad_s": 1.0
+  }
+ },
+ {
+  "id": "ess_u610b_vlow",
+  "plugin": "uaudio_610_b",
+  "params": {
+   "input_select": "(Mic) 500",
+   "input_pad": "Off",
+   "input_gain": 0.0,
+   "level": 10.0,
+   "lo_eq_gain": 0.0,
+   "hi_eq_gain": 0.0
+  },
+  "sig": {
+   "kind": "ess",
+   "level_db": -76,
+   "dur_s": 4.0,
+   "pad_s": 1.0
+  }
+ },
+ {
+  "id": "ts_u610a_lvlm20out12_1000",
+  "plugin": "uaudio_610_a",
+  "params": {
+   "input_select": "Mic",
+   "input_pad": "Off",
+   "input_gain": "Hi",
+   "level": "-20.0 dB",
+   "output": "12.0 dB",
+   "low_eq_gain": 0.0,
+   "hi_eq_gain": 0.0
+  },
+  "sig": {
+   "kind": "tonestair",
+   "levels": [
+    -90,
+    -87,
+    -84,
+    -81,
+    -78,
+    -75,
+    -72,
+    -69,
+    -66,
+    -63,
+    -60,
+    -57,
+    -54,
+    -51,
+    -48,
+    -45,
+    -42,
+    -39,
+    -36,
+    -33,
+    -30,
+    -27,
+    -24,
+    -21,
+    -18,
+    -15,
+    -12,
+    -9,
+    -6,
+    -3,
+    0
+   ],
+   "step_s": 1.25,
+   "f": 1000.0
+  }
+ },
+ {
+  "id": "ts_u610b_lvl5_1000",
+  "plugin": "uaudio_610_b",
+  "params": {
+   "input_select": "(Mic) 500",
+   "input_pad": "Off",
+   "input_gain": 10.0,
+   "level": 5.0,
+   "lo_eq_gain": 0.0,
+   "hi_eq_gain": 0.0
+  },
+  "sig": {
+   "kind": "tonestair",
+   "levels": [
+    -90,
+    -87,
+    -84,
+    -81,
+    -78,
+    -75,
+    -72,
+    -69,
+    -66,
+    -63,
+    -60,
+    -57,
+    -54,
+    -51,
+    -48,
+    -45,
+    -42,
+    -39,
+    -36,
+    -33,
+    -30,
+    -27,
+    -24,
+    -21,
+    -18,
+    -15,
+    -12,
+    -9,
+    -6,
+    -3,
+    0
+   ],
+   "step_s": 1.25,
+   "f": 1000.0
+  }
+ },
+ {
+  "id": "ts_u610a_line_1000",
+  "plugin": "uaudio_610_a",
+  "params": {
+   "input_select": "Line",
+   "input_pad": "Off",
+   "input_gain": "Lo",
+   "level": "-10.0 dB",
+   "output": "0.00 dB",
+   "low_eq_gain": 0.0,
+   "hi_eq_gain": 0.0
+  },
+  "sig": {
+   "kind": "tonestair",
+   "levels": [
+    -90,
+    -87,
+    -84,
+    -81,
+    -78,
+    -75,
+    -72,
+    -69,
+    -66,
+    -63,
+    -60,
+    -57,
+    -54,
+    -51,
+    -48,
+    -45,
+    -42,
+    -39,
+    -36,
+    -33,
+    -30,
+    -27,
+    -24,
+    -21,
+    -18,
+    -15,
+    -12,
+    -9,
+    -6,
+    -3,
+    0
+   ],
+   "step_s": 1.25,
+   "f": 1000.0
+  }
+ }
+]

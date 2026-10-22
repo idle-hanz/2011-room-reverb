@@ -1,0 +1,94 @@
+{
+ "none": {
+  "play": {
+   "total_db": -12.84,
+   "ild_L_minus_R_db": 0.0,
+   "itd_ms": 0.0
+  },
+  "render": {
+   "total_db": -20.28,
+   "ild_L_minus_R_db": 0.17,
+   "itd_ms": 0.0
+  }
+ },
+ "A": {
+  "play": {
+   "total_db": -25.93,
+   "ild_L_minus_R_db": 9.09,
+   "itd_ms": -0.208
+  },
+  "render": {
+   "total_db": -28.65,
+   "ild_L_minus_R_db": 23.83,
+   "itd_ms": -0.438
+  }
+ },
+ "B": {
+  "play": {
+   "total_db": -25.41,
+   "ild_L_minus_R_db": 0.0,
+   "itd_ms": 0.0
+  },
+  "render": {
+   "total_db": -33.58,
+   "ild_L_minus_R_db": -0.0,
+   "itd_ms": 0.0
+  }
+ },
+ "C": {
+  "play": {
+   "total_db": -25.93,
+   "ild_L_minus_R_db": -9.09,
+   "itd_ms": 0.208
+  },
+  "render": {
+   "total_db": -29.38,
+   "ild_L_minus_R_db": -23.66,
+   "itd_ms": 0.438
+  }
+ },
+ "D": {
+  "play": {
+   "total_db": -56.56,
+   "ild_L_minus_R_db": 0.0,
+   "itd_ms": 0.0
+  },
+  "render": {
+   "total_db": -56.56,
+   "ild_L_minus_R_db": 0.0,
+   "itd_ms": 0.0
+  }
+ },
+ "E": {
+  "play": {
+   "total_db": -17.47,
+   "ild_L_minus_R_db": 0.0,
+   "itd_ms": 0.0
+  },
+  "render": {
+   "total_db": -26.89,
+   "ild_L_minus_R_db": 1.32,
+   "itd_ms": 0.021
+  }
+ },
+ "F": {
+  "play": {
+   "total_db": -19.58,
+   "ild_L_minus_R_db": 0.0,
+   "itd_ms": 0.0
+  },
+  "render": {
+   "total_db": -28.18,
+   "ild_L_minus_R_db": -0.92,
+   "itd_ms": 0.0
+  }
+ },
+ "per_mic_play": {
+  "A_l": -25.93,
+  "A_c": -25.93,
+  "A_r": -25.93,
+  "C_l": -25.93,
+  "C_c": -25.93,
+  "C_r": -25.93
+ }
+}

@@ -1,0 +1,44 @@
+{
+  "mic_id": "NeumannU87AiCardioid",
+  "display_name": "Neumann U87 Ai Cardioid \u2014 LDC",
+  "honesty": "MEASURED",
+  "family": "ldc_cardioid",
+  "source": "Franco et al. Zenodo 10.5281/zenodo.4633508 (Raw_IRs, 5m, 24-bit, selected angles)",
+  "params": {
+    "f0": 765.0274902653846,
+    "depth_max_db": -20.093301924875494,
+    "shelf_slope": 1.2972559132475152,
+    "f_lo": 209.53261099747354,
+    "depth_lo_db": 0.37675863755905176,
+    "res_hz": 1500.0000261755463,
+    "lp_mix": 0.2902997704353872,
+    "fc_floor": 5650.425132934155,
+    "p": 0.6022950754493743
+  },
+  "train_rmse_db": 3.400660139153216,
+  "holdout_rmse_db": 4.150390671556011,
+  "train_mse_db": 11.56448938202557,
+  "holdout_mse_db": 17.225742726539153,
+  "holdout_angles_deg": [
+    45.0,
+    135.0
+  ],
+  "train_angles_deg": [
+    0.0,
+    15.0,
+    30.0,
+    60.0,
+    90.0,
+    120.0,
+    150.0,
+    180.0
+  ],
+  "fit_message": "DE success=False nit=70 fun=11.767683; LS success=True cost=3012.056366",
+  "preset": "NeumannU87AiCardioid.json",
+  "plots": {
+    "polar": "plots/polars/NeumannU87AiCardioid_polar.png",
+    "colour": "plots/colour/NeumannU87AiCardioid_colour.png",
+    "fit_train": "plots/fit/NeumannU87AiCardioid_train.png",
+    "fit_holdout": "plots/fit/NeumannU87AiCardioid_holdout.png"
+  }
+}

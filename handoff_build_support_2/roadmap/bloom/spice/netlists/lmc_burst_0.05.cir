@@ -1,0 +1,23 @@
+* lmc_burst_0.05
+.include /workspace/compressors/spice/models/devices.lib
+Vin in 0 SIN(0 0.05 1000)
+Vgate gt 0 PWL(0 1 0.2 1 0.20001000000000002 0)
+Bin in2 0 V=v(in)*v(gt)
+Rs in2 fet 22k
+J1 fet g 0 2N5486
+Bg g 0 V=min(-4.05+v(c)*0.5,-0.05)
+* (drain-to-gate linearisation R19/R21 omitted: affects distortion, not timing)
+Brec r 0 V=max(abs(v(fet))*40.0-0.6,-0.6)
+R23 r c 1k
+C14 c 0 15u
+.options method=gear reltol=1e-3
+
+.control
+set wr_singlescale
+set wr_vecnames
+option numdgt=7
+tran 5e-6 0.45 0 5e-6
+wrdata /workspace/compressors/spice/raw/lmc_burst_0.05.txt v(fet) v(c)
+quit
+.endc
+.end

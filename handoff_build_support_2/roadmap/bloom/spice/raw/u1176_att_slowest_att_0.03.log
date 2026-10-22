@@ -1,0 +1,35 @@
+
+Note: No compatibility mode selected!
+
+
+Circuit: * u1176_att_slowest_att_0.03
+
+Doing analysis at TEMP = 27.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+
+Initial Transient Solution
+--------------------------
+
+Node                                   Voltage
+----                                   -------
+in                                           0
+gt                                           1
+in2                                          0
+fet                                 -0.0151689
+g                                     -1.83078
+ctl                                    -3.6464
+c                                  -0.00319916
+out                                  -0.303377
+r                                    -0.589868
+d                                  -0.00326365
+brec#branch                        2.51903e-09
+bout#branch                                  0
+bctl#branch                        1.81562e-06
+bin#branch                        -1.81561e-06
+vgate#branch                                 0
+vin#branch                                   0
+
+
+No. of Data Rows : 25008
+ngspice-44.2 done

@@ -1,0 +1,13 @@
+p5 std_lock18 fdn {'play_db': np.float64(-6.27), 'render_db': np.float64(-6.43)}
+p5 std_lock18 direct {'play_db': np.float64(0.04), 'render_db': np.float64(0.04)}
+p5 std_lock18 early {'play_db': np.float64(-7.14)}
+p5 std_lock18 all {'play_db': np.float64(3.43), 'render_db': np.float64(2.28)}
+p5 small_lock08 fdn {'play_db': np.float64(-6.63), 'render_db': np.float64(-4.66)}
+p5 small_lock08 direct {'play_db': np.float64(-2.7), 'render_db': np.float64(-2.7)}
+p5 small_lock08 early {'play_db': np.float64(-8.23)}
+p5 small_lock08 all {'play_db': np.float64(2.39), 'render_db': np.float64(1.0)}
+p5 hall_lock40 fdn {'play_db': np.float64(-6.68), 'render_db': np.float64(-5.51)}
+p5 hall_lock40 direct {'play_db': np.float64(0.03), 'render_db': np.float64(0.03)}
+p5 hall_lock40 early {'play_db': np.float64(-4.5)}
+p5 hall_lock40 all {'play_db': np.float64(3.96), 'render_db': np.float64(3.89)}
+p5 t14 {'play_peak': 0.5594, 'play_rms_db': np.float64(-16.24)} {'play_peak': 0.6644, 'play_rms_db': np.float64(-13.8)}

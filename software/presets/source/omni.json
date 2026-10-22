@@ -1,0 +1,85 @@
+{
+  "schema": "source_fitter.preset.v1",
+  "id": "omni",
+  "label": "Omni",
+  "category": "reference",
+  "tag": "ASSUMED-EXACT",
+  "model": "radiation_shelf_plus_soft_one_pole",
+  "level_reference": "on_axis (0 dB when facing the receiver; omni = exact null)",
+  "frame": {
+    "x": "facing (radiation reference axis of the dataset)",
+    "y": "source left",
+    "z": "up",
+    "facing_definition": ""
+  },
+  "params": {
+    "lo_db": 0.0,
+    "hi_db": 0.0,
+    "f0": 2000.0,
+    "shelf_s": 0.7,
+    "p": 1.0,
+    "q": 0.0,
+    "b_ud": 0.0,
+    "b_lr": 0.0,
+    "aim_az": 0.0,
+    "aim_el": 0.0,
+    "lp_hz": 24000.0,
+    "lp_mix": 0.0,
+    "p_lo": 1.0,
+    "dip": 0.0
+  },
+  "size": {
+    "a_eq_m": 0.0271,
+    "beaming_onset_hz": 2000.0,
+    "rule": "a_eq = c/(2*pi*f0), c=340 m/s as engine (piston ka=1); UI size slider sets size_scale = a_user/a_eq -> f0, lp_hz divided by size_scale"
+  },
+  "di_db": {
+    "125": -0.0,
+    "250": -0.0,
+    "500": -0.0,
+    "1000": -0.0,
+    "2000": -0.0,
+    "4000": -0.0,
+    "8000": -0.0,
+    "16000": -0.0
+  },
+  "diffuse_inject": {
+    "gain_db": -4.821637332766436e-16,
+    "shelf_f0": 1500.0,
+    "shelf_gain_db": 4.821637332766436e-16,
+    "shelf_s": 0.7,
+    "fit_rmse_db": 6.067093928217841e-16,
+    "target_db": {
+      "50": -4.821637332766436e-16,
+      "104": -4.821637332766436e-16,
+      "218": 0.0,
+      "455": 0.0,
+      "951": 0.0,
+      "1986": 0.0,
+      "4148": 0.0,
+      "8662": 0.0
+    }
+  },
+  "fit": {
+    "note": "analytic; relative response identically 0 dB"
+  },
+  "dsp": {
+    "stages": [
+      "broadband_gain(k_lo*lo_db)",
+      "rbj_high_shelf(f0, k*hi_db, shelf_s)",
+      "soft_beaming_lp(lp_hz/k_hi, lp_mix, lp_order 1|2 cascaded one-poles)"
+    ],
+    "fs_ref_hz": 48000,
+    "k": "k_hi = A*u^p*(1-q*u^8); k_lo = A*((1-dip)*u^p_lo*(1-q*u^8) + dip*4u(1-u)); both 0 on axis",
+    "slot": "FIRST stage of each image's serial cascade (before surfaces/air/mic)"
+  },
+  "provenance": {
+    "dataset": "none (analytic)",
+    "measurement": "n/a"
+  },
+  "tags": {
+    "params": "VERIFIED analytic null (k*0 = 0 dB everywhere)",
+    "model_form": "ASSUMED (engineering model, mirrors mic_fitter v3)",
+    "size_rule": "VERIFIED physics (piston ka=1) applied as ASSUMED mapping"
+  }
+}

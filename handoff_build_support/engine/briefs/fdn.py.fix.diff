@@ -1,0 +1,53 @@
+--- a/engine/fdn.py	2026-09-25 14:24:14.000000000 +0100
++++ b/engine/fdn.py	2026-09-27 11:42:06.607621197 +0100
+@@ -726,6 +726,7 @@
+         n: Optional[int] = None,
+         dffs: Optional[Sequence[float]] = None,
+         mic_g: Optional[Sequence[float]] = None,
++        line_t60: float = 0.0,
+     ) -> None:
+         n_lines = int(n) if n is not None else len(delays)
+         if n_lines < 1 or (n_lines & (n_lines - 1)) != 0:
+@@ -734,9 +735,19 @@
+             raise ValueError(f"need {n_lines} delays, got {len(delays)}")
+         self.n = n_lines
+         # Unscaled Hadamard: stable only if g < 1/√N. Structure is Gain/N.
+-        lim = 0.99 / math.sqrt(float(self.n))
++        # With line absorption (decay lock) every line loses gain < 1 per
++        # trip, so the loop may run at the lossless g = 1/√N.
++        self.line_t60 = float(line_t60 or 0.0)
++        lim = (1.0 if self.line_t60 > 0.05 else 0.99) / math.sqrt(float(self.n))
+         self.g = float(max(0.0, min(lim, g)))
+         self.delays = [int(d) for d in delays]
++        # lg_i = 10^(-3 d_i / (sr T60)): delay-proportional absorption (Jot).
++        self._lg = None
++        if self.line_t60 > 0.05:
++            self._lg = np.asarray(
++                [10.0 ** (-3.0 * float(d) / (float(sr) * self.line_t60)) for d in self.delays],
++                dtype=np.float64,
++            )
+         self.max_d = max(self.delays) if self.delays else 0
+         self.bufs = [np.zeros(d, dtype=np.float64) for d in self.delays]
+         self.idx = [0] * self.n
+@@ -814,7 +825,7 @@
+         Prefers fdn_core.so (C) when N==32; otherwise Python+numpy.
+         """
+         assert inject.shape[1] == self.n
+-        if _FDN_CORE is not None and self.n == 32 and not self._any_dffs and not self._any_mic:
++        if _FDN_CORE is not None and self.n == 32 and not self._any_dffs and not self._any_mic and self._lg is None:
+             return self._process_block_c(inject)
+         return self._process_block_py(inject)
+ 
+@@ -846,9 +857,12 @@
+         any_mic = self._any_mic
+         mg = self.mic_g
+         mz = self._mic_z
++        lg = self._lg
+         for t in range(n_samp):
+             for i in range(n):
+                 reads[i] = bufs[i][idx[i]]
++            if lg is not None:
++                reads *= lg
+             if peaking:
+                 for i in range(n):
+                     if use_peak[i]:

@@ -1,0 +1,15 @@
+* jfet_rds_2N5457
+.include /workspace/compressors/spice/models/devices.lib
+Vd d 0 0.01
+Vg g 0 0
+J1 d g 0 2N5457
+
+.control
+set wr_singlescale
+set wr_vecnames
+option numdgt=7
+dc Vg 0 -1.78 -0.01
+wrdata /workspace/compressors/spice/raw/jfet_rds_2N5457.txt i(Vd)
+quit
+.endc
+.end

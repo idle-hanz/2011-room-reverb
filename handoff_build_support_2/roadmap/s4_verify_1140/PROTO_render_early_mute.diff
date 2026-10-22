@@ -1,0 +1,13 @@
+--- /workspace/build_support_2/snapshot_2026-10-02_1140/software/render_pipeline.py	2026-10-02 11:11:12.000000000 +0100
++++ software/render_pipeline.py	2026-10-02 12:09:23.377364098 +0100
+@@ -413,6 +413,10 @@
+         d_r = float(t.distance_r)
+         # ASSUMED surface hit from geometric n (not Structure A–F OCR masks)
+         hit = surfaces_hit_by_n(t.n) if surfaces else []
++        # Mute = full absorb: a reflection off a muted (or not-soloed) face is silent,
++        # as in Play, where that line's inject is 0. Timing of the other taps is unchanged.
++        if surfaces and hit and any((surfaces.get(L) or {}).get("muted") for L in hit):
++            continue
+         if surfaces and hit:
+             img = t.position
+             h_l = h_r = {}

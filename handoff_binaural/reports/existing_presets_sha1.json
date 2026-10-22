@@ -1,0 +1,23 @@
+{
+ "AKGC414Bidirect.json": "e31379c6a9c91ff66ee5a24328fccd593e73b8cf",
+ "AKGC414Cardioid.json": "e09784e7332f826409ffa6ffe257b1eb5ec55f31",
+ "AKGC414Hyper.json": "377d5f4e643f863a63c25287f5a6422789d51dac",
+ "AKGC414Omni.json": "8a0b6b59f62f4226c91f47946e242fa9679feffb",
+ "Coles4038.json": "6b33c2beacfb43b2a49b55f458f161e4db437d3e",
+ "DPA4006.json": "0cdcf3835ec6212fe4d15ae52b970ed0a5f172cd",
+ "ElectroVoiceRE20.json": "f99a8795d1f2096d36e9501e0023f2b5c60baa0c",
+ "NeumannU87AiBidirect.json": "4b0c4fba85342a0808ab464f12b064bd28c167e2",
+ "NeumannU87AiCardioid.json": "d5d71a51d6f806488118aad4e929978961728d0b",
+ "NeumannU87AiOmni.json": "1699cb1405319ad7c6e23319a1dcdf41c9260292",
+ "RodeNT2ABidirect.json": "9038a5442c971e60ce687edde7d6140bbde9d489",
+ "RodeNT2ACardioid.json": "2b82097dd1cf6d49ff1c9269ef64ab2162534fe9",
+ "RodeNT2AOmni.json": "f6dc23755d70a0935e7771848150576c85ec66cb",
+ "RoyerR121.json": "5f717fccca914bf59586e2f759520dec13eedb15",
+ "SchoepsCMC5UBidirect.json": "e25ebd0fdfc652fb7881bbd14a5fda917afa79ef",
+ "SchoepsCMC5UCardioid.json": "bd5b08d069ba5b636a37f7ecb98f52fbdfcb129c",
+ "SchoepsCMC5UOmni.json": "c2b766758e08d3fdf4b7f0dca153a894a99234b8",
+ "SennheiserMD441.json": "1634e2eb0d0138225bb5bfee4bfd3468b49ddb42",
+ "ShureSM57.json": "46176089b7a74b2a5715849542397f32962fe65f",
+ "ShureSM58.json": "7ad03a6a1c1b93cf6903e94780465fb0f56eb9eb",
+ "index.json": "322682d08b6ebb075393d1e622a54935541b406b"
+}

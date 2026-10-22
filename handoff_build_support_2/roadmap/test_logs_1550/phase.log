@@ -1,0 +1,95 @@
+PASS      0.3s  test_colour_sos::test_colour_tables_match_presets                      
+PASS      0.0s  test_colour_sos::test_colour_at_c1_48k_within_0p5db                    
+PASS      0.0s  test_colour_sos::test_colour_at_c4_44k1_within_0p6db                   
+PASS      0.0s  test_colour_sos::test_colour_44k1_tables_match_presets                 
+PASS      0.0s  test_colour_sos::test_colour_unsupported_rate_disabled_with_notice[32000] 
+PASS      0.0s  test_colour_sos::test_colour_unsupported_rate_disabled_with_notice[88200] 
+PASS      0.0s  test_colour_sos::test_colour_unsupported_rate_disabled_with_notice[96000] 
+PASS      0.0s  test_colour_sos::test_colour_sos_stable[44100]                         
+PASS      0.0s  test_colour_sos::test_colour_sos_stable[48000]                         
+PASS      0.6s  test_colour_sos::test_colour_hpf_on_low_end[44100]                     
+PASS      0.0s  test_colour_sos::test_colour_hpf_on_low_end[48000]                     
+PASS      0.4s  test_colour_sos::test_colour_play_bank_fits_two_sources_apart          
+PASS      4.8s  test_colour_sos::test_colour_cpu_active                                
+PASS      0.0s  test_colour_sos::test_colour_numpy_sos_matches_loop                    
+PASS      0.0s  test_decisions_2026_09_28::test_k1_single_yaw_convention               
+PASS      1.0s  test_decisions_2026_09_28::test_k1_left_source_L_louder_and_earlier_play[xy_90] 
+PASS      1.0s  test_decisions_2026_09_28::test_k1_left_source_L_louder_and_earlier_play[xy_120] 
+PASS      0.9s  test_decisions_2026_09_28::test_k1_left_source_L_louder_and_earlier_play[ortf] 
+PASS      1.0s  test_decisions_2026_09_28::test_k1_left_source_L_louder_and_earlier_play[nos] 
+PASS      0.9s  test_decisions_2026_09_28::test_k1_left_source_L_louder_and_earlier_play[din] 
+PASS      1.0s  test_decisions_2026_09_28::test_k1_left_source_L_louder_and_earlier_play[ms] 
+PASS      2.6s  test_decisions_2026_09_28::test_k1_left_source_L_louder_and_earlier_render[ortf] 
+PASS      2.3s  test_decisions_2026_09_28::test_k1_left_source_L_louder_and_earlier_render[xy_90] 
+PASS      2.3s  test_decisions_2026_09_28::test_k1_left_source_L_louder_and_earlier_render[ms] 
+PASS      0.0s  test_decisions_2026_09_28::test_k2_air_1pole_default_zero              
+PASS      0.0s  test_decisions_2026_09_28::test_k3_default_source_29_distinct_delays   
+PASS      0.0s  test_decisions_2026_09_28::test_k3_client_default_matches              
+PASS      0.0s  test_decisions_2026_09_28::test_k4_fdn_first_defaults                  
+PASS      1.7s  test_decisions_2026_09_28::test_k4_raise_early_fader_no_stale_replay   
+PASS      0.0s  test_decisions_2026_09_28::test_headroom_trim_table                    
+PASS      3.2s  test_decisions_2026_09_28::test_headroom_t14_fdn_level_matches_pre_f2  
+XFAIL     2.6s  test_decisions_2026_09_28::test_headroom_t14_whole_mix_informational   whole mix +1.61 dB vs pre-F2 (peak 0.56 vs 0.512): direct/early not trimmed - DECISION
+PASS      0.0s  test_locks::test_lock_unscaled_pm1_hadamard_render                     
+PASS      0.0s  test_locks::test_lock_unscaled_pm1_hadamard_play                       
+PASS      0.0s  test_locks::test_lock_geometric_level_inverse_square                   
+PASS      0.0s  test_locks::test_lock_early_images_excite_fdn                          
+XFAIL     0.0s  test_locks::test_lock_two_diffusion_layers_separate_keys               P0.3 diffusion key split not in tree (card "diffusion" still feeds both layers)
+XFAIL     0.0s  test_mirror_symmetry::test_mirror_image_set_is_mirror_symmetric        LIVE_32 is not X-mirror symmetric: unpaired [(1, -1, 0), (1, -2, 0), (-1, -2, 0)]
+XFAIL     2.7s  test_mirror_symmetry::test_mirror_play_one_source                      MIRROR fix not in tree: Play one source A vs B at mirrored position: null_db -20.4 (tol -60.0), band_db 0.938 (tol 0.1), ild_db 1.1 (tol 0.1), ic 0.0297 (tol 0.01), early_db 0.123 (tol 0.1), t30_pct 21 (tol 2.0)
+XFAIL     4.0s  test_mirror_symmetry::test_mirror_play_two_sources_hard[fdn-MEASURED_SHELF] MIRROR fix not in tree: Play two sources balance A vs B (fdn, MEASURED_SHELF): null_db -20.4 (tol -60.0), band_db 0.938 (tol 0.1), ild_db 1.1 (tol 0.1), ic 0.0297 (tol 0.01), early_db 0.123 (tol 0.1), t30_pct 21 (tol 2.0)
+XFAIL     3.5s  test_mirror_symmetry::test_mirror_play_two_sources_hard[fdn-BYPASS]    MIRROR fix not in tree: Play two sources balance A vs B (fdn, BYPASS): null_db -18.5 (tol -60.0), band_db 0.322 (tol 0.1), ild_db 0.115 (tol 0.1), ic 0.00351 (tol 0.01), early_db 0.00407 (tol 0.1), t30_pct 21.1 (tol 2.0)
+XFAIL     2.5s  test_mirror_symmetry::test_mirror_play_two_sources_hard[early-MEASURED_SHELF] MIRROR fix not in tree: Play two sources balance A vs B (early, MEASURED_SHELF): null_db -20 (tol -60.0), band_db 1.39 (tol 0.1), ild_db 1.54 (tol 0.1), ic 0.116 (tol 0.01), early_db 0.0402 (tol 0.1), t30_pct 31.2 (tol 2.0)
+XFAIL     2.2s  test_mirror_symmetry::test_mirror_play_two_sources_hard[early-BYPASS]  MIRROR fix not in tree: Play two sources balance A vs B (early, BYPASS): null_db -19.1 (tol -60.0), band_db 0.485 (tol 0.1), ild_db 0.6 (tol 0.1), ic 0.0338 (tol 0.01), early_db 0.0512 (tol 0.1), t30_pct 18.6 (tol 2.0)
+PASS      1.9s  test_mirror_symmetry::test_mirror_play_two_sources_hard[direct-MEASURED_SHELF] 
+PASS      1.7s  test_mirror_symmetry::test_mirror_play_two_sources_hard[direct-BYPASS] 
+XFAIL     2.1s  test_mirror_symmetry::test_mirror_play_two_sources_centre_is_self_mirror MIRROR fix not in tree: Play two sources, balance centre, L vs R: null_db -26.9 (tol -60.0), band_db 0.0979 (tol 0.1), ild_db 0.196 (tol 0.1), ic 0 (tol 0.01), early_db 0.00778 (tol 0.1), t30_pct 28.9 (tol 2.0)
+XFAIL    34.4s  test_mirror_symmetry::test_mirror_render_one_source                    MIRROR fix not in tree: Render one source A vs B at mirrored position: null_db -20.1 (tol -60.0), band_db 1.04 (tol 0.1), ild_db 1.16 (tol 0.1), ic 0.0286 (tol 0.01), early_db 1.02 (tol 0.1), t30_pct 20.8 (tol 2.0)
+PASS      0.0s  test_p0_engine::test_p0_1_denormal_guard_in_source                     
+PASS      2.2s  test_p0_engine::test_p0_1_silence_cost[colour_off-over0-0.5]           
+PASS      2.8s  test_p0_engine::test_p0_1_silence_cost[colour_on-over1-0.75]           
+PASS      0.8s  test_p0_engine::test_p0_2_t60_play_within_8pct[std_lock18]             
+FAIL      1.0s  test_p0_engine::test_p0_2_t60_play_within_8pct[small_lock08]           AssertionError: Play T30 {500: 0.885, 1000: 0.805, 2000: 0.783, 4000: 0.777, 8000: 0.761} vs dial 0.8 s (+-8%); out: {500: 0.885} assert not {500: 0.885}
+PASS      2.0s  test_p0_engine::test_p0_2_t60_play_within_8pct[hall_lock40]            
+PASS      0.9s  test_p0_engine::test_p0_2_t60_play_independent_of_dffs[0.0]            
+PASS      0.9s  test_p0_engine::test_p0_2_t60_play_independent_of_dffs[-0.5]           
+PASS      0.8s  test_p0_engine::test_p0_2_t60_play_independent_of_dffs[-0.9]           
+PASS      0.8s  test_p0_engine::test_p0_2_hf_residue_play                              
+PASS     29.2s  test_p0_engine::test_p0_2_t60_render_within_8pct                       
+PASS      0.3s  test_p0_engine::test_p0_2_decay_lock_off_unchanged                     
+XFAIL     0.0s  test_p0_engine::test_p0_3_two_diffusion_layers_independent             P0.3 diffusion key split not in tree (card "diffusion" still feeds both layers)
+XFAIL     0.0s  test_p0_engine::test_p0_4_fdn_tail_null_play_vs_render                 P0.4 loop semantics not decided/landed (no build_mix / loop_semantics / packed loop_mix) - F5 is DECISION FOR IDLE
+XFAIL     0.1s  test_p0_engine::test_p0_5_server_defaults_equal_client_state           P0.5b: client does not load /api/defaults (hard-coded state in app.js); 10 shared-key mismatches: decay_lock False/True, decay_s 0.0/1.8, early_wet 0.0/1, humidity 0.0/0.35, mic_proximity 0.0/0.25, mirror_b False/True, space 0.25/0.17, toe_half_deg None/55, yaw_l_deg None/-55, yaw_r_deg None/55
+PASS      0.0s  test_p0_engine::test_p0_5_scipy_in_requirements                        
+XFAIL     0.0s  test_p0_engine::test_p0_5_loop_mix_not_dead_payload                    P0.5a: loop_mix still computed in render_pipeline.py but never packed/used by Play (dead payload); delete it or consume it with F5 (DECISION FOR IDLE with the loop-semantics choice)
+PASS      0.0s  test_p0_engine::test_p0_5_diffusion_master_clamped                     
+PASS      0.0s  test_p0_engine::test_p0_5_diffusion_master_single_value                
+PASS      0.0s  test_p1_blob::test_p1_worklet_ver_consistent_everywhere                
+PASS      0.1s  test_p1_blob::test_p1_blob_len_matches_packer                          
+PASS      1.9s  test_p1_blob::test_p1_wasm_matches_source                              
+XFAIL     0.0s  test_p1_blob::test_p1_blob_v2_header_and_sections                      P1 blob v2 header/section table not in tree (magic 1 only)
+XFAIL     0.0s  test_p1_blob::test_p1_max_blob_raised                                  P1 blob v2 header/section table not in tree (magic 1 only)
+XFAIL     0.0s  test_p1_blob::test_p1_old_wasm_silent_on_v2_blob                       P1 blob v2 header/section table not in tree (magic 1 only)
+PASS      1.0s  test_p2_air::test_lock_direct_is_air_free_play                         
+PASS      3.2s  test_p2_air::test_lock_direct_is_air_free_render                       
+PASS      0.0s  test_p2_air::test_lock_no_air_on_fdn_return_play                       
+PASS      0.0s  test_p2_air::test_lock_no_air_on_fdn_return_render                     
+PASS      0.0s  test_p2_air::test_lock_humidity_one_pole_separate_from_shelf           
+PASS      0.0s  test_p2_air::test_lock_render_stage_order                              
+XFAIL     0.0s  test_p2_air::test_p2_iso_air_fit_within_tolerance                      P2 ISO 9613-1 air not in tree (no engine/air_iso.py, no air_climate)
+XFAIL     0.0s  test_p2_air::test_p2_air_shelf_zero_nulls_iso_off                      P2 ISO 9613-1 air not in tree (no engine/air_iso.py, no air_climate)
+XFAIL     0.0s  test_p2_air::test_p2_play_render_early_null                            P2 ISO 9613-1 air not in tree (no engine/air_iso.py, no air_climate)
+PASS      0.0s  test_p3_p4_surfaces::test_lock_per_hit_cascade_is_serial_render        
+PASS      0.0s  test_p3_p4_surfaces::test_lock_render_passes_every_hit                 
+XFAIL     0.0s  test_p3_p4_surfaces::test_p3a_curtain_wall_only_real_materials         P3A Track A materials/role bans not in tree
+XFAIL     0.0s  test_p3_p4_surfaces::test_p3b_mute_all_panels_leaves_direct_and_fdn    P3B surfaces Solo/Mute not in tree
+XFAIL     0.0s  test_p3_p4_surfaces::test_p4_play_render_early_null                    P4 Play per-hit surface cascade not in tree
+XFAIL     0.0s  test_p3_p4_surfaces::test_p4_flat_cards_bit_exact_bypass               P4 Play per-hit surface cascade not in tree
+XFAIL     0.0s  test_p3_p4_surfaces::test_p4_cpu_budget                                P4 Play per-hit surface cascade not in tree
+PASS      0.0s  test_p5_p6::test_lock_no_scattering_inside_fdn_loop                    
+XFAIL     0.0s  test_p5_p6::test_p5_scatter_zero_is_bit_identical                      P5 scattering (Track C) not in tree
+XFAIL     0.0s  test_p5_p6::test_p5_scatter_after_air                                  P5 scattering (Track C) not in tree
+XFAIL     0.0s  test_p5_p6::test_p5_energy_and_feed_forward                            P5 scattering (Track C) not in tree
+XFAIL     0.0s  test_p5_p6::test_p6_omni_source_bit_identical                          P6 source radiation not in tree
+XFAIL     0.0s  test_p5_p6::test_p6_tail_invariant_to_source_yaw                       P6 source radiation not in tree
+{'PASS': 63, 'FAIL': 1, 'XFAIL': 30, 'SKIP': 0}

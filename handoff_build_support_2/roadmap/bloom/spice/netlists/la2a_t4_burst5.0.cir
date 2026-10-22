@@ -1,0 +1,34 @@
+* la2a_t4_burst5.0
+.include /workspace/compressors/spice/models/devices.lib
+Vin in 0 SIN(0 1.0 500)
+Vgate gt0 0 PWL(0 1 5.0 1 5.0001 0)
+Bout out 0 V=v(in)*v(gt0)/(1+1.0*(v(gf)+v(gs)))
+* EL light: rectified output, smoothed 1 ms (EL phosphor; ESTIMATE)
+Bl lraw 0 V=pow(abs(v(out))+1e-12,3.0)
+Rl lraw l 1k
+Cl l 0 1u
+Bt tgt 0 V=20*pow(abs(v(l))+1e-12,0.6)
+* memory M: charges toward 1 while light present (tm), decays with mem_decay s
+Bm1 0 m1 I=(v(l)>1e-3 ? (1-v(m1))/0.8405230616780007 : -v(m1)/20.0)
+Cm1 m1 0 1
+Rm1 m1 0 1e9
+Bm 0 m I=(v(l)>1e-3 ? (v(m1)-v(m))/0.8405230616780007 : -v(m)/20.0)
+Cm m 0 1
+Rmx m 0 1e9
+* conductance parts: rise with a1/a2 (weights w,1-w), fall with tau_rel(M)
+Bf 0 gf I=((0.8768454465414198*v(tgt))>v(gf) ? (0.8768454465414198*v(tgt)-v(gf))/0.10423974169425752 : (0.8768454465414198*v(tgt)-v(gf))/(0.06+(1.5886813112791396-0.06)*v(m)))
+Cf gf 0 1
+Rfx gf 0 1e9
+Bs 0 gs I=(((1-0.8768454465414198)*v(tgt))>v(gs) ? ((1-0.8768454465414198)*v(tgt)-v(gs))/1.250876899791749 : ((1-0.8768454465414198)*v(tgt)-v(gs))/(0.06+(1.5886813112791396-0.06)*v(m)))
+Cs gs 0 1
+Rsx gs 0 1e9
+
+.control
+set wr_singlescale
+set wr_vecnames
+option numdgt=7
+tran 5e-5 11.0 0 5e-5
+wrdata /workspace/compressors/spice/raw/la2a_t4_burst5.0.txt v(gf) v(gs) v(m)
+quit
+.endc
+.end

@@ -1,0 +1,61 @@
+{
+ "rbj_vs_iso_48k_studio": {
+  "1m": {
+   "rbj_vs_iso_rmse_db": 0.004,
+   "rbj_vs_iso_max_db": 0.012,
+   "model_vs_iso_rmse_db": 0.0,
+   "iso_at_8k_db": -0.01,
+   "rbj_at_8k_db": -0.01,
+   "iso_at_16k_db": -0.04,
+   "rbj_at_16k_db": -0.04
+  },
+  "5m": {
+   "rbj_vs_iso_rmse_db": 0.021,
+   "rbj_vs_iso_max_db": 0.062,
+   "model_vs_iso_rmse_db": 0.002,
+   "iso_at_8k_db": -0.07,
+   "rbj_at_8k_db": -0.04,
+   "iso_at_16k_db": -0.22,
+   "rbj_at_16k_db": -0.22
+  },
+  "10m": {
+   "rbj_vs_iso_rmse_db": 0.042,
+   "rbj_vs_iso_max_db": 0.124,
+   "model_vs_iso_rmse_db": 0.004,
+   "iso_at_8k_db": -0.14,
+   "rbj_at_8k_db": -0.07,
+   "iso_at_16k_db": -0.44,
+   "rbj_at_16k_db": -0.44
+  },
+  "30m": {
+   "rbj_vs_iso_rmse_db": 0.126,
+   "rbj_vs_iso_max_db": 0.37,
+   "model_vs_iso_rmse_db": 0.013,
+   "iso_at_8k_db": -0.41,
+   "rbj_at_8k_db": -0.22,
+   "iso_at_16k_db": -1.33,
+   "rbj_at_16k_db": -1.31
+  }
+ },
+ "pack_rmse_per_distance": {
+  "joint_db": 0.01120658692869966,
+  "per_distance_db": {
+   "5m": 0.0022410454123774327,
+   "10m": 0.004482090824754865,
+   "20m": 0.00896418164950973,
+   "40m": 0.01792836329901946
+  },
+  "flat_naive_db": 0.2223575363315409,
+  "assumed_shelf": {
+   "humidity_0.5_joint_db": 0.32681444144788424,
+   "humidity_1.0_joint_db": 0.9041603420074942,
+   "note": "ASSUMED engine: gain = -0.15 * d * humidity, high-shelf corner ~0.35*Nyquist @ 44.1 kHz (\u22487718 Hz). Not fitted \u2014 compare only."
+  },
+  "all_candidates_joint_db": {
+   "A": 0.06057908754924832,
+   "B": 0.02373540901442516,
+   "C": 0.01120658692869966
+  }
+ },
+ "play_direct_h0.5_vs_h0_maxabs": 0.0
+}

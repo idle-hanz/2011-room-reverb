@@ -1,0 +1,35 @@
+flowchart TB
+  SRC["Source<br/>+ radiation tint"] --> AIR["1 · Air<br/>ISO 9613 by distance"]
+  AIR --> MAT["2 · Material absorption<br/>real α(f), 7 bands"]
+  MAT --> FEQ["3 · Face EQ<br/>low shelf · peak · high shelf<br/>+ resonance α-dips (early part)"]
+  subgraph SURF["Surfaces tab: before the FDN"]
+    AIR
+    MAT
+    FEQ
+  end
+  FEQ --> EARLY["Early reflections<br/>Render: exact cascade per tap<br/>Play: fitted cascade per line"]
+  FEQ --> INJ["FDN inject: fitted cascade per line (S5)<br/>LTI, outside the loop = level only"]
+  subgraph LOOPG["Inside the FDN loop: repeats every pass"]
+    LOOP["4 · Delay lines + diffuser allpass (Dffs)<br/>Decay = broadband T60"]
+    RES["4a · Resonance control<br/>per-line peaks, dB ∝ delay (Jot)<br/>extends the 3 per-axis peaks"]
+    DEC["4b · Option: per-band T60<br/>from materials + air (D-EQ-7)"]
+    MOD["4c · Metallic fix: delay modulation<br/>+ Dffs cap (rotation rejected)"]
+  end
+  INJ --> LOOP
+  LOOP --> RES --> DEC --> MOD --> LOOP
+  SRC --> DIRECT["Direct sound"]
+  DIRECT --> MIC
+  EARLY --> MIC["5 · Mic colour, per mic<br/>Measured capsule response + HPF"]
+  LOOP --> MIC
+  MIC --> DESK["6 · Desk<br/>trim · route · width · pan · phase · fader<br/>no EQ"]
+  subgraph OUT["Mix tab: Output strip (S-OUT)"]
+    OEQ["7 · Output EQ<br/>wet sum only"]
+    SUM(("+"))
+    AUTO["Auto level"]
+    LIM["Soft limiter<br/>same in Play and Render"]
+  end
+  DESK --> OEQ --> SUM
+  DRY["Host dry"] --> SUM
+  SUM --> AUTO --> LIM --> SPK["Speakers / 24-bit WAV"]
+  DESK -. "Render wet IR" .-> ANA["Room colour analyser<br/>Level and Decay views, display only"]
+  ANA -. "detects" .-> RES

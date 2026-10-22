@@ -1,0 +1,20 @@
+PASS     t01_pack_matches_worklet              0.5s  {'blob_len': 1982, 'max_diff': 0.0}
+PASS     t02_wasm_matches_source               1.9s  {'max_diff': 0.0}
+SKIP     t03_golden_play_features_off          0.7s  no golden play_std_unlocked_byp.f32; run --regen-golden on a known-good tree
+SKIP     t04_golden_render_features_off        4.6s  no golden render_std_unlocked_byp.f32; run --regen-golden on a known-good tree
+PENDING  t05_omni_source_identity              0.0s  source radiation not in this tree (no source_pattern/radiation key)
+PENDING  t06_scattering_zero_identity          0.0s  scattering (Track C) not in this tree
+PENDING  t07_tail_yaw_invariance               0.0s  source yaw not in this tree
+PASS     t08_fdn_stability                    17.9s  {'dffs0': {'peak': 0.5674418210983276, 'silence_5s_db': np.float64(-36.9), 'silence_last5s_db': np.float64(-108.7)}, 'dffs+0.98': {'peak': 1.0, 'silence_5s_db': np.float64(-25.1), 'silence_last5s_db': np.float64(-95.2)},
+PASS     t09_silence_cpu                       4.9s  {'byp': {'play_mean_ms': 0.395, 'silence_late_mean_ms': 0.371}, 'col': {'play_mean_ms': 0.542, 'silence_late_mean_ms': 0.5}}
+PASS     t10_t60_play                          3.7s  {'std_lock18': {'dial': 1.8, 't30': {'500': np.float64(1.72), '1000': np.float64(1.83), '2000': np.float64(1.74), '4000': np.float64(1.79), '8000': np.float64(1.8)}}, 'small_lock08': {'dial': 0.8, 't30': {'500': np.float
+PASS     t11_hf_residue_play                   0.8s  {9000: np.float64(1.8), 11000: np.float64(1.8)}
+PASS     t12_t60_render                       29.1s  {'500': np.float64(1.72), '1000': np.float64(1.7), '2000': np.float64(1.81), '4000': np.float64(1.81), '8000': np.float64(1.8)}
+FAIL     t13_parity_play_render               64.0s  byp balance 500 Hz 2.9 dB; byp balance 4000 Hz 1.7 dB; byp tail level -2.48 dB; col balance 500 Hz 2.6 dB; col tail level -2.27 dB | {'byp': {'t30_play': {'250': np.float64(1.63), '500': np.float64(1.68), '1000': np.floa
+PASS     t14_level_sanity                      3.2s  {'play_peak': 0.536, 'play_rms_db': np.float64(-17.0), 'pinned_fdn_peak': 0.213, 'pinned_fdn_rms_db': np.float64(-27.1), 'pinned_fdn_delta_db': np.float64(0.08), 'pinned_mix_peak': 0.56, 'pinned_mix_rms_db': np.float64(-
+PASS     t15_perf_active                       4.3s  {'1src_col': 0.507, '2src_col': 0.815}
+PENDING  t16_diffusion_layers_separate         0.0s  single "diffusion" card key still drives both tap_dff (Dffs) and Δd jitter; no separate key yet
+PENDING  t17_play_hadamard_n                   0.3s  Play N fixed at 32 (render_pipeline.live_fdn_params n_had=32)
+FAIL     t18_tail_null_play_render            13.7s  Play tail vs Render null [np.float64(2.0), np.float64(2.0)] dB (> -30): Play loop is a different network (z^-1 diffuser / loop_mix unused / fractional delays)
+
+9 pass, 2 fail/error, 2 skip, 5 pending, 0 xfail

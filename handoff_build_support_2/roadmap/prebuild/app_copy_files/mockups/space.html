@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><title>Mockup · Space (non-rect rooms)</title>
+<link rel="stylesheet" href="/static/css/app.css"><link rel="stylesheet" href="mock_common.css">
+<style>
+.sp-grid{grid-template-columns:minmax(0,1.6fr) minmax(0,1fr)}
+a.chip{text-decoration:none}
+.chip.on{border-color:var(--accent);color:var(--text);background:var(--accent-dim)}
+.olegend{display:flex;gap:12px;font-size:.72rem;color:var(--muted);flex-wrap:wrap}
+.olegend i{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:4px;vertical-align:middle}
+.stat{font:600 .8rem var(--mono);color:var(--text)}
+.kv{display:grid;grid-template-columns:auto 1fr;gap:4px 12px;font-size:.76rem;color:var(--muted)}
+</style></head><body>
+<div class="mk-top"><h1>Space</h1><span class="mk-note">Mockup · design for the non‑rectangular rooms (NONRECT brief) · geometry computed live in this page (2‑D, plan view)</span></div>
+<div class="view-switch" style="margin-bottom:10px"><button class="view-tab">Room</button><button class="view-tab">Source</button><button class="view-tab">Mic</button><button class="view-tab">Mix</button><button class="view-tab active">Space</button><button class="view-tab">Surfaces</button><button class="view-tab">Polar</button></div>
+<div class="panel" style="padding:10px 12px;margin-bottom:12px;display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+ <span style="font-size:.7rem;color:var(--faint)">Room</span><a class="chip" id="r_rect" href="#lattice">Rectangle 6 × 8</a><a class="chip" id="r_rfz" href="#nonrect">Splayed control room (RFZ)</a><a class="chip" id="r_paths" href="#paths">Splayed · paths + arrivals</a>
+ <span style="width:20px"></span><span style="font-size:.7rem;color:var(--faint)">Show</span><span class="chip on">Mirror sources</span><span class="chip" id="c_paths">Paths</span><span class="chip">Order ≤ 2</span>
+</div>
+<div class="mk-grid sp-grid">
+ <div class="panel" style="padding:12px"><div class="panel-head"><h2 id="vtitle"></h2><span id="vsub" style="font-size:.7rem;color:var(--muted)"></span></div>
+  <canvas id="cv" width="900" height="640" style="width:100%;height:auto"></canvas>
+  <div class="olegend"><span><i style="background:#fbbf24"></i>Source</span><span><i style="background:#60a5fa"></i>Mic stand</span><span><i style="background:#2dd4bf"></i>1st order mirror source</span><span><i style="background:#f472b6"></i>2nd order</span><span><i style="border:1.5px solid #5c6478;background:transparent"></i>Not heard (blocked: the path misses the wall)</span><span style="color:var(--faint)">· 2nd‑order sources beyond the frame are counted, not drawn</span></div>
+ </div>
+ <div class="panel" style="padding:12px"><div class="panel-head"><h2>What the engine uses</h2></div>
+  <div class="kv" id="kv"></div>
+  <div class="mk-cap" id="expl" style="margin-top:10px"></div>
+  <div class="panel-head" style="margin-top:12px"><h2>Arrivals at the mic</h2><span style="font-size:.7rem;color:var(--muted)">time → , level ↑ (1/distance)</span></div>
+  <canvas id="eg" width="520" height="220" style="width:100%;height:auto"></canvas>
+ </div>
+</div>
+<script>
+var OC=["#fbbf24","#2dd4bf","#f472b6"], C=343;
+function mirror(p,a,b){var dx=b.x-a.x,dy=b.y-a.y,t=((p.x-a.x)*dx+(p.y-a.y)*dy)/(dx*dx+dy*dy);var fx=a.x+t*dx,fy=a.y+t*dy;return{x:2*fx-p.x,y:2*fy-p.y};}
+function segX(p,q,a,b){var r={x:q.x-p.x,y:q.y-p.y},s={x:b.x-a.x,y:b.y-a.y},d=r.x*s.y-r.y*s.x;if(Math.abs(d)<1e-12)return null;var t=((a.x-p.x)*s.y-(a.y-p.y)*s.x)/d,u=((a.x-p.x)*r.y-(a.y-p.y)*r.x)/d;return(t>1e-9&&t<1-1e-9&&u>=0&&u<=1)?{x:p.x+t*r.x,y:p.y+t*r.y}:null;}
+function images(poly,S,R){var n=poly.length,out=[{o:0,p:S,valid:true,pts:[]}];
+ for(var i=0;i<n;i++){var a=poly[i],b=poly[(i+1)%n],I=mirror(S,a,b);var hit=segX(R,I,a,b);out.push({o:1,p:I,valid:!!hit,pts:hit?[hit]:[],w:[i]});
+  for(var j=0;j<n;j++){if(j===i)continue;var c=poly[j],d=poly[(j+1)%n],I2=mirror(I,c,d);var h2=segX(R,I2,c,d),h1=h2?segX(h2,I,a,b):null;out.push({o:2,p:I2,valid:!!(h2&&h1),pts:(h2&&h1)?[h1,h2]:[],w:[i,j],parent:I});}}
+ return out;}
+var RECT=[{x:0,y:0},{x:6,y:0},{x:6,y:8},{x:0,y:8}];
+// splayed control room: narrow front wall, splayed side walls, wider back (RFZ style), 5 faces in plan
+var RFZ=[{x:1.2,y:8},{x:4.8,y:8},{x:6.4,y:3.2},{x:6.0,y:0},{x:0,y:0},{x:-0.4,y:3.2}];
+var S={x:2.6,y:6.2},R={x:3.0,y:1.6};
+function draw(mode){
+ var poly=mode==="lattice"?RECT:RFZ, im=images(poly,S,R), cv=document.getElementById("cv"),c=cv.getContext("2d");c.clearRect(0,0,cv.width,cv.height);
+ var xs=[],ys=[];im.forEach(function(m){if(m.o<=1){xs.push(m.p.x);ys.push(m.p.y);}});poly.forEach(function(p){xs.push(p.x);ys.push(p.y);});
+ var mnx=Math.min.apply(null,xs)-2,mxx=Math.max.apply(null,xs)+2,mny=Math.min.apply(null,ys)-2,mxy=Math.max.apply(null,ys)+2;
+ var sc=Math.min(cv.width/(mxx-mnx),cv.height/(mxy-mny));var ox=(cv.width-(mxx-mnx)*sc)/2,oy=(cv.height-(mxy-mny)*sc)/2;
+ function P(p){return{x:ox+(p.x-mnx)*sc,y:oy+(mxy-p.y)*sc};}
+ function polyPath(pp,stroke,fill,dash){c.beginPath();pp.forEach(function(p,i){var q=P(p);c[i?"lineTo":"moveTo"](q.x,q.y);});c.closePath();if(fill){c.fillStyle=fill;c.fill();}c.setLineDash(dash||[]);c.strokeStyle=stroke;c.stroke();c.setLineDash([]);}
+ // mirrored rooms (order 1)
+ for(var i=0;i<poly.length;i++){var a=poly[i],b=poly[(i+1)%poly.length];polyPath(poly.map(function(p){return mirror(p,a,b);}),"#262b38",null,[4,4]);}
+ if(mode==="lattice"){[[-1,-1],[1,-1],[-1,1],[1,1],[0,2],[0,-2],[2,0],[-2,0]].forEach(function(t){polyPath(RECT.map(function(p){return{x:p.x+t[0]*6,y:p.y+t[1]*8};}),"#1f2430",null,[2,5]);});}
+ polyPath(poly,"#8b93a8","rgba(45,212,191,0.05)");
+ c.lineWidth=1;
+ var showPaths=mode==="paths";
+ if(showPaths){im.forEach(function(m){if(!m.valid||m.o===0)return;var pts=[S].concat(m.pts).concat([R]);c.strokeStyle=OC[m.o];c.globalAlpha=0.55;c.beginPath();pts.forEach(function(p,k){var q=P(p);c[k?"lineTo":"moveTo"](q.x,q.y);});c.stroke();c.globalAlpha=1;});
+   var q0=P(S),q1=P(R);c.strokeStyle="#fbbf24";c.lineWidth=2;c.beginPath();c.moveTo(q0.x,q0.y);c.lineTo(q1.x,q1.y);c.stroke();c.lineWidth=1;}
+ im.forEach(function(m){if(m.o===0)return;var q=P(m.p);c.beginPath();c.arc(q.x,q.y,m.o===1?5.5:4,0,7);if(m.valid){c.fillStyle=OC[m.o];c.fill();}else{c.strokeStyle="#5c6478";c.stroke();}});
+ [[S,"#fbbf24","Source"],[R,"#60a5fa","Mics"]].forEach(function(t){var q=P(t[0]);c.fillStyle=t[1];c.beginPath();c.arc(q.x,q.y,7,0,7);c.fill();c.fillStyle="#e9ecf3";c.font="12px sans-serif";c.fillText(t[2],q.x+10,q.y-8);});
+ c.fillStyle="#5c6478";c.font="11px sans-serif";c.fillText("front",P({x:3,y:8}).x-12,P({x:3,y:8}).y-8);c.fillText("1 m",14,cv.height-14);c.strokeStyle="#5c6478";c.beginPath();c.moveTo(14,cv.height-24);c.lineTo(14+sc,cv.height-24);c.stroke();
+ var v1=im.filter(function(m){return m.o===1&&m.valid;}).length,n1=im.filter(function(m){return m.o===1;}).length,v2=im.filter(function(m){return m.o===2&&m.valid;}).length,n2=im.filter(function(m){return m.o===2;}).length;
+ var T={lattice:["Rectangle · mirrored rooms","every mirror source is heard: the rooms tile the plane"],nonrect:["Splayed room · mirror sources","only some mirror sources are heard; the rest are drawn hollow"],paths:["Splayed room · reflection paths","each heard mirror source = one path that bounces off real wall segments"]}[mode];
+ document.getElementById("vtitle").textContent=T[0];document.getElementById("vsub").textContent=T[1];
+ document.getElementById("kv").innerHTML='<span>Faces in plan</span><span class="stat">'+poly.length+'</span><span>1st order heard</span><span class="stat">'+v1+' of '+n1+'</span><span>2nd order heard</span><span class="stat">'+v2+' of '+n2+(mode==="lattice"?' (4 repeat corner images)':'')+'</span><span>Candidates per order</span><span class="stat">N(N−1)<sup>k−1</sup></span><span>Early taps</span><span class="stat">32 (LIVE_32 picks)</span>';
+ document.getElementById("expl").innerHTML=mode==="lattice"?"In a box every mirror source is valid, so the old lattice view stays for rectangles. The Hadamard size sidebar moves to Advanced.":
+  "In an angled room the mirror rooms no longer tile, so the lattice view is replaced by this plan: mirror sources that are really heard are solid, blocked ones hollow. The early field uses only the solid ones (the prototype in roadmap/nonrect/ shows 2–9 % of order‑4 candidates are valid).";
+ var e=document.getElementById("eg"),g=e.getContext("2d");g.clearRect(0,0,e.width,e.height);var arr=im.filter(function(m){return m.valid;}).map(function(m){var d=Math.hypot(m.p.x-R.x,m.p.y-R.y);return{t:d/C*1000,l:1/d,o:m.o};});
+ var tmax=Math.max.apply(null,arr.map(function(a){return a.t;}))*1.1,lmax=Math.max.apply(null,arr.map(function(a){return a.l;}));
+ g.strokeStyle="#2a2f3d";g.beginPath();g.moveTo(30,190);g.lineTo(510,190);g.stroke();g.fillStyle="#5c6478";g.font="10px sans-serif";
+ for(var t=0;t<=tmax;t+=10){var x=30+t/tmax*480;g.fillText(t+" ms",x-8,205);}
+ arr.sort(function(a,b){return a.o-b.o;}).forEach(function(a){var x=30+a.t/tmax*480,h=20*Math.log10(a.l/lmax);var y=190-Math.max(4,(1+h/30)*170);g.strokeStyle=OC[a.o];g.lineWidth=2;g.beginPath();g.moveTo(x,190);g.lineTo(x,y);g.stroke();});
+ g.fillStyle="#8b93a8";g.fillText("dB: 0 at the direct sound, −30 at the axis",30,12);
+ ["r_rect","r_rfz","r_paths"].forEach(function(id){document.getElementById(id).classList.toggle("on",({lattice:"r_rect",nonrect:"r_rfz",paths:"r_paths"})[mode]===id);});
+ document.getElementById("c_paths").classList.toggle("on",showPaths);
+}
+function route(){draw((location.hash||"#lattice").slice(1)||"lattice");}
+window.addEventListener("hashchange",route);route();
+</script></body></html>

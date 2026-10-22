@@ -1,0 +1,261 @@
+{
+  "schema": "surfaces_fitter.preset_index.v1",
+  "preset_schema": "surfaces_fitter.material.v1",
+  "presets": [
+    {
+      "id": "plaster_smooth",
+      "display_name": "Plaster (smooth)",
+      "honesty": "ASSUMED_TEXTBOOK",
+      "roles": [
+        "wall",
+        "ceiling"
+      ],
+      "banned_on": [
+        "floor"
+      ],
+      "model": "dual_high_shelf",
+      "candidate": "A",
+      "file": "plaster_smooth.json",
+      "rmse_r_db": 0.0030478413805857993,
+      "absorb_l1": 0.0009342979023178362
+    },
+    {
+      "id": "gypsum_painted",
+      "display_name": "Gypsum board (painted)",
+      "honesty": "ASSUMED_TEXTBOOK",
+      "roles": [
+        "wall",
+        "ceiling"
+      ],
+      "banned_on": [
+        "floor"
+      ],
+      "model": "low_shelf_high_shelf",
+      "candidate": "B",
+      "file": "gypsum_painted.json",
+      "rmse_r_db": 0.004163698751085373,
+      "absorb_l1": 0.0014235615520906536
+    },
+    {
+      "id": "brick_unglazed",
+      "display_name": "Brick (unglazed)",
+      "honesty": "ASSUMED_TEXTBOOK",
+      "roles": [
+        "wall"
+      ],
+      "banned_on": [
+        "floor",
+        "ceiling"
+      ],
+      "model": "dual_high_shelf",
+      "candidate": "A",
+      "file": "brick_unglazed.json",
+      "rmse_r_db": 0.0015015313418094488,
+      "absorb_l1": 0.0005669674878868604
+    },
+    {
+      "id": "concrete_painted",
+      "display_name": "Concrete (painted)",
+      "honesty": "ASSUMED_TEXTBOOK",
+      "roles": [
+        "floor",
+        "wall",
+        "ceiling"
+      ],
+      "banned_on": [],
+      "model": "dual_high_shelf",
+      "candidate": "A",
+      "file": "concrete_painted.json",
+      "rmse_r_db": 0.001924564171818272,
+      "absorb_l1": 0.0008099463008513601
+    },
+    {
+      "id": "wood_parquet",
+      "display_name": "Wood parquet",
+      "honesty": "ASSUMED_TEXTBOOK",
+      "roles": [
+        "floor"
+      ],
+      "banned_on": [
+        "wall",
+        "ceiling"
+      ],
+      "model": "dual_high_shelf",
+      "candidate": "A",
+      "file": "wood_parquet.json",
+      "rmse_r_db": 0.010333224786285313,
+      "absorb_l1": 0.003175739657757405
+    },
+    {
+      "id": "plywood_panel",
+      "display_name": "Plywood panel",
+      "honesty": "ASSUMED_TEXTBOOK",
+      "roles": [
+        "wall"
+      ],
+      "banned_on": [
+        "floor",
+        "ceiling"
+      ],
+      "model": "low_shelf_high_shelf",
+      "candidate": "B",
+      "file": "plywood_panel.json",
+      "rmse_r_db": 0.026158095767053018,
+      "absorb_l1": 0.00750199305070432
+    },
+    {
+      "id": "carpet_on_concrete",
+      "display_name": "Carpet on concrete",
+      "honesty": "ASSUMED_TEXTBOOK",
+      "roles": [
+        "floor"
+      ],
+      "banned_on": [
+        "wall",
+        "ceiling"
+      ],
+      "model": "dual_high_shelf",
+      "candidate": "A",
+      "file": "carpet_on_concrete.json",
+      "rmse_r_db": 0.04497485572908994,
+      "absorb_l1": 0.008391704592359743
+    },
+    {
+      "id": "carpet_on_foam",
+      "display_name": "Carpet on foam",
+      "honesty": "ASSUMED_TEXTBOOK",
+      "roles": [
+        "floor"
+      ],
+      "banned_on": [
+        "wall",
+        "ceiling"
+      ],
+      "model": "dual_high_shelf",
+      "candidate": "A",
+      "file": "carpet_on_foam.json",
+      "rmse_r_db": 0.04711941661815814,
+      "absorb_l1": 0.010069743137844424
+    },
+    {
+      "id": "glass_window",
+      "display_name": "Glass window",
+      "honesty": "ASSUMED_TEXTBOOK",
+      "roles": [
+        "wall"
+      ],
+      "banned_on": [
+        "floor",
+        "ceiling"
+      ],
+      "model": "low_shelf_high_shelf",
+      "candidate": "B",
+      "file": "glass_window.json",
+      "rmse_r_db": 0.05502483743205957,
+      "absorb_l1": 0.010798160327111965
+    },
+    {
+      "id": "acoustic_ceiling_tile",
+      "display_name": "Acoustic ceiling tile",
+      "honesty": "ASSUMED_TEXTBOOK",
+      "roles": [
+        "ceiling"
+      ],
+      "banned_on": [
+        "floor",
+        "wall"
+      ],
+      "model": "low_shelf_high_shelf",
+      "candidate": "B",
+      "file": "acoustic_ceiling_tile.json",
+      "rmse_r_db": 0.1660796644402147,
+      "absorb_l1": 0.013106144448956929
+    },
+    {
+      "id": "absorber_panel_2in",
+      "display_name": "Absorber panel (50 mm fiberglass)",
+      "honesty": "ASSUMED_TEXTBOOK",
+      "roles": [
+        "wall"
+      ],
+      "banned_on": [
+        "floor",
+        "ceiling"
+      ],
+      "model": "dual_high_shelf",
+      "candidate": "A",
+      "file": "absorber_panel_2in.json",
+      "rmse_r_db": 0.2712888801446066,
+      "absorb_l1": 0.024407368221129704
+    },
+    {
+      "id": "heavy_curtain",
+      "display_name": "Heavy curtain",
+      "honesty": "ASSUMED_TEXTBOOK",
+      "roles": [
+        "wall"
+      ],
+      "banned_on": [
+        "floor",
+        "ceiling"
+      ],
+      "model": "low_shelf_high_shelf",
+      "candidate": "B",
+      "file": "heavy_curtain.json",
+      "rmse_r_db": 0.2059868464329228,
+      "absorb_l1": 0.026827902268686348
+    },
+    {
+      "id": "absorber_panel_1in_gap1in",
+      "display_name": "Absorber panel (25 mm, 25 mm gap)",
+      "honesty": "MODELLED (Miki 1990 + Paris; sigma=15 kPa s/m2 ASSUMED)",
+      "roles": [
+        "wall",
+        "ceiling"
+      ],
+      "banned_on": [
+        "floor"
+      ],
+      "model": "dual_high_shelf",
+      "candidate": "A",
+      "file": "absorber_panel_1in_gap1in.json",
+      "rmse_r_db": 0.17536892310207927,
+      "absorb_l1": 0.011466861012889957
+    },
+    {
+      "id": "absorber_panel_2in_gap2in",
+      "display_name": "Absorber panel (50 mm, 50 mm gap)",
+      "honesty": "MODELLED (Miki 1990 + Paris; sigma=15 kPa s/m2 ASSUMED)",
+      "roles": [
+        "wall",
+        "ceiling"
+      ],
+      "banned_on": [
+        "floor"
+      ],
+      "model": "dual_high_shelf",
+      "candidate": "A",
+      "file": "absorber_panel_2in_gap2in.json",
+      "rmse_r_db": 0.24639972704338498,
+      "absorb_l1": 0.016706400099506618
+    },
+    {
+      "id": "absorber_panel_4in_gap4in",
+      "display_name": "Absorber panel (100 mm, 100 mm gap)",
+      "honesty": "MODELLED (Miki 1990 + Paris; sigma=15 kPa s/m2 ASSUMED)",
+      "roles": [
+        "wall",
+        "ceiling"
+      ],
+      "banned_on": [
+        "floor"
+      ],
+      "model": "dual_high_shelf",
+      "candidate": "A",
+      "file": "absorber_panel_4in_gap4in.json",
+      "rmse_r_db": 0.2717019971361222,
+      "absorb_l1": 0.015397047609076326
+    }
+  ],
+  "note": "12 ASSUMED_TEXTBOOK presets plus 3 MODELLED porous-gap presets. Respect roles / banned_on. Audio uses absorb[7], not the shelf params."
+}

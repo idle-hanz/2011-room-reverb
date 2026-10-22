@@ -1,0 +1,10 @@
+0b4e62d82fc74f47e1fe127645a6c23b  LISTENING_CHECKLIST.md
+52198bb3c2cfa7d64ff3ffc85a6e4221  analyse2.py
+9b217d25bba25205914f5844a4759834  default_guitar_before.wav
+ac10f29fd62b6c431938070d71b0f08d  default_guitar_dcap.wav
+c54f5ec43a261e5d9e515494fb753bca  default_guitar_mod10.wav
+f20c26220386e0991560afb5b7fa81fe  default_guitar_mod10dcap.wav
+4e0e28a9864c76c254915e619ab95f56  default_guitar_mod15.wav
+3f13b4237504f64ebe6b78fa2df8c1bb  fdn_mod_proto.diff
+ac3abaa0f41338e239c2efa6391b449a  proto_mod.json
+9824545ba1a6a6b255d294dcc7781fa0  run2.sh

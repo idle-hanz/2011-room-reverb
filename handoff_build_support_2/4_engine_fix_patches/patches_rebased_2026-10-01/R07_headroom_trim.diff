@@ -1,0 +1,84 @@
+diff -ruN a/engine/fdn.py b/engine/fdn.py
+--- a/engine/fdn.py	2026-10-01 07:46:53.062339037 +0100
++++ b/engine/fdn.py	2026-10-01 07:46:53.070339013 +0100
+@@ -213,6 +213,48 @@
+     return v
+ 
+ 
++# ---------------------------------------------------------------------------
++# Loop level trim (headroom decision 6, locked 28 Sep 2026).
++# Fixed makeup trims, one row per loop change, so the same FDN fader gives the
++# same loudness as before that change. dB, applied to the FDN bus only (the send
++# `fdn_wet`), never to direct/early. The engine is float inside; the risk is
++# clipping at 0 dBFS on the output, so trims only ever reduce level.
++#   "play":   Play path (live_stereo.c via live_fdn_params)
++#   "render": Render path (render_fdn_ir)
++#   "when":   "lock" = only while line absorption carries the decay (F2 active,
++#             decay_lock on); "always" = every loop.
++# Values measured at the reference scene (page default room 6x3x8, decay lock
++# 1.8 s, humidity 0.5, source pinned at the old default x 3.0 / y 1.5,
++# diffusion_master at the locked default -0.25, air_lp held at the old 0.25 so
++# the K2 change is not absorbed): FDN-only impulse-response energy, latest
++# snapshot vs F2+F3 tree (build_support_2/4_engine_fix_patches/results/levels/
++# levels_{latest,p4}_dm025). F3 alone = -1.70 dB on Play (unlocked scene);
++# F2 = -2.81 dB on both paths. Not re-derived at diffusion -0.5: with F2 the
++# loop level depends on diffusion_master (Render -0.5 -> -0.25: -9 dB). A fixed
++# trim is exact only at that scene; residuals at other scenes are in the
++# package-4 README. F5 (same-sample loop) will make Play about +5.8 dB hotter at
++# the reference scene: measure it the same way and fill its row.
++LOOP_LEVEL_TRIM_DB = {
++    "f2_line_absorption": {"play": -2.81, "render": -2.81, "when": "lock"},
++    "f3_play_rate_delays": {"play": -1.70, "render": 0.0, "when": "always"},
++    "f5_same_sample": {"play": 0.0, "render": 0.0, "when": "always"},  # not landed
++}
++
++
++def loop_level_trim_db(path: str = "play", lock_active: bool = True) -> float:
++    """Summed loop trim in dB for `path` ("play" / "render")."""
++    tot = 0.0
++    for row in LOOP_LEVEL_TRIM_DB.values():
++        if row.get("when") == "lock" and not lock_active:
++            continue
++        tot += float(row.get(path, 0.0))
++    return tot
++
++
++def loop_level_trim_lin(path: str = "play", lock_active: bool = True) -> float:
++    return float(10.0 ** (loop_level_trim_db(path, lock_active) / 20.0))
++
++
+ def diffusion_scale_from_room(room: Vec3, knob: float = DFFS_KNOB_DEFAULT) -> float:
+     """Room Dim Diffusion out (276): max(W,H,L) × mean(W,H,L) × knob.
+ 
+diff -ruN a/render_pipeline.py b/render_pipeline.py
+--- a/render_pipeline.py	2026-10-01 07:46:53.062339037 +0100
++++ b/render_pipeline.py	2026-10-01 07:46:53.070339013 +0100
+@@ -64,6 +64,8 @@
+     diffusion_scale_from_room,
+     dff_after_master,
+     DIFFUSION_MASTER_LIVE,
++    loop_level_trim_db,
++    loop_level_trim_lin,
+     mixer_lcr_fold,
+     apply_capsule_weights,
+     capsule_speaker_weights,
+@@ -631,6 +633,8 @@
+             line_t60=line_t60,
+         )
+         poly = fdn.process_block_poly(inj)
++        # Headroom decision 6: fixed Render loop trim (F2 row only while line absorption is on).
++        poly *= loop_level_trim_lin("render", float(line_t60) > 0.05)
+         if colour is not None and colour.measured and n_t:
+             for i in range(n_lines):
+                 col = poly[:, i]
+@@ -1590,7 +1594,9 @@
+         "g": g_loop,
+         "g_decay": g,
+         "line_t60": line_t60,
+-        "fdn_wet": float(p.get("fdn_wet", 1.0)),
++        # Headroom decision 6: fixed Play loop trim folded into the FDN send.
++        "fdn_wet": float(p.get("fdn_wet", 1.0)) * loop_level_trim_lin("play", line_t60 > 0.0),
++        "loop_trim_db": loop_level_trim_db("play", line_t60 > 0.0),
+         "direct_wet": float(p.get("direct_wet", 1.0)),
+         "early_wet": float(p.get("early_wet", 0.0)),
+         "dry_gain": float(p.get("dry_gain", 0.0)),

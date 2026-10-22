@@ -1,0 +1,162 @@
+{
+ "snapshot FIR colour, 1 src": {
+  "play_ms": 1.158,
+  "silence_ms": 1.17,
+  "play_pct_budget": 43.4,
+  "runs": [
+   1.169,
+   1.135,
+   1.158
+  ]
+ },
+ "snapshot SOS K=3, 1 src": {
+  "play_ms": 0.577,
+  "silence_ms": 0.585,
+  "play_pct_budget": 21.6,
+  "runs": [
+   0.577,
+   0.599,
+   0.576
+  ]
+ },
+ "snapshot SOS K=4, 1 src": {
+  "play_ms": 0.635,
+  "silence_ms": 0.618,
+  "play_pct_budget": 23.8,
+  "runs": [
+   0.635,
+   0.634,
+   0.639
+  ]
+ },
+ "snapshot colour off, 1 src": {
+  "play_ms": 0.496,
+  "silence_ms": 0.515,
+  "play_pct_budget": 18.6,
+  "runs": [
+   0.512,
+   0.481,
+   0.496
+  ]
+ },
+ "snapshot FIR colour, 2 src": {
+  "play_ms": 1.385,
+  "silence_ms": 1.459,
+  "play_pct_budget": 51.9,
+  "runs": [
+   1.398,
+   1.369,
+   1.385
+  ]
+ },
+ "snapshot SOS K=3, 2 src": {
+  "play_ms": 0.863,
+  "silence_ms": 0.979,
+  "play_pct_budget": 32.4,
+  "runs": [
+   0.846,
+   0.863,
+   0.884
+  ]
+ },
+ "snapshot SOS K=4, 2 src": {
+  "play_ms": 0.909,
+  "silence_ms": 1.003,
+  "play_pct_budget": 34.1,
+  "runs": [
+   0.918,
+   0.868,
+   0.909
+  ]
+ },
+ "snapshot colour off, 2 src": {
+  "play_ms": 0.732,
+  "silence_ms": 0.875,
+  "play_pct_budget": 27.4,
+  "runs": [
+   0.725,
+   0.762,
+   0.732
+  ]
+ },
+ "F1-F3+F5 FIR colour, 1 src": {
+  "play_ms": 1.396,
+  "silence_ms": 1.34,
+  "play_pct_budget": 52.3,
+  "runs": [
+   1.361,
+   1.402,
+   1.396
+  ]
+ },
+ "F1-F3+F5 SOS K=3, 1 src": {
+  "play_ms": 0.863,
+  "silence_ms": 0.821,
+  "play_pct_budget": 32.4,
+  "runs": [
+   0.865,
+   0.863,
+   0.823
+  ]
+ },
+ "F1-F3+F5 SOS K=4, 1 src": {
+  "play_ms": 0.877,
+  "silence_ms": 0.835,
+  "play_pct_budget": 32.9,
+  "runs": [
+   0.822,
+   0.884,
+   0.877
+  ]
+ },
+ "F1-F3+F5 colour off, 1 src": {
+  "play_ms": 0.776,
+  "silence_ms": 0.719,
+  "play_pct_budget": 29.1,
+  "runs": [
+   0.728,
+   0.911,
+   0.776
+  ]
+ },
+ "F1-F3+F5 FIR colour, 2 src": {
+  "play_ms": 1.839,
+  "silence_ms": 1.758,
+  "play_pct_budget": 69.0,
+  "runs": [
+   1.864,
+   1.839,
+   1.798
+  ]
+ },
+ "F1-F3+F5 SOS K=3, 2 src": {
+  "play_ms": 1.318,
+  "silence_ms": 1.324,
+  "play_pct_budget": 49.4,
+  "runs": [
+   1.318,
+   1.476,
+   1.314
+  ]
+ },
+ "F1-F3+F5 SOS K=4, 2 src": {
+  "play_ms": 1.343,
+  "silence_ms": 1.321,
+  "play_pct_budget": 50.4,
+  "runs": [
+   1.343,
+   1.311,
+   1.355
+  ]
+ },
+ "F1-F3+F5 colour off, 2 src": {
+  "play_ms": 1.196,
+  "silence_ms": 1.187,
+  "play_pct_budget": 44.9,
+  "runs": [
+   1.196,
+   1.203,
+   1.192
+  ]
+ }
+}

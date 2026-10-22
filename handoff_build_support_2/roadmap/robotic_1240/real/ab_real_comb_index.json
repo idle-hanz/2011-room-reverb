@@ -1,0 +1,51 @@
+{
+ "P1_play_default_fdn_only__A_today.wav": {
+  "best_comb_101.5_105.5Hz": {
+   "f0": 104.6,
+   "comb_db": 1.16
+  },
+  "fine_peaks_p99_db": 25.0
+ },
+ "P1_play_default_fdn_only__B_fix_output_signs_plus_DC.wav": {
+  "best_comb_101.5_105.5Hz": {
+   "f0": 103.9,
+   "comb_db": 2.83
+  },
+  "fine_peaks_p99_db": 22.51
+ },
+ "P1_play_default_fdn_only__C_fix_column_signs_plus_DC.wav": {
+  "best_comb_101.5_105.5Hz": {
+   "f0": 102.65,
+   "comb_db": 2.05
+  },
+  "fine_peaks_p99_db": 21.79
+ },
+ "R0_idle_real_render_372-412s.wav": {
+  "best_comb_101.5_105.5Hz": {
+   "f0": 103.5,
+   "comb_db": 11.07
+  },
+  "fine_peaks_p99_db": 24.31
+ },
+ "R1_render_default_fdn_only__A_today.wav": {
+  "best_comb_101.5_105.5Hz": {
+   "f0": 103.5,
+   "comb_db": 11.08
+  },
+  "fine_peaks_p99_db": 24.29
+ },
+ "R1_render_default_fdn_only__B_fix_output_signs.wav": {
+  "best_comb_101.5_105.5Hz": {
+   "f0": 103.15,
+   "comb_db": 5.08
+  },
+  "fine_peaks_p99_db": 23.66
+ },
+ "R1_render_default_fdn_only__C_fix_column_signs.wav": {
+  "best_comb_101.5_105.5Hz": {
+   "f0": 103.5,
+   "comb_db": 4.52
+  },
+  "fine_peaks_p99_db": 22.37
+ }
+}

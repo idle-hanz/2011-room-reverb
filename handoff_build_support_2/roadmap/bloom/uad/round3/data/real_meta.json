@@ -1,0 +1,27 @@
+{
+ "drums": {
+  "src": "NZ Kick+Snare+OH+Hat freeze",
+  "start_s": 157.0,
+  "rms_dbfs": -20.550342559814453
+ },
+ "bass": {
+  "src": "NZ Bass",
+  "start_s": 162.0,
+  "rms_dbfs": -10.941015243530273
+ },
+ "guitar": {
+  "src": "NZ Clean GTR 1 U",
+  "start_s": 95.5,
+  "rms_dbfs": -18.2448787689209
+ },
+ "vocal": {
+  "src": "Emmavie Main vocal",
+  "start_s": 28.0,
+  "rms_dbfs": -14.57691764831543
+ },
+ "mix": {
+  "src": "Idle 2026-08-20 Test Arranger mixdown (For Suno.wav)",
+  "start_s": 204.5,
+  "rms_dbfs": -10.020102500915527
+ }
+}

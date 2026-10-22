@@ -1,0 +1,255 @@
+{
+  "schema": "scattering_fitter.preset_index.v1",
+  "bands_hz": [
+    125.0,
+    250.0,
+    500.0,
+    1000.0,
+    2000.0,
+    4000.0,
+    8000.0
+  ],
+  "matches": "surfaces_fitter.material.v1 absorb_hz (7 octave bands 125..8000)",
+  "presets": [
+    {
+      "id": "plaster_smooth",
+      "honesty": "VERIFIED_CITED_EST",
+      "scatter": [
+        0.0159,
+        0.0169,
+        0.0191,
+        0.0235,
+        0.0321,
+        0.0478,
+        0.0735
+      ],
+      "rmse_s": 0.00577,
+      "source_key": "mat_scene09_plaster",
+      "file": "plaster_smooth.json"
+    },
+    {
+      "id": "gypsum_painted",
+      "honesty": "PROXY",
+      "scatter": [
+        0.008,
+        0.008,
+        0.0081,
+        0.0082,
+        0.0093,
+        0.0163,
+        0.0579
+      ],
+      "rmse_s": 0.0028,
+      "source_key": "mat_scene10_plaster",
+      "file": "gypsum_painted.json"
+    },
+    {
+      "id": "brick_unglazed",
+      "honesty": "VERIFIED_CITED_EST",
+      "scatter": [
+        0.0222,
+        0.0224,
+        0.0249,
+        0.0533,
+        0.2311,
+        0.4144,
+        0.4448
+      ],
+      "rmse_s": 0.00635,
+      "source_key": "mat_scene11_brickwall",
+      "file": "brick_unglazed.json"
+    },
+    {
+      "id": "concrete_painted",
+      "honesty": "VERIFIED_CITED_EST",
+      "scatter": [
+        0.0098,
+        0.0167,
+        0.0328,
+        0.0614,
+        0.0937,
+        0.1157,
+        0.1261
+      ],
+      "rmse_s": 0.00208,
+      "source_key": "mat_scene08_paintedConcrete",
+      "file": "concrete_painted.json"
+    },
+    {
+      "id": "glass_window",
+      "honesty": "VERIFIED_CITED_EST",
+      "scatter": [
+        0.0079,
+        0.0084,
+        0.0095,
+        0.0117,
+        0.016,
+        0.0238,
+        0.0365
+      ],
+      "rmse_s": 0.00282,
+      "source_key": "mat_scene09_windows",
+      "file": "glass_window.json"
+    },
+    {
+      "id": "plywood_panel",
+      "honesty": "VERIFIED_CITED_EST",
+      "scatter": [
+        0.0245,
+        0.0251,
+        0.0318,
+        0.098,
+        0.3477,
+        0.4785,
+        0.4946
+      ],
+      "rmse_s": 0.00712,
+      "source_key": "mat_scene11_woodPanels",
+      "file": "plywood_panel.json"
+    },
+    {
+      "id": "wood_parquet",
+      "honesty": "VERIFIED_CITED_EST",
+      "scatter": [
+        0.0078,
+        0.0078,
+        0.0078,
+        0.008,
+        0.009,
+        0.014,
+        0.0367
+      ],
+      "rmse_s": 0.00283,
+      "source_key": "mat_scene11_parquet",
+      "file": "wood_parquet.json"
+    },
+    {
+      "id": "acoustic_ceiling_tile",
+      "honesty": "VERIFIED_CITED_EST",
+      "scatter": [
+        0.0191,
+        0.0191,
+        0.0192,
+        0.0192,
+        0.021,
+        0.0578,
+        0.2437
+      ],
+      "rmse_s": 0.00937,
+      "source_key": "mat_RockFonSonarG_00deg",
+      "file": "acoustic_ceiling_tile.json"
+    },
+    {
+      "id": "absorber_panel_2in",
+      "honesty": "VERIFIED_CITED_EST",
+      "scatter": [
+        0.0059,
+        0.0064,
+        0.0081,
+        0.0143,
+        0.0314,
+        0.0583,
+        0.0774
+      ],
+      "rmse_s": 0.00147,
+      "source_key": "mat_scene08_absorber",
+      "file": "absorber_panel_2in.json"
+    },
+    {
+      "id": "carpet_on_concrete",
+      "honesty": "PROXY",
+      "scatter": [
+        0.012,
+        0.012,
+        0.012,
+        0.0125,
+        0.0155,
+        0.0357,
+        0.1373
+      ],
+      "rmse_s": 0.00416,
+      "source_key": "mat_scene11_linoleum",
+      "file": "carpet_on_concrete.json"
+    },
+    {
+      "id": "carpet_on_foam",
+      "honesty": "PROXY",
+      "scatter": [
+        0.012,
+        0.012,
+        0.012,
+        0.0125,
+        0.0155,
+        0.0357,
+        0.1373
+      ],
+      "rmse_s": 0.00416,
+      "source_key": "mat_scene11_linoleum",
+      "file": "carpet_on_foam.json"
+    },
+    {
+      "id": "heavy_curtain",
+      "honesty": "ASSUMED",
+      "scatter": [
+        0.0015,
+        0.0117,
+        0.0782,
+        0.2788,
+        0.412,
+        0.4384,
+        0.442
+      ],
+      "rmse_s": 0.06566,
+      "source_key": "periodic_1d_battens_h5cm",
+      "file": "heavy_curtain.json"
+    },
+    {
+      "id": "diffuser_qrd_n7",
+      "honesty": "VERIFIED_MEASURED(2 pts)+ASSUMED(shape)",
+      "scatter": [
+        0.1826,
+        0.3228,
+        0.5304,
+        0.7264,
+        0.8467,
+        0.9022,
+        0.9245
+      ],
+      "rmse_s": 0.0,
+      "source_key": "qrd_n7",
+      "file": "diffuser_qrd_n7.json"
+    },
+    {
+      "id": "diffuser_ceiling_measured",
+      "honesty": "VERIFIED_MEASURED",
+      "scatter": [
+        0.0819,
+        0.1034,
+        0.1575,
+        0.2773,
+        0.4802,
+        0.7065,
+        0.8663
+      ],
+      "rmse_s": 0.01592,
+      "source_key": "kamisinski",
+      "file": "diffuser_ceiling_measured.json"
+    },
+    {
+      "id": "diffuser_pyramids",
+      "honesty": "VERIFIED_MEASURED",
+      "scatter": [
+        0.0199,
+        0.0262,
+        0.055,
+        0.1723,
+        0.4809,
+        0.8136,
+        0.9542
+      ],
+      "rmse_s": 0.04625,
+      "source_key": "pyramids_h30p5_L2h",
+      "file": "diffuser_pyramids.json"
+    }
+  ]
+}

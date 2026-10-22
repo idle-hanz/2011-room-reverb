@@ -1,0 +1,95 @@
+--- 3_phase_acceptance_tests/harness/lib/pack.py	2026-09-28 20:59:56.702750942 +0100
++++ _incoming/desk2210/handoff_build_support_2/3_phase_acceptance_tests/harness/lib/pack.py	2026-10-01 21:26:00.000000000 +0100
+@@ -1,6 +1,6 @@
+ """Pack a live_fdn_params JSON into the exact float blob / int route / IR arrays that
+ fdn_worklet.js (packRoom) + live_fdn.js (buildRoute/takeColour) hand to live_stereo.
+-Port is line-for-line; BLOB_LEN must be 1981 (checked).
++Blob v2 matches packRoom: directory plus CORE (v1 body without magic, plus 8 reserves).
+ Usage: python pack.py params.json out_prefix [json overrides e.g. '{"early_wet":1,"colour_on":false}']
+ Writes out_prefix.blob (f32), .route (i32 x230), .irs (f32), .lens (i32)."""
+ import sys, json, math, base64, struct
+@@ -40,9 +40,38 @@
+     dms = dl[di] if dl and isinstance(dl[di], (int, float)) else 20
+     a += [dms, num(src.get('direct_gain'), 1)]
+ 
+-def pack_room(d):
+-    a = [1]
+-    di = int(num(d.get('direct_index'), 2))
++def _shelf2_live(d):
++    buses = d.get('buses') or {}
++    for k in 'lcr':
++        src = buses.get(k)
++        for _ in range(2):
++            if not src:
++                break
++            for sh in (src.get('shelf2') or []):
++                if sh and sh.get('on'):
++                    return True
++            src = src.get('b')
++    return False
++
++def pack_air(d):
++    if not _shelf2_live(d):
++        return []
++    a = []
++    buses = d.get('buses') or {}
++    for k in 'lcr':
++        bus = buses.get(k) or {}
++        shelf = bus.get('shelf2') or []
++        for i in range(32):
++            push_shelf(a, shelf[i] if i < len(shelf) else None)
++        b = bus.get('b') or {}
++        shelf = b.get('shelf2') or []
++        for i in range(32):
++            push_shelf(a, shelf[i] if i < len(shelf) else None)
++    return a
++
++def pack_core(d):
++    a = []
++    di = int(num(d.get('direct_index'), 10))
+     di = max(0, min(31, di))
+     a += [num(d.get('g'), 0.03), num(d.get('fdn_wet'), 1), num(d.get('direct_wet'), 1), num(d.get('early_wet'), 0),
+           num(d.get('dry_gain'), 0), num(d.get('makeup'), 1), num(d.get('gain_a'), 1), num(d.get('gain_b'), 1)]
+@@ -60,7 +89,32 @@
+         bus = (d.get('buses') or {}).get(k)
+         push_side(a, bus, di)
+         push_side(a, bus.get('b') if bus else None, di)
+-    assert len(a) == BLOB_LEN, len(a)  # 1981 today; the fix appends line_t60 after this
++    assert len(a) == BLOB_LEN - 1, len(a)  # v1 body without magic and without line_t60
++    a.append(num(d.get('line_t60'), 0))
++    sm = d.get('solo_mute') or []
++    hn = d.get('hadamard_n')
++    if hn is None:
++        hn = d.get('n')
++    a.append(num(hn, 32))
++    a.append(num(d.get('loop_semantics'), 0))
++    for i in range(6):
++        a.append(num(sm[i] if i < len(sm) else 1, 1))
++    return a
++
++def pack_room(d):
++    parts = [(1, pack_core(d)), (2, pack_air(d)), (3, []), (4, []), (5, [])]
++    nsec = len(parts)
++    off = 5 + 4 * nsec
++    directory = []
++    body = []
++    for sid, payload in parts:
++        ln = len(payload)
++        directory += [sid, off, ln, 1]
++        if ln:
++            body += payload
++            off += ln
++    a = [2, 2, 0, nsec, 0] + directory + body
++    a[4] = len(a)
+     return np.asarray(a, dtype=np.float32)
+ 
+ def _at(v, d):
+@@ -94,8 +148,6 @@
+     d.update({'colour_on': on, 'mono': False, 'snap': True})
+     d.update(over)
+     blob = pack_room(d)
+-    if d.get('line_t60') is not None:  # proposed fix: optional trailing float (BLOB_LEN 1982)
+-        blob = np.concatenate([blob, np.asarray([float(d['line_t60'])], np.float32)])
+     if on:
+         irs = [np.frombuffer(base64.b64decode(s), dtype=np.float32) for s in c['irs']]
+         lens = np.asarray([len(x) for x in irs], dtype=np.int32)

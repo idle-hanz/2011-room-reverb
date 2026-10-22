@@ -1,0 +1,66 @@
+PASS      0.3s  test_colour_sos::test_colour_tables_match_presets                      
+PASS      0.0s  test_colour_sos::test_colour_at_c1_48k_within_0p5db                    
+FAIL      0.0s  test_colour_sos::test_colour_at_c4_44k1_within_0p6db                   AssertionError: AT-C4 44.1 kHz: ['NeumannU87AiOmni@150deg 0.64 dB @ 14645 Hz', 'NeumannU87AiOmni@180deg 0.69 dB @ 14645 Hz', 'RodeNT2AOmni@180deg 0.62 dB @ 15969 Hz'] (worst (0.6922455517431167, 'NeumannU87AiOmni@180')) assert not ['NeumannU87AiOmni@150deg 0.64 dB @ 14645 Hz', 'NeumannU87AiOmni@180d
+XFAIL     0.0s  test_colour_sos::test_colour_high_rates_informational[88200]           88200 Hz: 26 mic/angle cases > 0.5 dB, worst SchoepsCMC5UOmni@180 1.99 dB (DECISION: per-rate tables or refuse colour at >48 kHz)
+XFAIL     0.0s  test_colour_sos::test_colour_high_rates_informational[96000]           96000 Hz: 27 mic/angle cases > 0.5 dB, worst SchoepsCMC5UOmni@180 2.12 dB (DECISION: per-rate tables or refuse colour at >48 kHz)
+PASS      0.0s  test_colour_sos::test_colour_sos_stable[44100]                         
+PASS      0.0s  test_colour_sos::test_colour_sos_stable[48000]                         
+PASS      0.0s  test_colour_sos::test_colour_sos_stable[88200]                         
+PASS      0.0s  test_colour_sos::test_colour_sos_stable[96000]                         
+PASS      0.6s  test_colour_sos::test_colour_hpf_on_low_end[44100]                     
+PASS      0.0s  test_colour_sos::test_colour_hpf_on_low_end[48000]                     
+FAIL      0.4s  test_colour_sos::test_colour_play_bank_fits_two_sources_apart          AssertionError: 90 colour entries > MAX_IRS 64 (live_stereo.c) -> Play colour silently off with two sources assert 90 <= 64
+PASS      5.8s  test_colour_sos::test_colour_cpu_active                                
+PASS      0.0s  test_locks::test_lock_unscaled_pm1_hadamard_render                     
+PASS      0.0s  test_locks::test_lock_unscaled_pm1_hadamard_play                       
+PASS      0.0s  test_locks::test_lock_geometric_level_inverse_square                   
+PASS      0.0s  test_locks::test_lock_early_images_excite_fdn                          
+XFAIL     0.0s  test_locks::test_lock_two_diffusion_layers_separate_keys               P0.3 diffusion key split not in tree (card "diffusion" still feeds both layers)
+PASS      0.0s  test_p0_engine::test_p0_1_denormal_guard_in_source                     
+PASS      3.1s  test_p0_engine::test_p0_1_silence_cost[colour_off-over0-0.5]           
+PASS      3.5s  test_p0_engine::test_p0_1_silence_cost[colour_on-over1-0.75]           
+PASS      1.0s  test_p0_engine::test_p0_2_t60_play_within_8pct[std_lock18]             
+FAIL      1.6s  test_p0_engine::test_p0_2_t60_play_within_8pct[small_lock08]           AssertionError: Play T30 {500: 0.722, 1000: 0.813, 2000: 0.784, 4000: 0.782, 8000: 0.786} vs dial 0.8 s (+-8%); out: {500: 0.722} assert not {500: 0.722}
+PASS      3.0s  test_p0_engine::test_p0_2_t60_play_within_8pct[hall_lock40]            
+PASS      1.1s  test_p0_engine::test_p0_2_t60_play_independent_of_dffs[0.0]            
+PASS      1.1s  test_p0_engine::test_p0_2_t60_play_independent_of_dffs[-0.5]           
+PASS      1.1s  test_p0_engine::test_p0_2_t60_play_independent_of_dffs[-0.9]           
+PASS      1.0s  test_p0_engine::test_p0_2_hf_residue_play                              
+PASS     40.8s  test_p0_engine::test_p0_2_t60_render_within_8pct                       
+PASS      0.4s  test_p0_engine::test_p0_2_decay_lock_off_unchanged                     
+XFAIL     0.0s  test_p0_engine::test_p0_3_two_diffusion_layers_independent             P0.3 diffusion key split not in tree (card "diffusion" still feeds both layers)
+XFAIL     0.0s  test_p0_engine::test_p0_4_fdn_tail_null_play_vs_render                 P0.4 loop semantics not decided/landed (no build_mix / loop_semantics / packed loop_mix) - F5 is DECISION FOR IDLE
+XFAIL     0.1s  test_p0_engine::test_p0_5_server_defaults_equal_client_state           P0.5b: client does not load /api/defaults (hard-coded state in app.js); 9 shared-key mismatches: decay_lock False/True, decay_s 0.0/1.8, humidity 0.0/0.35, mic_proximity 0.0/0.25, mirror_b False/True, space 0.25/0.17, toe_half_deg None/55, yaw_l_deg None/-55, yaw_r_deg None/55
+PASS      0.0s  test_p0_engine::test_p0_5_scipy_in_requirements                        
+XFAIL     0.0s  test_p0_engine::test_p0_5_loop_mix_not_dead_payload                    P0.5a: loop_mix still computed in render_pipeline.py but never packed/used by Play (dead payload); delete it or consume it with F5 (DECISION FOR IDLE with the loop-semantics choice)
+PASS      0.0s  test_p0_engine::test_p0_5_diffusion_master_clamped                     
+XFAIL     0.0s  test_p0_engine::test_p0_5_diffusion_master_single_value                P0.5e: two diffusion_master values in the tree {'fdn.DIFFUSION_MASTER_DEFAULT': -0.25, 'fdn.DIFFUSION_MASTER_LIVE': -0.5, 'server default': -0.5} - DECISION FOR IDLE (-0.25 Structure default vs -0.5 live)
+PASS      0.0s  test_p1_blob::test_p1_worklet_ver_consistent_everywhere                
+PASS      0.1s  test_p1_blob::test_p1_blob_len_matches_packer                          
+PASS      2.8s  test_p1_blob::test_p1_wasm_matches_source                              
+XFAIL     0.0s  test_p1_blob::test_p1_blob_v2_header_and_sections                      P1 blob v2 header/section table not in tree (magic 1 only)
+XFAIL     0.0s  test_p1_blob::test_p1_max_blob_raised                                  P1 blob v2 header/section table not in tree (magic 1 only)
+XFAIL     0.0s  test_p1_blob::test_p1_old_wasm_silent_on_v2_blob                       P1 blob v2 header/section table not in tree (magic 1 only)
+PASS      1.3s  test_p2_air::test_lock_direct_is_air_free_play                         
+PASS      4.3s  test_p2_air::test_lock_direct_is_air_free_render                       
+PASS      0.0s  test_p2_air::test_lock_no_air_on_fdn_return_play                       
+PASS      0.0s  test_p2_air::test_lock_no_air_on_fdn_return_render                     
+PASS      0.0s  test_p2_air::test_lock_humidity_one_pole_separate_from_shelf           
+PASS      0.0s  test_p2_air::test_lock_render_stage_order                              
+XFAIL     0.0s  test_p2_air::test_p2_iso_air_fit_within_tolerance                      P2 ISO 9613-1 air not in tree (no engine/air_iso.py, no air_climate)
+XFAIL     0.0s  test_p2_air::test_p2_air_shelf_zero_nulls_iso_off                      P2 ISO 9613-1 air not in tree (no engine/air_iso.py, no air_climate)
+XFAIL     0.0s  test_p2_air::test_p2_play_render_early_null                            P2 ISO 9613-1 air not in tree (no engine/air_iso.py, no air_climate)
+PASS      0.0s  test_p3_p4_surfaces::test_lock_per_hit_cascade_is_serial_render        
+PASS      0.0s  test_p3_p4_surfaces::test_lock_render_passes_every_hit                 
+XFAIL     0.0s  test_p3_p4_surfaces::test_p3a_curtain_wall_only_real_materials         P3A Track A materials/role bans not in tree
+XFAIL     0.0s  test_p3_p4_surfaces::test_p3b_mute_all_panels_leaves_direct_and_fdn    P3B surfaces Solo/Mute not in tree
+XFAIL     0.0s  test_p3_p4_surfaces::test_p4_play_render_early_null                    P4 Play per-hit surface cascade not in tree
+XFAIL     0.0s  test_p3_p4_surfaces::test_p4_flat_cards_bit_exact_bypass               P4 Play per-hit surface cascade not in tree
+XFAIL     0.0s  test_p3_p4_surfaces::test_p4_cpu_budget                                P4 Play per-hit surface cascade not in tree
+PASS      0.0s  test_p5_p6::test_lock_no_scattering_inside_fdn_loop                    
+XFAIL     0.0s  test_p5_p6::test_p5_scatter_zero_is_bit_identical                      P5 scattering (Track C) not in tree
+XFAIL     0.0s  test_p5_p6::test_p5_scatter_after_air                                  P5 scattering (Track C) not in tree
+XFAIL     0.0s  test_p5_p6::test_p5_energy_and_feed_forward                            P5 scattering (Track C) not in tree
+XFAIL     0.0s  test_p5_p6::test_p6_omni_source_bit_identical                          P6 source radiation not in tree
+XFAIL     0.0s  test_p5_p6::test_p6_tail_invariant_to_source_yaw                       P6 source radiation not in tree
+{'PASS': 38, 'FAIL': 3, 'XFAIL': 24, 'SKIP': 0}

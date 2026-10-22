@@ -1,0 +1,230 @@
+{
+ "setup": {
+  "room": "default (app DEFAULTS), FDN only: early_wet 0, direct_wet 0, colour BYPASS, 48 kHz, Render path (box scratch copy of the 18:29 audit tree)",
+  "rotation": "one FWHT butterfly stage (distance 16, the outer stage) uses Ref(theta), theta = pi/4 + eps*pi*sin(2*pi*f*t), t from sample 0; H\u00b7D column signs kept; orthogonal at every sample (checked 7e-15)",
+  "variants": {
+   "before": "eps 0 (bit-exact engine path)",
+   "rot5": "eps 0.05 pi (9 deg), 0.3 Hz",
+   "rot10": "eps 0.10 pi (18 deg), 0.5 Hz"
+  },
+  "tail_window": "0.3-1.3 s of the IR, L+R mean, 1.8 s decay removed, Hann, 1 Hz bins, 100 Hz-8 kHz, residual vs 301-bin running median",
+  "guitar": "test_guitar_dualmono.wav (12 s, mono) run THROUGH the time-varying FDN (inject convolved with guitar before the loop), not IR convolution",
+  "before_vs_v2_def_fdn_maxabs": 0.0,
+  "through_loop_vs_ir_convolution_before_rel_err": 2.1036283286604268e-07
+ },
+ "before": {
+  "peakiness_std_db": 7.2,
+  "peaks_db_over_median": {
+   "724": 20.8,
+   "781": 18.6,
+   "1285": 19.0,
+   "2008": 18.6
+  },
+  "top5_now": [
+   [
+    724.0,
+    20.8
+   ],
+   [
+    1285.0,
+    19.0
+   ],
+   [
+    781.0,
+    18.6
+   ],
+   [
+    2008.0,
+    18.6
+   ],
+   [
+    723.0,
+    18.5
+   ]
+  ],
+  "four_windows_0.3_0.8_1.3_2.0s": {
+   "peakiness_mean_db": 7.21,
+   "peakiness_range_db": [
+    7.18,
+    7.24
+   ],
+   "peak_mean_db": {
+    "724": 18.5,
+    "781": 19.4,
+    "1285": 16.0,
+    "2008": 16.5
+   }
+  },
+  "T30_s": {
+   "63": 1.202,
+   "125": 1.672,
+   "250": 1.602,
+   "500": 1.746,
+   "1000": 1.777,
+   "2000": 1.806,
+   "4000": 1.811,
+   "8000": 1.798
+  }
+ },
+ "rot5": {
+  "peakiness_std_db": 7.25,
+  "peaks_db_over_median": {
+   "724": 17.9,
+   "781": 17.9,
+   "1285": 18.8,
+   "2008": 18.0
+  },
+  "top5_now": [
+   [
+    261.0,
+    24.8
+   ],
+   [
+    157.0,
+    22.6
+   ],
+   [
+    262.0,
+    20.7
+   ],
+   [
+    820.0,
+    19.7
+   ],
+   [
+    302.0,
+    19.0
+   ]
+  ],
+  "four_windows_0.3_0.8_1.3_2.0s": {
+   "peakiness_mean_db": 7.27,
+   "peakiness_range_db": [
+    7.16,
+    7.43
+   ],
+   "peak_mean_db": {
+    "724": 18.6,
+    "781": 17.9,
+    "1285": 14.8,
+    "2008": 13.5
+   }
+  },
+  "T30_s": {
+   "63": 1.252,
+   "125": 1.746,
+   "250": 1.624,
+   "500": 1.756,
+   "1000": 1.796,
+   "2000": 1.811,
+   "4000": 1.811,
+   "8000": 1.784
+  },
+  "T30_change_pct": {
+   "63": 4.2,
+   "125": 4.4,
+   "250": 1.4,
+   "500": 0.6,
+   "1000": 1.1,
+   "2000": 0.3,
+   "4000": 0.0,
+   "8000": -0.8
+  },
+  "peak_reduction_4win_db": {
+   "724": -0.1,
+   "781": 1.5,
+   "1285": 1.2,
+   "2008": 3.0
+  },
+  "peak_reduction_db": {
+   "724": 2.9,
+   "781": 0.7,
+   "1285": 0.2,
+   "2008": 0.6
+  }
+ },
+ "rot10": {
+  "peakiness_std_db": 7.28,
+  "peaks_db_over_median": {
+   "724": 18.1,
+   "781": 17.4,
+   "1285": 17.7,
+   "2008": 14.1
+  },
+  "top5_now": [
+   [
+    261.0,
+    25.3
+   ],
+   [
+    262.0,
+    21.7
+   ],
+   [
+    157.0,
+    21.7
+   ],
+   [
+    820.0,
+    21.4
+   ],
+   [
+    1025.0,
+    20.8
+   ]
+  ],
+  "four_windows_0.3_0.8_1.3_2.0s": {
+   "peakiness_mean_db": 7.12,
+   "peakiness_range_db": [
+    7.03,
+    7.28
+   ],
+   "peak_mean_db": {
+    "724": 14.7,
+    "781": 16.9,
+    "1285": 15.4,
+    "2008": 14.9
+   }
+  },
+  "T30_s": {
+   "63": 1.213,
+   "125": 1.745,
+   "250": 1.57,
+   "500": 1.834,
+   "1000": 1.794,
+   "2000": 1.793,
+   "4000": 1.786,
+   "8000": 1.826
+  },
+  "T30_change_pct": {
+   "63": 0.9,
+   "125": 4.4,
+   "250": -2.0,
+   "500": 5.0,
+   "1000": 1.0,
+   "2000": -0.7,
+   "4000": -1.4,
+   "8000": 1.6
+  },
+  "peak_reduction_4win_db": {
+   "724": 3.8,
+   "781": 2.5,
+   "1285": 0.6,
+   "2008": 1.6
+  },
+  "peak_reduction_db": {
+   "724": 2.7,
+   "781": 1.2,
+   "1285": 1.3,
+   "2008": 4.5
+  }
+ },
+ "guitar_level_match": {
+  "method": "equal RMS over the whole file, then one shared gain to -1 dBFS peak; 24-bit WAV",
+  "match_gain_db": {
+   "before": 0.0,
+   "rot5": 0.01,
+   "rot10": -0.39
+  },
+  "shared_gain_db": 8.66
+ }
+}

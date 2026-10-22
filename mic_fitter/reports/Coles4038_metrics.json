@@ -1,0 +1,44 @@
+{
+  "mic_id": "Coles4038",
+  "display_name": "Coles 4038 \u2014 fig-8 ribbon",
+  "honesty": "MEASURED",
+  "family": "fig8_ribbon",
+  "source": "Franco et al. Zenodo 10.5281/zenodo.4633508 (Raw_IRs, 5m, 24-bit, selected angles)",
+  "params": {
+    "f0": 200.00003177605709,
+    "depth_max_db": -11.875142550740794,
+    "shelf_slope": 0.6000000000000001,
+    "f_lo": 235.1594229118391,
+    "depth_lo_db": -0.7602830802165925,
+    "res_hz": 1500.0007270249603,
+    "lp_mix": 0.3107442499725204,
+    "fc_floor": 5241.531433738029,
+    "p": 0.6000000000000001
+  },
+  "train_rmse_db": 6.19444929767776,
+  "holdout_rmse_db": 3.0569376624874223,
+  "train_mse_db": 38.371202101500494,
+  "holdout_mse_db": 9.344867872334065,
+  "holdout_angles_deg": [
+    45.0,
+    135.0
+  ],
+  "train_angles_deg": [
+    0.0,
+    15.0,
+    30.0,
+    60.0,
+    90.0,
+    120.0,
+    150.0,
+    180.0
+  ],
+  "fit_message": "DE success=False nit=70 fun=38.684272; LS success=True cost=9892.432004",
+  "preset": "Coles4038.json",
+  "plots": {
+    "polar": "plots/polars/Coles4038_polar.png",
+    "colour": "plots/colour/Coles4038_colour.png",
+    "fit_train": "plots/fit/Coles4038_train.png",
+    "fit_holdout": "plots/fit/Coles4038_holdout.png"
+  }
+}

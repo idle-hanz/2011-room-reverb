@@ -1,0 +1,71 @@
+{
+  "schema": "air_fitter.preset.v1",
+  "id": "dry_20C_20RH",
+  "honesty": "FITTED_TO_ISO_9613_1",
+  "conditions": {
+    "temperature_c": 20.0,
+    "relative_humidity_pct": 20.0,
+    "pressure_kpa": 101.325
+  },
+  "model": "dual_high_shelf",
+  "candidate": "C",
+  "params": {
+    "f0": 7999.999999655233,
+    "depth_db_per_m": -0.00731179164937025,
+    "shelf_slope": 0.7255599034851314,
+    "f0_hi": 15999.999999999998,
+    "depth_hi_db_per_m": -0.07453046939096905,
+    "shelf_slope_hi": 6.943995090816494
+  },
+  "usage": "A_db(f,d) = d * H1(f); apply as magnitude 10^(A_db/20) once per path (early) or inject distance (FDN). Do not put on feedback return. Do not replace geometric 1/r^2.",
+  "rmse": {
+    "joint_db": 0.009656719280139165,
+    "per_distance_db": {
+      "5m": 0.0018343778674963476,
+      "10m": 0.0036687557349926953,
+      "20m": 0.007337511469985391,
+      "40m": 0.014675022939970781
+    },
+    "flat_naive_db": 0.2176375817086758,
+    "assumed_shelf": {
+      "humidity_0.5_joint_db": 0.33953078599738057,
+      "humidity_1.0_joint_db": 0.9189325585641783,
+      "note": "ASSUMED engine: gain = -0.15 * d * humidity, high-shelf corner ~0.35*Nyquist @ 44.1 kHz (\u22487718 Hz). Not fitted \u2014 compare only."
+    },
+    "all_candidates_joint_db": {
+      "A": 0.042797765763374386,
+      "B": 0.021659613176677125,
+      "C": 0.009656719280139165
+    }
+  },
+  "freq_range_hz": [
+    20.0,
+    16000.0
+  ],
+  "distances_m": [
+    5.0,
+    10.0,
+    20.0,
+    40.0
+  ],
+  "locks": {
+    "geometric_1_over_r2": "stays \u2014 this only replaces ASSUMED high-shelf colour",
+    "structure_1pole_wet_dis": "separate musical control \u2014 not replaced",
+    "placement": "once on early + FDN inject; not Direct; not feedback",
+    "live_software": "do not import into live software/ engine in this pack"
+  },
+  "fit": {
+    "success": true,
+    "message": "winner=C (dual_high_shelf); DE success=False nit=80 fun=9.35775e-05; LS success=True cost=0.0179044"
+  },
+  "alpha_check": {
+    "125Hz": 0.0018616051552503953,
+    "250Hz": 0.0019743043900319504,
+    "500Hz": 0.0020325530435141735,
+    "1000Hz": 0.002159623946212278,
+    "2000Hz": 0.0026409006892883394,
+    "4000Hz": 0.004559222410049129,
+    "8000Hz": 0.012230810873717994,
+    "16000Hz": 0.04291673999172828
+  }
+}

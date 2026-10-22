@@ -1,0 +1,7 @@
+CPU A/B on the box, 2 Oct (run_all --only t09_silence_cpu,t15_perf_active, alternating builds, ms per 128-sample block, budget 2.667 ms)
+2210 run1: t09 byp play 0.711 / silence 0.909; col play 1.112 / silence 0.896; t15 1src_col 0.973, 2src_col 1.614
+0615 run1: t09 byp play 0.787 / silence 0.790; col play 0.963 / silence 0.892; t15 1src_col 0.884, 2src_col 1.533
+2210 run2: t09 byp play 0.710 / silence 0.684; col play 0.926 / silence 0.873; t15 1src_col 0.925, 2src_col 1.477
+0615 run2: t09 byp play 0.783 / silence 0.757; col play 0.991 / silence 0.880; t15 1src_col 0.890, 2src_col 1.521
+run_all --quick full run (0615): t09 byp 0.788/0.696, col 0.921/0.921; t15 1src_col 0.908, 2src_col 1.545
+Note: the box is slower today than on 1 Oct (2210 measured 0.589 / 1.122 then); the same-session A/B shows no regression.

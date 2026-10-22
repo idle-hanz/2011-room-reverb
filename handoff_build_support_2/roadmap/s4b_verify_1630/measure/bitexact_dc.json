@@ -1,0 +1,27 @@
+{
+ "nocsign_nodc_vs_1140|bin_big|page": {
+  "max_abs_diff": 0.0,
+  "peak": 0.6126634478569031,
+  "diff_dB_re_peak": null
+ },
+ "ship1630_vs_1140|bin_big|page": {
+  "max_abs_diff": 0.006753106834366918,
+  "peak": 0.6126634478569031,
+  "diff_dB_re_peak": -39.154367006278676
+ },
+ "nocsign_vs_1140|bin_big|page": {
+  "max_abs_diff": 4.5755900259791815e-06,
+  "peak": 0.6126634478569031,
+  "diff_dB_re_peak": -102.535497320162
+ },
+ "nocsign_nodc_vs_1140|hall_preset|page": {
+  "max_abs_diff": 0.0,
+  "peak": 0.40437665581703186,
+  "diff_dB_re_peak": null
+ },
+ "ship1630_vs_1140|hall_preset|page": {
+  "max_abs_diff": 1.2141263141529635e-05,
+  "peak": 0.40437665581703186,
+  "diff_dB_re_peak": -90.45044409041816
+ }
+}

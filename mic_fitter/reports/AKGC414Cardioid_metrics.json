@@ -1,0 +1,44 @@
+{
+  "mic_id": "AKGC414Cardioid",
+  "display_name": "AKG C414 Cardioid \u2014 LDC multipattern",
+  "honesty": "MEASURED",
+  "family": "ldc_cardioid",
+  "source": "Franco et al. Zenodo 10.5281/zenodo.4633508 (Raw_IRs, 5m, 24-bit, selected angles)",
+  "params": {
+    "f0": 363.3790361787889,
+    "depth_max_db": -18.534848059937737,
+    "shelf_slope": 1.463408226221397,
+    "f_lo": 219.73914572617107,
+    "depth_lo_db": 0.018758254659365065,
+    "res_hz": 1500.009731315695,
+    "lp_mix": 0.27418992584783775,
+    "fc_floor": 5874.955571009443,
+    "p": 0.6704385487789598
+  },
+  "train_rmse_db": 3.5006798172233653,
+  "holdout_rmse_db": 3.3182157365655476,
+  "train_mse_db": 12.254759182715015,
+  "holdout_mse_db": 11.010555674391238,
+  "holdout_angles_deg": [
+    45.0,
+    135.0
+  ],
+  "train_angles_deg": [
+    0.0,
+    15.0,
+    30.0,
+    60.0,
+    90.0,
+    120.0,
+    150.0,
+    180.0
+  ],
+  "fit_message": "DE success=False nit=70 fun=12.424547; LS success=True cost=3180.168415",
+  "preset": "AKGC414Cardioid.json",
+  "plots": {
+    "polar": "plots/polars/AKGC414Cardioid_polar.png",
+    "colour": "plots/colour/AKGC414Cardioid_colour.png",
+    "fit_train": "plots/fit/AKGC414Cardioid_train.png",
+    "fit_holdout": "plots/fit/AKGC414Cardioid_holdout.png"
+  }
+}

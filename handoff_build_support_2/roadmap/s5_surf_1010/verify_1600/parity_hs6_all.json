@@ -1,0 +1,38 @@
+{
+ "mix|0-80ms": {
+  "max_abs_db": 0.795,
+  "at_hz": 10000
+ },
+ "mix|80ms+": {
+  "max_abs_db": 0.035,
+  "at_hz": 6300
+ },
+ "mix|full": {
+  "max_abs_db": 0.574,
+  "at_hz": 10000
+ },
+ "early|0-80ms": {
+  "max_abs_db": 0.419,
+  "at_hz": 6300
+ },
+ "early|80ms+": {
+  "max_abs_db": 10.614,
+  "at_hz": 250
+ },
+ "early|full": {
+  "max_abs_db": 0.435,
+  "at_hz": 6300
+ },
+ "fdn|0-80ms": {
+  "max_abs_db": 0.051,
+  "at_hz": 6300
+ },
+ "fdn|80ms+": {
+  "max_abs_db": 0.035,
+  "at_hz": 6300
+ },
+ "fdn|full": {
+  "max_abs_db": 0.046,
+  "at_hz": 6300
+ }
+}

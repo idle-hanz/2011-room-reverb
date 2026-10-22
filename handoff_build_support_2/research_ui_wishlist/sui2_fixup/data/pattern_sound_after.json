@@ -1,0 +1,116 @@
+{
+ "micPlayNote_fdn_only_play_vs_render": [
+  -72.33,
+  -71.99
+ ],
+ "measured_bi_vs_card": {
+  "render": [
+   -2996.47,
+   -2994.64
+  ],
+  "play": [
+   -2997.55,
+   -2996.02
+  ]
+ },
+ "measured_omni_vs_card": {
+  "render": [
+   -2996.47,
+   -2994.64
+  ],
+  "play": [
+   -2997.55,
+   -2996.02
+  ]
+ },
+ "bypass_bi_vs_card": {
+  "render": [
+   -3000.18,
+   -2999.36
+  ],
+  "play": [
+   -3000.81,
+   -3000.09
+  ]
+ },
+ "user_bi_vs_card": {
+  "render": [
+   -19.43,
+   -14.86
+  ],
+  "play": [
+   -18.96,
+   -14.75
+  ]
+ },
+ "user_omni_vs_card": {
+  "render": [
+   -21.69,
+   -18.01
+  ],
+  "play": [
+   -21.14,
+   -17.84
+  ]
+ },
+ "ms_classic_measured_vs_law": {
+  "render": [
+   -3000.94,
+   -3001.52
+  ],
+  "play": [
+   -3000.71,
+   -3000.92
+  ]
+ },
+ "ab_omni_user_vs_law": {
+  "render": [
+   -23.85,
+   -22.42
+  ],
+  "play": [
+   -23.61,
+   -22.43
+  ]
+ },
+ "ab_omni_user_vs_self": {
+  "render": [
+   -3000.05,
+   -2999.53
+  ],
+  "play": [
+   -3000.77,
+   -3000.71
+  ]
+ },
+ "ortf_measured_identity": {
+  "render": [
+   -2996.47,
+   -2994.64
+  ],
+  "play": [
+   -2997.55,
+   -2996.02
+  ]
+ },
+ "ortf_bypass_identity": {
+  "render": [
+   -3000.18,
+   -2999.36
+  ],
+  "play": [
+   -3000.81,
+   -3000.09
+  ]
+ },
+ "ortf_user_identity": {
+  "render": [
+   -2999.71,
+   -2998.53
+  ],
+  "play": [
+   -3000.68,
+   -2999.84
+  ]
+ }
+}

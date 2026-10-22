@@ -1,0 +1,36 @@
+{
+ "RT60_sabine_s": 1.5836065573770493,
+ "image_order": 5,
+ "n_images": 1848,
+ "common_gain": 1.0,
+ "A": {
+  "file": "demo_A_binaural.wav",
+  "rms_dbfs": -26.020599913279625,
+  "peak_dbfs": -2.1884461265843447,
+  "tail_IC_broadband(>150ms)": 0.08061323996403702,
+  "tail_IC_200-1000Hz": 0.20535336143604255,
+  "L_minus_R_dB_whole_clip": -0.006137741678387109,
+  "L_minus_R_dB_first_arrival": 8.344309004578934,
+  "L_minus_R_dB_first_50ms": 1.511670830073615
+ },
+ "B": {
+  "file": "demo_B_omni_at_speakers.wav",
+  "rms_dbfs": -26.020599913279625,
+  "peak_dbfs": -2.4152090872741603,
+  "tail_IC_broadband(>150ms)": 0.17893126345885546,
+  "tail_IC_200-1000Hz": 0.16879412795580567,
+  "L_minus_R_dB_whole_clip": 0.35474707510880804,
+  "L_minus_R_dB_first_arrival": 3.83613221470104,
+  "L_minus_R_dB_first_50ms": 1.303282341307179
+ },
+ "C": {
+  "file": "demo_C_omni_cube.wav",
+  "rms_dbfs": -26.020599913279625,
+  "peak_dbfs": -2.206988546665007,
+  "tail_IC_broadband(>150ms)": 0.1875050222068896,
+  "tail_IC_200-1000Hz": 0.10411290033029406,
+  "L_minus_R_dB_whole_clip": 0.20387382923482664,
+  "L_minus_R_dB_first_arrival": 0.28173156375461617,
+  "L_minus_R_dB_first_50ms": 0.1307793239055122
+ }
+}

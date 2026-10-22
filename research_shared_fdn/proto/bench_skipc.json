@@ -1,0 +1,26 @@
+{
+ "bin_def_2src|m0": {
+  "min": 1.735,
+  "med": 1.76
+ },
+ "bin_def_2src|skipc": {
+  "min": 1.278,
+  "med": 1.321
+ },
+ "bin_def_1src|m0": {
+  "min": 0.972,
+  "med": 1.026
+ },
+ "bin_def_1src|skipc": {
+  "min": 0.774,
+  "med": 0.787
+ },
+ "bin_big_1src|m0": {
+  "min": 1.036,
+  "med": 1.062
+ },
+ "bin_big_1src|skipc": {
+  "min": 0.861,
+  "med": 0.913
+ }
+}

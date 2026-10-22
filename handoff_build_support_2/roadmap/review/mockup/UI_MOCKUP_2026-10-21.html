@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"><title>2011 Room Reverb: UI MOCKUP (not shipping)</title>
+<style>
+:root{--bg:#0b0c10;--panel:#13151b;--panel2:#191c25;--border:#2a2f3d;--text:#e9ecf3;--muted:#8b93a8;--faint:#5c6478;--accent:#2dd4bf;--accent-dim:rgba(45,212,191,.16);--source:#fbbf24;--mic:#60a5fa;--left:#a78bfa;--right:#34d399;--warn:#fbbf24;--danger:#f472b6;--r:12px;--font:"Segoe UI",system-ui,sans-serif;--mono:ui-monospace,Consolas,monospace}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:13px var(--font)}
+.banner{background:#3a3420;color:var(--warn);padding:6px 12px;text-align:center;font-weight:600}
+header{display:flex;align-items:center;gap:10px;padding:8px 12px;border-bottom:1px solid var(--border);flex-wrap:wrap}
+h1{font-size:16px;margin:0 12px 0 0}
+button,.chip{background:var(--panel2);color:var(--text);border:1px solid var(--border);border-radius:999px;padding:5px 11px;cursor:pointer;font:inherit}
+button:hover{border-color:var(--accent)}button.on,.chip.on{background:var(--accent-dim);border-color:var(--accent);color:var(--accent)}
+button:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.primary{background:var(--accent);color:#042f2e;font-weight:600}
+.engine{width:100%;color:var(--muted);font:12px var(--mono)}
+.engine b{color:var(--accent)}.rtag{background:var(--danger);color:#000;border-radius:4px;padding:0 4px;font-size:10px;margin-left:4px}
+main{display:grid;grid-template-columns:230px 1fr 340px;gap:10px;padding:10px}
+.panel{background:var(--panel);border:1px solid var(--border);border-radius:var(--r);padding:10px;margin-bottom:10px}
+.panel h2{font-size:12px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin:0 0 8px}
+.row{display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin:4px 0}
+label.ctl{display:grid;grid-template-columns:70px 1fr 52px;gap:6px;align-items:center;margin:5px 0}
+output{font-family:var(--mono);color:var(--accent);text-align:right}
+input[type=range]{width:100%;accent-color:var(--accent)}
+.sub{display:grid;grid-template-columns:60px 1fr;gap:4px;font-size:11px;color:var(--muted)}
+.bar{height:6px;background:var(--panel2);border-radius:3px;overflow:hidden;margin-top:4px}.bar i{display:block;height:100%;background:var(--accent)}
+canvas{width:100%;display:block;background:#0a0b0e;border-radius:8px}
+.tabs{display:flex;gap:4px;margin-bottom:6px}
+.mix{grid-column:1/4;display:flex;gap:18px;align-items:end;flex-wrap:wrap}
+.fader{display:flex;flex-direction:column;align-items:center;gap:4px}
+.fader input{writing-mode:vertical-lr;direction:rtl;height:90px;width:24px}
+.editors{grid-column:1/4}
+.ex{color:var(--warn);font-size:11px}
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.6);display:none;align-items:center;justify-content:center}
+.modal div{background:var(--panel);border:1px solid var(--accent);border-radius:var(--r);padding:18px;max-width:420px}
+.hint{color:var(--muted);font-size:11px}
+.snap{border-radius:6px;padding:3px 8px}.snap.full{border-color:var(--source)}
+#toast{position:fixed;bottom:16px;left:50%;transform:translateX(-50%);background:var(--panel2);border:1px solid var(--accent);padding:8px 14px;border-radius:8px;display:none}
+.meter{display:grid;grid-template-columns:14px 1fr 60px;gap:6px;align-items:center;margin:4px 0;font:11px var(--mono)}
+.mbar{height:10px;background:linear-gradient(90deg,#34d399 0 70%,#fbbf24 70% 88%,#f472b6 88%);border-radius:3px;position:relative}
+.mbar span{position:absolute;right:0;top:0;bottom:0;background:#0a0b0e}
+/* ===== Editors (v2) ===== */
+#ed{min-height:100vh;background:var(--bg);display:none;flex-direction:column;z-index:20;font-size:13px}
+#ed.open{display:flex}
+body.edopen>*:not(#ed):not(#toast):not(.modal){display:none!important}
+#ed .ebar{display:flex;align-items:center;gap:8px;padding:8px 12px;border-bottom:1px solid var(--border);flex-wrap:wrap}
+#ed .ebar h1{font-size:16px}
+#ed [role=tablist]{display:flex;gap:4px;flex-wrap:wrap}
+#ed [role=tab][aria-selected=true]{background:var(--accent-dim);border-color:var(--accent);color:var(--accent)}
+#ed .ebody{flex:1;overflow:auto;padding:10px}
+#ed .eg{display:grid;gap:10px}
+#ed .g3{grid-template-columns:280px 1fr 300px}#ed .g2{grid-template-columns:1fr 320px}#ed .g2e{grid-template-columns:1fr 1fr}
+#ed .hint,#ed .ex,#ed .sub{font-size:12px}
+#ed .ex{color:var(--warn)}
+#ed .panel h2{font-size:12px}
+#ed label.ctl{grid-template-columns:1fr 64px;row-gap:2px}
+#ed label.ctl>span:first-child{grid-column:1/-1}
+#ed label.ctl select{grid-column:1/-1;width:100%}
+#ed select,#ed input[type=number]{background:var(--panel2);color:var(--text);border:1px solid var(--border);border-radius:6px;padding:4px 6px;font:inherit}
+#ed input[type=number]{width:70px}
+#ed :focus-visible{outline:2px solid var(--accent)!important;outline-offset:2px}
+.badge{font-size:12px;border-radius:4px;padding:0 5px;margin-left:6px;border:1px solid;white-space:nowrap}
+.b-pr{color:var(--accent);border-color:var(--accent)}.b-r{color:var(--danger);border-color:var(--danger)}.b-p{color:var(--mic);border-color:var(--mic)}.b-s{color:var(--warn);border-color:var(--warn)}
+.strips{display:flex;gap:10px;flex-wrap:wrap;align-items:stretch}
+.strip{background:var(--panel2);border:1px solid var(--border);border-radius:10px;padding:8px;width:118px;display:flex;flex-direction:column;align-items:center;gap:6px}
+.strip h3{margin:0;font-size:13px}
+.strip .fd{writing-mode:vertical-lr;direction:rtl;height:150px;width:28px}
+.strip output{font-size:13px}
+.strip button{padding:4px 9px}
+.strip label{font-size:12px;color:var(--muted);display:flex;flex-direction:column;align-items:center;width:100%}
+.mini{display:flex;gap:4px;flex-wrap:wrap;justify-content:center}
+.face{background:var(--panel2);border:1px solid var(--border);border-radius:8px;padding:8px;cursor:pointer}
+.face.sel{border-color:var(--accent)}
+.faces{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.seg{display:inline-flex;gap:4px;flex-wrap:wrap}
+#ed .meter{font-size:12px}
+.kv{display:grid;grid-template-columns:1fr auto;gap:2px 10px;font:12px var(--mono)}
+</style></head><body>
+<div class="banner">MOCKUP, NOT SHIPPING. Every number, curve and meter below is EXAMPLE DATA. Nothing here makes sound.</div>
+<header>
+ <h1>2011 Room Reverb</h1>
+ <button>File: guitar_DI.wav (example) ▾</button>
+ <button id="play" class="">▶ Play</button><button class="primary" id="render">● Render</button>
+ <button id="undo" title="Undo (Ctrl+Z)">↶ Undo</button><button id="redo" title="Redo (Ctrl+Y)">↷ Redo</button>
+ <span class="row" role="group" aria-label="A/B compare"><button id="abA" class="on">A</button><button id="abB">B</button><button id="abCopy" title="Copy A to B">A→B</button></span>
+ <span class="row" id="snaps" aria-label="Snapshots"></span>
+ <button id="save">Save…</button><button id="load">Load…</button>
+ <div class="engine">Engine · Play: <b>32 lines</b> · Surfaces ✓ · shared tail · physics ✓ &nbsp;|&nbsp; Render: <b id="engR">32 lines</b> &nbsp;· autosaved 11:24 (example)</div>
+</header>
+<main>
+ <section>
+  <div class="panel"><h2>Room</h2>
+   <div class="row" id="places"><button data-p="studio" class="on">Studio</button><button data-p="club">Club</button><button data-p="hall">Hall</button><button title="Save current room as a place">+</button></div>
+   <div class="hint" id="roomSize">5.6 × 7.2 × 2.8 m</div>
+   <label class="ctl"><span>Width m</span><input type="range" id="W" min="2" max="80" step=".1" value="5.6"><output id="Wo">5.6</output></label>
+   <label class="ctl"><span>Length m</span><input type="range" id="L" min="2" max="120" step=".1" value="7.2"><output id="Lo">7.2</output></label>
+  </div>
+  <div class="panel"><h2>Character <span class="ex">(proposed macro: needs Idle)</span></h2>
+   <label class="ctl"><span>Natural</span><input type="range" id="char" min="0" max="100" value="20"><output id="charO">20</output></label>
+   <div class="hint" style="text-align:right">Warm chamber →</div>
+   <div class="sub"><span>Surfaces</span><div class="bar"><i id="bS"></i></div><span>Density</span><div class="bar"><i id="bD"></i></div><span>BLOOM</span><div class="bar"><i id="bB"></i></div></div>
+  </div>
+  <div class="panel"><h2>Decay</h2>
+   <label class="ctl"><span>Mid T</span><input type="range" id="dec" min="0" max="1" step=".001" value=".55" title="Log taper. Double-click resets to 1.80 s. Shift = fine."><output id="decO">1.80 s</output></label>
+   <div class="row"><label><input type="checkbox" checked> Physical</label><span class="hint" id="reach">reachable ✓</span></div>
+   <label class="ctl"><span>Pre-delay</span><input type="range" id="pd" min="0" max="250" value="12"><output id="pdO">12 ms</output></label>
+   <div class="ex">Pre-delay is new: SOUND, needs Idle</div>
+  </div>
+ </section>
+ <section>
+  <div class="panel"><div class="row"><h2 style="margin:0">Plan</h2><span class="tabs"><button class="on">Top</button><button>Side</button><button>3D</button></span><span class="hint">Drag ★ source or ◉ stand. Grid 1 m. Ring = critical distance (example).</span></div>
+   <canvas id="plan" width="900" height="560" aria-label="Room plan, drag source and mics" tabindex="0"></canvas>
+   <div class="row"><span class="hint">Sources:</span><span class="chip on" style="color:var(--source)">● Gtr (A)</span><button>S</button><button>M</button><span class="chip" style="color:var(--danger)">● Vox (B)</span><button>+ Link track</button>
+   <span class="hint" style="margin-left:auto">Mics:</span><select style="background:var(--panel2);color:var(--text);border:1px solid var(--border);border-radius:6px"><option>ORTF</option><option>AB omni</option><option>XY 90°</option><option>Binaural</option></select>
+   <span class="hint" id="dist">source→stand 3.1 m</span></div>
+  </div>
+ </section>
+ <section>
+  <div class="panel"><h2>Output <span class="ex">(example meter)</span></h2>
+   <div class="meter"><span>L</span><div class="mbar"><span id="mL"></span></div><span id="mLo">-12.0 dB</span></div>
+   <div class="meter"><span>R</span><div class="mbar"><span id="mR"></span></div><span id="mRo">-14.0 dB</span></div>
+   <div class="meter"><span>GR</span><div class="bar"><i id="gr" style="width:0;background:var(--danger)"></i></div><span id="grO">0.0 dB</span></div>
+   <div class="row"><span class="hint">Correlation</span><input type="range" id="corr" min="-1" max="1" step=".01" value=".6" disabled><output id="corrO">+0.60</output></div>
+   <canvas id="gonio" width="300" height="140" aria-label="Goniometer"></canvas>
+  </div>
+  <div class="panel"><h2>What you hear</h2>
+   <div class="tabs" id="gtabs"><button data-g="etc" class="on">ETC</button><button data-g="band">Decay/band</button><button data-g="early">Early map</button><button data-g="spec">Spectrum</button></div>
+   <canvas id="graph" width="320" height="200"></canvas>
+   <div class="hint" id="gcap"></div>
+  </div>
+ </section>
+ <div class="panel mix"><h2 style="width:100%">Mix</h2>
+  <div class="fader"><input type="range" value="0"><span>Dry</span></div>
+  <div class="fader"><input type="range" value="70"><span>Direct</span></div>
+  <div class="fader"><input type="range" value="40"><span>Early</span></div>
+  <div class="fader"><input type="range" value="70"><span>Tail</span></div>
+  <div class="fader"><input type="range" value="60"><span>Width*</span></div>
+  <div class="fader"><input type="range" value="70"><span>Output*</span></div>
+  <button>Wet solo*</button><span class="row"><button class="on">Re-Mic</button><button>Reverb</button></span>
+  <span class="ex">* new controls: SOUND, needs Idle. Faders: audio taper, 0 dB detent, double-click = 0 dB.</span>
+ </div>
+ <div class="panel editors"><h2>Editors</h2><div class="row">
+  <button>Source</button><button>Mics</button><button>Desk</button><button>Surfaces</button><button>Air</button><button>Polar</button><button>Space (3D)</button><button>Advanced (Hadamard <span class="rtag">R 64/128</span>, 2011 law, parity…)</button></div>
+  <div class="hint">Each editor opens full view with ← Back to main (Esc). ←/→ switches editors. Signal flow: Source → Room → Mics → Desk → BLOOM → Output.</div></div>
+</main>
+<div class="modal" id="modal"><div><h3 id="mT">Load Hall?</h3><p>This changes the <b>room size, source and mic positions</b>. Your mic setup, Mix and Surfaces stay as they are. <span class="hint">(Proposed rule: Idle to decide.)</span></p><div class="row"><button class="primary" id="mOk">Load</button><button id="mNo">Cancel</button><label><input type="checkbox" id="mKeep" checked> Keep my mic positions</label></div></div></div>
+<div id="toast"></div>
+<script>
+var S={W:5.6,L:7.2,src:{x:2.8,z:5.3},stand:{x:2.8,z:1.6},char:20,dec:1.8,pd:12,place:"studio"};
+var hist=[],fut=[],AB={A:null,B:null},cur="A",snaps=[null,null,null,null,null,null,null,null];
+var $=function(i){return document.getElementById(i)};
+function toast(t){var e=$("toast");e.textContent=t;e.style.display="block";clearTimeout(toast.t);toast.t=setTimeout(function(){e.style.display="none"},1800)}
+function push(){hist.push(JSON.stringify(S));if(hist.length>50)hist.shift();fut=[]}
+function decFrom(v){return +(0.1*Math.pow(80,v)).toFixed(2)}function decTo(s){return Math.log(s/0.1)/Math.log(80)}
+function sync(){$("W").value=S.W;$("Wo").textContent=S.W.toFixed(1);$("L").value=S.L;$("Lo").textContent=S.L.toFixed(1);
+ $("roomSize").textContent=S.W.toFixed(1)+" × "+S.L.toFixed(1)+" × 2.8 m";$("char").value=S.char;$("charO").textContent=S.char;
+ $("bS").style.width=(20+S.char*.6)+"%";$("bD").style.width=(30+S.char*.5)+"%";$("bB").style.width=(S.char*.8)+"%";
+ $("dec").value=decTo(S.dec);$("decO").textContent=S.dec.toFixed(2)+" s";$("pd").value=S.pd;$("pdO").textContent=S.pd+" ms";
+ var reach=S.dec<=Math.max(1.2,(S.W*S.L)/20);$("reach").textContent=reach?"reachable ✓ (example)":"room max ≈ "+Math.max(1.2,(S.W*S.L)/20).toFixed(1)+" s (example)";$("reach").style.color=reach?"":"var(--warn)";
+ document.querySelectorAll("#places button[data-p]").forEach(function(b){b.classList.toggle("on",b.dataset.p===S.place)});
+ drawPlan();drawGraph();}
+// plan
+var plan=$("plan"),pc=plan.getContext("2d"),drag=null;
+function geo(){var m=40,sc=Math.min((plan.width-2*m)/S.W,(plan.height-2*m)/S.L);return{m:m,sc:sc,ox:(plan.width-S.W*sc)/2,oy:(plan.height-S.L*sc)/2}}
+function P(x,z){var g=geo();return[g.ox+x*g.sc,g.oy+(S.L-z)*g.sc]}
+function drawPlan(){var g=geo(),c=pc;c.clearRect(0,0,plan.width,plan.height);
+ c.strokeStyle="#1e2330";c.lineWidth=1;var step=S.W>30?5:1;for(var x=0;x<=S.W;x+=step){var a=P(x,0),b=P(x,S.L);c.beginPath();c.moveTo(a[0],a[1]);c.lineTo(b[0],b[1]);c.stroke()}
+ for(var z=0;z<=S.L;z+=step){a=P(0,z);b=P(S.W,z);c.beginPath();c.moveTo(a[0],a[1]);c.lineTo(b[0],b[1]);c.stroke()}
+ c.strokeStyle="#2dd4bf";c.lineWidth=2;c.strokeRect(g.ox,g.oy,S.W*g.sc,S.L*g.sc);
+ c.fillStyle="#8b93a8";c.font="12px Segoe UI";c.fillText("Front",g.ox+4,g.oy-6);c.fillText("Back",g.ox+4,g.oy+S.L*g.sc+16);c.fillText("grid "+step+" m",g.ox+S.W*g.sc-60,g.oy-6);
+ var s=P(S.src.x,S.src.z),m=P(S.stand.x,S.stand.z);
+ // reflection ticks (example: first-order mirror points)
+ [[0,S.src.z*.6+S.stand.z*.4],[S.W,S.src.z*.6+S.stand.z*.4]].forEach(function(r){var p=P(r[0],r[1]);c.fillStyle="#a78bfa";c.fillRect(p[0]-3,p[1]-6,6,12)});
+ var p=P((S.src.x+S.stand.x)/2,S.L);c.fillStyle="#34d399";c.fillRect(p[0]-6,p[1]-3,12,6);
+ // critical distance ring (example formula)
+ var rc=0.057*Math.sqrt(S.W*S.L*2.8/S.dec);c.strokeStyle="rgba(251,191,36,.35)";c.setLineDash([4,4]);c.beginPath();c.arc(s[0],s[1],rc*g.sc,0,7);c.stroke();c.setLineDash([]);
+ c.strokeStyle="#5c6478";c.beginPath();c.moveTo(s[0],s[1]);c.lineTo(m[0],m[1]);c.stroke();
+ var d=Math.hypot(S.src.x-S.stand.x,S.src.z-S.stand.z);c.fillStyle="#e9ecf3";c.fillText(d.toFixed(2)+" m",(s[0]+m[0])/2+6,(s[1]+m[1])/2);$("dist").textContent="source→stand "+d.toFixed(2)+" m · crit. dist ≈ "+rc.toFixed(2)+" m (example)";
+ c.fillStyle="#fbbf24";c.font="22px Segoe UI";c.fillText("★",s[0]-8,s[1]+8);c.font="12px Segoe UI";c.fillText("Gtr (A)",s[0]+12,s[1]+4);
+ c.fillStyle="#a78bfa";c.beginPath();c.arc(m[0]-14,m[1],6,0,7);c.fill();c.fillStyle="#60a5fa";c.beginPath();c.arc(m[0],m[1],6,0,7);c.fill();c.fillStyle="#34d399";c.beginPath();c.arc(m[0]+14,m[1],6,0,7);c.fill();
+ c.fillStyle="#8b93a8";c.fillText("L  C  R  (ORTF stand)",m[0]-30,m[1]+22);}
+function hit(e){var r=plan.getBoundingClientRect(),x=(e.clientX-r.left)*plan.width/r.width,y=(e.clientY-r.top)*plan.height/r.height;
+ var s=P(S.src.x,S.src.z),m=P(S.stand.x,S.stand.z);if(Math.hypot(x-s[0],y-s[1])<20)return"src";if(Math.hypot(x-m[0],y-m[1])<24)return"stand";return null}
+function toM(e){var r=plan.getBoundingClientRect(),x=(e.clientX-r.left)*plan.width/r.width,y=(e.clientY-r.top)*plan.height/r.height,g=geo();
+ return{x:Math.max(.2,Math.min(S.W-.2,(x-g.ox)/g.sc)),z:Math.max(.2,Math.min(S.L-.2,S.L-(y-g.oy)/g.sc))}}
+plan.addEventListener("pointerdown",function(e){drag=hit(e);if(drag){push();plan.setPointerCapture(e.pointerId)}});
+plan.addEventListener("pointermove",function(e){if(!drag){plan.style.cursor=hit(e)?"grab":"default";return}var p=toM(e);S[drag].x=+p.x.toFixed(2);S[drag].z=+p.z.toFixed(2);drawPlan();drawGraph()});
+plan.addEventListener("pointerup",function(){drag=null});
+plan.addEventListener("keydown",function(e){var d={ArrowLeft:[-.1,0],ArrowRight:[.1,0],ArrowUp:[0,.1],ArrowDown:[0,-.1]}[e.key];if(!d)return;e.preventDefault();push();S.src.x=+(S.src.x+d[0]).toFixed(2);S.src.z=+(S.src.z+d[1]).toFixed(2);sync()});
+// graphs (example curves)
+var gc=$("graph").getContext("2d"),gmode="etc";
+function axes(c,W,H,xl,yl){c.clearRect(0,0,W,H);c.strokeStyle="#2a2f3d";c.strokeRect(30,8,W-38,H-30);c.fillStyle="#8b93a8";c.font="10px Segoe UI";c.fillText(xl,W-60,H-6);c.save();c.translate(10,H/2+20);c.rotate(-Math.PI/2);c.fillText(yl,0,0);c.restore()}
+function drawGraph(){var cv=$("graph"),c=gc,W=cv.width,H=cv.height;var T=S.dec,dens=S.char/100;
+ if(gmode==="etc"){axes(c,W,H,"time ms","dB");var tmax=Math.max(400,T*1000*.8);
+  c.fillStyle="rgba(167,139,250,.12)";c.fillRect(30+S.pd/tmax*(W-38),8,80/tmax*(W-38),H-30);
+  c.strokeStyle="#2dd4bf";c.beginPath();for(var i=0;i<300;i++){var t=i/300*tmax,db=(t<S.pd?-80:-60*t/1000/T-(Math.sin(i*1.7)*(1-dens)*6+Math.random()*3)),y=8+(-db/80)*(H-30);if(i===0&&t>=S.pd)db=0;c.lineTo(30+t/tmax*(W-38),Math.min(H-22,y))}c.stroke();
+  c.fillStyle="#fbbf24";c.fillRect(30+S.pd/tmax*(W-38),8,2,10);$("gcap").textContent="EXAMPLE energy-time curve. Shaded = early window. Amber = direct after pre-delay. Slope follows Decay "+T.toFixed(2)+" s."}
+ else if(gmode==="band"){axes(c,W,H,"Hz (log)","T s");var f=[63,125,250,500,1000,2000,4000,8000],X=function(i){return 30+i/7*(W-38)},ym=Math.max(2,T*1.8),Y=function(v){return 8+(1-v/ym)*(H-30)};
+  c.strokeStyle="#5c6478";c.setLineDash([3,3]);c.beginPath();f.forEach(function(_,i){c.lineTo(X(i),Y(T*[1.4,1.25,1.1,1,1,.85,.65,.45][i]))});c.stroke();c.setLineDash([]);
+  c.strokeStyle="#2dd4bf";c.lineWidth=2;c.beginPath();f.forEach(function(_,i){c.lineTo(X(i),Y(T*[1.3,1.2,1.05,1,1,.9-.1*dens,.7-.1*dens,.5-.1*dens][i]))});c.stroke();c.lineWidth=1;
+  c.fillStyle="#fbbf24";f.forEach(function(_,i){c.beginPath();c.arc(X(i),Y(T*[1.28,1.18,1.06,1.01,.99,.88,.66,.47][i]),3,0,7);c.fill()});
+  c.fillStyle="#8b93a8";f.forEach(function(v,i){c.fillText(v>=1000?v/1000+"k":v,X(i)-8,H-12)});$("gcap").textContent="EXAMPLE. Teal = engine decay per band (what Play/Render use). Grey dashed = room theory (Eyring). Dots = last Render T20."}
+ else if(gmode==="early"){axes(c,W,H,"ms","dB");var cols=["#a78bfa","#34d399","#60a5fa","#fbbf24","#f472b6"];for(var k=0;k<24;k++){var t=S.pd+(k*k*0.25+k*3)*(S.L/7),db=-6-k*1.2-Math.random()*4,x=30+t/150*(W-38);if(x>W-8)break;c.strokeStyle=cols[k%5];c.beginPath();c.moveTo(x,H-22);c.lineTo(x,8+(-db/50)*(H-30));c.stroke()}
+  $("gcap").textContent="EXAMPLE early reflection map. Each stick = one reflection, coloured by wall, height = level at the mics."}
+ else{axes(c,W,H,"Hz (log)","dB");["A","now"].forEach(function(w,j){c.strokeStyle=j?"#2dd4bf":"#fbbf24";c.beginPath();for(var i=0;i<30;i++){var y=8+(H-30)*(.3+.25*Math.sin(i/5+j)+i*.008*(1-dens))*.9;c.lineTo(30+i/29*(W-38),y)}c.stroke()});$("gcap").textContent="EXAMPLE 1/3-octave spectrum. Teal = now, amber = A (global A/B)."}}
+document.querySelectorAll("#gtabs button").forEach(function(b){b.onclick=function(){gmode=b.dataset.g;document.querySelectorAll("#gtabs button").forEach(function(x){x.classList.toggle("on",x===b)});drawGraph()}});
+// meters (example animation)
+var go=$("gonio").getContext("2d"),playing=false;
+function meters(){var a=playing?(-14+Math.random()*6):-60,b=playing?(-15+Math.random()*6):-60;
+ $("mL").style.width=Math.min(100,-a/60*100)+"%";$("mR").style.width=Math.min(100,-b/60*100)+"%";$("mLo").textContent=a.toFixed(1)+" dB";$("mRo").textContent=b.toFixed(1)+" dB";
+ var g=playing?(S.char/100)*Math.random()*3:0;$("gr").style.width=(g/6*100)+"%";$("grO").textContent=(-g).toFixed(1)+" dB";
+ var corr=.8-S.char/250;$("corr").value=corr;$("corrO").textContent=(corr>=0?"+":"")+corr.toFixed(2);
+ go.fillStyle="rgba(10,11,14,.25)";go.fillRect(0,0,300,140);if(playing){go.fillStyle="#2dd4bf";for(var i=0;i<60;i++){var l=(Math.random()-.5),r=l*corr+(Math.random()-.5)*(1-corr);go.fillRect(150+(l-r)*90,70-(l+r)*55,2,2)}}
+ requestAnimationFrame(meters)}
+// controls
+function bindR(id,f){var dirty=false;$(id).addEventListener("pointerdown",function(){push();dirty=true});$(id).addEventListener("input",function(e){if(!dirty){push();dirty=true}f(+e.target.value);sync()});$(id).addEventListener("change",function(){dirty=false});$(id).addEventListener("blur",function(){dirty=false})}
+bindR("W",function(v){S.W=v;S.src.x=Math.min(S.src.x,v-.2);S.stand.x=Math.min(S.stand.x,v-.2)});bindR("L",function(v){S.L=v;S.src.z=Math.min(S.src.z,v-.2);S.stand.z=Math.min(S.stand.z,v-.2)});
+bindR("char",function(v){S.char=v});bindR("dec",function(v){S.dec=decFrom(v)});bindR("pd",function(v){S.pd=v});
+$("dec").addEventListener("dblclick",function(){push();S.dec=1.8;sync();toast("Decay reset to 1.80 s")});
+$("char").addEventListener("dblclick",function(){push();S.char=20;sync()});
+$("undo").onclick=function(){if(!hist.length)return toast("Nothing to undo");fut.push(JSON.stringify(S));S=JSON.parse(hist.pop());sync();toast("Undo")};
+$("redo").onclick=function(){if(!fut.length)return toast("Nothing to redo");hist.push(JSON.stringify(S));S=JSON.parse(fut.pop());sync();toast("Redo")};
+document.addEventListener("keydown",function(e){if(e.ctrlKey&&e.key==="z")$("undo").click();if(e.ctrlKey&&e.key==="y")$("redo").click()});
+function ab(w){if(w===cur)return;AB[cur]=JSON.stringify(S);if(!AB[w])AB[w]=AB[cur];cur=w;S=JSON.parse(AB[w]);$("abA").classList.toggle("on",w==="A");$("abB").classList.toggle("on",w==="B");sync();toast("Listening to "+w+" (level-matched, example)")}
+$("abA").onclick=function(){ab("A")};$("abB").onclick=function(){ab("B")};$("abCopy").onclick=function(){AB.B=JSON.stringify(S);toast("A copied to B")};
+var sn=$("snaps");snaps.forEach(function(_,i){var b=document.createElement("button");b.className="snap";b.textContent=i+1;b.title="Click: store/recall. Shift-click: clear";b.onclick=function(e){if(e.shiftKey){snaps[i]=null;b.classList.remove("full");return}if(snaps[i]){push();S=JSON.parse(snaps[i]);sync();toast("Snapshot "+(i+1)+" recalled")}else{snaps[i]=JSON.stringify(S);b.classList.add("full");toast("Stored in snapshot "+(i+1))}};sn.appendChild(b)});
+$("save").onclick=function(){var a=document.createElement("a");a.href=URL.createObjectURL(new Blob([JSON.stringify(S,null,1)],{type:"application/json"}));a.download="room_setup_example.json";a.click();toast("Saved (example JSON)")};
+$("load").onclick=function(){toast("Load would open a .json setup file")};
+$("play").onclick=function(){playing=!playing;this.classList.toggle("on",playing);this.textContent=playing?"■ Stop":"▶ Play"};
+$("render").onclick=function(){toast("Render (mockup): would bake the WAV and update ETC / Decay dots")};
+var PL={studio:{W:5.6,L:7.2,src:{x:2.8,z:5.3},stand:{x:2.8,z:1.6},dec:1.8},club:{W:14,L:22,src:{x:7,z:14.5},stand:{x:7,z:3.4},dec:1.8},hall:{W:57,L:97,src:{x:24.9,z:72.1},stand:{x:24.9,z:24.25},dec:4}},pend=null;
+document.querySelectorAll("#places button[data-p]").forEach(function(b){b.onclick=function(){pend=b.dataset.p;$("mT").textContent="Load "+b.textContent+"?";$("modal").style.display="flex";$("mOk").focus()}});
+$("mNo").onclick=function(){$("modal").style.display="none"};
+$("mOk").onclick=function(){push();var p=PL[pend],keep=$("mKeep").checked;S.W=p.W;S.L=p.L;S.src=Object.assign({},p.src);S.dec=p.dec;
+ if(keep){S.stand.x=Math.min(S.stand.x,p.W-.2);S.stand.z=Math.min(S.stand.z,p.L-.2)}else S.stand=Object.assign({},p.stand);S.place=pend;$("modal").style.display="none";sync();toast(pend+" loaded · Undo restores the previous room")};
+document.addEventListener("keydown",function(e){if(e.key==="Escape")$("modal").style.display="none"});
+sync();meters();
+</script>
+<script>
+// ===== Editors (v2 mockup). All values EXAMPLE DATA. =====
+(function(){
+var E={src:{preset:"Guitar amp (example)",yaw:0,pitch:0,size:0.027,freq:1000,plane:"h"},two:false,bal:0,mirrorB:true,
+ mic:{setup:"ORTF",space:0.17,mcx:2.8,mcz:1.6,my:1.5,sy:1.2,third:"off",link:"mirror",fam:"cardioid",pol:0.5,preset:"Shure SM57 (example)",hpf:false,align:true,linkH:false,room:{x:1.2,z:5.6,y:2.2,yaw:150},resp:10000,cap:17},
+ desk:{pair:"stereo",law:"linear",natural:false,phys:true,rumble:true,
+  ch:{l:{f:.5,t:0,p:-1,m:false,s:false,lr:"L",place:"stand"},c:{f:.5,t:0,p:0,m:false,s:false,lr:"LR",place:"stand"},r:{f:.5,t:0,p:1,m:false,s:false,lr:"R",place:"stand"}},
+  bus:{direct:{f:.5,t:0,m:false,s:false},fdn:{f:.5,t:0,m:false,s:false},early:{f:0,t:0,m:false,s:false},host:{f:.5,t:0,m:false,s:false}},decay:1.8},
+ surf:{sub:"mat",face:"A",faces:{A:"Plywood (smooth)",B:"Gypsum board",C:"Gypsum board",D:"Brick (unglazed)",E:"Carpet (example)",F:"Concrete (painted)"},solo:null,mute:{},abs:[.10,.11,.10,.08,.08,.09,.11],jit:.15,dif:.15,seed:0,lref:.02,ref:"peak",holdA:false,holdB:false},
+ air:{hum:40,clim:"Studio 20 °C / 50% RH",iso:1,lp:0},
+ pol:{page:"combined",show:{L:true,C:false,R:true,sum:true},rad:"db",freq:1000},
+ sp:{view:"lattice",mics:{L:true,C:false,R:true},zoom:1,map:"plan"},
+ adv:{had:32,smooth:true,parity:false,colour:"IIR biquads",g:1,ir:1500,bake:false,shared:false,move:0}};
+var DEF=JSON.parse(JSON.stringify(E));
+var $=function(i){return document.getElementById(i)};
+function T(t){var e=$("toast");e.textContent=t;e.style.display="block";clearTimeout(T.t);T.t=setTimeout(function(){e.style.display="none"},1800)}
+function badge(k){return {pr:'<span class="badge b-pr" title="Changes Play and Render">Play + Render</span>',r:'<span class="badge b-r" title="Only Render uses this">Render only</span>',p:'<span class="badge b-p">Play only</span>',s:'<span class="badge b-s" title="Changes the sound: Idle decides">SOUND · needs Idle</span>',v:'<span class="badge b-pr" style="color:var(--muted);border-color:var(--muted)">View only</span>'}[k]||""}
+// slider helper: path into E, double-click resets to DEF value
+function get(p){return p.split(".").reduce(function(o,k){return o[k]},E)}
+function set(p,v){var a=p.split("."),o=E;for(var i=0;i<a.length-1;i++)o=o[a[i]];o[a[a.length-1]]=v}
+function sl(p,lab,mn,mx,st,unit,b,fmt){var v=get(p);return '<label class="ctl" title="Double-click resets to '+dget(p)+'"><span>'+lab+(unit?' <em class="hint">'+unit+'</em>':'')+(b?badge(b):'')+'</span><input type="range" data-p="'+p+'" min="'+mn+'" max="'+mx+'" step="'+st+'" value="'+v+'"'+(fmt?' data-fmt="'+fmt+'"':'')+'><output>'+fx(v,fmt)+'</output></label>'}
+function fx(v,f){v=+v;if(f==="db")return fdb(v);if(f==="pct")return Math.round(v)+" %";if(f==="int")return Math.round(v);return v.toFixed(v>=100?0:2)}
+function fdb(f){if(f<=0.001)return "−∞";var d=40*Math.log10(f/0.5);return (d>=0?"+":"")+d.toFixed(1)+" dB"}
+function chips(p,opts,cls){var v=get(p);return '<span class="seg" role="group">'+opts.map(function(o){var val=o[0]!==undefined&&o.push?o[0]:o,lab=o.push?o[1]:o;return '<button data-c="'+p+'" data-v="'+val+'" class="'+(String(v)===String(val)?"on":"")+'" aria-pressed="'+(String(v)===String(val))+'">'+lab+'</button>'}).join("")+'</span>'}
+function sel(p,opts){var v=get(p);return '<select data-p="'+p+'">'+opts.map(function(o){return '<option'+(o===v?' selected':'')+'>'+o+'</option>'}).join("")+'</select>'}
+function ck(p,lab,b){return '<label class="row"><input type="checkbox" data-k="'+p+'"'+(get(p)?' checked':'')+'> '+lab+(b?badge(b):'')+'</label>'}
+function panel(t,h,extra){return '<div class="panel"><h2>'+t+(extra||'')+'</h2>'+h+'</div>'}
+function cv(id,w,h,lab){return '<canvas id="'+id+'" width="'+w+'" height="'+h+'" aria-label="'+lab+'" tabindex="0"></canvas>'}
+var EX='<div class="ex">EXAMPLE DATA. Curves and numbers are illustrative, not the engine.</div>';
+var SETUPS=["AB spaced pair (omni)","AB spaced pair (cardioid)","XY coincident 90°","XY 120°","ORTF","ORTF + C","NOS","DIN","MS — omni mid, cardioids inward","MS · omni Mid + fig-8 Side","MS · cardioid Mid + fig-8 Side","MS · cardioid Mid + two back-to-back cardioids","Mono centre","Binaural (dummy head)","Custom"];
+var MATS=["Plywood (smooth)","Gypsum board","Brick (unglazed)","Concrete (painted)","Plywood panel","Carpet (example)","Heavy curtain","Absorber panel 50 mm","Absorber panel 100 mm","Absorber 100 mm + 100 mm gap","Glass (example)"];
+// ---------- views ----------
+var V={};
+V.source=function(){return '<div class="eg g3">'+
+ panel("Sources",'<div class="row"><button class="on">This track</button><button disabled title="Not in this build">+ Link track</button></div>'+
+  '<label class="ctl"><span>Radiation</span>'+sel("src.preset",["Omni","Guitar amp (example)","Voice (example)","Acoustic guitar (example)","Piano (example)"])+'<span></span></label>'+
+  sl("src.yaw","Yaw","-180","180","1","deg","pr","int")+sl("src.pitch","Pitch","-89","89","1","deg","pr","int")+sl("src.size","Size","0.005","0.4","0.001","m","pr")+
+  '<div class="row"><button data-act="faceMic">Face mic</button><button data-act="faceAway">Face away</button><button data-act="omni">Omni</button></div>'+
+  '<div class="hint">Same controls as today\'s Source tab. Number boxes became the outputs: click a value to type it.</div>')+
+ panel("Place and face",cv("srcPlan",620,430,"Source plan: drag the dot to move, the ring to aim")+'<div class="hint">Drag ★ to move, drag the ring to aim. Shift snaps 15°. Arrow keys move 0.1 m when focused. Double-click the ring faces the mic.</div>')+
+ '<div>'+panel("Radiation",'<div class="row">'+chips("src.freq",[[250,"250"],[500,"500"],[1000,"1k"],[2000,"2k"],[4000,"4k"],[8000,"8k"]])+'</div><div class="row">'+chips("src.plane",[["h","Horizontal"],["v","Vertical"]])+'</div>'+cv("srcPol",280,240,"Source radiation polar")+'<div class="hint" id="srcHear"></div>',badge("v"))+
+ panel("Preview / two sources",'<div class="row"><button class="'+(E.two?'':'on')+'" data-act="one">One source</button><button data-act="two" class="'+(E.two?'on':'')+'" title="Needs a stereo file. Example file is stereo here.">Two sources</button></div>'+ck("mirrorB","Mirror B")+sl("bal","Balance A↔B","-1","1","0.01","","pr")+'<div class="hint">Moved from the Room sidebar: the source page is where you need it.</div>')+'</div></div>'+EX};
+V.mics=function(){var m=E.mic,third=m.third==="room";return '<div class="eg g3">'+
+ '<div>'+panel("Mic setup",'<label class="ctl"><span>Setup</span>'+sel("mic.setup",SETUPS)+'<span></span></label><div class="hint">Snaps space, pattern and L/R fronts. Then tweak freely. <b>Also shown on Room/Plan</b> (fix U38).</div>'+
+  sl("mic.space","Capsule space","0","6","0.01","m","pr")+sl("mic.mcx","Stand X","0",String(window.S?S.W:5.6),"0.01","m","pr")+sl("mic.mcz","Stand Z","0",String(window.S?S.L:7.2),"0.01","m","pr")+
+  '<div class="hint">Stand X/Z max follow the room size (fix U11).</div>'+sl("mic.my","Mic height","0","20","0.01","m","pr")+sl("mic.sy","Src height","0","20","0.01","m","pr")+ck("mic.linkH","Link heights (src = mic)"))+
+ panel("Array",ck("mic.align","Horizontally aligned")+'<div class="row"><span class="hint">L/R aim</span>'+chips("mic.link",[["mirror","Mirror"],["linked","Linked"],["split","Split"]])+'</div><div class="row"><span class="hint">Third mic</span>'+chips("mic.third",[["off","Off"],["centre","Centre"],["room","Room"]])+'</div>')+'</div>'+
+ panel("Top view",'<div class="row">'+chips("mic.view",[["top","Top"],["side","Side"]])+'</div>'+cv("micPlan",620,440,"Mic top view: drag capsules")+'<div class="hint">Drag the stand or a capsule; the room mic (when Third = Room) drags on its own. Polar ghost = combined pattern at 1 kHz.</div>')+
+ '<div>'+panel("Capsules",'<label class="ctl"><span>Colour</span>'+sel("mic.colour",["Measured","User defined"])+'<span></span></label><label class="ctl"><span>Side mics</span>'+sel("mic.preset",["Shure SM57 (example)","Neumann KM184 (example)","AKG C414 (example)","Ideal capsule"])+'<span></span></label>'+ck("mic.hpf","High-pass (manufacturer)")+
+  '<label class="ctl"><span>Family</span>'+sel("mic.fam",["omni","cardioid","supercardioid","figure-8"])+'<span></span></label>'+sl("mic.pol","Pattern","0","1","0.01","","pr")+cv("micPol",280,200,"Combined pattern")+'<div class="hint">Full pattern views live in Polar.</div>')+
+ (third?panel("Room mic (C)",'<div class="row"><label>X <input type="number" data-n="mic.room.x" value="'+m.room.x+'" step=".01"></label><label>Z <input type="number" data-n="mic.room.z" value="'+m.room.z+'" step=".01"></label></div><div class="row"><label>H <input type="number" data-n="mic.room.y" value="'+m.room.y+'" step=".01"></label><label>Aim° <input type="number" data-n="mic.room.yaw" value="'+m.room.yaw+'" step=".1"></label></div><button data-act="toStand">Return to stand</button>'):'')+
+ panel("Advanced capsule",sl("mic.resp","Mic response","10000","20000","100","Hz","pr","int")+sl("mic.cap","Capsule size","12","25","0.5","mm","pr"))+'</div></div>'+EX};
+function strip(k,name,o,isBus){var col={l:"var(--left)",c:"var(--mic)",r:"var(--right)"}[k]||"var(--text)";var d=(isBus?DEF.desk.bus:DEF.desk.ch)[k].f;
+ return '<div class="strip" data-strip="'+k+'"><h3 style="color:'+col+'">'+name+'</h3>'+
+ (isBus?'':'<div class="mini" role="group" aria-label="'+name+' to speakers"><button data-lr="'+k+'" data-v="L" class="'+(o.lr.indexOf("L")>=0?"on":"")+'">L</button><button data-lr="'+k+'" data-v="R" class="'+(o.lr.indexOf("R")>=0?"on":"")+'">R</button></div>')+
+ '<label>Trim<input type="range" data-p="desk.'+(isBus?"bus":"ch")+'.'+k+'.t" min="-12" max="12" step="0.5" value="'+o.t+'" style="width:96px"><output>'+o.t.toFixed(1)+' dB</output></label>'+
+ (isBus?'':'<label>Pan<input type="range" data-p="desk.ch.'+k+'.p" min="-1" max="1" step="0.01" value="'+o.p+'" style="width:96px"><output>'+(o.p<0?"L":o.p>0?"R":"C")+Math.round(Math.abs(o.p)*100)+'</output></label>')+
+ '<button data-solo="'+k+'" class="'+(o.s?"on":"")+'" aria-pressed="'+o.s+'">Solo</button>'+
+ '<input class="fd" type="range" min="0" max="1" step="0.001" value="'+o.f+'" data-p="desk.'+(isBus?"bus":"ch")+'.'+k+'.f" data-fmt="db" data-def="'+d+'" aria-label="'+name+' fader" title="Double-click: back to '+fdb(d)+' (this fader\'s default). Shift = fine. 0 dB detent.">'+
+ '<output class="fo" tabindex="0" title="Click to type dB">'+fdb(o.f)+'</output>'+
+ (k==="fdn"?'<label>Decay '+badge("pr").replace("Play + Render","P+R")+'<input type="range" data-p="desk.decay" min="0.05" max="8" step="0.01" value="'+E.desk.decay+'" style="width:96px" title="Double-click: 1.80 s"><output>'+E.desk.decay.toFixed(2)+' s</output></label>':'')+
+ '<button data-mute="'+k+'" class="'+(o.m?"on":"")+'" aria-pressed="'+o.m+'">Mute</button>'+
+ (isBus?'':'<div class="mini"><button data-place="'+k+'" data-v="stand" class="'+(o.place==="stand"?"on":"")+'">On stand</button><button data-place="'+k+'" data-v="room" class="'+(o.place==="room"?"on":"")+'">Room mic</button></div>')+'</div>'}
+V.desk=function(){var d=E.desk;return '<div class="eg g2"><div>'+
+ panel("Mics",'<div class="row"><span class="hint">Pair</span>'+chips("desk.pair",[["stereo","Stereo pair"],["ms","M/S pair"],["independent","Independent"]])+'<span class="hint" style="margin-left:12px">Pan law</span>'+chips("desk.law",[["linear","2011 linear"],["power","Constant power"]])+'</div>'+
+  '<div class="strips">'+strip("l","Left",d.ch.l)+strip("c","Centre",d.ch.c)+strip("r","Right",d.ch.r)+'</div>')+
+ panel("Buses",'<div class="row"><button data-act="natural" class="'+(d.natural?"on":"")+'" aria-pressed="'+d.natural+'" title="Sets Direct and FDN to 0 dB and gangs them">Natural</button><span class="hint">Faders: audio taper · 0 dB detent · double-click = that fader\'s own default (Early = −∞, the rest 0 dB; fix U37) · click a value to type.</span></div>'+
+  '<div class="strips">'+strip("direct","Direct",d.bus.direct,1)+strip("fdn","FDN tail",d.bus.fdn,1)+strip("early","Early",d.bus.early,1)+strip("host","Host (dry)",d.bus.host,1)+'</div>')+'</div>'+
+ '<div>'+panel("Decay",ck("desk.phys","Physical ceiling","pr")+ck("desk.rumble","Rumble filter","pr")+'<div class="kv" id="physRO"></div><div class="hint">Readout from today\'s Mix tab, now 12 px mono.</div>')+
+ panel("Meters",'<div class="meter"><span>L</span><div class="mbar"><span style="width:45%"></span></div><span>-14.2 dB</span></div><div class="meter"><span>R</span><div class="mbar"><span style="width:48%"></span></div><span>-15.0 dB</span></div><div class="ex">Example levels</div>')+
+ panel("What changed",'<ul class="hint" style="padding-left:16px;margin:0"><li>All desk text ≥ 12 px (was 9.9 px, U36)</li><li>Early resets to −∞, not 0 dB (U37); dB read-out law fixed</li><li>On stand / Room mic buttons sit with the strip; Room mic opens its X/Z in Mics</li></ul>')+'</div></div>'+EX};
+V.surfaces=function(){var s=E.surf;return '<div class="row" role="tablist" aria-label="Surfaces sections" id="surfTabs">'+[["mat","Materials"],["dec","Decay design"],["ana","Analysis"]].map(function(t){return '<button role="tab" data-sub="'+t[0]+'" aria-selected="'+(s.sub===t[0])+'" tabindex="'+(s.sub===t[0]?0:-1)+'">'+t[1]+'</button>'}).join("")+'<span class="badge b-s" style="margin-left:auto">ASSUMED orientation and data</span></div>'+
+ (s.sub==="mat"?'<div class="eg g2e">'+panel("Room net · click a face",'<div class="faces">'+"ABCDEF".split("").map(function(f,i){var n=["Left","Front","Right","Back","Floor","Ceiling"][i];return '<div class="face'+(s.face===f?" sel":"")+'" data-face="'+f+'" tabindex="0" role="button" aria-label="Face '+f+' '+n+'"><b>'+f+'</b> · '+n+'<div class="hint">'+s.faces[f]+'</div>'+cv("spark"+f,180,36,"absorption sparkline "+f)+'<div class="mini" style="justify-content:flex-start"><button data-fsolo="'+f+'" class="'+(s.solo===f?"on":"")+'">Solo</button><button data-fmute="'+f+'" class="'+(s.mute[f]?"on":"")+'">Mute</button></div></div>'}).join("")+'</div><div class="hint">Sparklines now drawn with 2 px lines and a visible baseline (live check found them near-blank).</div>')+
+  panel("Surface "+s.face+" · material",'<div class="row" style="gap:4px">'+MATS.map(function(m){return '<button data-mat="'+m+'" class="'+(s.faces[s.face]===m?"on":"")+'">'+m+'</button>'}).join("")+'</div><div class="row"><button data-act="paintAll">Paint all legal faces</button><button data-act="soloOff">Solo off</button></div>'+
+  cv("absCv",560,180,"Absorption vs frequency")+'<div class="hint">Absorption per band: drag the bars or use the sliders.</div>'+[125,250,500,"1k","2k","4k","8k"].map(function(b,i){return sl("surf.abs."+i,b+" Hz","0","1","0.01","","pr")}).join("")+
+  '<details><summary>Surface EQ (shelves / peak) '+badge("pr")+'</summary>'+["Low shelf dB","Low shelf Hz","Peak dB","Peak Hz","Peak Q","High shelf dB","High shelf Hz"].map(function(n){return '<label class="ctl"><span>'+n+'</span><input type="range" min="0" max="1" step=".01" value=".5"><output>example</output></label>'}).join("")+'</details>')+'</div>':
+ s.sub==="dec"?'<div class="eg g2">'+panel("Room result · T per band",cv("rtCv",820,320,"Room result decay per band")+'<div class="row">'+chips("surf.rtMode",[["flat","Flat (2011)"],["surfaces","Surfaces"]])+'<button data-act="renderDots">Show last Render T20</button></div><div class="hint">White = faces + treatment + air (model). Grey = faces only. Blue dashed = target, shaded ±10 %. <b>New:</b> amber dots = measured T20 from the last Render, so model vs result is readable (live gap).</div>')+
+  panel("Diffusion",sl("surf.jit","Smear","0","1","0.01","","pr")+sl("surf.dif","Tail diffusion","0","1","0.01","","pr")+'<label class="ctl"><span>Diffusion seed</span><input type="number" data-n="surf.seed" value="'+s.seed+'"><span></span></label><label class="ctl"><span>λ ref m</span><input type="number" data-n="surf.lref" value="'+s.lref+'" step=".01"><span></span></label><div class="hint">Smear only shows reflection timing; Tail diffusion changes how the tail starts.</div>')+'</div>':
+ '<div class="eg g2">'+panel("Room colour · 1/3 octave",'<div class="row">'+chips("surf.ref",[["peak","Peak band = 0 dB"],["1k","1 kHz = 0 dB"]])+'<button data-act="holdA" class="'+(s.holdA?"on":"")+'">Hold A</button><button data-act="holdB" class="'+(s.holdB?"on":"")+'">Hold B</button><button data-act="clearHold">Clear</button></div>'+cv("colCv",820,300,"Room colour bars")+cv("colSpark",820,60,"This face sparkline")+'<div class="hint">Bars = Now (after Render). Outlines = Hold A / Hold B. Hover a bar for its value.</div>')+
+  panel("Readouts",'<div class="kv"><span>FDN T (Render)</span><span>2.79 s</span><span>T60 mid</span><span>1.80 s</span><span>Schroeder</span><span>212 Hz</span><span>Peak band</span><span>160 Hz</span><span>Hold A</span><span>'+(s.holdA?"held":"—")+'</span></div><div class="ex">Example numbers from the live run (Render of test_pluck).</div>')+'</div>')+EX};
+V.air=function(){return '<div class="eg g2">'+panel("Air absorption by band",cv("airCv",820,300,"Air absorption")+'<div class="hint">ISO 9613-1 style example curve. Higher humidity → less HF loss.</div>')+
+ panel("Air",sl("air.hum","Air amount (humidity)","0","100","1","%","pr","pct")+'<label class="ctl"><span>Climate</span>'+sel("air.clim",["Studio 20 °C / 50% RH","Dry hall 18 °C / 30% RH","Humid 25 °C / 70% RH"])+'<span></span></label>'+sl("air.iso","ISO depth","0","1","0.01","","pr")+
+ '<hr style="border-color:var(--border)">'+sl("air.lp","2011 Air 1-pole","0","1","0.01","","pr")+'<div class="hint">Moved here from Advanced: it is air. 0 = off (default).</div>')+'</div>'+EX};
+V.polar=function(){var p=E.pol;return '<div class="eg g2">'+panel("Polar",'<div class="row" role="group">'+chips("pol.page",[["combined","Combined"],["each","Each mic"],["speakers","At speakers"]])+'<span style="margin-left:12px"></span>'+chips("pol.rad",[["db","dB"],["linear","Linear"]])+'</div><div class="row">'+["L","C","R","sum"].map(function(k){return '<label><input type="checkbox" data-k="pol.show.'+k+'"'+(p.show[k]?" checked":"")+'> '+k+'</label>'}).join(" ")+'<span style="margin-left:12px"></span>'+chips("pol.freq",[[125,"125"],[500,"500"],[1000,"1k"],[4000,"4k"],[8000,"8k"]])+'</div>'+cv("polCv",820,380,"Polar patterns")+'<div class="hint">Drag the amber dot on a pattern to aim that capsule (as today on Each mic).</div>',badge("v"))+
+ panel("Mic setup (shortcut)",'<div class="kv"><span>Setup</span><span>'+E.mic.setup+'</span><span>Space</span><span>'+E.mic.space.toFixed(2)+' m</span><span>Pattern</span><span>'+E.mic.fam+'</span></div><button data-go="mics">Edit in Mics ›</button><div class="hint">Today the full Listen panel repeats here; the mockup links instead, one home per control.</div>')+'</div>'+EX};
+V.space=function(){var s=E.sp;return '<div class="eg g2">'+panel("Mirrored-room lattice",'<div class="row"><span class="hint">View</span>'+chips("sp.view",[["lattice","Lattice"],["paths","Paths"],["legs","Last legs"]])+'<span class="hint" style="margin-left:12px">Mics</span>'+["L","C","R"].map(function(k){return '<label><input type="checkbox" data-k="sp.mics.'+k+'"'+(s.mics[k]?" checked":"")+'> '+k+'</label>'}).join(" ")+'<button data-act="zout" aria-label="Zoom out">−</button><button data-act="zin" aria-label="Zoom in">+</button><button data-act="zfit">Fit</button></div>'+cv("latCv",820,360,"Image lattice")+'<div class="hint" id="latHint"></div>',badge("v"))+
+ '<div>'+panel("Early map",'<div class="row">'+chips("sp.map",[["plan","Plan"],["sticks","Arrivals"]])+'</div>'+cv("emCv",300,300,"Early reflection map")+'<div class="hint" id="emHint"></div>')+'</div></div>'+EX};
+V.advanced=function(){var a=E.adv;return '<div class="eg g2e">'+panel("Engine size",'<div class="row" role="group" aria-label="Hadamard size">'+[8,16,32,64,128].map(function(n){var ro=n>32;return '<button data-had="'+n+'" class="'+(a.had===n?"on":"")+'" aria-pressed="'+(a.had===n)+'">'+n+(ro?' <span class="badge b-r">R</span>':'')+'</button>'}).join("")+'</div><div class="hint" id="hadHint"></div>'+
+ '<div class="kv"><span>Play now</span><span id="hadPlay"></span><span>Render</span><span id="hadRen"></span></div>'+badge("pr"))+
+ panel("Room behaviour",ck("adv.smooth","Smooth room-size changes","p")+sl("adv.move","Movement","0","100","1","","s","int")+'<div class="hint">Movement is hidden today; shown here only as a placeholder.</div>')+
+ panel("2011 parity",ck("adv.parity","Reaktor parity: lock mic X to room centre (W/2)","pr")+sl("adv.g","2011 gain law","0","1","0.01","","pr")+'<button data-act="snap">2011 Reaktor snapshot</button><div class="hint">Loads Hall 57×34×97 with the 2011 gain law, humidity 400, mic 10 kHz, live surface Dif. Asks first, Undo restores.</div>')+
+ panel("Render options",'<label class="ctl"><span>Colour filter'+badge("pr")+'</span>'+sel("adv.colour",["IIR biquads","FIR (Phase 3)"])+'<span></span></label>'+sl("adv.ir","Min IR length","50","2000","10","ms","r","int")+ck("adv.bake","Also bake an IR when I drop Src / Mic","r")+ck("adv.shared","Shared tail (lighter CPU)","p")+'<div class="hint">Every option now carries a Play / Render badge. The "Colour filter" label uses the normal control style (fix U39).</div>')+'</div>'+EX};
+var ORDER=[["source","Source"],["mics","Mics"],["desk","Desk"],["surfaces","Surfaces"],["air","Air"],["polar","Polar"],["space","Space"],["advanced","Advanced"]],cur=null,lastBtn=null;
+// ---------- shell ----------
+var ed=document.createElement("div");ed.id="ed";ed.setAttribute("role","dialog");ed.setAttribute("aria-label","Editor");
+ed.innerHTML='<div class="banner">MOCKUP EDITOR · EXAMPLE DATA · nothing here makes sound</div><div class="ebar"><button id="edBack" title="Back to main (Esc)">← Back to main</button><h1 id="edTitle"></h1><div role="tablist" id="edTabs" aria-label="Editors">'+ORDER.map(function(o){return '<button role="tab" data-ed="'+o[0]+'" tabindex="-1">'+o[1]+'</button>'}).join("")+'</div><span class="hint" style="margin-left:auto">←/→ switch editor · Esc back · Undo/Redo shared with main</span></div><div class="ebody" id="edBody"></div>';
+document.body.appendChild(ed);
+function open(n,focusTab){cur=n;ed.classList.add("open");document.body.classList.add("edopen");window.scrollTo(0,0);$("edTitle").textContent=ORDER.filter(function(o){return o[0]===n})[0][1];
+ document.querySelectorAll("#edTabs [role=tab]").forEach(function(b){var on=b.dataset.ed===n;b.setAttribute("aria-selected",on);b.tabIndex=on?0:-1;if(on&&focusTab)b.focus()});render()}
+function close(){ed.classList.remove("open");document.body.classList.remove("edopen");cur=null;if(lastBtn)lastBtn.focus()}
+window.openEditor=open;window.EDSTATE=E;
+$("edBack").onclick=close;
+document.querySelectorAll("#edTabs [role=tab]").forEach(function(b){b.onclick=function(){open(b.dataset.ed)}});
+$("edTabs").addEventListener("keydown",function(e){var i=ORDER.findIndex(function(o){return o[0]===cur});if(e.key==="ArrowRight"||e.key==="ArrowLeft"){e.preventDefault();i=(i+(e.key==="ArrowRight"?1:-1)+ORDER.length)%ORDER.length;open(ORDER[i][0],true)}if(e.key==="Home"){open(ORDER[0][0],true)}if(e.key==="End"){open(ORDER[7][0],true)}});
+document.addEventListener("keydown",function(e){if(e.key==="Escape"&&cur&&$("modal").style.display!=="flex")close()});
+// wire main Editors buttons
+var map={"Source":"source","Mics":"mics","Desk":"desk","Surfaces":"surfaces","Air":"air","Polar":"polar","Space (3D)":"space"};
+document.querySelectorAll(".editors button").forEach(function(b){var t=b.textContent.trim(),k=map[t]||(t.indexOf("Advanced")===0?"advanced":null);if(k){b.dataset.ed=k;b.onclick=function(){lastBtn=b;open(k)}}});
+// ---------- render + bind ----------
+function render(){var body=$("edBody");body.innerHTML=V[cur]();bind(body);draw()}
+function rerender(){var y=$("edBody").scrollTop,f=document.activeElement&&document.activeElement.dataset;var key=f&&(f.c?"c:"+f.c+":"+f.v:f.p?"p:"+f.p:f.sub?"sub:"+f.sub:null);render();$("edBody").scrollTop=y;
+ if(key){var p=key.split(":"),q=p[0]==="c"?'[data-c="'+p[1]+'"][data-v="'+p[2]+'"]':p[0]==="p"?'[data-p="'+p[1]+'"]':'[data-sub="'+p[1]+'"]';var el=$("edBody").querySelector(q);if(el)el.focus()}}
+function hpush(){if(typeof push==="function")push()}
+function bind(r){
+ r.querySelectorAll("input[type=range][data-p]").forEach(function(i){var dirty=false;
+  i.addEventListener("input",function(){if(!dirty){hpush();dirty=true}var v=+i.value;if(i.dataset.fmt==="db"&&Math.abs(v-.5)<.012&&!window.event.shiftKey){v=.5;i.value=.5}set(i.dataset.p,v);var o=i.nextElementSibling;if(o&&o.tagName==="OUTPUT")o.textContent=i.dataset.p==="desk.decay"?v.toFixed(2)+" s":fx(v,i.dataset.fmt);side(i.dataset.p);draw()});
+  i.addEventListener("change",function(){dirty=false});
+  i.addEventListener("dblclick",function(){hpush();var d=i.dataset.def!==undefined?+i.dataset.def:get.call(null,"x")===0?0:dget(i.dataset.p);set(i.dataset.p,d);i.value=d;var o=i.nextElementSibling;if(o&&o.tagName==="OUTPUT")o.textContent=i.dataset.p==="desk.decay"?(+d).toFixed(2)+" s":fx(d,i.dataset.fmt);side(i.dataset.p);draw();T("Reset to default "+(i.dataset.fmt==="db"?fdb(d):d))})});
+ r.querySelectorAll("select[data-p]").forEach(function(s){s.onchange=function(){hpush();set(s.dataset.p,s.value);if(s.dataset.p==="mic.setup")snapSetup(s.value);rerender()}});
+ r.querySelectorAll("input[type=checkbox][data-k]").forEach(function(c){c.onchange=function(){hpush();set(c.dataset.k,c.checked);if(c.dataset.k==="mic.linkH"&&c.checked)E.mic.sy=E.mic.my;rerender()}});
+ r.querySelectorAll("input[type=number][data-n]").forEach(function(n){n.onchange=function(){hpush();set(n.dataset.n,+n.value);draw()}});
+ r.querySelectorAll("[data-c]").forEach(function(b){b.onclick=function(){hpush();var v=b.dataset.v;set(b.dataset.c,isNaN(+v)?v:+v);rerender()}});
+ r.querySelectorAll("[data-sub]").forEach(function(b){b.onclick=function(){E.surf.sub=b.dataset.sub;rerender()}});
+ var st=r.querySelector("#surfTabs");if(st)st.addEventListener("keydown",function(e){var s=["mat","dec","ana"],i=s.indexOf(E.surf.sub);if(e.key==="ArrowRight"||e.key==="ArrowLeft"){e.preventDefault();e.stopPropagation();E.surf.sub=s[(i+(e.key==="ArrowRight"?1:2))%3];render();r.querySelector('[data-sub="'+E.surf.sub+'"]').focus()}});
+ r.querySelectorAll("[data-solo]").forEach(function(b){b.onclick=function(){var k=b.dataset.solo,o=E.desk.ch[k]||E.desk.bus[k];o.s=!o.s;rerender()}});
+ r.querySelectorAll("[data-mute]").forEach(function(b){b.onclick=function(){hpush();var k=b.dataset.mute,o=E.desk.ch[k]||E.desk.bus[k];o.m=!o.m;rerender()}});
+ r.querySelectorAll("[data-lr]").forEach(function(b){b.onclick=function(){hpush();var o=E.desk.ch[b.dataset.lr],v=b.dataset.v;o.lr=o.lr.indexOf(v)>=0?o.lr.replace(v,""):(o.lr+v).split("").sort().join("");if(!o.lr)T("Ø: this mic feeds no speaker");rerender()}});
+ r.querySelectorAll("[data-place]").forEach(function(b){b.onclick=function(){hpush();E.desk.ch[b.dataset.place].place=b.dataset.v;if(b.dataset.v==="room"){E.mic.third="room";T("Room mic: set its X/Z in Mics")}rerender()}});
+ r.querySelectorAll(".fo").forEach(function(o){function typ(){var s=prompt("Level in dB (or -inf)",o.textContent.replace(" dB",""));if(s===null)return;var i=o.previousElementSibling,v=/inf/.test(s)?0:Math.min(1,.5*Math.pow(10,(+s)/40));if(isNaN(v))return;hpush();set(i.dataset.p,v);rerender()}o.onclick=typ;o.onkeydown=function(e){if(e.key==="Enter")typ()}});
+ r.querySelectorAll("[data-face]").forEach(function(f){function s(){E.surf.face=f.dataset.face;rerender()}f.addEventListener("click",function(e){if(e.target.tagName!=="BUTTON")s()});f.addEventListener("keydown",function(e){if(e.key==="Enter"||e.key===" "){e.preventDefault();s()}})});
+ r.querySelectorAll("[data-fsolo]").forEach(function(b){b.onclick=function(){var f=b.dataset.fsolo;E.surf.solo=E.surf.solo===f?null:f;rerender()}});
+ r.querySelectorAll("[data-fmute]").forEach(function(b){b.onclick=function(){var f=b.dataset.fmute;E.surf.mute[f]=!E.surf.mute[f];rerender()}});
+ r.querySelectorAll("[data-mat]").forEach(function(b){b.onclick=function(){hpush();E.surf.faces[E.surf.face]=b.dataset.mat;var a=matAbs(b.dataset.mat);E.surf.abs=a;rerender()}});
+ r.querySelectorAll("[data-had]").forEach(function(b){b.onclick=function(){var n=+b.dataset.had;if(n>32&&window.playing){T(n+" is Render only. Play keeps 32 lines (fix U13)")}hpush();E.adv.had=n;rerender()}});
+ r.querySelectorAll("[data-go]").forEach(function(b){b.onclick=function(){open(b.dataset.go)}});
+ r.querySelectorAll("[data-act]").forEach(function(b){b.onclick=function(){act(b.dataset.act)}});
+ canvases(r)}
+function dget(p){return p.split(".").reduce(function(o,k){return o[k]},DEF)}
+function side(p){if(p==="mic.my"&&E.mic.linkH){E.mic.sy=E.mic.my}if(p==="desk.decay"&&$("physRO"))physRO()}
+function matAbs(m){var t={"Carpet (example)":[.05,.1,.25,.4,.55,.6,.65],"Heavy curtain":[.07,.3,.5,.7,.7,.65,.6],"Absorber panel 50 mm":[.1,.35,.8,.95,.95,.9,.85],"Absorber panel 100 mm":[.3,.7,.95,1,.95,.9,.85],"Absorber 100 mm + 100 mm gap":[.6,.9,1,1,.95,.9,.85],"Brick (unglazed)":[.03,.03,.03,.04,.05,.07,.07],"Concrete (painted)":[.01,.01,.02,.02,.02,.02,.03],"Glass (example)":[.35,.25,.18,.12,.07,.04,.03]};return (t[m]||[.1,.11,.1,.08,.08,.09,.11]).slice()}
+function snapSetup(v){var m=E.mic;var t={"ORTF":[.17,"cardioid"],"ORTF + C":[.17,"cardioid"],"XY coincident 90°":[0,"cardioid"],"XY 120°":[0,"cardioid"],"NOS":[.3,"cardioid"],"DIN":[.2,"cardioid"],"AB spaced pair (omni)":[.6,"omni"],"AB spaced pair (cardioid)":[.6,"cardioid"],"Mono centre":[0,"cardioid"]}[v];if(t){m.space=t[0];m.fam=t[1]}m.third=v==="ORTF + C"?"centre":m.third;T(v+" snapped: space "+m.space+" m, "+m.fam)}
+function act(a){var s=E.src,S0=window.S||{src:{x:2.8,z:5.3},stand:{x:2.8,z:1.6}};hpush();
+ if(a==="faceMic"){s.yaw=Math.round(Math.atan2(S0.stand.x-S0.src.x,-(S0.stand.z-S0.src.z))*180/Math.PI);if(s.preset==="Omni")s.preset="Guitar amp (example)"}
+ if(a==="faceAway"){s.yaw=Math.round(Math.atan2(S0.stand.x-S0.src.x,-(S0.stand.z-S0.src.z))*180/Math.PI+180);if(s.yaw>180)s.yaw-=360}
+ if(a==="omni"){s.preset="Omni"}
+ if(a==="one")E.two=false;if(a==="two")E.two=true;
+ if(a==="toStand"){E.mic.third="centre";E.desk.ch.c.place="stand"}
+ if(a==="natural"){var d=E.desk;d.natural=!d.natural;if(d.natural){d.bus.direct.f=.5;d.bus.fdn.f=.5;T("Natural: Direct and FDN at 0 dB, ganged")}}
+ if(a==="paintAll"){"ABCD".split("").forEach(function(f){E.surf.faces[f]=E.surf.faces[E.surf.face]});T("Painted walls A–D (floor/ceiling only take legal materials)")}
+ if(a==="soloOff")E.surf.solo=null;
+ if(a==="holdA")E.surf.holdA=!E.surf.holdA;if(a==="holdB")E.surf.holdB=!E.surf.holdB;if(a==="clearHold"){E.surf.holdA=E.surf.holdB=false}
+ if(a==="renderDots"){E.surf.dots=!E.surf.dots}
+ if(a==="zin")E.sp.zoom=Math.min(3,E.sp.zoom*1.25);if(a==="zout")E.sp.zoom=Math.max(.4,E.sp.zoom/1.25);if(a==="zfit")E.sp.zoom=1;
+ if(a==="snap"){if(!confirm("Load the 2011 Reaktor snapshot? Room, gain law and air change. Undo restores."))return;E.adv.g=0;E.adv.parity=true;E.air.hum=100;T("2011 snapshot loaded (example)")}
+ rerender()}
+// ---------- drawing ----------
+function C(id){var c=$(id);return c?c.getContext("2d"):null}
+function grid(c,W,H){c.clearRect(0,0,W,H);c.strokeStyle="#1e2330";for(var x=0;x<W;x+=40){c.beginPath();c.moveTo(x,0);c.lineTo(x,H);c.stroke()}for(var y=0;y<H;y+=40){c.beginPath();c.moveTo(0,y);c.lineTo(W,y);c.stroke()}}
+function room(){var S0=window.S||{W:5.6,L:7.2,src:{x:2.8,z:5.3},stand:{x:2.8,z:1.6}};return S0}
+function rg(cv,m){var S0=room(),sc=Math.min((cv.width-2*m)/S0.W,(cv.height-2*m)/S0.L);var ox=(cv.width-S0.W*sc)/2,oy=(cv.height-S0.L*sc)/2;return{sc:sc,P:function(x,z){return[ox+x*sc,oy+(S0.L-z)*sc]},ox:ox,oy:oy,S:S0}}
+function capsules(){var S0=room(),m=E.mic,h=m.space/2,a=m.fam==="omni"?0:55;var L={x:S0.stand.x-h,z:S0.stand.z,yaw:-a},R={x:S0.stand.x+h,z:S0.stand.z,yaw:a},Cc=m.third==="room"?{x:m.room.x,z:m.room.z,yaw:m.room.yaw,room:true}:m.third==="centre"?{x:S0.stand.x,z:S0.stand.z+.05,yaw:0}:null;return{L:L,R:R,C:Cc}}
+function cardioid(c,x,y,r,yaw,p,col){c.strokeStyle=col;c.beginPath();for(var i=0;i<=72;i++){var t=i/72*2*Math.PI,g=Math.abs((1-p)+p*Math.cos(t));c.lineTo(x+Math.sin(t+yaw)*r*g,y-Math.cos(t+yaw)*r*g)}c.stroke()}
+function pval(){return {omni:0,cardioid:.5,supercardioid:.63,"figure-8":1}[E.mic.fam]*0+E.mic.pol*(E.mic.fam==="omni"?0:1)+(E.mic.fam==="figure-8"?.5:0)}
+function canvases(r){var sp=$("srcPlan");if(sp){var drag=null;sp.onpointerdown=function(e){var g=rg(sp,40),b=sp.getBoundingClientRect(),x=(e.clientX-b.left)*sp.width/b.width,y=(e.clientY-b.top)*sp.height/b.height,s=g.P(g.S.src.x,g.S.src.z),d=Math.hypot(x-s[0],y-s[1]);drag=d<16?"move":d<40?"aim":null;if(drag){hpush();sp.setPointerCapture(e.pointerId)}};
+ sp.onpointermove=function(e){if(!drag)return;var g=rg(sp,40),b=sp.getBoundingClientRect(),x=(e.clientX-b.left)*sp.width/b.width,y=(e.clientY-b.top)*sp.height/b.height;if(drag==="move"){g.S.src.x=+Math.max(.2,Math.min(g.S.W-.2,(x-g.ox)/g.sc)).toFixed(2);g.S.src.z=+Math.max(.2,Math.min(g.S.L-.2,g.S.L-(y-g.oy)/g.sc)).toFixed(2)}else{var s=g.P(g.S.src.x,g.S.src.z),a=Math.round(Math.atan2(x-s[0],-(y-s[1]))*180/Math.PI);if(e.shiftKey)a=Math.round(a/15)*15;E.src.yaw=a;var i=r.querySelector('[data-p="src.yaw"]');i.value=a;i.nextElementSibling.textContent=a}draw()};
+ sp.onpointerup=function(){drag=null;if(typeof drawPlan==="function")drawPlan()};sp.ondblclick=function(){act("faceMic")};
+ sp.onkeydown=function(e){var d={ArrowLeft:[-.1,0],ArrowRight:[.1,0],ArrowUp:[0,.1],ArrowDown:[0,-.1]}[e.key];if(!d)return;e.preventDefault();var S0=room();S0.src.x=+(S0.src.x+d[0]).toFixed(2);S0.src.z=+(S0.src.z+d[1]).toFixed(2);draw()}}
+ var mp=$("micPlan");if(mp){var dm=null;mp.onpointerdown=function(e){var g=rg(mp,40),b=mp.getBoundingClientRect(),x=(e.clientX-b.left)*mp.width/b.width,y=(e.clientY-b.top)*mp.height/b.height,c=capsules();var st=g.P(g.S.stand.x,g.S.stand.z);dm=null;if(c.C&&c.C.room){var q=g.P(c.C.x,c.C.z);if(Math.hypot(x-q[0],y-q[1])<16)dm="room"}if(!dm&&Math.hypot(x-st[0],y-st[1])<30)dm="stand";if(dm){hpush();mp.setPointerCapture(e.pointerId)}};
+ mp.onpointermove=function(e){if(!dm)return;var g=rg(mp,40),b=mp.getBoundingClientRect(),x=(e.clientX-b.left)*mp.width/b.width,y=(e.clientY-b.top)*mp.height/b.height,X=+Math.max(.1,Math.min(g.S.W-.1,(x-g.ox)/g.sc)).toFixed(2),Z=+Math.max(.1,Math.min(g.S.L-.1,g.S.L-(y-g.oy)/g.sc)).toFixed(2);if(dm==="stand"){g.S.stand.x=X;g.S.stand.z=Z;E.mic.mcx=X;E.mic.mcz=Z}else{E.mic.room.x=X;E.mic.room.z=Z}draw()};mp.onpointerup=function(){if(dm==="stand")rerender();dm=null}}
+ var pc=$("polCv");if(pc){var dp=false;pc.onpointerdown=function(){dp=true;hpush()};pc.onpointermove=function(e){if(!dp)return;var b=pc.getBoundingClientRect(),x=(e.clientX-b.left)*pc.width/b.width-pc.width/4,y=(e.clientY-b.top)*pc.height/b.height-pc.height/2;E.pol.aimL=Math.atan2(x,-y);draw()};pc.onpointerup=function(){dp=false}}}
+function draw(){
+ var c,cv;
+ if(cv=$("srcPlan")){c=cv.getContext("2d");grid(c,cv.width,cv.height);var g=rg(cv,40);c.strokeStyle="#2dd4bf";c.lineWidth=2;c.strokeRect(g.ox,g.oy,g.S.W*g.sc,g.S.L*g.sc);c.lineWidth=1;c.fillStyle="#8b93a8";c.font="13px system-ui,sans-serif";c.fillText("Front (+Z)",g.ox,g.oy-8);c.fillText("Back",g.ox,g.oy+g.S.L*g.sc+18);
+  var s=g.P(g.S.src.x,g.S.src.z),m=g.P(g.S.stand.x,g.S.stand.z),y=E.src.yaw*Math.PI/180;if(E.src.preset!=="Omni"){c.fillStyle="rgba(251,191,36,.15)";c.beginPath();c.moveTo(s[0],s[1]);c.arc(s[0],s[1],70,y-Math.PI/2-.6,y-Math.PI/2+.6);c.fill()}
+  c.strokeStyle="#fbbf24";c.beginPath();c.arc(s[0],s[1],28,0,7);c.stroke();if(E.src.preset!=="Omni"){c.beginPath();c.arc(s[0]+Math.sin(y)*28,s[1]-Math.cos(y)*28,5,0,7);c.fillStyle="#fbbf24";c.fill()}
+  c.fillStyle="#fbbf24";c.beginPath();c.arc(s[0],s[1],9,0,7);c.fill();c.fillText("Src (Gtr A)",s[0]+34,s[1]+4);c.fillStyle="#60a5fa";c.beginPath();c.arc(m[0],m[1],8,0,7);c.fill();c.fillStyle="#8b93a8";c.fillText("Mic stand",m[0]+12,m[1]+4);
+  var d=Math.hypot(g.S.src.x-g.S.stand.x,g.S.src.z-g.S.stand.z),toMic=Math.atan2(g.S.stand.x-g.S.src.x,-(g.S.stand.z-g.S.src.z))*180/Math.PI,off=Math.abs(((E.src.yaw-toMic)+540)%360-180);
+  var att=E.src.preset==="Omni"?0:-(off/180)*(E.src.freq/1000*4+2);var h=$("srcHear");if(h)h.innerHTML="<b>What the room hears:</b> "+att.toFixed(1)+" dB at "+(E.src.freq>=1000?E.src.freq/1000+" kHz":E.src.freq+" Hz")+" on the direct to the mic ("+d.toFixed(2)+" m, "+Math.round(off)+"° off-axis). Example."}
+ if(cv=$("srcPol")){c=cv.getContext("2d");c.clearRect(0,0,cv.width,cv.height);var cx=cv.width/2,cy=cv.height/2;c.strokeStyle="#2a2f3d";[30,60,90].forEach(function(r){c.beginPath();c.arc(cx,cy,r,0,7);c.stroke()});c.fillStyle="#8b93a8";c.font="12px system-ui,sans-serif";c.fillText("0 dB",cx+4,cy-92);c.fillText("−10",cx+4,cy-62);c.fillText("−20",cx+4,cy-32);
+  var p=E.src.preset==="Omni"?0:Math.min(.9,.15+E.src.freq/10000*(E.src.plane==="v"?1.1:1));cardioid(c,cx,cy,90,E.src.yaw*Math.PI/180,p,"#fbbf24")}
+ if(cv=$("micPlan")){c=cv.getContext("2d");grid(c,cv.width,cv.height);var g=rg(cv,40),cs=capsules();c.strokeStyle="#2dd4bf";c.lineWidth=2;c.strokeRect(g.ox,g.oy,g.S.W*g.sc,g.S.L*g.sc);c.lineWidth=1;c.font="13px system-ui,sans-serif";
+  var s=g.P(g.S.src.x,g.S.src.z);c.fillStyle="#fbbf24";c.beginPath();c.arc(s[0],s[1],8,0,7);c.fill();c.fillText("Src",s[0]+12,s[1]+4);var pv=E.mic.fam==="omni"?0:E.mic.fam==="figure-8"?1:E.mic.pol;
+  [["L",cs.L,"#a78bfa"],["R",cs.R,"#34d399"],["C",cs.C,"#60a5fa"]].forEach(function(k){if(!k[1])return;var p=g.P(k[1].x,k[1].z);cardioid(c,p[0],p[1],40,k[1].yaw*Math.PI/180,pv,k[2]);c.fillStyle=k[2];c.beginPath();c.arc(p[0],p[1],k[1].room?8:6,0,7);c.fill();c.fillText(k[0]+(k[1].room?" (room mic)":""),p[0]+10,p[1]-10)});
+  c.fillStyle="#8b93a8";c.fillText(E.mic.setup+" · stand "+E.mic.mcx.toFixed(2)+", "+E.mic.mcz.toFixed(2)+" m",10,cv.height-10)}
+ if(cv=$("micPol")){c=cv.getContext("2d");c.clearRect(0,0,cv.width,cv.height);var pv=E.mic.fam==="omni"?0:E.mic.fam==="figure-8"?1:E.mic.pol,a=E.mic.fam==="omni"?0:55*Math.PI/180;c.strokeStyle="#2a2f3d";[30,60,90].forEach(function(r){c.beginPath();c.arc(140,100,r,0,7);c.stroke()});cardioid(c,140,100,85,-a,pv,"#a78bfa");cardioid(c,140,100,85,a,pv,"#34d399")}
+ if($("physRO"))physRO();
+ if(cv=$("absCv")){c=cv.getContext("2d");c.clearRect(0,0,cv.width,cv.height);var a=E.surf.abs,W=cv.width,H=cv.height;c.strokeStyle="#2a2f3d";c.strokeRect(40,10,W-50,H-40);c.fillStyle="#8b93a8";c.font="12px system-ui,sans-serif";["125","250","500","1k","2k","4k","8k"].forEach(function(b,i){var x=50+i*(W-70)/6;c.fillText(b,x-8,H-12);c.fillStyle="rgba(45,212,191,.5)";c.fillRect(x-14,10+(1-a[i])*(H-40),28,a[i]*(H-40));c.fillStyle="#8b93a8"});c.fillText("α 1.0",4,18);c.fillText("0",24,H-30)}
+ "ABCDEF".split("").forEach(function(f){var cv=$("spark"+f);if(!cv)return;var c=cv.getContext("2d"),a=matAbs(E.surf.faces[f]);c.clearRect(0,0,180,36);c.strokeStyle="#3a4152";c.beginPath();c.moveTo(0,34);c.lineTo(180,34);c.stroke();c.strokeStyle=E.surf.mute[f]?"#5c6478":"#2dd4bf";c.lineWidth=2;c.beginPath();a.forEach(function(v,i){c.lineTo(4+i*28,32-v*28)});c.stroke();c.lineWidth=1});
+ if(cv=$("rtCv")){c=cv.getContext("2d");var W=cv.width,H=cv.height,f=[63,125,250,500,1000,2000,4000,8000],X=function(i){return 50+i/7*(W-70)},Y=function(v){return 10+(1-v/4)*(H-40)};c.clearRect(0,0,W,H);c.strokeStyle="#2a2f3d";c.strokeRect(50,10,W-70,H-40);c.fillStyle="rgba(96,165,250,.12)";c.beginPath();f.forEach(function(_,i){c.lineTo(X(i),Y(2.2))});for(var i=7;i>=0;i--)c.lineTo(X(i),Y(1.6));c.fill();
+  c.setLineDash([5,4]);c.strokeStyle="#60a5fa";c.beginPath();f.forEach(function(_,i){c.lineTo(X(i),Y(1.9-i*.04))});c.stroke();c.setLineDash([]);var base=E.surf.rtMode==="flat"?[1.9,1.9,1.85,1.8,1.8,1.7,1.5,1.2]:[3.3,3.25,2.8,2.0,1.6,1.15,.85,.55];
+  c.strokeStyle="#8b93a8";c.beginPath();base.forEach(function(v,i){c.lineTo(X(i),Y(v*1.05))});c.stroke();c.strokeStyle="#e9ecf3";c.lineWidth=2;c.beginPath();base.forEach(function(v,i){c.lineTo(X(i),Y(v*(1-E.surf.dif*.1)))});c.stroke();c.lineWidth=1;
+  if(E.surf.dots){c.fillStyle="#fbbf24";base.forEach(function(v,i){c.beginPath();c.arc(X(i),Y(v*(.93+(i%3)*.04)),5,0,7);c.fill()})}c.fillStyle="#8b93a8";c.font="12px system-ui,sans-serif";f.forEach(function(v,i){c.fillText(v>=1000?v/1000+"k":v,X(i)-8,H-12)});c.fillText("T s",8,20);[1,2,3,4].forEach(function(v){c.fillText(v,30,Y(v)+4)})}
+ if(cv=$("colCv")){c=cv.getContext("2d");var W=cv.width,H=cv.height,n=31;c.clearRect(0,0,W,H);for(var i=0;i<n;i++){var v=(Math.sin(i/3)*.4+.6)*(1-i/60)*(E.surf.ref==="1k"?1.1:1),x=40+i*(W-60)/n,bh=v*(H-40);var hue=30+i*6;c.fillStyle="hsl("+hue+",70%,55%)";c.fillRect(x,H-30-bh,(W-60)/n-3,bh);if(E.surf.holdA){c.strokeStyle="#fbbf24";c.strokeRect(x,H-30-bh*1.08,(W-60)/n-3,bh*1.08)}if(E.surf.holdB){c.strokeStyle="#f472b6";c.strokeRect(x,H-30-bh*.9,(W-60)/n-3,bh*.9)}}c.fillStyle="#8b93a8";c.font="12px system-ui,sans-serif";c.fillText("20 Hz",40,H-10);c.fillText("1 kHz",W/2-10,H-10);c.fillText("20 kHz",W-70,H-10);c.fillText("0 dB = "+(E.surf.ref==="1k"?"1 kHz":"peak band"),W-170,16)}
+ if(cv=$("colSpark")){c=cv.getContext("2d");c.clearRect(0,0,cv.width,cv.height);c.strokeStyle="#a78bfa";c.lineWidth=2;c.beginPath();for(var i=0;i<60;i++)c.lineTo(10+i*13,30+Math.sin(i/4)*14);c.stroke();c.lineWidth=1;c.fillStyle="#8b93a8";c.font="12px system-ui,sans-serif";c.fillText("Face "+E.surf.face+" contribution (example)",10,12)}
+ if(cv=$("airCv")){c=cv.getContext("2d");var W=cv.width,H=cv.height;c.clearRect(0,0,W,H);c.strokeStyle="#2a2f3d";c.strokeRect(50,10,W-70,H-40);c.fillStyle="#8b93a8";c.font="12px system-ui,sans-serif";["1k","2k","4k","8k","16k"].forEach(function(b,i){c.fillText(b,50+i*(W-70)/4-8,H-12)});c.fillText("dB / 10 m",4,20);
+  c.strokeStyle="#2dd4bf";c.lineWidth=2;c.beginPath();for(var i=0;i<=40;i++){var fr=Math.pow(2,i/10),loss=E.air.iso*fr*fr*.6*(60/(E.air.hum+20))+E.air.lp*fr*2;c.lineTo(50+i/40*(W-70),10+Math.min(H-40,loss*8))}c.stroke();c.lineWidth=1}
+ if(cv=$("polCv")){c=cv.getContext("2d");var W=cv.width,H=cv.height;c.clearRect(0,0,W,H);var pv=E.mic.fam==="omni"?0:E.mic.fam==="figure-8"?1:E.mic.pol,a=E.pol.aimL!==undefined?E.pol.aimL:-55*Math.PI/180,hf=E.pol.freq/8000*.2;
+  var centres=E.pol.page==="speakers"?[[W/4,"Speaker L"],[3*W/4,"Speaker R"]]:E.pol.page==="each"?[[W/6,"L"],[W/2,"C"],[5*W/6,"R"]]:[[W/2,"Combined · "+E.pol.freq+" Hz"]];
+  centres.forEach(function(k,j){var cx=k[0],cy=H/2+10,r=Math.min(150,W/centres.length/2-20);c.strokeStyle="#2a2f3d";[.33,.66,1].forEach(function(f){c.beginPath();c.arc(cx,cy,r*f,0,7);c.stroke()});c.fillStyle="#e9ecf3";c.font="13px system-ui,sans-serif";c.fillText(k[1],cx-30,24);
+   var show=E.pol.page==="combined"?["L","R","C","sum"].filter(function(s){return E.pol.show[s]}):[k[1].slice(-1)==="L"?"L":k[1].slice(-1)==="R"?"R":"C"];
+   show.forEach(function(s){var yaw=s==="L"?a:s==="R"?-a:0,col={L:"#a78bfa",R:"#34d399",C:"#60a5fa",sum:"#e9ecf3"}[s];cardioid(c,cx,cy,r*(E.pol.rad==="db"?.95:.8),yaw,Math.min(1,pv+hf),col);if(s==="L"||(E.pol.page!=="combined"&&s!=="sum")){c.fillStyle="#fbbf24";c.beginPath();c.arc(cx+Math.sin(yaw)*r*.95,cy-Math.cos(yaw)*r*.95,5,0,7);c.fill()}})})}
+ if(cv=$("latCv")){c=cv.getContext("2d");var W=cv.width,H=cv.height,S0=room(),z=E.sp.zoom,sc=Math.min(W/(S0.W*5),H/(S0.L*3))*z,cx=W/2,cy=H/2;c.clearRect(0,0,W,H);var cs=capsules(),n=0;
+  for(var i=-2;i<=2;i++)for(var j=-1;j<=1;j++){var x0=cx+(i*S0.W-S0.W/2)*sc,y0=cy+(j*S0.L-S0.L/2)*sc;c.strokeStyle=(i===0&&j===0)?"#fbbf24":"#2a3a48";c.strokeRect(x0,y0,S0.W*sc,S0.L*sc);var sx=(i%2?S0.W-S0.src.x:S0.src.x),sz=(j%2?S0.src.z:S0.L-S0.src.z);var px=x0+sx*sc,py=y0+sz*sc;c.fillStyle=(i===0&&j===0)?"#fbbf24":"#f472b6";c.beginPath();c.arc(px,py,i===0&&j===0?6:4,0,7);c.fill();n++;
+   if(E.sp.view!=="lattice"&&!(i===0&&j===0)){["L","R","C"].forEach(function(k){if(!E.sp.mics[k]||!cs[k])return;var m=cs[k],mx=cx+(m.x-S0.W/2)*sc,my=cy+(S0.L-m.z-S0.L/2)*sc;c.strokeStyle={L:"rgba(167,139,250,.5)",R:"rgba(52,211,153,.5)",C:"rgba(96,165,250,.6)"}[k];c.beginPath();if(E.sp.view==="legs"){var ex=Math.max(cx-S0.W/2*sc,Math.min(cx+S0.W/2*sc,px)),ey=Math.max(cy-S0.L/2*sc,Math.min(cy+S0.L/2*sc,py));c.moveTo(ex,ey)}else c.moveTo(px,py);c.lineTo(mx,my);c.stroke()})}}
+  ["L","R","C"].forEach(function(k){if(!E.sp.mics[k]||!cs[k])return;var m=cs[k],mx=cx+(m.x-S0.W/2)*sc,my=cy+(S0.L-m.z-S0.L/2)*sc;c.fillStyle={L:"#a78bfa",R:"#34d399",C:"#60a5fa"}[k];c.beginPath();c.arc(mx,my,5,0,7);c.fill();c.font="12px system-ui,sans-serif";c.fillText(k+(m.room?" room":""),mx+7,my-6)});
+  var h=$("latHint");if(h)h.textContent=n-1+" first/second-order images shown (example 2D slice) · "+E.adv.had+" FDN lines · mics "+["L","C","R"].filter(function(k){return E.sp.mics[k]&&cs[k]}).join("+")+" · C is drawn at its real room-mic position when Third = Room."}
+ if(cv=$("emCv")){c=cv.getContext("2d");var W=cv.width,H=cv.height,S0=room(),cs=capsules();c.clearRect(0,0,W,H);c.font="12px system-ui,sans-serif";
+  if(E.sp.map==="plan"){var sc=Math.min((W-40)/S0.W,(H-40)/S0.L),ox=(W-S0.W*sc)/2,oy=(H-S0.L*sc)/2,P=function(x,z){return[ox+x*sc,oy+(S0.L-z)*sc]};c.strokeStyle="#2dd4bf";c.strokeRect(ox,oy,S0.W*sc,S0.L*sc);var s=P(S0.src.x,S0.src.z);
+   ["L","R","C"].forEach(function(k){var m=cs[k];if(!m)return;var mp=P(m.x,m.z),col={L:"#a78bfa",R:"#34d399",C:"#60a5fa"}[k];[[0,null],[S0.W,null],[null,0],[null,S0.L]].forEach(function(w){var rx,rz;if(w[0]!==null){var a=Math.abs(S0.src.x-w[0]),b=Math.abs(m.x-w[0]);rx=w[0];rz=S0.src.z+(m.z-S0.src.z)*a/(a+b)}else{var a2=Math.abs(S0.src.z-w[1]),b2=Math.abs(m.z-w[1]);rz=w[1];rx=S0.src.x+(m.x-S0.src.x)*a2/(a2+b2)}var rp=P(rx,rz);c.strokeStyle=col;c.globalAlpha=.6;c.beginPath();c.moveTo(s[0],s[1]);c.lineTo(rp[0],rp[1]);c.lineTo(mp[0],mp[1]);c.stroke();c.globalAlpha=1;c.fillStyle=col;c.fillRect(rp[0]-3,rp[1]-3,6,6)});
+    c.fillStyle=col;c.beginPath();c.arc(mp[0],mp[1],5,0,7);c.fill();c.fillText(k+(m.room?" room":""),mp[0]+7,mp[1]+4)});c.fillStyle="#fbbf24";c.beginPath();c.arc(s[0],s[1],6,0,7);c.fill()}
+  else{c.strokeStyle="#2a2f3d";c.strokeRect(30,10,W-40,H-40);["L","R","C"].forEach(function(k,j){var m=cs[k];if(!m)return;var col={L:"#a78bfa",R:"#34d399",C:"#60a5fa"}[k];for(var q=0;q<6;q++){var d=Math.hypot(S0.src.x-m.x,S0.src.z-m.z)+q*1.6+(m.room?2:0),t=d/343*1000,x=30+t/60*(W-40);if(x>W-10)break;c.strokeStyle=col;c.beginPath();c.moveTo(x+j*2,H-30);c.lineTo(x+j*2,H-30-(H-50)/(1+q*.6));c.stroke()}});c.fillStyle="#8b93a8";c.fillText("0–60 ms",W-70,H-12)}
+  var h=$("emHint");if(h)h.textContent="First-order reflections, source → wall → each capsule. "+(cs.C&&cs.C.room?"Room mic C uses its own X/Z ("+cs.C.x+", "+cs.C.z+" m), not the stand (today's early map draws it at the stand).":"Set Third mic = Room in Mics to see the room-mic paths.")+" Example geometry."}
+ if($("hadHint")){var n=E.adv.had;$("hadHint").textContent=n+" images · "+n+" FDN lines. 64 and 128 are Render only; while Play runs they are offered but Play stays on 32 (fix U13: chip shows R badge, toast explains).";$("hadPlay").textContent=(n>32?32:n)+" lines";$("hadRen").textContent=n+" lines"}}
+function physRO(){var d=E.desk.decay,k=(0.2+d*.04).toFixed(3),b=[63,125,250,500,1000,2000,4000].map(function(f,i){return '<span>'+f+' Hz</span><span>'+(d*[.88,.88,1.01,1.12,.88,.6,.39][i]).toFixed(2)+' s</span>'}).join("");$("physRO").innerHTML='<span>Physical mid</span><span>'+d.toFixed(2)+' s · k '+k+'</span>'+b}
+})();
+
+</script></body></html>

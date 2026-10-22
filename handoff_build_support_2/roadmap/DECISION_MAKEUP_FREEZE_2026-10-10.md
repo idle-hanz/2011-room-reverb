@@ -1,0 +1,6 @@
+﻿# D-MAKEUP-FREEZE and fault fixes - locked by Idle, Sat 10 Oct 2026 07:52 BST
+From roadmap\faults_1009\INVESTIGATION_REPORT.md (Build, read-only, 10 Oct).
+- D-MAKEUP-FREEZE (F1): makeup (the automatic gain) is frozen at the STAND distance. The default (everything on the stand) stays bit-exact. A mic that is moved to a room spot then follows natural 1/r distance loss (about 12 dB per doubling) instead of the gain cancelling it, and a close room mic no longer ducks the gain for the other mics. Do not retune 1/r^2 or the 0.55 Direct fold. Do not lower the 0.7 target.
+- OPEN QUESTION for Idle (not decided): what happens when the SOURCE moves toward or away from the stand mics. As reported, freeze uses the stand mic distances, so moving the source still changes makeup (closer = softer). The session must REPORT the numbers for a moving source, not change it.
+- F3 fix (functional bug, in scope): in the Mix-page place handler, when the capsule is C and the button is Room, also set third_mic = "room" (as the Mic-page button already does), so C is not zeroed. L and R unchanged. Return to stand still restores the saved third_mic.
+- F2 fix (display, no sound change): for a strip that is Room, the Mic-page views read the room spot, not the stand.

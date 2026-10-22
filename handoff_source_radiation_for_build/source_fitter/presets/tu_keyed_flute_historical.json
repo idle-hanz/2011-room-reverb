@@ -1,0 +1,186 @@
+{
+  "schema": "source_fitter.preset.v1",
+  "id": "tu_keyed_flute_historical",
+  "label": "Keyed flute historical (TU Berlin)",
+  "category": "library_tu",
+  "tag": "MEASURED-FIT",
+  "model": "radiation_shelf_plus_soft_one_pole",
+  "level_reference": "on_axis (0 dB when facing the receiver; omni = exact null)",
+  "frame": {
+    "x": "facing (radiation reference axis of the dataset)",
+    "y": "source left",
+    "z": "up",
+    "facing_definition": "Mic#27 direction (from SourceView text; VERIFIED text, mapping ASSUMED where 'between' / 'slightly')"
+  },
+  "params": {
+    "lp_order": 2.0,
+    "lo_db": 3.98626,
+    "hi_db": -11.30829,
+    "f0": 497.03991,
+    "shelf_s": 0.81176,
+    "p": 0.36386,
+    "q": 0.19256,
+    "b_ud": -0.42929,
+    "b_lr": -0.74914,
+    "aim_az": 2.43674,
+    "aim_el": 24.86859,
+    "lp_hz": 8592.00331,
+    "lp_mix": 0.60642,
+    "p_lo": 2.64323,
+    "dip": 0.99667
+  },
+  "size": {
+    "a_eq_m": 0.1089,
+    "beaming_onset_hz": 497.0,
+    "rule": "a_eq = c/(2*pi*f0), c=340 m/s as engine (piston ka=1); UI size slider sets size_scale = a_user/a_eq -> f0, lp_hz divided by size_scale"
+  },
+  "di_db": {
+    "125": -2.92,
+    "250": -1.92,
+    "500": 1.22,
+    "1000": 3.71,
+    "2000": 4.3,
+    "4000": 4.58,
+    "8000": 4.99,
+    "16000": 5.41
+  },
+  "diffuse_inject": {
+    "gain_db": 2.9999999999999996,
+    "shelf_f0": 484.8475172510156,
+    "shelf_gain_db": -7.830517618577333,
+    "shelf_s": 0.7,
+    "fit_rmse_db": 0.22493868739565176,
+    "target_db": {
+      "50": 3.133308392500785,
+      "104": 3.0004756876326137,
+      "218": 2.2524135751293795,
+      "455": -0.720165107171546,
+      "951": -3.6227112912830597,
+      "1986": -4.293746012240915,
+      "4148": -4.594190688679939,
+      "8662": -5.0433246081488825
+    }
+  },
+  "fit": {
+    "rmse_train_db": 3.451441630095054,
+    "rmse_holdout_db": 3.2733035809137583,
+    "rmse_per_band_db": {
+      "250": 2.963240671384179,
+      "315": 3.4368967958418577,
+      "400": 3.7917326096665,
+      "500": 3.620148442375379,
+      "630": 4.354463896016022,
+      "800": 4.639892612305853,
+      "1000": 4.506389721641428,
+      "1250": 2.6236015951487057,
+      "1600": 3.78186909920273,
+      "2000": 2.601376482421755,
+      "2500": 3.3505147182194475,
+      "3150": 2.934878793985054,
+      "4000": 3.412652613150369,
+      "5000": 3.2864184666887364,
+      "6300": 3.070451093930953,
+      "8000": 3.0166705375629514,
+      "10000": 2.9904068499839913,
+      "12500": 3.0381221299015984,
+      "16000": 2.5011501022397344
+    },
+    "n_dirs": 32,
+    "n_train": 26,
+    "n_holdout": 6,
+    "fit_bands_hz": [
+      250.0,
+      16000.0
+    ],
+    "n_bands": 19,
+    "free_params": [
+      "lo_db",
+      "hi_db",
+      "f0",
+      "shelf_s",
+      "p",
+      "q",
+      "b_ud",
+      "b_lr",
+      "aim_az",
+      "aim_el",
+      "lp_hz",
+      "lp_mix",
+      "p_lo",
+      "dip"
+    ],
+    "fixed_params": {
+      "lp_order": 2.0
+    },
+    "di_data_db": {
+      "250": -6.631782675158952,
+      "315": -5.646272399604587,
+      "400": -6.085355923503473,
+      "500": -4.782346763113701,
+      "630": -0.6524523066056727,
+      "800": -2.860668417201474,
+      "1000": -6.510526422248507,
+      "1250": -8.01092558269702,
+      "1600": 1.949183205739935,
+      "2000": 0.16240642950866224,
+      "2500": 0.8076151884437301,
+      "3150": -1.7435197210026026,
+      "4000": -4.669440458649849,
+      "5000": -0.9508659472147762,
+      "6300": 6.285099996624276,
+      "8000": 5.351682780200824,
+      "10000": 7.641017476955256,
+      "12500": -0.23320817695115004,
+      "16000": 2.380308171166085
+    },
+    "di_model_db": {
+      "250": -1.9157747557539482,
+      "315": -1.110609142464895,
+      "400": 0.0249145206537923,
+      "500": 1.2240096536004226,
+      "630": 2.3577256252940995,
+      "800": 3.215218976708597,
+      "1000": 3.7131577481138383,
+      "1250": 4.003758288402493,
+      "1600": 4.188853891397038,
+      "2000": 4.296664339517973,
+      "2500": 4.383406969265898,
+      "3150": 4.472199298509613,
+      "4000": 4.576663885302794,
+      "5000": 4.692379912216093,
+      "6300": 4.831255888381717,
+      "8000": 4.989321760678448,
+      "10000": 5.140122546253945,
+      "12500": 5.281441234040568,
+      "16000": 5.410943156469159
+    }
+  },
+  "dsp": {
+    "stages": [
+      "broadband_gain(k_lo*lo_db)",
+      "rbj_high_shelf(f0, k*hi_db, shelf_s)",
+      "soft_beaming_lp(lp_hz/k_hi, lp_mix, lp_order 1|2 cascaded one-poles)"
+    ],
+    "fs_ref_hz": 48000,
+    "k": "k_hi = A*u^p*(1-q*u^8); k_lo = A*((1-dip)*u^p_lo*(1-q*u^8) + dip*4u(1-u)); both 0 on axis",
+    "slot": "FIRST stage of each image's serial cascade (before surfaces/air/mic)"
+  },
+  "provenance": {
+    "dataset": "TU Berlin \u2014 A Database of Anechoic Microphone Array Measurements of Musical Instruments (1b_Directivities3rdOctave_SOFA)",
+    "url": "https://depositonce.tu-berlin.de/items/b194da8b-e98c-4761-9100-2b0bb6ba93e8",
+    "doi": "10.14279/depositonce-19858 ; paper 10.17743/jaes.2022.0128",
+    "file": "Keyed_flute_historical_3rdOctave.sofa",
+    "license": "cc by-nc-sa 4.0 (file attribute; NC = non-commercial)",
+    "source_type": "Keyed flute historical",
+    "manufacturer": "Instrument: manufacturer unknown (1850)",
+    "source_view": "Crown aiming at between Mic#27 and Mic#20, Mouthpiece aimig at Mic#13",
+    "forward_axis": "Mic#27 direction (from SourceView text; VERIFIED text, mapping ASSUMED where 'between' / 'slightly')",
+    "grid": "32-mic pentakis dodecahedron r=2.06 m; equal quadrature weights ASSUMED",
+    "measurement": "MEASURED (anechoic, 3rd-octave band average of partials)"
+  },
+  "tags": {
+    "params": "VERIFIED fit output (this code) of MEASURED data",
+    "model_form": "ASSUMED (engineering model, mirrors mic_fitter v3)",
+    "size_rule": "VERIFIED physics (piston ka=1) applied as ASSUMED mapping"
+  }
+}

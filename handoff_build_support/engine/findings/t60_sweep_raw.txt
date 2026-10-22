@@ -1,0 +1,21 @@
+orig_std_0.8                 dial  0.8s | T30 250   3.55 1k   5.10 4k   6.83 8k   4.12 bb   5.28 | 10k late   4.34
+fix_std_0.8                  dial  0.8s | T30 250   0.74 1k   0.73 4k   0.75 8k   0.77 bb   0.75 | 10k late   0.80
+orig_std_1.8                 dial  1.8s | T30 250   2.87 1k   5.11 4k   8.84 8k   5.57 bb   6.91 | 10k late   9.08
+fix_std_1.8                  dial  1.8s | T30 250   1.67 1k   1.78 4k   1.76 8k   1.75 bb   1.78 | 10k late   1.78
+orig_std_4.0                 dial  4.0s | T30 250   3.07 1k   7.40 4k  12.45 8k   8.70 bb  10.50 | 10k late  23.40
+fix_std_4.0                  dial  4.0s | T30 250   3.87 1k   3.99 4k   3.93 8k   3.97 bb   3.96 | 10k late   4.01
+orig_small_0.8               dial  0.8s | T30 250   1.36 1k   2.74 4k   5.40 8k   4.62 bb   3.98 | 10k late   7.02
+fix_small_0.8                dial  0.8s | T30 250   0.77 1k   0.76 4k   0.78 8k   0.78 bb   0.84 | 10k late   0.81
+orig_small_1.8               dial  1.8s | T30 250   0.94 1k   3.42 4k   7.52 8k   5.90 bb   5.30 | 10k late   8.64
+fix_small_1.8                dial  1.8s | T30 250   1.66 1k   1.79 4k   1.85 8k   1.84 bb   1.89 | 10k late   1.80
+orig_small_4.0               dial  4.0s | T30 250   1.35 1k   5.92 4k  11.06 8k   6.99 bb   7.57 | 10k late  12.04
+fix_small_4.0                dial  4.0s | T30 250   3.31 1k   4.11 4k   4.03 8k   4.03 bb   4.30 | 10k late   4.01
+orig_hall_0.8                dial  0.8s | T30 250   1.64 1k   2.55 4k   2.32 8k   1.82 bb   1.97 | 10k late   2.07
+fix_hall_0.8                 dial  0.8s | T30 250   0.76 1k   0.76 4k   0.73 8k   0.74 bb   0.75 | 10k late   0.79
+orig_hall_1.8                dial  1.8s | T30 250   2.87 1k   3.33 4k   3.28 8k   2.61 bb   2.98 | 10k late   3.67
+fix_hall_1.8                 dial  1.8s | T30 250   1.79 1k   1.83 4k   1.74 8k   1.71 bb   1.74 | 10k late   1.80
+orig_hall_4.0                dial  4.0s | T30 250   5.23 1k   5.06 4k   4.87 8k   3.75 bb   4.74 | 10k late   5.69
+fix_hall_4.0                 dial  4.0s | T30 250   3.84 1k   3.88 4k   4.01 8k   3.99 bb   4.03 | 10k late   4.01
+std mean_ms 29.1 delay 9.4..57.2 dffs -0.98..-0.00 n|dffs|>=.9: 20 gsqrtN(1.8) 0.894
+small mean_ms 19.6 delay 5.9..35.8 dffs -0.98..-0.00 n|dffs|>=.9: 25 gsqrtN(1.8) 0.927
+hall mean_ms 105.6 delay 35.3..217.6 dffs -0.83..-0.00 n|dffs|>=.9: 0 gsqrtN(1.8) 0.667

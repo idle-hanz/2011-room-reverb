@@ -1,0 +1,85 @@
+{
+  "schema": "surfaces_fitter.material.v1",
+  "id": "absorber_panel_1in_gap1in",
+  "display_name": "Absorber panel (25 mm, 25 mm gap)",
+  "honesty": "MODELLED (Miki 1990 + Paris; sigma=15 kPa s/m2 ASSUMED)",
+  "roles": [
+    "wall",
+    "ceiling"
+  ],
+  "banned_on": [
+    "floor"
+  ],
+  "absorb_hz": [
+    125.0,
+    250.0,
+    500.0,
+    1000.0,
+    2000.0,
+    4000.0,
+    8000.0
+  ],
+  "absorb": [
+    0.06681,
+    0.190319,
+    0.436456,
+    0.735909,
+    0.88289,
+    0.888541,
+    0.948842
+  ],
+  "alpha_octave": [
+    0.06681,
+    0.190319,
+    0.436456,
+    0.735909,
+    0.88289,
+    0.888541,
+    0.948842
+  ],
+  "model": "dual_high_shelf",
+  "candidate": "A",
+  "params": {
+    "r0_db": -0.29448496227208487,
+    "f0": 895.1436555761405,
+    "depth_db": -9.753991230410046,
+    "shelf_slope": 4.982006243960965,
+    "f0_hi": 6299.020145782355,
+    "depth_hi_db": -3.115459700376559,
+    "shelf_slope_hi": 11.999999999999998
+  },
+  "rmse_r_db": 0.17536892310207927,
+  "absorb_l1": 0.011466861012889957,
+  "candidate_rmse_r_db": {
+    "A": 0.17536892310207927,
+    "B": 0.41589735497452324
+  },
+  "freq_range_hz": [
+    20.0,
+    16000.0
+  ],
+  "source_note": "Miki 1990 + Paris random incidence, extended reaction. sigma=15000 Pa s/m2, thickness 0.0254 m, air gap 0.0254 m. Not a measured manufacturer table.",
+  "usage": "One bounce: apply R(f); multi-bounce: cascade product along hit list. Do not put curtain/carpet roles on illegal faces.",
+  "fit": {
+    "success": true,
+    "message": "DE success=False; LS success=True cost=2.952"
+  },
+  "locks": {
+    "live_software": "vendored absorb[7]; the audio path does not use the shelf params",
+    "honesty": "MODELLED (Miki 1990 + Paris; sigma=15 kPa s/m2 ASSUMED) \u2014 not MEASURED",
+    "depth": "absolute per bounce (not per metre)"
+  },
+  "on_rigid_absorb": [
+    0.053773,
+    0.14739,
+    0.325277,
+    0.568174,
+    0.797148,
+    0.911536,
+    0.949199
+  ],
+  "thickness_m": 0.0254,
+  "gap_m": 0.0254,
+  "reaction": "extended",
+  "incidence": "Paris random"
+}

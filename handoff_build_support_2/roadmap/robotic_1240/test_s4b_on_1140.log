@@ -1,0 +1,11 @@
+xx.xxxxxx.                                                               [100%]
+=========================== short test summary info ============================
+XFAIL tests/test_s4b_tail_solo_runaway.py::test_s4b_solo_mute_leave_play_tail_untouched - S4b: Play Solo/Mute still gates the FDN inject and Dffs
+XFAIL tests/test_s4b_tail_solo_runaway.py::test_s4b_solo_mute_leave_render_tail_untouched - S4b: Render Solo/Mute still gates the FDN inject (and its makeup)
+XFAIL tests/test_s4b_tail_solo_runaway.py::test_s4b_render_solo_left_wall_is_left - D11: Render early keeps silenced faces (11:40: Solo A ILD -0.45 dB)
+XFAIL tests/test_s4b_tail_solo_runaway.py::test_s4b_long_decay_no_runaway[hall_2src_decay8-extra0] - Long-decay runaway: float32 peaking biquads lose unity DC gain (DC 1.5 on the X axis in the 57 m hall)
+XFAIL tests/test_s4b_tail_solo_runaway.py::test_s4b_long_decay_no_runaway[hall_binaural_decay4-extra1] - Long-decay runaway: float32 peaking biquads lose unity DC gain (DC 1.5 on the X axis in the 57 m hall)
+XFAIL tests/test_s4b_tail_solo_runaway.py::test_s4b_long_decay_no_runaway[hall_binaural_decay8-extra2] - Long-decay runaway: float32 peaking biquads lose unity DC gain (DC 1.5 on the X axis in the 57 m hall)
+XFAIL tests/test_s4b_tail_solo_runaway.py::test_s4b_play_tail_has_no_line0_comb - S4b: all-+1 output sum funnels the tail through line 0 (comb at 19.3 ms)
+XFAIL tests/test_s4b_tail_solo_runaway.py::test_s4b_render_tail_has_no_line0_comb - S4b: Render sums lines with all +1 weights too (Idle's 13:31 file)
+2 passed, 8 xfailed in 107.02s (0:01:47)

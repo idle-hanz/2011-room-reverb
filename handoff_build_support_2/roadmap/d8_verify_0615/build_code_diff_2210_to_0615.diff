@@ -1,0 +1,3000 @@
+diff -ruN -x __pycache__ -x .pytest_cache -x '*.wasm' -x '*.orig' snapshot_2026-10-01_2210/software/app_server.py snapshot_2026-10-02_0615/software/app_server.py
+--- snapshot_2026-10-01_2210/software/app_server.py	2026-10-02 03:39:20.065353611 +0100
++++ snapshot_2026-10-02_0615/software/app_server.py	2026-10-02 05:11:40.000000000 +0100
+@@ -96,6 +96,13 @@
+     "binaural_image_set": "binaural_rear32",
+     "binaural_itd_mode": "table",
+     "head_yaw_deg": 0.0,
++    # ISO air. Humidity still only gates the shelf; the depth is the climate.
++    "air_climate": "studio_20C_50RH",
++    "air_iso": True,
++    # Source radiation. Omni is the current sound (the stage is not called).
++    "source_radiation": "omni",
++    "source_yaw": 0.0,
++    "source_pitch": 0.0,
+ }
+ 
+ 
+@@ -359,8 +366,14 @@
+         "humidity": _f(body.get("humidity"), 0.0),
+         "air_lp": _f(body.get("air_lp"), 0.0),  # K2 locked: 1-pole kept, default mix 0
+         "air_shelf": _f(body.get("air_shelf"), 1.0),
+-        "air_climate": str(body.get("air_climate") or "studio_20C_50RH"),
+-        "air_iso": _b(body.get("air_iso"), True),
++        "air_climate": str(body.get("air_climate") or DEFAULTS["air_climate"]),
++        "air_iso": _b(body.get("air_iso"), DEFAULTS["air_iso"]),
++        "source_radiation": str(body.get("source_radiation") or DEFAULTS["source_radiation"]),
++        "source_yaw": _f(body.get("source_yaw"), DEFAULTS["source_yaw"]),
++        "source_pitch": _f(body.get("source_pitch"), DEFAULTS["source_pitch"]),
++        "source_radiation_b": str(body.get("source_radiation_b") or body.get("source_radiation") or DEFAULTS["source_radiation"]),
++        "source_yaw_b": body.get("source_yaw_b"),
++        "source_pitch_b": _f(body.get("source_pitch_b"), _f(body.get("source_pitch"), DEFAULTS["source_pitch"])),
+         "diffusion_master": _span(body.get("diffusion_master"), DIFFUSION_MASTER_DEFAULT, DIFFUSION_MASTER_MIN, 0.0),
+         "decay_s": _f(body.get("decay_s"), 0.0),
+         "decay_lock": _b(body.get("decay_lock"), False),
+@@ -686,6 +699,13 @@
+             mic_hpf_engaged=bool(p.get("mic_hpf_engaged")),
+             mic_hpf_sides=p.get("mic_hpf_sides"),
+             mic_hpf_centre=p.get("mic_hpf_centre"),
++            source_radiation=str(p.get("source_radiation") or "omni"),
++            source_yaw=float(p.get("source_yaw") or 0.0),
++            source_pitch=float(p.get("source_pitch") or 0.0),
++            source_radiation_b=p.get("source_radiation_b"),
++            source_yaw_b=p.get("source_yaw_b"),
++            source_pitch_b=p.get("source_pitch_b"),
++            source_size_m=p.get("source_size_m"),
+         )
+         out = default_out_path()
+         meta = write_wav_stereo(str(out), Lch, Rch, sr)
+diff -ruN -x __pycache__ -x .pytest_cache -x '*.wasm' -x '*.orig' snapshot_2026-10-01_2210/software/engine/air_iso.py snapshot_2026-10-02_0615/software/engine/air_iso.py
+--- snapshot_2026-10-01_2210/software/engine/air_iso.py	2026-10-02 03:39:20.069353611 +0100
++++ snapshot_2026-10-02_0615/software/engine/air_iso.py	2026-10-02 06:06:53.000000000 +0100
+@@ -1,12 +1,17 @@
+ """ISO 9613-1 air colour for the engine. FITTED_TO_ISO_9613_1.
+ 
+-The analytic curve is candidate C (dual log-sigmoid high shelf) from
+-``air_fitter/presets``. Realtime Render and Play use two RBJ high shelves
+-(slope 1) with the same corners and dB/m, so both paths share one gain law.
+-Do not import the ``air_fitter`` package (its init pulls SciPy).
+-
+-Humidity still gates the stage and still owns the Structure 1-pole.
+-It does not scale these dB. ``air_shelf`` 0..1 scales the ISO depth.
++The analytic curve is candidate C (dual log-sigmoid high shelf). Presets
++ship in ``engine/presets/air``; ``air_fitter/presets`` is only a fallback.
++Realtime Render and Play use two RBJ high shelves (slope 1) with the same
++corners and dB/m, so both paths share one gain law. Do not import the
++``air_fitter`` package (its init pulls SciPy).
++
++Humidity 0 bypasses the stage. Above 0 the slider sets relative humidity
++at the climate's temperature. The stored preset is used at that preset's
++own RH; other humidities interpolate those shelves, with a numpy refit
++past the shipped range.
++``air_shelf`` 0..1 still scales the ISO depth. The Structure 1-pole stays
++a separate mix and still follows the slider's Wet law.
+ """
+ 
+ from __future__ import annotations
+@@ -17,9 +22,46 @@
+ 
+ import numpy as np
+ 
+-_PRESETS = Path(__file__).resolve().parents[2] / "air_fitter" / "presets"
+ _CACHE: Dict[str, dict] = {}
++_FAMILY: Dict[Tuple[float, float], list] = {}
++_FIT_CACHE: Dict[Tuple[float, float, float], np.ndarray] = {}
+ DEFAULT_CLIMATE = "studio_20C_50RH"
++# Client default. This detent uses the climate preset's stored shelf.
++HUMIDITY_NOMINAL = 0.35
++# Slider ends once air is on. Right of nominal moves toward RH_LOSSY_PCT.
++# VERIFIED 2026-10-02: at 20–22 °C, ISO 9613-1 α from 8–16 kHz rises with RH,
++# so more high-frequency loss is the higher humidity.
++RH_QUIET_PCT = 10.0
++RH_LOSSY_PCT = 90.0
++
++
++def preset_roots() -> List[Path]:
++    """Shipped climates first. The air_fitter pack remains a fallback."""
++    here = Path(__file__).resolve()
++    local = here.parent / "presets" / "air"
++    pack = here.parents[2] / "air_fitter" / "presets"
++    roots: List[Path] = []
++    if (local / f"{DEFAULT_CLIMATE}.json").is_file():
++        roots.append(local)
++    if (pack / f"{DEFAULT_CLIMATE}.json").is_file():
++        roots.append(pack)
++    if not roots:
++        roots.append(local)
++    return roots
++
++
++def preset_file(name: str) -> Path:
++    """JSON for one climate. An unknown id uses the studio preset."""
++    key = str(name or DEFAULT_CLIMATE)
++    for root in preset_roots():
++        path = root / f"{key}.json"
++        if path.is_file():
++            return path
++    for root in preset_roots():
++        path = root / f"{DEFAULT_CLIMATE}.json"
++        if path.is_file():
++            return path
++    return preset_roots()[0] / f"{DEFAULT_CLIMATE}.json"
+ 
+ _REF_T = 293.15
+ _REF_P = 101.325
+@@ -32,9 +74,7 @@
+     hit = _CACHE.get(key)
+     if hit is not None:
+         return hit
+-    path = _PRESETS / f"{key}.json"
+-    if not path.is_file():
+-        path = _PRESETS / f"{DEFAULT_CLIMATE}.json"
++    path = preset_file(key)
+     data = json.loads(path.read_text(encoding="utf-8"))
+     _CACHE[key] = data
+     if key != data.get("id"):
+@@ -83,37 +123,249 @@
+     return 8.686 * (f ** 2) * (classical + (t_ratio ** (-2.5)) * (oxygen + nitrogen))
+ 
+ 
+-def iso_path_loss_db(freqs, distance_m: float, climate: str = DEFAULT_CLIMATE) -> np.ndarray:
+-    """A_db = −α(f)·d for the preset's temperature, RH, and pressure."""
++def iso_path_loss_db(
++    freqs,
++    distance_m: float,
++    climate: str = DEFAULT_CLIMATE,
++    rh_pct: float = None,
++) -> np.ndarray:
++    """A_db = −α(f)·d. Temperature and pressure stay with the climate.
++
++    ``rh_pct`` None uses the preset's own relative humidity.
++    """
+     cond = climate_record(climate)["conditions"]
++    rh = cond["relative_humidity_pct"] if rh_pct is None else float(rh_pct)
+     alpha = _iso_alpha_db_per_m(
+         freqs,
+         cond["temperature_c"],
+-        cond["relative_humidity_pct"],
++        rh,
+         cond.get("pressure_kpa", _REF_P),
+     )
+     return -alpha * float(distance_m)
+ 
+ 
++def rh_pct_from_slider(humidity: float, climate: str = DEFAULT_CLIMATE):
++    """Map the air-amount slider to relative humidity, percent.
++
++    0 and below is off (None). ``HUMIDITY_NOMINAL`` (0.35) is the climate
++    preset's RH, which is today's shelf. Above that, RH moves toward
++    ``RH_LOSSY_PCT`` (more 8–16 kHz loss). Below that, toward ``RH_QUIET_PCT``.
++    """
++    h = float(humidity)
++    if not np.isfinite(h) or h <= 0.0:
++        return None
++    if h > 1.0:
++        h = 1.0
++    preset = float(climate_record(climate)["conditions"]["relative_humidity_pct"])
++    if h <= HUMIDITY_NOMINAL:
++        t = h / HUMIDITY_NOMINAL
++        return RH_QUIET_PCT + t * (preset - RH_QUIET_PCT)
++    t = (h - HUMIDITY_NOMINAL) / (1.0 - HUMIDITY_NOMINAL)
++    return preset + t * (RH_LOSSY_PCT - preset)
++
++
++def _params_of(rec: dict) -> np.ndarray:
++    p = rec["params"]
++    return np.array(
++        [float(p["f0"]), float(p["depth_db_per_m"]), float(p["f0_hi"]), float(p["depth_hi_db_per_m"])],
++        dtype=float,
++    )
++
++
++def _index_presets() -> list:
++    for root in preset_roots():
++        path = root / "index.json"
++        if path.is_file():
++            data = json.loads(path.read_text(encoding="utf-8"))
++            return list(data.get("presets") or [])
++    return []
++
++
++def _fit_freqs() -> np.ndarray:
++    return np.geomspace(100.0, 16000.0, 200)
++
++
++def _pair_db(freqs, sr: float, dist: float, params: np.ndarray) -> np.ndarray:
++    """Realised dual RBJ (slope 1) in dB, the same shelves Play and Render run."""
++    import early_field as ef
++
++    f0, dep, f0h, deph = (float(x) for x in params)
++    out = np.zeros(len(freqs), dtype=float)
++    for corner, depth in ((f0, dep * dist), (f0h, deph * dist)):
++        if abs(depth) < 1e-12:
++            continue
++        b0, b1, b2, a0, a1, a2 = ef.rbj_highshelf(sr, corner, depth, 1.0)
++        z = np.exp(-2j * np.pi * freqs / sr)
++        h = (b0 + b1 * z + b2 * z * z) / (a0 + a1 * z + a2 * z * z)
++        out += 20.0 * np.log10(np.maximum(np.abs(h), 1e-20))
++    return out
++
++
++def _fit_score(params, temperature_c: float, rh_pct: float, pressure_kpa: float) -> float:
++    f0, dep, f0h, deph = (float(x) for x in params)
++    if f0 < 40.0 or f0h < f0 * 1.05 or f0h > 0.45 * 48000.0:
++        return 1e6
++    if dep > 0.0 or deph > 0.0 or dep < -1.0 or deph < -1.0:
++        return 1e6
++    freqs = _fit_freqs()
++    err = _pair_db(freqs, 48000.0, 30.0, np.asarray(params, dtype=float)) - (
++        -_iso_alpha_db_per_m(freqs, temperature_c, rh_pct, pressure_kpa) * 30.0
++    )
++    mx = float(np.max(np.abs(err)))
++    rmse = float(np.sqrt(np.mean(err ** 2)))
++    return mx + 0.25 * rmse
++
++
++def _nelder_mead(func, x0: np.ndarray, steps: np.ndarray, niter: int = 80) -> Tuple[np.ndarray, float]:
++    n = len(x0)
++    simplex = [np.array(x0, dtype=float)]
++    for i in range(n):
++        y = np.array(x0, dtype=float)
++        y[i] += float(steps[i])
++        simplex.append(y)
++    vals = [func(x) for x in simplex]
++    for _ in range(niter):
++        order = list(np.argsort(vals))
++        simplex = [simplex[i] for i in order]
++        vals = [vals[i] for i in order]
++        centroid = np.mean(simplex[:-1], axis=0)
++        worst = simplex[-1]
++        reflected = centroid + (centroid - worst)
++        fr = func(reflected)
++        if vals[0] <= fr < vals[-2]:
++            simplex[-1], vals[-1] = reflected, fr
++            continue
++        if fr < vals[0]:
++            expanded = centroid + 2.0 * (centroid - worst)
++            fe = func(expanded)
++            if fe < fr:
++                simplex[-1], vals[-1] = expanded, fe
++            else:
++                simplex[-1], vals[-1] = reflected, fr
++            continue
++        contracted = centroid + 0.5 * (worst - centroid)
++        fc = func(contracted)
++        if fc < vals[-1]:
++            simplex[-1], vals[-1] = contracted, fc
++            continue
++        for i in range(1, n + 1):
++            simplex[i] = simplex[0] + 0.5 * (simplex[i] - simplex[0])
++            vals[i] = func(simplex[i])
++    best = int(np.argmin(vals))
++    return simplex[best], float(vals[best])
++
++
++def _fit_shelf_params(
++    temperature_c: float, rh_pct: float, pressure_kpa: float, seed: np.ndarray,
++) -> np.ndarray:
++    """Two slope-1 RBJ shelves for one (T, RH, P). Cached. Numpy only."""
++    key = (round(float(temperature_c), 3), round(float(pressure_kpa), 3), round(float(rh_pct), 3))
++    hit = _FIT_CACHE.get(key)
++    if hit is not None:
++        return hit.copy()
++    steps = np.array([200.0, 0.002, 500.0, 0.01], dtype=float)
++    params, score = _nelder_mead(
++        lambda x: _fit_score(x, key[0], key[2], key[1]),
++        np.asarray(seed, dtype=float),
++        steps,
++    )
++    if score > 1.0:
++        params = np.asarray(seed, dtype=float)
++    params = np.asarray(params, dtype=float).copy()
++    _FIT_CACHE[key] = params
++    return params.copy()
++
++
++def _interp_knots(rh: float, knots: list) -> np.ndarray:
++    if rh <= knots[0][0]:
++        return knots[0][1].copy()
++    if rh >= knots[-1][0]:
++        return knots[-1][1].copy()
++    for i in range(len(knots) - 1):
++        a, pa = knots[i]
++        b, pb = knots[i + 1]
++        if rh > b:
++            continue
++        if abs(rh - a) <= 0.02:
++            return pa.copy()
++        span = float(b - a)
++        t = 0.0 if span <= 0.0 else (rh - a) / span
++        f0 = float(np.exp(np.log(pa[0]) * (1.0 - t) + np.log(pb[0]) * t))
++        f0h = float(np.exp(np.log(max(pa[2], 1.0)) * (1.0 - t) + np.log(max(pb[2], 1.0)) * t))
++        dep = float(pa[1] * (1.0 - t) + pb[1] * t)
++        deph = float(pa[3] * (1.0 - t) + pb[3] * t)
++        return np.array([f0, dep, f0h, deph], dtype=float)
++    return knots[-1][1].copy()
++
++
++def _family_knots(temperature_c: float, pressure_kpa: float, fallback: dict) -> list:
++    """Shipped same-climate shelves, plus fitted ends at the slider's RH limits."""
++    key = (round(float(temperature_c), 3), round(float(pressure_kpa), 3))
++    hit = _FAMILY.get(key)
++    if hit is not None:
++        return hit
++    knots = []
++    for item in _index_presets():
++        cond = item.get("conditions") or {}
++        t = float(cond.get("temperature_c", 1e9))
++        p = float(cond.get("pressure_kpa", _REF_P))
++        if abs(t - key[0]) > 0.05 or abs(p - key[1]) > 0.05:
++            continue
++        rec = climate_record(str(item.get("id") or DEFAULT_CLIMATE))
++        knots.append((float(rec["conditions"]["relative_humidity_pct"]), _params_of(rec)))
++    if not knots:
++        knots.append((float(fallback["conditions"]["relative_humidity_pct"]), _params_of(fallback)))
++    for rh_end in (RH_QUIET_PCT, RH_LOSSY_PCT):
++        if any(abs(k_rh - rh_end) < 0.05 for k_rh, _k_p in knots):
++            continue
++        seed = min(knots, key=lambda k: abs(k[0] - rh_end))[1]
++        fitted = _fit_shelf_params(key[0], rh_end, key[1], seed)
++        knots.append((float(rh_end), fitted))
++    knots.sort(key=lambda k: k[0])
++    _FAMILY[key] = knots
++    return knots
++
++
++def shelf_params_for_rh(climate: str = DEFAULT_CLIMATE, rh_pct: float = None) -> np.ndarray:
++    """(f0, depth dB/m, f0_hi, depth_hi dB/m). None keeps the stored preset."""
++    rec = climate_record(climate)
++    stored = _params_of(rec)
++    if rh_pct is None:
++        return stored
++    rh = float(rh_pct)
++    cond = rec["conditions"]
++    knots = _family_knots(
++        float(cond["temperature_c"]),
++        float(cond.get("pressure_kpa", _REF_P)),
++        rec,
++    )
++    for k_rh, params in knots:
++        if abs(k_rh - rh) <= 0.02:
++            return params.copy()
++    return _interp_knots(rh, knots)
++
++
+ def shelf_specs(
+     distance_m: float,
+     mix: float,
+     climate: str = DEFAULT_CLIMATE,
+     sr: float = 48000.0,
++    rh_pct: float = None,
+ ) -> List[Tuple[float, float]]:
+     """(f0 Hz, gain dB) for the two realtime RBJ shelves. Empty when the shelf is off.
+ 
+-    Gain is depth_db_per_m × distance × mix. Mix is the air-shelf fader, not humidity.
+-    Corners clamp to 0.45·sr. Gain clamps at −24 dB.
++    Gain is depth_db_per_m × distance × mix. Mix is the air-shelf fader.
++    ``rh_pct`` None uses the stored climate shelf. Corners clamp to 0.45·sr.
++    Gain clamps at −24 dB.
+     """
+     if float(distance_m) <= 0.0 or float(mix) <= 0.0 or float(sr) < 1.0:
+         return []
+-    p = climate_record(climate)["params"]
++    f0, dep, f0h, deph = shelf_params_for_rh(climate, rh_pct)
+     cap_hz = 0.45 * float(sr)
+     depth = float(distance_m) * float(mix)
+     out: List[Tuple[float, float]] = []
+-    for f_key, d_key in (("f0", "depth_db_per_m"), ("f0_hi", "depth_hi_db_per_m")):
+-        f0 = min(max(float(p[f_key]), 20.0), cap_hz)
+-        gain = max(float(p[d_key]) * depth, -24.0)
+-        out.append((f0, gain))
++    for f_hz, d_per_m in ((f0, dep), (f0h, deph)):
++        corner = min(max(float(f_hz), 20.0), cap_hz)
++        gain = max(float(d_per_m) * depth, -24.0)
++        out.append((corner, gain))
+     return out
+diff -ruN -x __pycache__ -x .pytest_cache -x '*.wasm' -x '*.orig' snapshot_2026-10-01_2210/software/engine/early_field.py snapshot_2026-10-02_0615/software/engine/early_field.py
+--- snapshot_2026-10-01_2210/software/engine/early_field.py	2026-10-02 03:39:20.073353611 +0100
++++ snapshot_2026-10-02_0615/software/engine/early_field.py	2026-10-02 06:03:52.000000000 +0100
+@@ -2061,15 +2061,22 @@
+     sr: int,
+     mix: float,
+     climate: str = "studio_20C_50RH",
++    humidity: float = None,
+ ):
+     """Two RBJ high shelves for the ISO dual-shelf. (None, None) when off.
+ 
+     Slope is 1. The log-sigmoid slope in the preset is the analytic fit only.
++    humidity None keeps the climate preset. Above 0, the slider sets RH.
+     """
+     if float(mix) <= 0.0 or float(distance) <= 0.0:
+         return None, None
+     import air_iso
+-    specs = air_iso.shelf_specs(distance, mix, climate, sr)
++    rh = None
++    if humidity is not None:
++        rh = air_iso.rh_pct_from_slider(humidity, climate)
++        if rh is None:
++            return None, None
++    specs = air_iso.shelf_specs(distance, mix, climate, sr, rh)
+     out = []
+     for f0, gain_db in specs:
+         if abs(float(gain_db)) < 1e-12:
+@@ -2093,9 +2100,10 @@
+ ) -> "np.ndarray":
+     """Air absorption: Structure 1-pole, then the ISO dual high-shelf.
+ 
+-    humidity ≤ 0 bypasses both stages. air_lp is the 1-pole dry/wet mix.
+-    air_shelf scales the ISO dB. air_iso False leaves the shelf off.
+-    Humidity does not scale the ISO curve (the climate already has RH).
++    humidity ≤ 0 bypasses both stages (the buffer is returned unchanged).
++    air_lp is the 1-pole dry/wet mix. air_shelf scales the ISO dB.
++    air_iso False leaves the shelf off. Above 0, humidity sets the climate's
++    relative humidity for the ISO shelf. Temperature stays on the preset.
+     """
+     if humidity <= 0.0:
+         return buf
+@@ -2107,7 +2115,7 @@
+             filt = one_pole_lp_process(np.copy(buf), fc, sr)
+             buf = (1.0 - lp) * buf + lp * filt
+     if sh > 0.0 and air_iso:
+-        low, high = iso_shelf_pair(distance, sr, sh, air_climate)
++        low, high = iso_shelf_pair(distance, sr, sh, air_climate, humidity)
+         if low is not None:
+             buf = biquad_process(buf, low)
+         if high is not None:
+diff -ruN -x __pycache__ -x .pytest_cache -x '*.wasm' -x '*.orig' snapshot_2026-10-01_2210/software/engine/live_stereo.c snapshot_2026-10-02_0615/software/engine/live_stereo.c
+--- snapshot_2026-10-01_2210/software/engine/live_stereo.c	2026-10-02 03:39:20.073353611 +0100
++++ snapshot_2026-10-02_0615/software/engine/live_stereo.c	2026-10-02 05:17:29.000000000 +0100
+@@ -35,7 +35,11 @@
+  *   1 CORE = the v1 body without the magic, plus 8 reserved floats.
+  *     Those reserves are not applied (order stays 32, one-sample feedback, unity).
+  *   2 AIR = second shelf, 1152 floats, or length 0 (bypass).
+- *   3 SURF, 4 SCATTER, 5 SRC_RAD length 0 until a later phase.
++ *   3 SURF, 4 SCATTER length 0 until a later phase.
++ *   5 SRC_RAD length 0 (omni, the current sound) or 716 floats:
++ *     rad_on_A, rad_on_B, then per source the diffuse shelf (7),
++ *     direct L/C/R (3×10) and 32 image filters (32×10).
++ *     Filters run on the write, before tint. The tail uses the diffuse shelf.
+  * Route (int), in order: fdn[3][32], early L/R [2][32], early B L/R [2][32],
+  * direct[3], direct B[3], fdn B[3][32]. -1 is a wire. < -1 is silent.
+  */
+@@ -55,6 +59,14 @@
+ 
+ typedef struct LiveStereo LiveStereo;
+ 
++/* One source filter: gain, RBJ high shelf (TDF-II), optional soft one-pole. */
++typedef struct SrcFilt {
++    int on;
++    int order;
++    double g, b0, b1, b2, a1, a2, pg, pm;
++    double z1, z2, pz, pz2;
++} SrcFilt;
++
+ enum {
+     N = 32,
+     PART = 128,
+@@ -202,6 +214,16 @@
+     float icHistM[512];
+     float icHistS[512];
+     float icBuf[1026];
++    /* Source radiation. Off (radA = radB = 0) is the omni path. */
++    int radA, radB;
++    SrcFilt srcImg[2][N];
++    SrcFilt srcDir[2][3];
++    SrcFilt srcDiff[2];
++    double srcSmp[N];
++    double srcSmpB[N];
++    double diffSmp, diffSmpB;
++    double dirSmp[3];
++    double dirSmpB[3];
+ };
+ 
+ static LS_ALIGN16 float g_wre[FFTN];
+@@ -796,6 +818,75 @@
+     }
+ }
+ 
++static double src_step(SrcFilt *f, double x) {
++    double v, o, lp;
++    if (!f->on) return x;
++    v = f->g * x;
++    o = f->b0 * v + f->z1;
++    f->z1 = f->b1 * v - f->a1 * o + f->z2;
++    f->z2 = f->b2 * v - f->a2 * o;
++    if (f->pg > 0.0) {
++        f->pz += f->pg * (o - f->pz);
++        lp = f->pz;
++        if (f->order >= 2) {
++            f->pz2 += f->pg * (f->pz - f->pz2);
++            lp = f->pz2;
++        }
++        o = (1.0 - f->pm) * o + f->pm * lp;
++    }
++    if (!finite_d(o) || !finite_d(f->z1) || !finite_d(f->z2)) {
++        f->z1 = f->z2 = f->pz = f->pz2 = 0.0;
++        f->on = 0;
++        return x;
++    }
++    f->z1 = ls_flush(f->z1);
++    f->z2 = ls_flush(f->z2);
++    f->pz = ls_flush(f->pz);
++    f->pz2 = ls_flush(f->pz2);
++    return o;
++}
++
++static void load_src_filt(Rd *r, SrcFilt *f, int with_pole) {
++    f->g = rf(r);
++    f->b0 = rf(r);
++    f->b1 = rf(r);
++    f->b2 = rf(r);
++    f->a1 = rf(r);
++    f->a2 = rf(r);
++    if (with_pole) {
++        f->pg = rf(r);
++        f->pm = rf(r);
++        f->order = (int)rf(r);
++        f->on = rf(r) > 0.5;
++    } else {
++        f->pg = 0.0;
++        f->pm = 0.0;
++        f->order = 1;
++        f->on = rf(r) > 0.5;
++    }
++    if (!finite_d(f->g) || !finite_d(f->b0) || !finite_d(f->a1)) f->on = 0;
++    if (f->order < 1) f->order = 1;
++    if (f->order > 2) f->order = 2;
++}
++
++/* SRC_RAD: 2 flags + 2 × (diffuse 7 + direct 30 + image 320) = 716. Else bypass. */
++static void load_src_section(LiveStereo *st, int off, int n) {
++    Rd r;
++    int s, i;
++    if (n != 716) return;
++    if (off < 0 || off + n > MAX_BLOB) return;
++    r.p = st->blob;
++    r.i = off;
++    r.n = off + n;
++    st->radA = rf(&r) > 0.5;
++    st->radB = rf(&r) > 0.5;
++    for (s = 0; s < 2; s++) {
++        load_src_filt(&r, &st->srcDiff[s], 0);
++        for (i = 0; i < 3; i++) load_src_filt(&r, &st->srcDir[s][i], 1);
++        for (i = 0; i < N; i++) load_src_filt(&r, &st->srcImg[s][i], 1);
++    }
++}
++
+ /* AIR section: 3 buses × (32 A + 32 B) × 6 floats. Any other length is a bypass. */
+ static void load_sh2_section(LiveStereo *st, int off, int n) {
+     Rd r;
+@@ -820,6 +911,8 @@
+     magic = (int)rf(&r);
+     if (magic == 1) {
+         clear_sh2_on(st);
++        st->radA = 0;
++        st->radB = 0;
+         load_core_body(st, &r);
+         st->icOn = 0;
+         return;
+@@ -842,6 +935,8 @@
+     }
+     if (core < 0) return;
+     clear_sh2_on(st);
++    st->radA = 0;
++    st->radB = 0;
+     r.p = st->blob;
+     r.i = off[core];
+     r.n = off[core] + ln[core];
+@@ -851,6 +946,11 @@
+         if (ln[s] < 1 || off[s] < 0 || off[s] + ln[s] > n) continue;
+         load_sh2_section(st, off[s], ln[s]);
+     }
++    for (s = 0; s < nsec; s++) {
++        if (id[s] != 5) continue;
++        if (ln[s] < 1 || off[s] < 0 || off[s] + ln[s] > n) continue;
++        load_src_section(st, off[s], ln[s]);
++    }
+     st->icOn = 0;
+ }
+ 
+@@ -1215,13 +1315,19 @@
+     }
+     bus->dirD += SMOOTH * (bus->dirDT - bus->dirD);
+     dA = read_lin(st->dir[b], bus->dirW, bus->dirD, cap);
+-    /* One source stores the raw downmix. Two sources scale by that source's spike. */
+-    st->dir[b][bus->dirW] = (float)(two ? xA * bus->dirGain : x);
++    /* One source stores the raw downmix. Two sources scale by that source's spike.
++     * Radiation, when on, filters that write. Off keeps the old expression. */
++    if (st->radA || (two && st->radB)) {
++        if (two) st->dir[b][bus->dirW] = (float)((st->radA ? st->dirSmp[b] : xA) * bus->dirGain);
++        else st->dir[b][bus->dirW] = (float)(st->radA ? st->dirSmp[b] : x);
++    } else {
++        st->dir[b][bus->dirW] = (float)(two ? xA * bus->dirGain : x);
++    }
+     adv(&bus->dirW, cap);
+     if (two) {
+         bus->dirDB += SMOOTH * (bus->dirDBT - bus->dirDB);
+         dB = read_lin(st->dirB[b], bus->dirWB, bus->dirDB, cap);
+-        st->dirB[b][bus->dirWB] = (float)(xB * bus->dirGainB);
++        st->dirB[b][bus->dirWB] = (float)((st->radB ? st->dirSmpB[b] : xB) * bus->dirGainB);
+         adv(&bus->dirWB, cap);
+     }
+     st->daBlk[b][t] = dA;
+@@ -1242,14 +1348,27 @@
+         }
+         for (i = 0; i < N; i++) {
+             Line *line = &bus->line[i];
+-            /* Kind 0 is the FDN inject as well. Tint it once, and keep the lane current. */
+-            double xin = tint(line, x * line->inj, 0);
+-            if (runEarly) {
+-                double ev = read_lane(st->ring[b][i], LANE_EARLY, line->w, line->delay, cap);
+-                st->eaBlk[b][i][t] = ev;
+-                early += ev;
++            double xin;
++            /* Kind 0 is the FDN inject as well. Tint it once, and keep the lane current.
++             * Radiation splits that: the image filter feeds Early, the diffuse filter feeds the FDN. */
++            if (st->radA) {
++                double earlyIn = tint(line, st->srcSmp[i] * line->inj, 1);
++                xin = tint(line, st->diffSmp * line->inj, 0);
++                if (runEarly) {
++                    double ev = read_lane(st->ring[b][i], LANE_EARLY, line->w, line->delay, cap);
++                    st->eaBlk[b][i][t] = ev;
++                    early += ev;
++                }
++                write_lane(st->ring[b][i], line->w, LANE_EARLY, (float)earlyIn);
++            } else {
++                xin = tint(line, x * line->inj, 0);
++                if (runEarly) {
++                    double ev = read_lane(st->ring[b][i], LANE_EARLY, line->w, line->delay, cap);
++                    st->eaBlk[b][i][t] = ev;
++                    early += ev;
++                }
++                write_lane(st->ring[b][i], line->w, LANE_EARLY, (float)xin);
+             }
+-            write_lane(st->ring[b][i], line->w, LANE_EARLY, (float)xin);
+             if (mix1) st->xinArr[i] = xin + LS_DC;
+             else if (runFdn) {
+                 double gi = line->dffs;
+@@ -1274,8 +1393,8 @@
+     for (i = 0; i < N; i++) {
+         Line *line = &bus->line[i];
+         /* Kinds 1 and 2 stay running while Early is down. Kinds 0 and 3 stay with the FDN. */
+-        double eA = tint(line, xA * line->inj, 1);
+-        double eB = tint(line, xB * line->injB, 2);
++        double eA = tint(line, (st->radA ? st->srcSmp[i] : xA) * line->inj, 1);
++        double eB = tint(line, (st->radB ? st->srcSmpB[i] : xB) * line->injB, 2);
+         if (runEarly) {
+             double ev = read_lane(st->ring[b][i], LANE_EARLY, line->w, line->delay, cap);
+             double evB = read_lane(st->ring[b][i], LANE_EARLYB, line->w, line->delayB, cap);
+@@ -1293,7 +1412,8 @@
+             Line *line = &bus->line[i];
+             st->delayed[i] = read_peaked(st, line, st->ring[b][i], LANE_FDN, i, 0, line->delay);
+             st->reads[i] = st->delayed[i];
+-            st->xinArr[i] = tint(line, 0.5 * xA * line->inj, 0) + LS_DC;
++            if (st->radA) st->xinArr[i] = tint(line, 0.5 * st->diffSmp * line->inj, 0) + LS_DC;
++            else st->xinArr[i] = tint(line, 0.5 * xA * line->inj, 0) + LS_DC;
+         }
+         if (mixA) diffuse(st, b, 0, st->xinArr, bus->fb, st->yA);
+         else {
+@@ -1311,7 +1431,8 @@
+             Line *line = &bus->line[i];
+             st->delayed[i] = read_peaked(st, line, st->ring[b][i], LANE_FDNB, i, 1, line->delayB);
+             st->reads[i] = st->delayed[i];
+-            st->xinArr[i] = tint(line, 0.5 * xB * line->injB, 3) + LS_DC;
++            if (st->radB) st->xinArr[i] = tint(line, 0.5 * st->diffSmpB * line->injB, 3) + LS_DC;
++            else st->xinArr[i] = tint(line, 0.5 * xB * line->injB, 3) + LS_DC;
+         }
+         if (mixB) {
+             diffuse(st, b, 1, st->xinArr, bus->fbB, st->yB);
+@@ -1796,6 +1917,20 @@
+             xB = 0;
+             x = 0.5 * (xL + xR);
+         }
++        if (st->radA || st->radB) {
++            double xin = split ? xA : x;
++            double yin = split ? xB : x;
++            for (i = 0; i < N; i++) {
++                st->srcSmp[i] = st->radA ? src_step(&st->srcImg[0][i], xin) : xin;
++                st->srcSmpB[i] = st->radB ? src_step(&st->srcImg[1][i], yin) : yin;
++            }
++            st->diffSmp = st->radA ? src_step(&st->srcDiff[0], xin) : xin;
++            st->diffSmpB = st->radB ? src_step(&st->srcDiff[1], yin) : yin;
++            for (b = 0; b < 3; b++) {
++                st->dirSmp[b] = st->radA ? src_step(&st->srcDir[0][b], xin) : xin;
++                st->dirSmpB[b] = st->radB ? src_step(&st->srcDir[1][b], yin) : yin;
++            }
++        }
+         for (b = 0; b < 3; b++) bus_sample(st, b, x, xA, xB, split, t);
+         if (st->colour_on && st->mono) dry = st->dry_gain * xL;
+         else if (st->two) dry = st->dry_gain * 0.5 * (st->gain_a * xL + st->gain_b * xR);
+diff -ruN -x __pycache__ -x .pytest_cache -x '*.wasm' -x '*.orig' snapshot_2026-10-01_2210/software/engine/presets/air/README.md snapshot_2026-10-02_0615/software/engine/presets/air/README.md
+--- snapshot_2026-10-01_2210/software/engine/presets/air/README.md	1970-01-01 01:00:00.000000000 +0100
++++ snapshot_2026-10-02_0615/software/engine/presets/air/README.md	2026-10-02 06:03:52.000000000 +0100
+@@ -0,0 +1,10 @@
++# Air climate presets
++
++Vendored from `air_fitter/presets/` so Play and Render can load a climate when that pack is not next to `software/`. `engine/air_iso.py` reads this folder first and falls back to the pack.
++
++**Honesty:** FITTED_TO_ISO_9613_1 (not measured IRs).
++
++ISO 9613-1:1993 α(f) in dB/m (python-acoustics equations):
++saturation vapour pressure → molar h → frO / frN → attenuation_coefficient.
++
++The equations in `air_iso.py` follow python-acoustics `acoustics.standards.iso_9613_1_1993` (BSD-3-Clause, Copyright (c) 2013, Python Acoustics). These JSON files are fitted shelf parameters, not the standard's tables. Geometric 1/r² stays. Humidity 0 leaves the shelf off. Above 0 the slider sets relative humidity at this preset's temperature, and the dual shelf is interpolated from these fits (the slider default 0.35 uses the stored preset as-is).
+diff -ruN -x __pycache__ -x .pytest_cache -x '*.wasm' -x '*.orig' snapshot_2026-10-01_2210/software/engine/presets/air/dry_20C_20RH.json snapshot_2026-10-02_0615/software/engine/presets/air/dry_20C_20RH.json
+--- snapshot_2026-10-01_2210/software/engine/presets/air/dry_20C_20RH.json	1970-01-01 01:00:00.000000000 +0100
++++ snapshot_2026-10-02_0615/software/engine/presets/air/dry_20C_20RH.json	2026-09-23 17:02:40.000000000 +0100
+@@ -0,0 +1,71 @@
++{
++  "schema": "air_fitter.preset.v1",
++  "id": "dry_20C_20RH",
++  "honesty": "FITTED_TO_ISO_9613_1",
++  "conditions": {
++    "temperature_c": 20.0,
++    "relative_humidity_pct": 20.0,
++    "pressure_kpa": 101.325
++  },
++  "model": "dual_high_shelf",
++  "candidate": "C",
++  "params": {
++    "f0": 7999.999999655233,
++    "depth_db_per_m": -0.00731179164937025,
++    "shelf_slope": 0.7255599034851314,
++    "f0_hi": 15999.999999999998,
++    "depth_hi_db_per_m": -0.07453046939096905,
++    "shelf_slope_hi": 6.943995090816494
++  },
++  "usage": "A_db(f,d) = d * H1(f); apply as magnitude 10^(A_db/20) once per path (early) or inject distance (FDN). Do not put on feedback return. Do not replace geometric 1/r^2.",
++  "rmse": {
++    "joint_db": 0.009656719280139165,
++    "per_distance_db": {
++      "5m": 0.0018343778674963476,
++      "10m": 0.0036687557349926953,
++      "20m": 0.007337511469985391,
++      "40m": 0.014675022939970781
++    },
++    "flat_naive_db": 0.2176375817086758,
++    "assumed_shelf": {
++      "humidity_0.5_joint_db": 0.33953078599738057,
++      "humidity_1.0_joint_db": 0.9189325585641783,
++      "note": "ASSUMED engine: gain = -0.15 * d * humidity, high-shelf corner ~0.35*Nyquist @ 44.1 kHz (\u22487718 Hz). Not fitted \u2014 compare only."
++    },
++    "all_candidates_joint_db": {
++      "A": 0.042797765763374386,
++      "B": 0.021659613176677125,
++      "C": 0.009656719280139165
++    }
++  },
++  "freq_range_hz": [
++    20.0,
++    16000.0
++  ],
++  "distances_m": [
++    5.0,
++    10.0,
++    20.0,
++    40.0
++  ],
++  "locks": {
++    "geometric_1_over_r2": "stays \u2014 this only replaces ASSUMED high-shelf colour",
++    "structure_1pole_wet_dis": "separate musical control \u2014 not replaced",
++    "placement": "once on early + FDN inject; not Direct; not feedback",
++    "live_software": "do not import into live software/ engine in this pack"
++  },
++  "fit": {
++    "success": true,
++    "message": "winner=C (dual_high_shelf); DE success=False nit=80 fun=9.35775e-05; LS success=True cost=0.0179044"
++  },
++  "alpha_check": {
++    "125Hz": 0.0018616051552503953,
++    "250Hz": 0.0019743043900319504,
++    "500Hz": 0.0020325530435141735,
++    "1000Hz": 0.002159623946212278,
++    "2000Hz": 0.0026409006892883394,
++    "4000Hz": 0.004559222410049129,
++    "8000Hz": 0.012230810873717994,
++    "16000Hz": 0.04291673999172828
++  }
++}
+\ No newline at end of file
+diff -ruN -x __pycache__ -x .pytest_cache -x '*.wasm' -x '*.orig' snapshot_2026-10-01_2210/software/engine/presets/air/humid_20C_80RH.json snapshot_2026-10-02_0615/software/engine/presets/air/humid_20C_80RH.json
+--- snapshot_2026-10-01_2210/software/engine/presets/air/humid_20C_80RH.json	1970-01-01 01:00:00.000000000 +0100
++++ snapshot_2026-10-02_0615/software/engine/presets/air/humid_20C_80RH.json	2026-09-23 17:02:42.000000000 +0100
+@@ -0,0 +1,71 @@
++{
++  "schema": "air_fitter.preset.v1",
++  "id": "humid_20C_80RH",
++  "honesty": "FITTED_TO_ISO_9613_1",
++  "conditions": {
++    "temperature_c": 20.0,
++    "relative_humidity_pct": 80.0,
++    "pressure_kpa": 101.325
++  },
++  "model": "dual_high_shelf",
++  "candidate": "C",
++  "params": {
++    "f0": 500.0000000000019,
++    "depth_db_per_m": -0.00912276299802007,
++    "shelf_slope": 1.3699487604857439,
++    "f0_hi": 15999.999999999998,
++    "depth_hi_db_per_m": -0.07343110569022904,
++    "shelf_slope_hi": 7.34625271358996
++  },
++  "usage": "A_db(f,d) = d * H1(f); apply as magnitude 10^(A_db/20) once per path (early) or inject distance (FDN). Do not put on feedback return. Do not replace geometric 1/r^2.",
++  "rmse": {
++    "joint_db": 0.014184033741276232,
++    "per_distance_db": {
++      "5m": 0.002969710563920289,
++      "10m": 0.005939421127840578,
++      "20m": 0.011878842255681156,
++      "40m": 0.02375768451136231
++    },
++    "flat_naive_db": 0.2312593852330984,
++    "assumed_shelf": {
++      "humidity_0.5_joint_db": 0.3120266425836008,
++      "humidity_1.0_joint_db": 0.8850530851484663,
++      "note": "ASSUMED engine: gain = -0.15 * d * humidity, high-shelf corner ~0.35*Nyquist @ 44.1 kHz (\u22487718 Hz). Not fitted \u2014 compare only."
++    },
++    "all_candidates_joint_db": {
++      "A": 0.08066760416790968,
++      "B": 0.02861486785800371,
++      "C": 0.014184033741276232
++    }
++  },
++  "freq_range_hz": [
++    20.0,
++    16000.0
++  ],
++  "distances_m": [
++    5.0,
++    10.0,
++    20.0,
++    40.0
++  ],
++  "locks": {
++    "geometric_1_over_r2": "stays \u2014 this only replaces ASSUMED high-shelf colour",
++    "structure_1pole_wet_dis": "separate musical control \u2014 not replaced",
++    "placement": "once on early + FDN inject; not Direct; not feedback",
++    "live_software": "do not import into live software/ engine in this pack"
++  },
++  "fit": {
++    "success": true,
++    "message": "winner=C (dual_high_shelf); DE success=False nit=80 fun=0.000206475; LS success=True cost=0.0386279"
++  },
++  "alpha_check": {
++    "125Hz": 0.003346282757113446,
++    "250Hz": 0.0045452439686169055,
++    "500Hz": 0.005025399697447382,
++    "1000Hz": 0.005272585553074325,
++    "2000Hz": 0.005784933921553152,
++    "4000Hz": 0.0077110910108605605,
++    "8000Hz": 0.01538464256996157,
++    "16000Hz": 0.04607106272824263
++  }
++}
+\ No newline at end of file
+diff -ruN -x __pycache__ -x .pytest_cache -x '*.wasm' -x '*.orig' snapshot_2026-10-01_2210/software/engine/presets/air/index.json snapshot_2026-10-02_0615/software/engine/presets/air/index.json
+--- snapshot_2026-10-01_2210/software/engine/presets/air/index.json	1970-01-01 01:00:00.000000000 +0100
++++ snapshot_2026-10-02_0615/software/engine/presets/air/index.json	2026-09-23 17:02:46.000000000 +0100
+@@ -0,0 +1,63 @@
++{
++  "schema": "air_fitter.preset_index.v1",
++  "preset_schema": "air_fitter.preset.v1",
++  "presets": [
++    {
++      "id": "studio_20C_50RH",
++      "label": "Studio 20 \u00b0C / 50 % RH (PRIMARY)",
++      "honesty": "FITTED_TO_ISO_9613_1",
++      "model": "dual_high_shelf",
++      "candidate": "C",
++      "file": "studio_20C_50RH.json",
++      "joint_rmse_db": 0.01120658692869966,
++      "conditions": {
++        "temperature_c": 20.0,
++        "relative_humidity_pct": 50.0,
++        "pressure_kpa": 101.325
++      }
++    },
++    {
++      "id": "dry_20C_20RH",
++      "label": "Dry 20 \u00b0C / 20 % RH",
++      "honesty": "FITTED_TO_ISO_9613_1",
++      "model": "dual_high_shelf",
++      "candidate": "C",
++      "file": "dry_20C_20RH.json",
++      "joint_rmse_db": 0.009656719280139165,
++      "conditions": {
++        "temperature_c": 20.0,
++        "relative_humidity_pct": 20.0,
++        "pressure_kpa": 101.325
++      }
++    },
++    {
++      "id": "humid_20C_80RH",
++      "label": "Humid 20 \u00b0C / 80 % RH",
++      "honesty": "FITTED_TO_ISO_9613_1",
++      "model": "dual_high_shelf",
++      "candidate": "C",
++      "file": "humid_20C_80RH.json",
++      "joint_rmse_db": 0.014184033741276232,
++      "conditions": {
++        "temperature_c": 20.0,
++        "relative_humidity_pct": 80.0,
++        "pressure_kpa": 101.325
++      }
++    },
++    {
++      "id": "warm_22C_40RH",
++      "label": "Warm 22 \u00b0C / 40 % RH",
++      "honesty": "FITTED_TO_ISO_9613_1",
++      "model": "dual_high_shelf",
++      "candidate": "C",
++      "file": "warm_22C_40RH.json",
++      "joint_rmse_db": 0.011036253822536408,
++      "conditions": {
++        "temperature_c": 22.0,
++        "relative_humidity_pct": 40.0,
++        "pressure_kpa": 101.325
++      }
++    }
++  ],
++  "note": "Geometric 1/r^2 stays. Structure 1-pole Wet/Dis separate. Apply once on early + FDN inject \u2014 not Direct, not feedback."
++}
+\ No newline at end of file
+diff -ruN -x __pycache__ -x .pytest_cache -x '*.wasm' -x '*.orig' snapshot_2026-10-01_2210/software/engine/presets/air/studio_20C_50RH.json snapshot_2026-10-02_0615/software/engine/presets/air/studio_20C_50RH.json
+--- snapshot_2026-10-01_2210/software/engine/presets/air/studio_20C_50RH.json	1970-01-01 01:00:00.000000000 +0100
++++ snapshot_2026-10-02_0615/software/engine/presets/air/studio_20C_50RH.json	2026-09-23 17:02:38.000000000 +0100
+@@ -0,0 +1,71 @@
++{
++  "schema": "air_fitter.preset.v1",
++  "id": "studio_20C_50RH",
++  "honesty": "FITTED_TO_ISO_9613_1",
++  "conditions": {
++    "temperature_c": 20.0,
++    "relative_humidity_pct": 50.0,
++    "pressure_kpa": 101.325
++  },
++  "model": "dual_high_shelf",
++  "candidate": "C",
++  "params": {
++    "f0": 500.00000000012307,
++    "depth_db_per_m": -0.00655233332616923,
++    "shelf_slope": 1.1217329192186143,
++    "f0_hi": 15999.999999999645,
++    "depth_hi_db_per_m": -0.07448108131080945,
++    "shelf_slope_hi": 7.053415484505896
++  },
++  "usage": "A_db(f,d) = d * H1(f); apply as magnitude 10^(A_db/20) once per path (early) or inject distance (FDN). Do not put on feedback return. Do not replace geometric 1/r^2.",
++  "rmse": {
++    "joint_db": 0.01120658692869966,
++    "per_distance_db": {
++      "5m": 0.0022410454123774327,
++      "10m": 0.004482090824754865,
++      "20m": 0.00896418164950973,
++      "40m": 0.01792836329901946
++    },
++    "flat_naive_db": 0.2223575363315409,
++    "assumed_shelf": {
++      "humidity_0.5_joint_db": 0.32681444144788424,
++      "humidity_1.0_joint_db": 0.9041603420074942,
++      "note": "ASSUMED engine: gain = -0.15 * d * humidity, high-shelf corner ~0.35*Nyquist @ 44.1 kHz (\u22487718 Hz). Not fitted \u2014 compare only."
++    },
++    "all_candidates_joint_db": {
++      "A": 0.06057908754924832,
++      "B": 0.02373540901442516,
++      "C": 0.01120658692869966
++    }
++  },
++  "freq_range_hz": [
++    20.0,
++    16000.0
++  ],
++  "distances_m": [
++    5.0,
++    10.0,
++    20.0,
++    40.0
++  ],
++  "locks": {
++    "geometric_1_over_r2": "stays \u2014 this only replaces ASSUMED high-shelf colour",
++    "structure_1pole_wet_dis": "separate musical control \u2014 not replaced",
++    "placement": "once on early + FDN inject; not Direct; not feedback",
++    "live_software": "do not import into live software/ engine in this pack"
++  },
++  "fit": {
++    "success": true,
++    "message": "winner=C (dual_high_shelf); DE success=False nit=80 fun=0.000130375; LS success=True cost=0.0241128"
++  },
++  "alpha_check": {
++    "125Hz": 0.0027389515637342068,
++    "250Hz": 0.0031811592859876513,
++    "500Hz": 0.003343274150925449,
++    "1000Hz": 0.003497981668435808,
++    "2000Hz": 0.003986278267486556,
++    "4000Hz": 0.005906361975795439,
++    "8000Hz": 0.013578391376983062,
++    "16000Hz": 0.04426443075693855
++  }
++}
+\ No newline at end of file
+diff -ruN -x __pycache__ -x .pytest_cache -x '*.wasm' -x '*.orig' snapshot_2026-10-01_2210/software/engine/presets/air/warm_22C_40RH.json snapshot_2026-10-02_0615/software/engine/presets/air/warm_22C_40RH.json
+--- snapshot_2026-10-01_2210/software/engine/presets/air/warm_22C_40RH.json	1970-01-01 01:00:00.000000000 +0100
++++ snapshot_2026-10-02_0615/software/engine/presets/air/warm_22C_40RH.json	2026-09-23 17:02:44.000000000 +0100
+@@ -0,0 +1,71 @@
++{
++  "schema": "air_fitter.preset.v1",
++  "id": "warm_22C_40RH",
++  "honesty": "FITTED_TO_ISO_9613_1",
++  "conditions": {
++    "temperature_c": 22.0,
++    "relative_humidity_pct": 40.0,
++    "pressure_kpa": 101.325
++  },
++  "model": "dual_high_shelf",
++  "candidate": "C",
++  "params": {
++    "f0": 500.0000000045118,
++    "depth_db_per_m": -0.006380612520158538,
++    "shelf_slope": 1.0774956971836434,
++    "f0_hi": 15999.999999999998,
++    "depth_hi_db_per_m": -0.0748390862778581,
++    "shelf_slope_hi": 7.023806524995857
++  },
++  "usage": "A_db(f,d) = d * H1(f); apply as magnitude 10^(A_db/20) once per path (early) or inject distance (FDN). Do not put on feedback return. Do not replace geometric 1/r^2.",
++  "rmse": {
++    "joint_db": 0.011036253822536408,
++    "per_distance_db": {
++      "5m": 0.0021924585509914933,
++      "10m": 0.004384917101982987,
++      "20m": 0.008769834203965973,
++      "40m": 0.017539668407931946
++    },
++    "flat_naive_db": 0.22233457536393816,
++    "assumed_shelf": {
++      "humidity_0.5_joint_db": 0.32733277214769874,
++      "humidity_1.0_joint_db": 0.9048485879004148,
++      "note": "ASSUMED engine: gain = -0.15 * d * humidity, high-shelf corner ~0.35*Nyquist @ 44.1 kHz (\u22487718 Hz). Not fitted \u2014 compare only."
++    },
++    "all_candidates_joint_db": {
++      "A": 0.05922596200715288,
++      "B": 0.023529042252342244,
++      "C": 0.011036253822536408
++    }
++  },
++  "freq_range_hz": [
++    20.0,
++    16000.0
++  ],
++  "distances_m": [
++    5.0,
++    10.0,
++    20.0,
++    40.0
++  ],
++  "locks": {
++    "geometric_1_over_r2": "stays \u2014 this only replaces ASSUMED high-shelf colour",
++    "structure_1pole_wet_dis": "separate musical control \u2014 not replaced",
++    "placement": "once on early + FDN inject; not Direct; not feedback",
++    "live_software": "do not import into live software/ engine in this pack"
++  },
++  "fit": {
++    "success": true,
++    "message": "winner=C (dual_high_shelf); DE success=False nit=80 fun=0.00012558; LS success=True cost=0.0233854"
++  },
++  "alpha_check": {
++    "125Hz": 0.0027029482996426125,
++    "250Hz": 0.0030796593287895674,
++    "500Hz": 0.00321910672540789,
++    "1000Hz": 0.003368003704188462,
++    "2000Hz": 0.003856342953176851,
++    "4000Hz": 0.005782558025190546,
++    "8000Hz": 0.01348061196544918,
++    "16000Hz": 0.044271124831293564
++  }
++}
+\ No newline at end of file
+diff -ruN -x __pycache__ -x .pytest_cache -x '*.wasm' -x '*.orig' snapshot_2026-10-01_2210/software/engine/source_radiation.py snapshot_2026-10-02_0615/software/engine/source_radiation.py
+--- snapshot_2026-10-01_2210/software/engine/source_radiation.py	1970-01-01 01:00:00.000000000 +0100
++++ snapshot_2026-10-02_0615/software/engine/source_radiation.py	2026-10-02 05:02:42.000000000 +0100
+@@ -0,0 +1,381 @@
++"""Source radiation for Render and Play. One coefficient law for both.
++
++The stage is the first filter on each image: source, then air, then the mic.
++Omni, and any on-axis direction, is a bypass and is not called. The FDN inject
++uses the preset's diffuse (power-averaged) filter, so the tail does not follow
++yaw. Presets ship in ``software/presets/source``. TU Berlin fits stay in the
++handoff pack and are not loaded from there.
++
++Do not import ``source_fitter`` (the package is the research fitter).
++"""
++
++from __future__ import annotations
++
++import json
++import math
++from dataclasses import dataclass
++from pathlib import Path
++from typing import List, Optional, Sequence, Tuple
++
++N_LINES = 32
++# rad_on A,B + two sources × (diffuse 7 + direct 3×10 + image 32×10)
++SRC_PACK_LEN = 2 + 2 * (7 + 3 * 10 + N_LINES * 10)
++
++
++@dataclass
++class Coef:
++    gain: float = 1.0
++    b0: float = 1.0
++    b1: float = 0.0
++    b2: float = 0.0
++    a1: float = 0.0
++    a2: float = 0.0
++    pole_g: float = 0.0
++    pole_mix: float = 0.0
++    order: int = 1
++    bypass: bool = True
++
++
++BYPASS = Coef()
++
++
++@dataclass
++class Plan:
++    diffuse: Coef
++    direct: Tuple[Coef, Coef, Coef]
++    images: List[Coef]
++
++
++def is_omni(preset_id) -> bool:
++    return str(preset_id or "omni").strip().lower() in ("", "omni", "off", "none")
++
++
++def preset_roots() -> List[Path]:
++    """Shipped presets first. The handoff pack is a fallback for local fits."""
++    here = Path(__file__).resolve()
++    local = here.parents[1] / "presets" / "source"
++    pack = here.parents[2] / "handoff_source_radiation_for_build" / "source_fitter" / "presets"
++    roots: List[Path] = []
++    if (local / "omni.json").is_file():
++        roots.append(local)
++    if (pack / "omni.json").is_file():
++        roots.append(pack)
++    if not roots:
++        roots.append(local)
++    return roots
++
++
++def _reject_tu(data: dict) -> None:
++    pid = str(data.get("id") or "")
++    dataset = str((data.get("provenance") or {}).get("dataset") or "")
++    if pid.startswith("tu_") or "TU Berlin" in dataset:
++        raise ValueError(f"{pid} is a TU Berlin fit and is not loaded")
++
++
++def load_preset(preset_id: str) -> dict:
++    """Preset JSON. Unknown ids and TU Berlin fits become omni."""
++    key = str(preset_id or "omni").strip()
++    if is_omni(key) or key.startswith("tu_"):
++        key = "omni"
++    path = None
++    for root in preset_roots():
++        cand = root / f"{key}.json"
++        if cand.is_file():
++            path = cand
++            break
++    if path is None:
++        for root in preset_roots():
++            cand = root / "omni.json"
++            if cand.is_file():
++                path = cand
++                break
++    if path is None:
++        return {"id": "omni", "params": {}}
++    data = json.loads(path.read_text(encoding="utf-8"))
++    try:
++        _reject_tu(data)
++    except ValueError:
++        return {"id": "omni", "params": {}}
++    return data
++
++
++def _cross(a, b):
++    return (
++        a[1] * b[2] - a[2] * b[1],
++        a[2] * b[0] - a[0] * b[2],
++        a[0] * b[1] - a[1] * b[0],
++    )
++
++
++def _dot(a, b) -> float:
++    return a[0] * b[0] + a[1] * b[1] + a[2] * b[2]
++
++
++def _norm(v):
++    n = math.sqrt(_dot(v, v))
++    if n < 1e-12:
++        return (1.0, 0.0, 0.0)
++    return (v[0] / n, v[1] / n, v[2] / n)
++
++
++def facing_basis(yaw_deg: float, pitch_deg: float, roll_deg: float = 0.0):
++    """Rows (forward, left, up) in engine coords. Yaw 0 faces +Z. +yaw turns toward +X."""
++    ps = math.radians(float(yaw_deg))
++    th = math.radians(float(pitch_deg))
++    f = (math.sin(ps) * math.cos(th), math.sin(th), math.cos(ps) * math.cos(th))
++    u0 = (0.0, 1.0, 0.0)
++    u = (u0[0] - f[0] * _dot(u0, f), u0[1] - f[1] * _dot(u0, f), u0[2] - f[2] * _dot(u0, f))
++    if _dot(u, u) < 1e-18:
++        u = (-math.sin(ps), 0.0, -math.cos(ps))
++    u = _norm(u)
++    left = _cross(u, f)
++    if roll_deg:
++        r = math.radians(float(roll_deg))
++        c, s = math.cos(r), math.sin(r)
++        left, u = (
++            (c * left[0] + s * u[0], c * left[1] + s * u[1], c * left[2] + s * u[2]),
++            (-s * left[0] + c * u[0], -s * left[1] + c * u[1], -s * left[2] + c * u[2]),
++        )
++    return (f, left, u)
++
++
++def emission_dir(n, image_pos, receiver) -> Tuple[float, float, float]:
++    """World direction the real source emits toward this receiver, mirrors undone."""
++    v = [float(receiver[i]) - float(image_pos[i]) for i in range(3)]
++    for i, k in enumerate(n):
++        if abs(int(k)) % 2 == 1:
++            v[i] = -v[i]
++    return _norm(v)
++
++
++def local_dir(e_world, basis) -> Tuple[float, float, float]:
++    return (_dot(basis[0], e_world), _dot(basis[1], e_world), _dot(basis[2], e_world))
++
++
++def _axis_frame(aim_az: float, aim_el: float):
++    az, el = math.radians(aim_az), math.radians(aim_el)
++    a = (math.cos(el) * math.cos(az), math.cos(el) * math.sin(az), math.sin(el))
++    up = (-math.sin(el) * math.cos(az), -math.sin(el) * math.sin(az), math.cos(el))
++    left = _cross(up, a)
++    return a, left, up
++
++
++def _params(preset: dict) -> dict:
++    p = dict(preset.get("params") or {})
++    defaults = {
++        "lo_db": 0.0, "hi_db": 0.0, "f0": 2000.0, "shelf_s": 0.7, "p": 1.0, "q": 0.0,
++        "b_ud": 0.0, "b_lr": 0.0, "aim_az": 0.0, "aim_el": 0.0, "lp_hz": 24000.0,
++        "lp_mix": 0.0, "p_lo": 1.0, "dip": 0.0, "lp_order": 1.0,
++    }
++    for k, v in defaults.items():
++        if p.get(k) is None:
++            p[k] = v
++    return p
++
++
++def weight_k2(params: dict, d_local) -> Tuple[float, float]:
++    """(k_lo, k_hi). Both are 0 when the direction is the radiation axis."""
++    a, left, up = _axis_frame(float(params["aim_az"]), float(params["aim_el"]))
++    c = max(-1.0, min(1.0, _dot(d_local, a)))
++    u = 0.5 * (1.0 - c)
++    back = 1.0 - float(params["q"]) * (u ** 8)
++    A = max(0.0, 1.0 + float(params["b_ud"]) * _dot(d_local, up) + float(params["b_lr"]) * _dot(d_local, left))
++    k_hi = A * (u ** float(params["p"])) * back
++    dip = float(params.get("dip") or 0.0)
++    p_lo = float(params.get("p_lo") if params.get("p_lo") is not None else params["p"])
++    k_lo = A * ((1.0 - dip) * (u ** p_lo) * back + dip * 4.0 * u * (1.0 - u))
++    return k_lo, k_hi
++
++
++def rbj_high_shelf(f0: float, gain_db: float, slope: float, fs: float):
++    """RBJ high shelf, (b0, b1, b2, a1, a2), a0 normalised to 1."""
++    A = 10.0 ** (float(gain_db) / 40.0)
++    w0 = 2.0 * math.pi * min(float(f0), 0.45 * float(fs)) / float(fs)
++    cw, sw = math.cos(w0), math.sin(w0)
++    s = float(slope) if float(slope) > 1e-6 else 0.7
++    alpha = sw / 2.0 * math.sqrt(max((A + 1.0 / A) * (1.0 / s - 1.0) + 2.0, 1e-9))
++    sa = 2.0 * math.sqrt(A) * alpha
++    b0 = A * ((A + 1.0) + (A - 1.0) * cw + sa)
++    b1 = -2.0 * A * ((A - 1.0) + (A + 1.0) * cw)
++    b2 = A * ((A + 1.0) + (A - 1.0) * cw - sa)
++    a0 = (A + 1.0) - (A - 1.0) * cw + sa
++    a1 = 2.0 * ((A - 1.0) - (A + 1.0) * cw)
++    a2 = (A + 1.0) - (A - 1.0) * cw - sa
++    if abs(a0) < 1e-18:
++        return (1.0, 0.0, 0.0, 0.0, 0.0)
++    return (b0 / a0, b1 / a0, b2 / a0, a1 / a0, a2 / a0)
++
++
++def one_pole_g(fc: float, fs: float) -> float:
++    return 1.0 - math.exp(-2.0 * math.pi * float(fc) / float(fs))
++
++
++def coef_for_dir(params: dict, d_local, fs: float, size_scale: float = 1.0) -> Coef:
++    k_lo, k = weight_k2(params, d_local)
++    if (k <= 0.0 and k_lo <= 0.0) or (
++        float(params["lo_db"]) == 0.0 and float(params["hi_db"]) == 0.0 and float(params["lp_mix"]) == 0.0
++    ):
++        return BYPASS
++    scale = float(size_scale) if float(size_scale) > 1e-6 else 1.0
++    g = 10.0 ** (k_lo * float(params["lo_db"]) / 20.0)
++    b0, b1, b2, a1, a2 = rbj_high_shelf(
++        float(params["f0"]) / scale, k * float(params["hi_db"]), float(params["shelf_s"]), fs,
++    )
++    pg, pm = 0.0, 0.0
++    if float(params["lp_mix"]) > 1e-6 and k > 0.0:
++        fc = float(params["lp_hz"]) / scale / k
++        if fc < 0.45 * float(fs):
++            pg = one_pole_g(fc, fs)
++            pm = float(params["lp_mix"])
++    order = int(params.get("lp_order") or 1)
++    if order < 1:
++        order = 1
++    if order > 2:
++        order = 2
++    return Coef(g, b0, b1, b2, a1, a2, pg, pm, order, False)
++
++
++def diffuse_coef(preset: dict, fs: float, size_scale: float = 1.0) -> Coef:
++    """Power-averaged inject filter. Independent of yaw."""
++    if is_omni(preset.get("id")):
++        return BYPASS
++    d = preset.get("diffuse_inject") or {}
++    if not d:
++        return BYPASS
++    scale = float(size_scale) if float(size_scale) > 1e-6 else 1.0
++    b0, b1, b2, a1, a2 = rbj_high_shelf(
++        float(d.get("shelf_f0") or 1500.0) / scale,
++        float(d.get("shelf_gain_db") or 0.0),
++        float(d.get("shelf_s") or 0.7),
++        fs,
++    )
++    g = 10.0 ** (float(d.get("gain_db") or 0.0) / 20.0)
++    if abs(g - 1.0) < 1e-8 and abs(b0 - 1.0) < 1e-8 and abs(b1) < 1e-8 and abs(b2) < 1e-8:
++        return BYPASS
++    return Coef(g, b0, b1, b2, a1, a2, 0.0, 0.0, 1, False)
++
++
++def _size_scale(preset: dict, size_m) -> float:
++    if size_m is None:
++        return 1.0
++    try:
++        user = float(size_m)
++    except (TypeError, ValueError):
++        return 1.0
++    a = float((preset.get("size") or {}).get("a_eq_m") or 0.0)
++    if a <= 0.0 or user <= 0.0:
++        return 1.0
++    return max(1e-3, user / a)
++
++
++def plan_from_scene(
++    preset_id,
++    yaw_deg: float,
++    pitch_deg: float,
++    taps,
++    source,
++    mic_centre,
++    capsules,
++    sr: float,
++    size_m=None,
++    roll_deg: float = 0.0,
++) -> Optional[Plan]:
++    """None when the preset is omni: callers must not run the stage."""
++    if is_omni(preset_id):
++        return None
++    preset = load_preset(str(preset_id))
++    if is_omni(preset.get("id")):
++        return None
++    params = _params(preset)
++    scale = _size_scale(preset, size_m)
++    fs = float(sr)
++    basis = facing_basis(yaw_deg, pitch_deg, roll_deg)
++    images: List[Coef] = []
++    n_t = len(taps) if taps is not None else 0
++    for i in range(N_LINES):
++        if n_t <= 0:
++            images.append(BYPASS)
++            continue
++        t = taps[i % n_t]
++        e = emission_dir(t.n, t.position, mic_centre)
++        images.append(coef_for_dir(params, local_dir(e, basis), fs, scale))
++    direct = []
++    for cap in capsules:
++        e = emission_dir((0, 0, 0), source, cap)
++        direct.append(coef_for_dir(params, local_dir(e, basis), fs, scale))
++    while len(direct) < 3:
++        direct.append(BYPASS)
++    return Plan(diffuse_coef(preset, fs, scale), (direct[0], direct[1], direct[2]), images)
++
++
++def src_process(x, coef: Coef):
++    """gain, then RBJ TDF-II, then the soft one-pole. Bypass returns the same array."""
++    import numpy as np
++
++    if coef is None or coef.bypass:
++        return x
++    y = np.empty_like(x, dtype=np.float64)
++    z1 = z2 = pz = pz2 = 0.0
++    g, b0, b1, b2, a1, a2 = coef.gain, coef.b0, coef.b1, coef.b2, coef.a1, coef.a2
++    pg, pm, order = coef.pole_g, coef.pole_mix, int(coef.order)
++    for i in range(len(x)):
++        v = g * float(x[i])
++        o = b0 * v + z1
++        z1 = b1 * v - a1 * o + z2
++        z2 = b2 * v - a2 * o
++        if pg > 0.0:
++            pz += pg * (o - pz)
++            lp = pz
++            if order >= 2:
++                pz2 += pg * (pz - pz2)
++                lp = pz2
++            o = (1.0 - pm) * o + pm * lp
++        y[i] = o
++    return y
++
++
++def apply_coef(buf, coef: Optional[Coef]):
++    if coef is None or coef.bypass:
++        return buf
++    return src_process(buf, coef)
++
++
++def _push_diff(a: list, c: Optional[Coef]) -> None:
++    if c is None or c.bypass:
++        a += [1.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0]
++    else:
++        a += [c.gain, c.b0, c.b1, c.b2, c.a1, c.a2, 1.0]
++
++
++def _push_full(a: list, c: Optional[Coef]) -> None:
++    if c is None or c.bypass:
++        a += [1.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0]
++    else:
++        a += [c.gain, c.b0, c.b1, c.b2, c.a1, c.a2, c.pole_g, c.pole_mix, float(c.order), 1.0]
++
++
++def _push_source(a: list, plan: Optional[Plan]) -> None:
++    if plan is None:
++        _push_diff(a, None)
++        for _ in range(3):
++            _push_full(a, None)
++        for _ in range(N_LINES):
++            _push_full(a, None)
++        return
++    _push_diff(a, plan.diffuse)
++    for i in range(3):
++        _push_full(a, plan.direct[i])
++    for i in range(N_LINES):
++        _push_full(a, plan.images[i] if i < len(plan.images) else None)
++
++
++def pack_play(plan_a: Optional[Plan], plan_b: Optional[Plan]) -> list:
++    """SRC_RAD payload. Empty when both sources are omni (the bit-exact path)."""
++    if plan_a is None and plan_b is None:
++        return []
++    a = [1.0 if plan_a is not None else 0.0, 1.0 if plan_b is not None else 0.0]
++    _push_source(a, plan_a)
++    _push_source(a, plan_b)
++    if len(a) != SRC_PACK_LEN:
++        raise RuntimeError(f"SRC_RAD pack {len(a)} != {SRC_PACK_LEN}")
++    return a
+diff -ruN -x __pycache__ -x .pytest_cache -x '*.wasm' -x '*.orig' snapshot_2026-10-01_2210/software/parameters.csv snapshot_2026-10-02_0615/software/parameters.csv
+--- snapshot_2026-10-01_2210/software/parameters.csv	2026-10-02 03:39:20.065353611 +0100
++++ snapshot_2026-10-02_0615/software/parameters.csv	2026-10-02 06:03:52.000000000 +0100
+@@ -12,3 +12,7 @@
+ binaural_symmetric,Binaural,proposed,One L/R mirror-averaged table (60 records) for both ears,true,true,true,,LOCKED 2026-09-30,hidden,—,Y,Y,R ear at node n = L record of mirror(n)
+ binaural_eq,Binaural,proposed,HRTF equalisation,diffuse_field,diffuse_field,diffuse_field,,as shipped (not changed),hidden,—,Y,Y,
+ binaural_headphones_note,Binaural,proposed,Show listen on headphones note,bool,—,true,,UI,Mic tab,Mic,n/a,n/a,client-only
++air_climate,Air,current,ISO 9613-1 climate preset (dual high shelf),studio_20C_50RH|dry_20C_20RH|humid_20C_80RH|warm_22C_40RH,studio_20C_50RH,studio_20C_50RH,,FITTED_TO_ISO_9613_1,panelMix,Colour,Y,Y,temperature stays with the preset; humidity above 0 sets the RH
++air_iso,Air,current,Use the ISO climate shelf when humidity is above 0,bool,true,true,,FITTED_TO_ISO_9613_1,panelMix,Colour,Y,Y,D8: humidity above 0 maps the slider onto relative humidity
++source_radiation,Source,current,Source radiation preset,omni|talking_head|trumpet_byu|violin_byu|cab_1x12_closed|cab_4x12_closed|piano_grand_lid_open,omni,omni,,MEASURED-FIT or ASSUMED per preset file,Advanced,Source,Y,Y,omni skips the stage; TU Berlin presets are not shipped
++source_yaw,Source,current,Source yaw (0 faces +Z; + toward +X),±180,0,0,deg,ASSUMED,Advanced,Source,Y,Y,FDN inject uses the diffuse filter so the tail does not follow yaw
+diff -ruN -x __pycache__ -x .pytest_cache -x '*.wasm' -x '*.orig' snapshot_2026-10-01_2210/software/presets/source/README.md snapshot_2026-10-02_0615/software/presets/source/README.md
+--- snapshot_2026-10-01_2210/software/presets/source/README.md	1970-01-01 01:00:00.000000000 +0100
++++ snapshot_2026-10-02_0615/software/presets/source/README.md	2026-10-02 05:03:38.000000000 +0100
+@@ -0,0 +1,19 @@
++# Source radiation presets
++
++Shipped with the app so Play and Render do not need `handoff_source_radiation_for_build` beside `software/`.
++
++`engine/source_radiation.py` reads this folder first. Omni skips the stage, so the current sound stays bit-exact. The FDN inject uses each preset's diffuse filter, which does not follow yaw.
++
++| id | tag | data |
++|---|---|---|
++| `omni` | exact bypass | none |
++| `talking_head` | MEASURED-FIT | BYU average speech |
++| `trumpet_byu` | MEASURED-FIT | BYU trumpet |
++| `violin_byu` | MEASURED-FIT | BYU violin |
++| `cab_1x12_closed` | ASSUMED | derived, no anechoic set |
++| `cab_4x12_closed` | ASSUMED | derived, no anechoic set |
++| `piano_grand_lid_open` | ASSUMED | placeholder |
++
++TU Berlin fits stay out of this folder (`tu_*`, and the TU `trumpet`, `violin`, `cello`, `singer_soprano`, and `acoustic_guitar`). `combo_*` stays in the fitter pack (low-confidence fits).
++
++Source directivity presets marked BYU are fitted to data from the BYU Acoustics Research Group directivity database (BYU ScholarsArchive); see T. W. Leishman et al., J. Acoust. Soc. Am. 149(3):1507, 2021, doi:10.1121/10.0003363. Raw balloons are not in this folder. The BYU pages state no licence; these files are the fitted shelf parameters only.
+diff -ruN -x __pycache__ -x .pytest_cache -x '*.wasm' -x '*.orig' snapshot_2026-10-01_2210/software/presets/source/cab_1x12_closed.json snapshot_2026-10-02_0615/software/presets/source/cab_1x12_closed.json
+--- snapshot_2026-10-01_2210/software/presets/source/cab_1x12_closed.json	1970-01-01 01:00:00.000000000 +0100
++++ snapshot_2026-10-02_0615/software/presets/source/cab_1x12_closed.json	2026-09-26 21:49:42.000000000 +0100
+@@ -0,0 +1,88 @@
++{
++  "schema": "source_fitter.preset.v1",
++  "id": "cab_1x12_closed",
++  "label": "Guitar cab 1x12 closed-back (ASSUMED, derived)",
++  "category": "guitar_amp",
++  "tag": "ASSUMED",
++  "model": "radiation_shelf_plus_soft_one_pole",
++  "level_reference": "on_axis (0 dB when facing the receiver; omni = exact null)",
++  "frame": {
++    "x": "facing (radiation reference axis of the dataset)",
++    "y": "source left",
++    "z": "up",
++    "facing_definition": ""
++  },
++  "params": {
++    "lp_order": 2.0,
++    "lo_db": -1.0,
++    "hi_db": -26.61841,
++    "f0": 2130.51994,
++    "shelf_s": 1.0,
++    "p": 0.74349,
++    "q": 0.0,
++    "b_ud": -0.04347,
++    "b_lr": 0.03303,
++    "aim_az": 1.02809,
++    "aim_el": 1.77029,
++    "lp_hz": 215.28444,
++    "lp_mix": 0.78837,
++    "p_lo": 0.3185,
++    "dip": 1.0
++  },
++  "size": {
++    "a_eq_m": 0.0254,
++    "beaming_onset_hz": 2130.5,
++    "rule": "a_eq = c/(2*pi*f0), c=340 m/s as engine (piston ka=1); UI size slider sets size_scale = a_user/a_eq -> f0, lp_hz divided by size_scale"
++  },
++  "di_db": {
++    "125": 1.77,
++    "250": 3.8,
++    "500": 6.97,
++    "1000": 10.33,
++    "2000": 14.46,
++    "4000": 17.93,
++    "8000": 19.76,
++    "16000": 20.64
++  },
++  "diffuse_inject": {
++    "gain_db": -2.1439726115813893,
++    "shelf_f0": 1042.6852123641204,
++    "shelf_gain_db": -17.29601008606224,
++    "shelf_s": 0.7,
++    "fit_rmse_db": 1.0837695170825377,
++    "target_db": {
++      "50": -0.860625443806265,
++      "104": -1.4701106456312163,
++      "218": -3.286278057424892,
++      "455": -6.514327611195999,
++      "951": -10.07106544049929,
++      "1986": -14.42020070988471,
++      "4148": -18.060818324142602,
++      "8662": -19.906678488955038
++    }
++  },
++  "fit": {
++    "note": "no measured data found for this cabinet type"
++  },
++  "dsp": {
++    "stages": [
++      "broadband_gain(k_lo*lo_db)",
++      "rbj_high_shelf(f0, k*hi_db, shelf_s)",
++      "soft_beaming_lp(lp_hz/k_hi, lp_mix, lp_order 1|2 cascaded one-poles)"
++    ],
++    "fs_ref_hz": 48000,
++    "k": "k_hi = A*u^p*(1-q*u^8); k_lo = A*((1-dip)*u^p_lo*(1-q*u^8) + dip*4u(1-u)); both 0 on axis",
++    "slot": "FIRST stage of each image's serial cascade (before surfaces/air/mic)"
++  },
++  "provenance": {
++    "dataset": "none \u2014 derived",
++    "derived_from": "combo_1x12 (BYU Fender Deluxe Reverb fit)",
++    "rule": "derived from combo_1x12 MEASURED fit: q->0 (no open-back rear lobe), lo_db>=-1 (closed box ~omni at LF)",
++    "measurement": "ASSUMED (no open 4x12 / closed 1x12 spherical dataset found; DirPat cab data rejected, see report)"
++  },
++  "tags": {
++    "params": "ASSUMED design values",
++    "model_form": "ASSUMED (engineering model, mirrors mic_fitter v3)",
++    "size_rule": "VERIFIED physics (piston ka=1) applied as ASSUMED mapping"
++  }
++}
+\ No newline at end of file
+diff -ruN -x __pycache__ -x .pytest_cache -x '*.wasm' -x '*.orig' snapshot_2026-10-01_2210/software/presets/source/cab_4x12_closed.json snapshot_2026-10-02_0615/software/presets/source/cab_4x12_closed.json
+--- snapshot_2026-10-01_2210/software/presets/source/cab_4x12_closed.json	1970-01-01 01:00:00.000000000 +0100
++++ snapshot_2026-10-02_0615/software/presets/source/cab_4x12_closed.json	2026-09-26 21:49:44.000000000 +0100
+@@ -0,0 +1,88 @@
++{
++  "schema": "source_fitter.preset.v1",
++  "id": "cab_4x12_closed",
++  "label": "Guitar cab 4x12 closed-back (ASSUMED, derived)",
++  "category": "guitar_amp",
++  "tag": "ASSUMED",
++  "model": "radiation_shelf_plus_soft_one_pole",
++  "level_reference": "on_axis (0 dB when facing the receiver; omni = exact null)",
++  "frame": {
++    "x": "facing (radiation reference axis of the dataset)",
++    "y": "source left",
++    "z": "up",
++    "facing_definition": ""
++  },
++  "params": {
++    "lp_order": 2.0,
++    "lo_db": -1.0,
++    "hi_db": -26.61841,
++    "f0": 1065.25997,
++    "shelf_s": 1.0,
++    "p": 0.74349,
++    "q": 0.0,
++    "b_ud": -0.04347,
++    "b_lr": 0.03303,
++    "aim_az": 1.02809,
++    "aim_el": 1.77029,
++    "lp_hz": 150.0,
++    "lp_mix": 0.78837,
++    "p_lo": 0.3185,
++    "dip": 1.0
++  },
++  "size": {
++    "a_eq_m": 0.0508,
++    "beaming_onset_hz": 1065.3,
++    "rule": "a_eq = c/(2*pi*f0), c=340 m/s as engine (piston ka=1); UI size slider sets size_scale = a_user/a_eq -> f0, lp_hz divided by size_scale"
++  },
++  "di_db": {
++    "125": 2.66,
++    "250": 5.44,
++    "500": 9.02,
++    "1000": 13.41,
++    "2000": 17.09,
++    "4000": 19.39,
++    "8000": 20.82,
++    "16000": 21.47
++  },
++  "diffuse_inject": {
++    "gain_db": -2.328409831549805,
++    "shelf_f0": 716.4628518716132,
++    "shelf_gain_db": -17.893582379371303,
++    "shelf_s": 0.7,
++    "fit_rmse_db": 0.9815241201879376,
++    "target_db": {
++      "50": -1.0664488364018425,
++      "104": -2.1681773611578965,
++      "218": -4.795324337128933,
++      "455": -8.503297034819811,
++      "951": -13.070720427406282,
++      "1986": -17.066228914517115,
++      "4148": -19.485866988718517,
++      "8662": -20.927275061571482
++    }
++  },
++  "fit": {
++    "note": "no measured data found for this cabinet type"
++  },
++  "dsp": {
++    "stages": [
++      "broadband_gain(k_lo*lo_db)",
++      "rbj_high_shelf(f0, k*hi_db, shelf_s)",
++      "soft_beaming_lp(lp_hz/k_hi, lp_mix, lp_order 1|2 cascaded one-poles)"
++    ],
++    "fs_ref_hz": 48000,
++    "k": "k_hi = A*u^p*(1-q*u^8); k_lo = A*((1-dip)*u^p_lo*(1-q*u^8) + dip*4u(1-u)); both 0 on axis",
++    "slot": "FIRST stage of each image's serial cascade (before surfaces/air/mic)"
++  },
++  "provenance": {
++    "dataset": "none \u2014 derived",
++    "derived_from": "combo_1x12 (BYU Fender Deluxe Reverb fit)",
++    "rule": "derived from cab_1x12_closed: 2x2 array of 12in drivers -> effective radius ~2x -> f0, lp_hz halved (piston/array scaling)",
++    "measurement": "ASSUMED (no open 4x12 / closed 1x12 spherical dataset found; DirPat cab data rejected, see report)"
++  },
++  "tags": {
++    "params": "ASSUMED design values",
++    "model_form": "ASSUMED (engineering model, mirrors mic_fitter v3)",
++    "size_rule": "VERIFIED physics (piston ka=1) applied as ASSUMED mapping"
++  }
++}
+\ No newline at end of file
+diff -ruN -x __pycache__ -x .pytest_cache -x '*.wasm' -x '*.orig' snapshot_2026-10-01_2210/software/presets/source/index.json snapshot_2026-10-02_0615/software/presets/source/index.json
+--- snapshot_2026-10-01_2210/software/presets/source/index.json	1970-01-01 01:00:00.000000000 +0100
++++ snapshot_2026-10-02_0615/software/presets/source/index.json	2026-10-02 05:03:27.000000000 +0100
+@@ -0,0 +1,106 @@
++{
++  "schema": "source_fitter.index.v1",
++  "note": "Shipped set. TU Berlin fits (tu_*, trumpet, violin, cello, singer_soprano, acoustic_guitar) are not in this folder. combo_* stays in the fitter pack.",
++  "presets": [
++    {
++      "id": "omni",
++      "label": "Omni (current engine sound \u2014 null)",
++      "category": "reference",
++      "tag": "ASSUMED-EXACT",
++      "rmse_train_db": null,
++      "rmse_holdout_db": null,
++      "fit_bands_hz": null,
++      "a_eq_m": 0.0271,
++      "di_1k_db": -0.0,
++      "di_4k_db": -0.0,
++      "dataset": "none (analytic)"
++    },
++    {
++      "id": "talking_head",
++      "label": "Talking head (average speech, 6 talkers)",
++      "category": "voice",
++      "tag": "MEASURED-FIT",
++      "rmse_train_db": 1.8535074753735086,
++      "rmse_holdout_db": 1.8574478335571092,
++      "fit_bands_hz": [
++        100.0,
++        10000.0
++      ],
++      "a_eq_m": 0.0212,
++      "di_1k_db": 2.54,
++      "di_4k_db": 4.24,
++      "dataset": "BYU ScholarsArchive Spatial Audio Library \u2014 Average Speech Directivity"
++    },
++    {
++      "id": "trumpet_byu",
++      "label": "Trumpet (BYU, 160-3150 Hz)",
++      "category": "brass",
++      "tag": "MEASURED-FIT",
++      "rmse_train_db": 1.8528950860553055,
++      "rmse_holdout_db": 1.8199702417367325,
++      "fit_bands_hz": [
++        160.0,
++        3150.0
++      ],
++      "a_eq_m": 0.0229,
++      "di_1k_db": 3.49,
++      "di_4k_db": 12.63,
++      "dataset": "BYU ScholarsArchive Spatial Audio Library \u2014 Trumpet Directivity"
++    },
++    {
++      "id": "violin_byu",
++      "label": "Violin (BYU, 200-2500 Hz)",
++      "category": "strings",
++      "tag": "MEASURED-FIT",
++      "rmse_train_db": 2.116819063235342,
++      "rmse_holdout_db": 2.108767347740375,
++      "fit_bands_hz": [
++        200.0,
++        2500.0
++      ],
++      "a_eq_m": 0.0045,
++      "di_1k_db": 1.81,
++      "di_4k_db": 3.86,
++      "dataset": "BYU ScholarsArchive Spatial Audio Library \u2014 Violin Directivity"
++    },
++    {
++      "id": "cab_1x12_closed",
++      "label": "Guitar cab 1x12 closed-back (ASSUMED, derived)",
++      "category": "guitar_amp",
++      "tag": "ASSUMED",
++      "rmse_train_db": null,
++      "rmse_holdout_db": null,
++      "fit_bands_hz": null,
++      "a_eq_m": 0.0254,
++      "di_1k_db": 10.33,
++      "di_4k_db": 17.93,
++      "dataset": "none \u2014 derived"
++    },
++    {
++      "id": "cab_4x12_closed",
++      "label": "Guitar cab 4x12 closed-back (ASSUMED, derived)",
++      "category": "guitar_amp",
++      "tag": "ASSUMED",
++      "rmse_train_db": null,
++      "rmse_holdout_db": null,
++      "fit_bands_hz": null,
++      "a_eq_m": 0.0508,
++      "di_1k_db": 13.41,
++      "di_4k_db": 19.39,
++      "dataset": "none \u2014 derived"
++    },
++    {
++      "id": "piano_grand_lid_open",
++      "label": "Grand piano, lid open (ASSUMED placeholder)",
++      "category": "keys",
++      "tag": "ASSUMED",
++      "rmse_train_db": null,
++      "rmse_holdout_db": null,
++      "fit_bands_hz": null,
++      "a_eq_m": 0.0601,
++      "di_1k_db": 2.84,
++      "di_4k_db": 4.1,
++      "dataset": "none"
++    }
++  ]
++}
+diff -ruN -x __pycache__ -x .pytest_cache -x '*.wasm' -x '*.orig' snapshot_2026-10-01_2210/software/presets/source/omni.json snapshot_2026-10-02_0615/software/presets/source/omni.json
+--- snapshot_2026-10-01_2210/software/presets/source/omni.json	1970-01-01 01:00:00.000000000 +0100
++++ snapshot_2026-10-02_0615/software/presets/source/omni.json	2026-09-26 21:49:42.000000000 +0100
+@@ -0,0 +1,85 @@
++{
++  "schema": "source_fitter.preset.v1",
++  "id": "omni",
++  "label": "Omni (current engine sound \u2014 null)",
++  "category": "reference",
++  "tag": "ASSUMED-EXACT",
++  "model": "radiation_shelf_plus_soft_one_pole",
++  "level_reference": "on_axis (0 dB when facing the receiver; omni = exact null)",
++  "frame": {
++    "x": "facing (radiation reference axis of the dataset)",
++    "y": "source left",
++    "z": "up",
++    "facing_definition": ""
++  },
++  "params": {
++    "lo_db": 0.0,
++    "hi_db": 0.0,
++    "f0": 2000.0,
++    "shelf_s": 0.7,
++    "p": 1.0,
++    "q": 0.0,
++    "b_ud": 0.0,
++    "b_lr": 0.0,
++    "aim_az": 0.0,
++    "aim_el": 0.0,
++    "lp_hz": 24000.0,
++    "lp_mix": 0.0,
++    "p_lo": 1.0,
++    "dip": 0.0
++  },
++  "size": {
++    "a_eq_m": 0.0271,
++    "beaming_onset_hz": 2000.0,
++    "rule": "a_eq = c/(2*pi*f0), c=340 m/s as engine (piston ka=1); UI size slider sets size_scale = a_user/a_eq -> f0, lp_hz divided by size_scale"
++  },
++  "di_db": {
++    "125": -0.0,
++    "250": -0.0,
++    "500": -0.0,
++    "1000": -0.0,
++    "2000": -0.0,
++    "4000": -0.0,
++    "8000": -0.0,
++    "16000": -0.0
++  },
++  "diffuse_inject": {
++    "gain_db": -4.821637332766436e-16,
++    "shelf_f0": 1500.0,
++    "shelf_gain_db": 4.821637332766436e-16,
++    "shelf_s": 0.7,
++    "fit_rmse_db": 6.067093928217841e-16,
++    "target_db": {
++      "50": -4.821637332766436e-16,
++      "104": -4.821637332766436e-16,
++      "218": 0.0,
++      "455": 0.0,
++      "951": 0.0,
++      "1986": 0.0,
++      "4148": 0.0,
++      "8662": 0.0
++    }
++  },
++  "fit": {
++    "note": "analytic; relative response identically 0 dB"
++  },
++  "dsp": {
++    "stages": [
++      "broadband_gain(k_lo*lo_db)",
++      "rbj_high_shelf(f0, k*hi_db, shelf_s)",
++      "soft_beaming_lp(lp_hz/k_hi, lp_mix, lp_order 1|2 cascaded one-poles)"
++    ],
++    "fs_ref_hz": 48000,
++    "k": "k_hi = A*u^p*(1-q*u^8); k_lo = A*((1-dip)*u^p_lo*(1-q*u^8) + dip*4u(1-u)); both 0 on axis",
++    "slot": "FIRST stage of each image's serial cascade (before surfaces/air/mic)"
++  },
++  "provenance": {
++    "dataset": "none (analytic)",
++    "measurement": "n/a"
++  },
++  "tags": {
++    "params": "VERIFIED analytic null (k*0 = 0 dB everywhere)",
++    "model_form": "ASSUMED (engineering model, mirrors mic_fitter v3)",
++    "size_rule": "VERIFIED physics (piston ka=1) applied as ASSUMED mapping"
++  }
++}
+\ No newline at end of file
+diff -ruN -x __pycache__ -x .pytest_cache -x '*.wasm' -x '*.orig' snapshot_2026-10-01_2210/software/presets/source/piano_grand_lid_open.json snapshot_2026-10-02_0615/software/presets/source/piano_grand_lid_open.json
+--- snapshot_2026-10-01_2210/software/presets/source/piano_grand_lid_open.json	1970-01-01 01:00:00.000000000 +0100
++++ snapshot_2026-10-02_0615/software/presets/source/piano_grand_lid_open.json	2026-09-26 21:49:46.000000000 +0100
+@@ -0,0 +1,86 @@
++{
++  "schema": "source_fitter.preset.v1",
++  "id": "piano_grand_lid_open",
++  "label": "Grand piano, lid open (ASSUMED placeholder)",
++  "category": "keys",
++  "tag": "ASSUMED",
++  "model": "radiation_shelf_plus_soft_one_pole",
++  "level_reference": "on_axis (0 dB when facing the receiver; omni = exact null)",
++  "frame": {
++    "x": "facing (radiation reference axis of the dataset)",
++    "y": "source left",
++    "z": "up",
++    "facing_definition": ""
++  },
++  "params": {
++    "lo_db": -1.5,
++    "hi_db": -9.0,
++    "f0": 900.0,
++    "shelf_s": 0.5,
++    "p": 1.0,
++    "q": 0.0,
++    "b_ud": 0.0,
++    "b_lr": 0.0,
++    "aim_az": -20.0,
++    "aim_el": 25.0,
++    "lp_hz": 24000.0,
++    "lp_mix": 0.0,
++    "p_lo": 1.0,
++    "dip": 0.0
++  },
++  "size": {
++    "a_eq_m": 0.0601,
++    "beaming_onset_hz": 900.0,
++    "rule": "a_eq = c/(2*pi*f0), c=340 m/s as engine (piston ka=1); UI size slider sets size_scale = a_user/a_eq -> f0, lp_hz divided by size_scale"
++  },
++  "di_db": {
++    "125": 0.81,
++    "250": 1.05,
++    "500": 1.71,
++    "1000": 2.84,
++    "2000": 3.73,
++    "4000": 4.1,
++    "8000": 4.21,
++    "16000": 4.24
++  },
++  "diffuse_inject": {
++    "gain_db": -0.8397819851081971,
++    "shelf_f0": 816.0607984951689,
++    "shelf_gain_db": -3.304299600068451,
++    "shelf_s": 0.7,
++    "fit_rmse_db": 0.10219366916838414,
++    "target_db": {
++      "50": -0.742585505406014,
++      "104": -0.7892057355135464,
++      "218": -0.9771407907908776,
++      "455": -1.5891504049974872,
++      "951": -2.752736260404018,
++      "1986": -3.723752074686066,
++      "4148": -4.109575606402261,
++      "8662": -4.213797650855472
++    }
++  },
++  "fit": {
++    "note": "no open measured spherical piano directivity found"
++  },
++  "dsp": {
++    "stages": [
++      "broadband_gain(k_lo*lo_db)",
++      "rbj_high_shelf(f0, k*hi_db, shelf_s)",
++      "soft_beaming_lp(lp_hz/k_hi, lp_mix, lp_order 1|2 cascaded one-poles)"
++    ],
++    "fs_ref_hz": 48000,
++    "k": "k_hi = A*u^p*(1-q*u^8); k_lo = A*((1-dip)*u^p_lo*(1-q*u^8) + dip*4u(1-u)); both 0 on axis",
++    "slot": "FIRST stage of each image's serial cascade (before surfaces/air/mic)"
++  },
++  "provenance": {
++    "dataset": "none",
++    "basis": "qualitative only: lid-open grand radiates mainly upward/out of the open lid side (Meyer, Acoustics and the Performance of Music, Springer 2009, doi:10.1007/978-0-387-09517-2) \u2014 NO numbers taken",
++    "measurement": "ASSUMED"
++  },
++  "tags": {
++    "params": "ASSUMED design values",
++    "model_form": "ASSUMED (engineering model, mirrors mic_fitter v3)",
++    "size_rule": "VERIFIED physics (piston ka=1) applied as ASSUMED mapping"
++  }
++}
+\ No newline at end of file
+diff -ruN -x __pycache__ -x .pytest_cache -x '*.wasm' -x '*.orig' snapshot_2026-10-01_2210/software/presets/source/talking_head.json snapshot_2026-10-02_0615/software/presets/source/talking_head.json
+--- snapshot_2026-10-01_2210/software/presets/source/talking_head.json	1970-01-01 01:00:00.000000000 +0100
++++ snapshot_2026-10-02_0615/software/presets/source/talking_head.json	2026-09-26 21:40:16.000000000 +0100
+@@ -0,0 +1,189 @@
++{
++  "schema": "source_fitter.preset.v1",
++  "id": "talking_head",
++  "label": "Talking head (average speech, 6 talkers)",
++  "category": "voice",
++  "tag": "MEASURED-FIT",
++  "model": "radiation_shelf_plus_soft_one_pole",
++  "level_reference": "on_axis (0 dB when facing the receiver; omni = exact null)",
++  "frame": {
++    "x": "facing (radiation reference axis of the dataset)",
++    "y": "source left",
++    "z": "up",
++    "facing_definition": "theta=0 column (VERIFIED dataset note for BYU instruments/speech)"
++  },
++  "params": {
++    "aim_az": 0.0,
++    "b_lr": 0.0,
++    "lp_order": 2.0,
++    "lo_db": -2.51406,
++    "hi_db": -29.29454,
++    "f0": 2551.19683,
++    "shelf_s": 0.36306,
++    "p": 1.99794,
++    "q": 0.12931,
++    "b_ud": -0.24228,
++    "aim_el": 6.61291,
++    "lp_hz": 15896.2775,
++    "lp_mix": 0.09037,
++    "p_lo": 1.38989,
++    "dip": 0.0926
++  },
++  "size": {
++    "a_eq_m": 0.0212,
++    "beaming_onset_hz": 2551.2,
++    "rule": "a_eq = c/(2*pi*f0), c=340 m/s as engine (piston ka=1); UI size slider sets size_scale = a_user/a_eq -> f0, lp_hz divided by size_scale"
++  },
++  "di_db": {
++    "125": 1.09,
++    "250": 1.26,
++    "500": 1.71,
++    "1000": 2.54,
++    "2000": 3.47,
++    "4000": 4.24,
++    "8000": 4.78,
++    "16000": 5.02
++  },
++  "diffuse_inject": {
++    "gain_db": -1.223568081587016,
++    "shelf_f0": 1348.8798113671992,
++    "shelf_gain_db": -3.436981139975767,
++    "shelf_s": 0.7,
++    "fit_rmse_db": 0.22521471189625278,
++    "target_db": {
++      "50": -1.0417471703576955,
++      "104": -1.075967951068367,
++      "218": -1.2105973253363747,
++      "455": -1.6299699990270873,
++      "951": -2.4706769950654865,
++      "1986": -3.4616197186381563,
++      "4148": -4.274905031455134,
++      "8662": -4.821093926619701
++    }
++  },
++  "fit": {
++    "rmse_train_db": 1.8535074753735086,
++    "rmse_holdout_db": 1.8574478335571092,
++    "rmse_per_band_db": {
++      "100": 0.612688983997381,
++      "125": 0.503139253647572,
++      "160": 0.4098598769952854,
++      "200": 0.43731533974516773,
++      "250": 0.9199807695818869,
++      "315": 1.3317670541360527,
++      "400": 1.4983594593963727,
++      "500": 1.4475393120081634,
++      "630": 2.14970457304399,
++      "800": 1.8320738362801654,
++      "1000": 1.5975433451225802,
++      "1250": 1.7541122165856822,
++      "1600": 2.032437790714971,
++      "2000": 2.134449517443075,
++      "2500": 2.1055342468009,
++      "3150": 2.399694217040887,
++      "4000": 2.598760547205631,
++      "5000": 2.556560990349138,
++      "6300": 2.3226700172727504,
++      "8000": 2.3284245478744516,
++      "10000": 2.7689997870777425
++    },
++    "n_dirs": 684,
++    "n_train": 547,
++    "n_holdout": 137,
++    "fit_bands_hz": [
++      100.0,
++      10000.0
++    ],
++    "n_bands": 21,
++    "free_params": [
++      "lo_db",
++      "hi_db",
++      "f0",
++      "shelf_s",
++      "p",
++      "q",
++      "b_ud",
++      "aim_el",
++      "lp_hz",
++      "lp_mix",
++      "p_lo",
++      "dip"
++    ],
++    "fixed_params": {
++      "aim_az": 0.0,
++      "b_lr": 0.0,
++      "lp_order": 2.0
++    },
++    "di_data_db": {
++      "100": 0.011829914604561564,
++      "125": 0.46964204152775973,
++      "160": 1.2496191678464812,
++      "200": 1.811944305011287,
++      "250": 2.6734075276684544,
++      "315": 3.0250443428007543,
++      "400": 2.3964872298267563,
++      "500": 1.085724238751085,
++      "630": 0.92366485550167,
++      "800": -0.2303633995012202,
++      "1000": 0.714054946590478,
++      "1250": 3.8985794996412633,
++      "1600": 5.554974787404015,
++      "2000": 3.6980966050272475,
++      "2500": 2.699196822314408,
++      "3150": 3.825020336981769,
++      "4000": 4.839906847065627,
++      "5000": 3.8321456183930724,
++      "6300": 3.1982444572259685,
++      "8000": 5.834855956537921,
++      "10000": 5.783361187644057
++    },
++    "di_model_db": {
++      "100": 1.0723575299358763,
++      "125": 1.0945901353221086,
++      "160": 1.1326023202233524,
++      "200": 1.184579874998482,
++      "250": 1.2598357462342389,
++      "315": 1.36986381141023,
++      "400": 1.5255645054347848,
++      "500": 1.7141302319454836,
++      "630": 1.9535829290791382,
++      "800": 2.2423884744329956,
++      "1000": 2.5389226079456324,
++      "1250": 2.846702962378181,
++      "1600": 3.1825821056450265,
++      "2000": 3.4703201188885497,
++      "2500": 3.738426424643136,
++      "3150": 3.9956587491923234,
++      "4000": 4.239926627808262,
++      "5000": 4.444929882145933,
++      "6300": 4.627526251874144,
++      "8000": 4.7792305336524254,
++      "10000": 4.886258705718426
++    }
++  },
++  "dsp": {
++    "stages": [
++      "broadband_gain(k_lo*lo_db)",
++      "rbj_high_shelf(f0, k*hi_db, shelf_s)",
++      "soft_beaming_lp(lp_hz/k_hi, lp_mix, lp_order 1|2 cascaded one-poles)"
++    ],
++    "fs_ref_hz": 48000,
++    "k": "k_hi = A*u^p*(1-q*u^8); k_lo = A*((1-dip)*u^p_lo*(1-q*u^8) + dip*4u(1-u)); both 0 on axis",
++    "slot": "FIRST stage of each image's serial cascade (before surfaces/air/mic)"
++  },
++  "provenance": {
++    "dataset": "BYU ScholarsArchive Spatial Audio Library \u2014 Average Speech Directivity",
++    "url": "https://scholarsarchive.byu.edu/directivity/1/",
++    "citation": "S. D. Bellows, C. M. Pincock, J. K. Whiting, T. W. Leishman, 'Average Speech Directivity', BYU ScholarsArchive Directivity 1 (2019); T. W. Leishman et al., JASA 149(3) 1507-1523 (2021) doi:10.1121/10.0003363",
++    "license": "free & open access; cite as requested (no explicit licence text found)",
++    "grid": "5 deg dual-equiangular 72x37 (SH-resampled, 1/3 octave)",
++    "measurement": "MEASURED (anechoic, rotating semicircular array)",
++    "note": "median-plane symmetrised by authors (VERIFIED); seated talker incl. chair/torso",
++    "front_axis": "theta=0 column (VERIFIED dataset note for BYU instruments/speech)"
++  },
++  "tags": {
++    "params": "VERIFIED fit output (this code) of MEASURED data",
++    "model_form": "ASSUMED (engineering model, mirrors mic_fitter v3)",
++    "size_rule": "VERIFIED physics (piston ka=1) applied as ASSUMED mapping"
++  }
++}
+\ No newline at end of file
+diff -ruN -x __pycache__ -x .pytest_cache -x '*.wasm' -x '*.orig' snapshot_2026-10-01_2210/software/presets/source/trumpet_byu.json snapshot_2026-10-02_0615/software/presets/source/trumpet_byu.json
+--- snapshot_2026-10-01_2210/software/presets/source/trumpet_byu.json	1970-01-01 01:00:00.000000000 +0100
++++ snapshot_2026-10-02_0615/software/presets/source/trumpet_byu.json	2026-09-26 21:40:16.000000000 +0100
+@@ -0,0 +1,167 @@
++{
++  "schema": "source_fitter.preset.v1",
++  "id": "trumpet_byu",
++  "label": "Trumpet (BYU, 160-3150 Hz)",
++  "category": "brass",
++  "tag": "MEASURED-FIT",
++  "model": "radiation_shelf_plus_soft_one_pole",
++  "level_reference": "on_axis (0 dB when facing the receiver; omni = exact null)",
++  "frame": {
++    "x": "facing (radiation reference axis of the dataset)",
++    "y": "source left",
++    "z": "up",
++    "facing_definition": "theta=0 column (VERIFIED dataset note for BYU instruments/speech)"
++  },
++  "params": {
++    "lp_order": 2.0,
++    "lo_db": -3.59277,
++    "hi_db": -29.49983,
++    "f0": 2359.08312,
++    "shelf_s": 1.0,
++    "p": 0.66749,
++    "q": 0.45829,
++    "b_ud": -0.28871,
++    "b_lr": 0.04773,
++    "aim_az": -0.81372,
++    "aim_el": -32.92464,
++    "lp_hz": 1049.5537,
++    "lp_mix": 0.46077,
++    "p_lo": 4.0,
++    "dip": 0.39633
++  },
++  "size": {
++    "a_eq_m": 0.0229,
++    "beaming_onset_hz": 2359.1,
++    "rule": "a_eq = c/(2*pi*f0), c=340 m/s as engine (piston ka=1); UI size slider sets size_scale = a_user/a_eq -> f0, lp_hz divided by size_scale"
++  },
++  "di_db": {
++    "125": 1.31,
++    "250": 1.41,
++    "500": 1.83,
++    "1000": 3.49,
++    "2000": 8.16,
++    "4000": 12.63,
++    "8000": 14.01,
++    "16000": 14.54
++  },
++  "diffuse_inject": {
++    "gain_db": -1.2618204159068485,
++    "shelf_f0": 1930.2840189729754,
++    "shelf_gain_db": -13.245786348886762,
++    "shelf_s": 0.7,
++    "fit_rmse_db": 0.06909961995511749,
++    "target_db": {
++      "50": -1.2795646620037209,
++      "104": -1.2984783457501696,
++      "218": -1.3808408327503034,
++      "455": -1.7390708604750669,
++      "951": -3.2856983907803787,
++      "1986": -8.100223583351603,
++      "4148": -12.755385021143395,
++      "8662": -14.096092241831325
++    }
++  },
++  "fit": {
++    "rmse_train_db": 1.8528950860553055,
++    "rmse_holdout_db": 1.8199702417367325,
++    "rmse_per_band_db": {
++      "160": 1.1778556717848143,
++      "200": 1.0278079061921626,
++      "250": 1.0959194425361214,
++      "315": 2.1585309463589573,
++      "400": 1.9330669764485546,
++      "500": 2.2192139374085116,
++      "630": 2.1459002796576185,
++      "800": 2.1197365602136014,
++      "1000": 1.7942608951862493,
++      "1250": 1.9138278119690382,
++      "1600": 1.9299023384567282,
++      "2000": 2.0852898210790856,
++      "2500": 1.8570494844547296,
++      "3150": 1.8052144458164139
++    },
++    "n_dirs": 684,
++    "n_train": 547,
++    "n_holdout": 137,
++    "fit_bands_hz": [
++      160.0,
++      3150.0
++    ],
++    "n_bands": 14,
++    "free_params": [
++      "lo_db",
++      "hi_db",
++      "f0",
++      "shelf_s",
++      "p",
++      "q",
++      "b_ud",
++      "b_lr",
++      "aim_az",
++      "aim_el",
++      "lp_hz",
++      "lp_mix",
++      "p_lo",
++      "dip"
++    ],
++    "fixed_params": {
++      "lp_order": 2.0
++    },
++    "di_data_db": {
++      "160": 2.4555142680293844,
++      "200": 0.787261807702325,
++      "250": -0.590291709051274,
++      "315": -0.5918653362164585,
++      "400": 1.453862318217518,
++      "500": -0.15061266287540942,
++      "630": 0.9007571556744285,
++      "800": 2.2624524102237933,
++      "1000": 2.645590578471431,
++      "1250": 1.9168613070203042,
++      "1600": 4.652353355906951,
++      "2000": 5.888259320660632,
++      "2500": 7.057661252366294,
++      "3150": 7.340711331408432
++    },
++    "di_model_db": {
++      "160": 1.3315297221693312,
++      "200": 1.3638837981567167,
++      "250": 1.4143897297282821,
++      "315": 1.4967399441710842,
++      "400": 1.632908953529129,
++      "500": 1.8345738505795837,
++      "630": 2.1639595082953575,
++      "800": 2.7068002532939457,
++      "1000": 3.490031221979219,
++      "1250": 4.62468832726933,
++      "1600": 6.323219947320285,
++      "2000": 8.1596183240846,
++      "2500": 10.007737253756844,
++      "3150": 11.56593752254816
++    }
++  },
++  "dsp": {
++    "stages": [
++      "broadband_gain(k_lo*lo_db)",
++      "rbj_high_shelf(f0, k*hi_db, shelf_s)",
++      "soft_beaming_lp(lp_hz/k_hi, lp_mix, lp_order 1|2 cascaded one-poles)"
++    ],
++    "fs_ref_hz": 48000,
++    "k": "k_hi = A*u^p*(1-q*u^8); k_lo = A*((1-dip)*u^p_lo*(1-q*u^8) + dip*4u(1-u)); both 0 on axis",
++    "slot": "FIRST stage of each image's serial cascade (before surfaces/air/mic)"
++  },
++  "provenance": {
++    "dataset": "BYU ScholarsArchive Spatial Audio Library \u2014 Trumpet Directivity",
++    "url": "https://scholarsarchive.byu.edu/directivity/13/",
++    "citation": "S. D. Bellows, K. J. Bodon, T. W. Leishman, 'Trumpet Directivity', BYU ScholarsArchive Directivity 13 (2020)",
++    "license": "free & open access; cite as requested (no explicit licence text found)",
++    "grid": "5 deg dual-equiangular 72x37 (SH-resampled, 1/3 octave)",
++    "measurement": "MEASURED (anechoic, rotating semicircular array)",
++    "front_axis": "theta=0 column (VERIFIED dataset note for BYU instruments/speech)"
++  },
++  "tags": {
++    "params": "VERIFIED fit output (this code) of MEASURED data",
++    "model_form": "ASSUMED (engineering model, mirrors mic_fitter v3)",
++    "size_rule": "VERIFIED physics (piston ka=1) applied as ASSUMED mapping"
++  }
++}
+\ No newline at end of file
+diff -ruN -x __pycache__ -x .pytest_cache -x '*.wasm' -x '*.orig' snapshot_2026-10-01_2210/software/presets/source/violin_byu.json snapshot_2026-10-02_0615/software/presets/source/violin_byu.json
+--- snapshot_2026-10-01_2210/software/presets/source/violin_byu.json	1970-01-01 01:00:00.000000000 +0100
++++ snapshot_2026-10-02_0615/software/presets/source/violin_byu.json	2026-09-26 21:39:52.000000000 +0100
+@@ -0,0 +1,161 @@
++{
++  "schema": "source_fitter.preset.v1",
++  "id": "violin_byu",
++  "label": "Violin (BYU, 200-2500 Hz)",
++  "category": "strings",
++  "tag": "MEASURED-FIT",
++  "model": "radiation_shelf_plus_soft_one_pole",
++  "level_reference": "on_axis (0 dB when facing the receiver; omni = exact null)",
++  "frame": {
++    "x": "facing (radiation reference axis of the dataset)",
++    "y": "source left",
++    "z": "up",
++    "facing_definition": "theta=0 column (VERIFIED dataset note for BYU instruments/speech)"
++  },
++  "params": {
++    "lp_order": 2.0,
++    "lo_db": -2.87527,
++    "hi_db": -39.99992,
++    "f0": 11979.02401,
++    "shelf_s": 0.38136,
++    "p": 0.83256,
++    "q": 0.18308,
++    "b_ud": -0.50956,
++    "b_lr": 0.40514,
++    "aim_az": 35.0,
++    "aim_el": 34.99994,
++    "lp_hz": 23995.69707,
++    "lp_mix": 0.00139,
++    "p_lo": 1.37605,
++    "dip": 0.25836
++  },
++  "size": {
++    "a_eq_m": 0.0045,
++    "beaming_onset_hz": 11979.0,
++    "rule": "a_eq = c/(2*pi*f0), c=340 m/s as engine (piston ka=1); UI size slider sets size_scale = a_user/a_eq -> f0, lp_hz divided by size_scale"
++  },
++  "di_db": {
++    "125": 1.29,
++    "250": 1.33,
++    "500": 1.45,
++    "1000": 1.81,
++    "2000": 2.55,
++    "4000": 3.86,
++    "8000": 5.85,
++    "16000": 8.59
++  },
++  "diffuse_inject": {
++    "gain_db": -1.5117329427121906,
++    "shelf_f0": 5031.315432437378,
++    "shelf_gain_db": -6.175052277380432,
++    "shelf_s": 0.7,
++    "fit_rmse_db": 0.35521868213398566,
++    "target_db": {
++      "50": -1.2777629572252738,
++      "104": -1.2846609358627947,
++      "218": -1.313801719933518,
++      "455": -1.42634697881851,
++      "951": -1.7711252141384668,
++      "1986": -2.5438615583385404,
++      "4148": -3.9483565648744987,
++      "8662": -6.113975351048754
++    }
++  },
++  "fit": {
++    "rmse_train_db": 2.116819063235342,
++    "rmse_holdout_db": 2.108767347740375,
++    "rmse_per_band_db": {
++      "200": 1.4442629990532823,
++      "250": 1.3081807568469808,
++      "315": 1.3218921879874184,
++      "400": 1.8577474279999555,
++      "500": 1.9823795830475763,
++      "630": 2.495928016818059,
++      "800": 2.2380441252261294,
++      "1000": 2.727176401527108,
++      "1250": 2.174191520082897,
++      "1600": 2.6030481874814715,
++      "2000": 2.472964345667665,
++      "2500": 2.1140464886962933
++    },
++    "n_dirs": 684,
++    "n_train": 547,
++    "n_holdout": 137,
++    "fit_bands_hz": [
++      200.0,
++      2500.0
++    ],
++    "n_bands": 12,
++    "free_params": [
++      "lo_db",
++      "hi_db",
++      "f0",
++      "shelf_s",
++      "p",
++      "q",
++      "b_ud",
++      "b_lr",
++      "aim_az",
++      "aim_el",
++      "lp_hz",
++      "lp_mix",
++      "p_lo",
++      "dip"
++    ],
++    "fixed_params": {
++      "lp_order": 2.0
++    },
++    "di_data_db": {
++      "200": 2.203959906759372,
++      "250": 1.9943967138180432,
++      "315": 2.465929811906036,
++      "400": 1.1296653321871468,
++      "500": -1.4855992557907536,
++      "630": -1.146976522918628,
++      "800": 0.34862677179982837,
++      "1000": -2.3640235113862067,
++      "1250": 0.37603045754464937,
++      "1600": 3.1811670891366077,
++      "2000": 2.0045867782303946,
++      "2500": 0.2417763812648257
++    },
++    "di_model_db": {
++      "200": 1.30791731168914,
++      "250": 1.32527606154061,
++      "315": 1.3525453085263497,
++      "400": 1.3951030354683416,
++      "500": 1.4531761222055104,
++      "630": 1.5380005043691276,
++      "800": 1.6588119136337522,
++      "1000": 1.808054803216118,
++      "1250": 1.9978253620606325,
++      "1600": 2.261263108310023,
++      "2000": 2.553849866597633,
++      "2500": 2.9045562644081704
++    }
++  },
++  "dsp": {
++    "stages": [
++      "broadband_gain(k_lo*lo_db)",
++      "rbj_high_shelf(f0, k*hi_db, shelf_s)",
++      "soft_beaming_lp(lp_hz/k_hi, lp_mix, lp_order 1|2 cascaded one-poles)"
++    ],
++    "fs_ref_hz": 48000,
++    "k": "k_hi = A*u^p*(1-q*u^8); k_lo = A*((1-dip)*u^p_lo*(1-q*u^8) + dip*4u(1-u)); both 0 on axis",
++    "slot": "FIRST stage of each image's serial cascade (before surfaces/air/mic)"
++  },
++  "provenance": {
++    "dataset": "BYU ScholarsArchive Spatial Audio Library \u2014 Violin Directivity",
++    "url": "https://scholarsarchive.byu.edu/directivity/15/",
++    "citation": "S. D. Bellows, K. J. Bodon, T. W. Leishman, 'Violin Directivity', BYU ScholarsArchive Directivity 15 (2020)",
++    "license": "free & open access; cite as requested (no explicit licence text found)",
++    "grid": "5 deg dual-equiangular 72x37 (SH-resampled, 1/3 octave)",
++    "measurement": "MEASURED (anechoic, rotating semicircular array)",
++    "front_axis": "theta=0 column (VERIFIED dataset note for BYU instruments/speech)"
++  },
++  "tags": {
++    "params": "VERIFIED fit output (this code) of MEASURED data",
++    "model_form": "ASSUMED (engineering model, mirrors mic_fitter v3)",
++    "size_rule": "VERIFIED physics (piston ka=1) applied as ASSUMED mapping"
++  }
++}
+\ No newline at end of file
+diff -ruN -x __pycache__ -x .pytest_cache -x '*.wasm' -x '*.orig' snapshot_2026-10-01_2210/software/render_pipeline.py snapshot_2026-10-02_0615/software/render_pipeline.py
+--- snapshot_2026-10-01_2210/software/render_pipeline.py	2026-10-02 03:39:20.185353611 +0100
++++ snapshot_2026-10-02_0615/software/render_pipeline.py	2026-10-02 06:03:52.000000000 +0100
+@@ -376,6 +376,7 @@
+     early_toys=None,
+     air_climate: str = "studio_20C_50RH",
+     air_iso: bool = True,
++    src_images=None,
+ ):
+     """Render early IR. Optional ASSUMED surfaces absorb×EQ + path-length jitter.
+ 
+@@ -396,7 +397,10 @@
+         toys = bool(early_toys)
+     hp_grad = rbj_highpass(sr, gradient_hp_hz(cap_mm)) if toys else None
+     beam_cache = {}
+-    for t in taps:
++    _apply_src = None
++    if src_images is not None:
++        from source_radiation import apply_coef as _apply_src
++    for ti, t in enumerate(taps):
+         d_l = float(t.distance_l)
+         d_r = float(t.distance_r)
+         # ASSUMED surface hit from geometric n (not Structure A–F OCR masks)
+@@ -448,6 +452,9 @@
+                 br += gr
+             else:
+                 _apply_ir_at(br, dr, grad_r, ap_stages, ap_cache)
++        if _apply_src is not None and ti < len(src_images):
++            bl = _apply_src(bl, src_images[ti])
++            br = _apply_src(br, src_images[ti])
+         if toys:
+             f_l = beaming_lp_hz(float(t.theta_l), cap_mm)
+             f_r = beaming_lp_hz(float(t.theta_r), cap_mm)
+@@ -588,6 +595,7 @@
+     line_t60=0.0,
+     air_climate: str = "studio_20C_50RH",
+     air_iso: bool = True,
++    src_diffuse=None,
+ ):
+     """2011 wet: L / C / R Diffuser Delay loops + Hadamard feedback + Mixer fold.
+ 
+@@ -621,6 +629,10 @@
+         _scale_inject_reflect(inj, taps, surfaces)
+         if omit_direct_inject and 0 <= di < n_lines:
+             inj[:, di] = 0.0
++        if src_diffuse is not None and not src_diffuse.bypass:
++            from source_radiation import apply_coef
++            for i in range(n_lines):
++                inj[:, i] = apply_coef(inj[:, i], src_diffuse)
+         dffs = dffs_from_taps(
+             taps, dff_per_tap, diffusion, n=n_lines, channel=ch,
+         )
+@@ -724,7 +736,7 @@
+     return (vals[0] / peak, vals[1] / peak, vals[2] / peak)
+ 
+ 
+-def render_listen_direct_ir(taps, sr, length_ms, n_lines=32, weights=None, colour=None, spikes=None):
++def render_listen_direct_ir(taps, sr, length_ms, n_lines=32, weights=None, colour=None, spikes=None, src_direct=None):
+     """Delayed spikes, capsule weights, × 0.55.
+ 
+     Default weights are the 477 fold (L+0.5·C, R+0.5·C).
+@@ -751,6 +763,11 @@
+     Ld[_at(t.delay_ms_l)] = s_l
+     Rd[_at(t.delay_ms_r)] = s_r
+     Cd[_at(dc)] = s_c
++    if src_direct is not None:
++        from source_radiation import apply_coef
++        Ld = apply_coef(Ld, src_direct[0])
++        Cd = apply_coef(Cd, src_direct[1])
++        Rd = apply_coef(Rd, src_direct[2])
+     Ld = _colour_apply(colour, Ld, float(t.theta_l), "l")
+     Cd = _colour_apply(colour, Cd, float(getattr(t, "theta_c", 0.0)), "c")
+     Rd = _colour_apply(colour, Rd, float(t.theta_r), "r")
+@@ -818,6 +835,7 @@
+     loop_g=None,
+     air_climate: str = "studio_20C_50RH",
+     air_iso: bool = True,
++    src_plan=None,
+ ):
+     weights = capsule_speaker_weights(
+         mic_gain_l, mic_gain_c, mic_gain_r,
+@@ -838,12 +856,14 @@
+             colour=colour,
+             air_climate=air_climate,
+             air_iso=air_iso,
++            src_images=None if src_plan is None else src_plan.images,
+         )
+     else:
+         Le = np.zeros(1, dtype=np.float64)
+         Re = np.zeros(1, dtype=np.float64)
+     Ld, Rd = render_listen_direct_ir(
+         taps, sr, fdn_ms, n_lines=hadamard_n, weights=weights, colour=colour,
++        src_direct=None if src_plan is None else src_plan.direct,
+     )
+     Lf, Rf = render_fdn_ir(
+         taps, room, sr, c, fdn_ms, fdn_g if loop_g is None else loop_g, DEFAULT_DEPTH, delays,
+@@ -858,6 +878,7 @@
+         line_t60=line_t60,
+         air_climate=air_climate,
+         air_iso=air_iso,
++        src_diffuse=None if src_plan is None else src_plan.diffuse,
+     )
+     n = max(len(Le), len(Lf), len(Ld))
+     def _pad(a):
+@@ -883,6 +904,29 @@
+     return L, R
+ 
+ 
++def _source_plan(preset_id, yaw_deg, pitch_deg, taps_src, prep_src, sr_hz, size_m=None):
++    """None for omni. Callers then leave the source stage out."""
++    import source_radiation as srcmod
++
++    if prep_src is None or not taps_src:
++        return None
++    return srcmod.plan_from_scene(
++        preset_id, float(yaw_deg or 0.0), float(pitch_deg or 0.0), taps_src,
++        prep_src.source, prep_src.mic_centre,
++        (prep_src.mic_left, prep_src.mic_centre, prep_src.mic_right),
++        sr_hz, size_m=size_m,
++    )
++
++
++def _yaw_for_b(yaw_a, yaw_b, mirror_b: bool) -> float:
++    """ASSUMED: a mirrored B with no own yaw faces the opposite way."""
++    if yaw_b is None and mirror_b:
++        return -float(yaw_a or 0.0)
++    if yaw_b is None:
++        return float(yaw_a or 0.0)
++    return float(yaw_b)
++
++
+ def render(
+     dry: np.ndarray,
+     sr: int,
+@@ -972,6 +1016,13 @@
+     reaktor_parity: bool = False,
+     air_climate: str = "studio_20C_50RH",
+     air_iso: bool = True,
++    source_radiation: str = "omni",
++    source_yaw: float = 0.0,
++    source_pitch: float = 0.0,
++    source_radiation_b: Optional[str] = None,
++    source_yaw_b: Optional[float] = None,
++    source_pitch_b: Optional[float] = None,
++    source_size_m: Optional[float] = None,
+ ) -> Tuple[np.ndarray, np.ndarray, dict]:
+     """Render dry mono through early-field (+ optional FDN) with optional motion.
+ 
+@@ -1107,8 +1158,17 @@
+             mk = ir_rms_makeup_from_inject(
+                 inj_l, inj_c, inj_r, g_split, n_had, fdn_ms, sr,
+             )
++            plan_a = _source_plan(
++                source_radiation, source_yaw, source_pitch, taps, prep, sr, source_size_m,
++            )
++            plan_b = _source_plan(
++                source_radiation_b or source_radiation,
++                _yaw_for_b(source_yaw, source_yaw_b, bool(mirror_b)),
++                source_pitch if source_pitch_b is None else source_pitch_b,
++                taps_b, prep_b, sr, source_size_m,
++            )
+ 
+-            def direct_early(taps_src):
++            def direct_early(taps_src, src_plan):
+                 di_src = direct_line_index(taps_src, n_had)
+                 spikes = None
+                 if taps_src and 0 <= di_src < len(taps_src):
+@@ -1116,6 +1176,7 @@
+                 Ld, Rd = render_listen_direct_ir(
+                     taps_src, sr, fdn_ms, n_lines=n_had, weights=weights, colour=mic_colour,
+                     spikes=spikes,
++                    src_direct=None if src_plan is None else src_plan.direct,
+                 )
+                 Ld = float(direct_wet) * Ld
+                 Rd = float(direct_wet) * Rd
+@@ -1134,6 +1195,7 @@
+                     colour=mic_colour,
+                     air_climate=air_climate,
+                     air_iso=air_iso,
++                    src_images=None if src_plan is None else src_plan.images,
+                 )
+                 n_ir = max(len(Ld), len(Le))
+ 
+@@ -1149,10 +1211,10 @@
+                 eR = weights["lr"] * Le + weights["rr"] * Re
+                 return Ld + float(early_wet) * mk * eL, Rd + float(early_wet) * mk * eR
+ 
+-            deA_L, deA_R = direct_early(taps)
+-            deB_L, deB_R = direct_early(taps_b)
++            deA_L, deA_R = direct_early(taps, plan_a)
++            deB_L, deB_R = direct_early(taps_b, plan_b)
+ 
+-            def _fdn_stereo(taps_src):
++            def _fdn_stereo(taps_src, src_plan):
+                 left, right = render_fdn_ir(
+                     taps_src, room, sr, c, fdn_ms, g_loop, DEFAULT_DEPTH, delays,
+                     n_lines=n_had, surfaces=surfaces, humidity=humidity,
+@@ -1166,11 +1228,12 @@
+                     line_t60=line_t60,
+                     air_climate=air_climate,
+                     air_iso=air_iso,
++                    src_diffuse=None if src_plan is None else src_plan.diffuse,
+                 )
+                 return float(fdn_wet) * mk * left, float(fdn_wet) * mk * right
+ 
+-            fA_L, fA_R = _fdn_stereo(taps)
+-            fB_L, fB_R = _fdn_stereo(taps_b)
++            fA_L, fA_R = _fdn_stereo(taps, plan_a)
++            fB_L, fB_R = _fdn_stereo(taps_b, plan_b)
+             exc_a, exc_b, down, ga, gb = two_source_excitation(dry_l, dry_r, source_balance)
+ 
+             def _conv3(ir_a, ir_b, ir_fa, ir_fb):
+@@ -1239,6 +1302,9 @@
+             lim = 0.99 / math.sqrt(float(n_had))
+             g = float(max(0.0, min(lim, g)))
+             line_t60 = float(decay_s)
++        src_plan = _source_plan(
++            source_radiation, source_yaw, source_pitch, taps, prep, sr, source_size_m,
++        )
+         ir_L, ir_R = combined_ir(
+             taps,
+             room,
+@@ -1273,6 +1339,7 @@
+             loop_g=(1.0 / math.sqrt(float(n_had))) if line_t60 > 0.05 else None,
+             air_climate=air_climate,
+             air_iso=air_iso,
++            src_plan=src_plan,
+         )
+         yL = fft_convolve(dry, ir_L)
+         yR = fft_convolve(dry, ir_R)
+@@ -1342,6 +1409,9 @@
+             lim = 0.99 / math.sqrt(float(n_had))
+             g = float(max(0.0, min(lim, g)))
+             line_t60 = float(decay_s)
++        hop_plan = _source_plan(
++            source_radiation, source_yaw, source_pitch, taps, last_prep, sr, source_size_m,
++        )
+         ir_L, ir_R = combined_ir(
+             taps,
+             room,
+@@ -1375,6 +1445,7 @@
+             loop_g=(1.0 / math.sqrt(float(n_had))) if line_t60 > 0.05 else None,
+             air_climate=air_climate,
+             air_iso=air_iso,
++            src_plan=hop_plan,
+         )
+         end = min(start + frame, n_dry)
+         block = np.zeros(frame, dtype=np.float64)
+@@ -1446,7 +1517,7 @@
+     shelf = _shelf_off()
+     shelf2 = _shelf_off()
+     if humidity > 0.0 and sh > 0.0 and air_iso:
+-        low, high = iso_shelf_pair(dist_m, sr, sh, air_climate)
++        low, high = iso_shelf_pair(dist_m, sr, sh, air_climate, humidity)
+         shelf = _shelf_on(low)
+         shelf2 = _shelf_on(high)
+     return air_g, lp, shelf, shelf2
+@@ -1732,6 +1803,20 @@
+         _bb = buses[_ch].get("b")
+         if isinstance(_bb, dict):
+             _attach_loop_mix(_bb, g_loop)
++    import source_radiation as _srcmod
++    plan_a = _source_plan(
++        p.get("source_radiation"), p.get("source_yaw"), p.get("source_pitch"),
++        taps, prep, rate, p.get("source_size_m"),
++    )
++    plan_b = None
++    if two and taps_b is not None:
++        plan_b = _source_plan(
++            p.get("source_radiation_b") or p.get("source_radiation"),
++            _yaw_for_b(p.get("source_yaw"), p.get("source_yaw_b"), bool(p.get("mirror_b"))),
++            p.get("source_pitch") if p.get("source_pitch_b") is None else p.get("source_pitch_b"),
++            taps_b, prep_b, rate, p.get("source_size_m"),
++        )
++    src_rad = _srcmod.pack_play(plan_a, plan_b)
+     return {
+         "ok": True,
+         "n": n_had,
+@@ -1780,6 +1865,7 @@
+         "colour": colour_bank,
+         "ic_hp": ic_hp,
+         "ic_hm": ic_hm,
++        "src_rad": src_rad,
+         "tag": "ASSUMED live FDN — same delays/inject/Dffs/mic/air/peaking as offline IR",
+     }
+ 
+@@ -1823,12 +1909,20 @@
+     a += [float(dms), _pb_num(src.get("direct_gain"), 1.0)]
+ 
+ 
++def _pb_src(d: dict) -> list:
++    """SRC_RAD payload. Anything other than 716 floats stays an empty section."""
++    src = d.get("src_rad") if isinstance(d, dict) else None
++    if not isinstance(src, (list, tuple)) or len(src) != 716:
++        return []
++    return [_pb_num(v, 0.0) for v in src]
++
++
+ def pack_blob_v2(params: dict) -> list:
+     """v2 room blob. Same layout as fdn_worklet.js packRoom and the harness packer.
+ 
+     CORE is the magic-1 body without the magic, plus hadamard_n, loop_semantics,
+-    and solo_mute[6]. AIR is the second shelf (1152) or empty. SURF, SCATTER,
+-    and SRC_RAD are empty until those phases fill them.
++    and solo_mute[6]. AIR is the second shelf (1152) or empty. SURF and SCATTER
++    stay empty. SRC_RAD is 716 floats, or empty when the source is omni.
+     """
+     d = params or {}
+     di = int(_pb_num(d.get("direct_index"), 10.0))
+@@ -1887,7 +1981,7 @@
+             shelf = b.get("shelf2") or []
+             for i in range(32):
+                 _pb_shelf(air, shelf[i] if i < len(shelf) else None)
+-    parts = [(1, core), (2, air), (3, []), (4, []), (5, [])]
++    parts = [(1, core), (2, air), (3, []), (4, []), (5, _pb_src(d))]
+     off = 5 + 4 * len(parts)
+     directory: list = []
+     body: list = []
+diff -ruN -x __pycache__ -x .pytest_cache -x '*.wasm' -x '*.orig' snapshot_2026-10-01_2210/software/static/index.html snapshot_2026-10-02_0615/software/static/index.html
+--- snapshot_2026-10-01_2210/software/static/index.html	2026-10-02 03:39:20.069353611 +0100
++++ snapshot_2026-10-02_0615/software/static/index.html	2026-10-02 06:04:07.000000000 +0100
+@@ -558,7 +558,7 @@
+             <p class="hadamard-note">Matrix is unscaled ±1 (Sylvester). Feedback slider is Structure Gain; engine uses Gain/N (1 at 32 lines = 1/32). Peaking in the loop is cut-only.</p>
+           </div>
+           <label class="ctrl"><span>IR length <em>ms</em></span><input type="range" id="ir_length_ms" min="50" max="2000" step="10" value="1500" /><output id="ir_length_ms_out">1500</output></label>
+-          <label class="ctrl"><span>Humidity</span><input type="range" id="humidity" min="0" max="1" step="0.01" value="0.35" /><output id="humidity_out">0.35</output></label>
++          <label class="ctrl" id="humidity_label" title="Relative humidity 50%"><span>Air amount (humidity)</span><input type="range" id="humidity" min="0" max="1" step="0.01" value="0.35" title="Relative humidity 50%" /><output id="humidity_out">50% RH</output></label>
+           <label class="ctrl"><span>Air 1-pole mix</span><input type="range" id="air_lp" min="0" max="1" step="0.01" value="0" /><output id="air_lp_out">0.00</output></label>
+           <label class="ctrl"><span>Air shelf mix</span><input type="range" id="air_shelf" min="0" max="1" step="0.01" value="1" /><output id="air_shelf_out">1.00</output></label>
+           <label class="ctrl"><span>Air climate</span>
+@@ -569,7 +569,7 @@
+               <option value="warm_22C_40RH">Warm 22 °C / 40% RH</option>
+             </select>
+           </label>
+-          <p class="hint">Humidity 0 = off. 0.5 = Structure Wet 400. The shelf is the ISO 9613-1 dual high-shelf for the climate. The 1-pole stays a separate mix. Direct has no air.</p>
++          <p class="hint">Air amount 0 = off. Right is more high-frequency loss. The tooltip shows the relative humidity at this climate's temperature. The 1-pole is a separate mix (0.5 on that Wet scale is still 400). Direct has no air.</p>
+           <button type="button" class="btn" id="reaktorSnapshotBtn">2011 Reaktor snapshot</button>
+           <p class="hint">Hall 57×34×97, source/mic from the dump, g=1/32, Humidity 400, Mic 10 kHz, live surface Dif.</p>
+           <label class="check">
+@@ -640,7 +640,7 @@
+   <script src="/static/js/colour_surfaces.js"></script>
+   <script src="/static/js/polar_field.js?v=4"></script>
+   <script src="/static/js/mic_desk.js?v=8"></script>
+-  <script src="/static/js/live_fdn.js?v=38"></script>
+-  <script src="/static/js/app.js?v=24"></script>
++  <script src="/static/js/live_fdn.js?v=39"></script>
++  <script src="/static/js/app.js?v=25"></script>
+ </body>
+ </html>
+diff -ruN -x __pycache__ -x .pytest_cache -x '*.wasm' -x '*.orig' snapshot_2026-10-01_2210/software/static/js/app.js snapshot_2026-10-02_0615/software/static/js/app.js
+--- snapshot_2026-10-01_2210/software/static/js/app.js	2026-10-02 03:39:20.149353611 +0100
++++ snapshot_2026-10-02_0615/software/static/js/app.js	2026-10-02 06:04:14.000000000 +0100
+@@ -1387,6 +1387,41 @@
+     });
+   }
+ 
++  /* Keep in sync with air_iso.rh_pct_from_slider. 0.35 is the climate preset. */
++  var AIR_RH_NOMINAL = 0.35;
++  var AIR_RH_QUIET = 10;
++  var AIR_RH_LOSSY = 90;
++  var AIR_PRESET_RH = {
++    studio_20C_50RH: 50,
++    dry_20C_20RH: 20,
++    humid_20C_80RH: 80,
++    warm_22C_40RH: 40
++  };
++  function airRhPct(humidity, climate) {
++    var h = Number(humidity);
++    if (!(h > 0)) return null;
++    if (h > 1) h = 1;
++    var preset = AIR_PRESET_RH[climate];
++    if (preset == null) preset = AIR_PRESET_RH.studio_20C_50RH;
++    if (h <= AIR_RH_NOMINAL) {
++      return AIR_RH_QUIET + (h / AIR_RH_NOMINAL) * (preset - AIR_RH_QUIET);
++    }
++    return preset + ((h - AIR_RH_NOMINAL) / (1 - AIR_RH_NOMINAL)) * (AIR_RH_LOSSY - preset);
++  }
++  function fmtRh(rh) {
++    var r = Math.round(rh * 10) / 10;
++    if (Math.abs(r - Math.round(r)) < 0.05) return String(Math.round(r));
++    return r.toFixed(1);
++  }
++  function paintHumidityReadout(el, out) {
++    var rh = airRhPct(state.humidity, state.air_climate);
++    var tip = rh == null ? "Air off" : ("Relative humidity " + fmtRh(rh) + "%");
++    if (out) out.textContent = rh == null ? "off" : (fmtRh(rh) + "% RH");
++    if (el) el.title = tip;
++    var label = document.getElementById("humidity_label");
++    if (label) label.title = tip;
++  }
++
+   function syncUINow() {
+     if (wavChannels < 2) state.two_sources = false;
+     var geo = RoomMath.compute(state);
+@@ -1406,6 +1441,8 @@
+         out.textContent = v >= 0.66 ? "Cardioid" : (v <= 0.33 ? "Omni" : "Blend");
+       } else if (id === "ir_length_ms") {
+         out.textContent = String(Math.round(state[id]));
++      } else if (id === "humidity") {
++        paintHumidityReadout(el, out);
+       } else {
+         out.textContent = fmt(state[id], (id === "W" || id === "H" || id === "L") ? 1 : 2);
+       }
+diff -ruN -x __pycache__ -x .pytest_cache -x '*.wasm' -x '*.orig' snapshot_2026-10-01_2210/software/static/js/fdn_worklet.js snapshot_2026-10-02_0615/software/static/js/fdn_worklet.js
+--- snapshot_2026-10-01_2210/software/static/js/fdn_worklet.js	2026-10-02 03:39:20.121353611 +0100
++++ snapshot_2026-10-02_0615/software/static/js/fdn_worklet.js	2026-10-02 05:11:40.000000000 +0100
+@@ -119,8 +119,20 @@
+   return a;
+ }
+ 
++function packSrc(data) {
++  var src = data && data.src_rad;
++  var a = [];
++  var i, n;
++  if (!src || src.length !== 716) return a;
++  for (i = 0; i < 716; i++) {
++    n = Number(src[i]);
++    a.push(isFinite(n) ? n : 0);
++  }
++  return a;
++}
++
+ function packRoom(data) {
+-  var parts = [[1, packCore(data)], [2, packAir(data)], [3, []], [4, []], [5, []]];
++  var parts = [[1, packCore(data)], [2, packAir(data)], [3, []], [4, []], [5, packSrc(data)]];
+   var nsec = parts.length;
+   var off = 5 + 4 * nsec;
+   var dir = [];
+diff -ruN -x __pycache__ -x .pytest_cache -x '*.wasm' -x '*.orig' snapshot_2026-10-01_2210/software/static/js/live_fdn.js snapshot_2026-10-02_0615/software/static/js/live_fdn.js
+--- snapshot_2026-10-01_2210/software/static/js/live_fdn.js	2026-10-02 03:39:20.129353611 +0100
++++ snapshot_2026-10-02_0615/software/static/js/live_fdn.js	2026-10-02 05:16:11.000000000 +0100
+@@ -16,7 +16,7 @@
+   var colourRev = "";
+   var bank = null;
+   var lastCapLine = "";
+-  var WORKLET_VER = 38;
++  var WORKLET_VER = 39;
+   var COLOUR_CAP = 192;
+   var ROUTE_LEN = 326;
+ 
+@@ -288,6 +288,7 @@
+       line_t60: params.line_t60 || 0,
+       ic_hp: params.ic_hp || null,
+       ic_hm: params.ic_hm || null,
++      src_rad: params.src_rad || null,
+       peaking: params.peaking,
+       two_sources: !!params.two_sources && !monoFile,
+       gain_a: params.gain_a,
+diff -ruN -x __pycache__ -x .pytest_cache -x '*.wasm' -x '*.orig' snapshot_2026-10-01_2210/software/tests/test_live_stereo.py snapshot_2026-10-02_0615/software/tests/test_live_stereo.py
+--- snapshot_2026-10-01_2210/software/tests/test_live_stereo.py	2026-10-02 03:39:20.069353611 +0100
++++ snapshot_2026-10-02_0615/software/tests/test_live_stereo.py	2026-10-02 05:11:40.000000000 +0100
+@@ -598,9 +598,9 @@
+     work = (ROOT / "static" / "js" / "fdn_worklet.js").read_text(encoding="utf-8")
+     page = (ROOT / "static" / "index.html").read_text(encoding="utf-8")
+     assert "createConvolver" not in live
+-    assert "WORKLET_VER = 38" in live
++    assert "WORKLET_VER = 39" in live
+     assert "LANES = 4" in text
+-    assert "live_fdn.js?v=38" in page
++    assert "live_fdn.js?v=39" in page
+     assert "MAX_SOS" in text
+     assert "design_sos" in text
+     assert "LS_DC" in text
+diff -ruN -x __pycache__ -x .pytest_cache -x '*.wasm' -x '*.orig' snapshot_2026-10-01_2210/software/tests/test_mic_colour_relative.py snapshot_2026-10-02_0615/software/tests/test_mic_colour_relative.py
+--- snapshot_2026-10-01_2210/software/tests/test_mic_colour_relative.py	2026-10-02 03:39:20.073353611 +0100
++++ snapshot_2026-10-02_0615/software/tests/test_mic_colour_relative.py	2026-10-02 05:11:40.000000000 +0100
+@@ -938,8 +938,8 @@
+     assert "apply_mic=True" not in pipe
+     assert "mic_one_pole_coeff" not in pipe
+     stereo = (SOFTWARE / "engine" / "live_stereo.c").read_text(encoding="utf-8")
+-    assert "WORKLET_VER = 38" in live_js
+-    assert "live_fdn.js?v=38" in page
++    assert "WORKLET_VER = 39" in live_js
++    assert "live_fdn.js?v=39" in page
+     assert "MAX_IRS = 192" in stereo
+     assert "var MAX_IRS = 192" in work
+     assert "Mic colour is OFF:" in live_js

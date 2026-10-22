@@ -1,0 +1,6 @@
+# T3b · MS sound: unity Mid −3 dB (D18) + MS direct pattern (D19). Effort: medium. Needs T3. Decisions: D18, D19 locked 4 Oct 16:43.
+Read `handoff_build_support_2\roadmap\prebuild\t3b_ms_sound\README.md`. Apply `d19_render_pipeline.diff` (3 hunks: `has_side_strip` after `LIVE_DIRECT_FOLD` ~1047; spikes in `render_listen_direct_ir` ~1080; Play `direct_gain` before `if binaural_on` ~2212; rg first). Set `RRMS.MS_LEVEL = "unity_trim"` in `ms_presets.js`. Copy `tests_py\test_t3b_ms_sound_draft.py`; remove the strict-xfail markers there and in `test_t3_ms_presets_draft.py` once they pass.
+- **Cut line:** D19 first (Render + Play together, never one alone), MS references regenerated, commit. D18 level second, commit. Each half is clean on its own.
+- **Golden impact:** **MS references only** (regenerate with a GOLDEN_META reason "D18/D19"). Main ORTF golden **NO**: must stay bit-exact.
+- **Done when:** the 3 flipped tests pass; `selfcheck.py` result unchanged (box baseline: 1/45 fail, `test_two_source_balance_mirror_and_split`, pre-existing); a Play direct-only MS check on the PC sits within 1 dB of centre for a front source.
+- **Stop if:** the main golden moves, ORTF gets a `direct_gain`, or Play and Render disagree on the MS direct by > 0.5 dB.

@@ -1,0 +1,157 @@
+key,group,status,what_it_does,range,default_server,default_client,units,provenance,current_ui_location,recommended_tabs,play,render,flags
+W,Room,current,Room width,1–80 (UI),6,6,m,Structure-derived,panelRoom (all tabs),Floor; Advanced numeric,Y,Y,
+H,Room,current,Room height,1–40,3,3,m,Structure-derived,panelRoom,Floor (Side view); Advanced,Y,Y,
+L,Room,current,Room length,2–120,8,8,m,Structure-derived,panelRoom,Floor; Advanced,Y,Y,
+sx,Source A,current,Source A x position,0–W,3,3,m,VERIFIED-code,Floor drag,Floor; Source,Y,Y,
+sy,Source A,current,Source A height,0–20,1.5,1.5,m,VERIFIED-code,Floor Side view,Floor; Source,Y,Y,linked by link_heights
+sz,Source A,current,Source A z (depth) position,0–L,4.75,4.75,m,VERIFIED-code,Floor drag,Floor; Source,Y,Y,
+mcx,Mic array,current,Mic array centre x,0–40,3,3,m,VERIFIED-code,Floor drag,Floor; Mic,Y,Y,
+mcz,Mic array,current,Mic array centre z,0–60,1.5,1.5,m,VERIFIED-code,Floor drag,Floor; Mic,Y,Y,
+my,Mic array,current,Mic height,0–20,1.5,1.5,m,VERIFIED-code,Floor Side view,Floor; Mic,Y,Y,
+link_heights,Room,current,Lock source height to mic height,bool,false,false,,VERIFIED-code,Floor/Mic,Floor,Y,Y,
+space,Mic array,current,Capsule spacing (array width),0–6 (UI),0.25,0.17,m,Structure-derived,panelRoom/Mic,Mic,Y,Y,CONFLICT: server/client default differ
+diverg,Mic array,current,Divergence factor (hidden),hidden,1,1,,Structure-derived,hidden,Advanced,Y,Y,hidden; consider removing from UI state
+toe_half_deg,Mic array,current,Toe-out half angle (hidden),hidden,55,55,deg,Structure-derived,hidden,Advanced,Y,Y,overlaps yaw_l/r_deg; DUPLICATE semantic
+car_omni,Mic array,current,Cardioid/omni blend (hidden),hidden,1,1,,Structure-derived,hidden,Advanced,Y,Y,overlaps polar_*; hidden
+pattern_l,Capsules,current,Polar pattern name capsule L,cardioid|…,cardioid,cardioid,,VERIFIED-code,Mic tab capsule rows,Mic,Y,Y,preset_owns_pattern can override
+family_l,Capsules,current,Pattern family capsule L,cardioid|bi,cardioid,cardioid,,VERIFIED-code,Mic tab,Mic,Y,Y,
+polar_l,Capsules,current,Polar blend capsule L (0 omni…1 fig-8),0–1,0.5,0.5,,VERIFIED-code,Mic tab,Mic,Y,Y,
+pattern_c,Capsules,current,Polar pattern name capsule C,cardioid|…,cardioid,cardioid,,VERIFIED-code,Mic tab capsule rows,Mic,Y,Y,preset_owns_pattern can override
+family_c,Capsules,current,Pattern family capsule C,cardioid|bi,cardioid,cardioid,,VERIFIED-code,Mic tab,Mic,Y,Y,
+polar_c,Capsules,current,Polar blend capsule C (0 omni…1 fig-8),0–1,0.5,0.5,,VERIFIED-code,Mic tab,Mic,Y,Y,
+pattern_r,Capsules,current,Polar pattern name capsule R,cardioid|…,cardioid,cardioid,,VERIFIED-code,Mic tab capsule rows,Mic,Y,Y,preset_owns_pattern can override
+family_r,Capsules,current,Pattern family capsule R,cardioid|bi,cardioid,cardioid,,VERIFIED-code,Mic tab,Mic,Y,Y,
+polar_r,Capsules,current,Polar blend capsule R (0 omni…1 fig-8),0–1,0.5,0.5,,VERIFIED-code,Mic tab,Mic,Y,Y,
+yaw_l_deg,Capsules,current,Left capsule yaw,±180,None (→toe),-55,deg,VERIFIED-code,Mic tab / Floor handle,Mic,Y,Y,CONFLICT: server None vs client -55
+yaw_c_deg,Capsules,current,Centre capsule yaw,±180,0,0,deg,VERIFIED-code,Mic tab,Mic,Y,Y,
+yaw_r_deg,Capsules,current,Right capsule yaw,±180,None (→toe),55,deg,VERIFIED-code,Mic tab / Floor handle,Mic,Y,Y,CONFLICT: server None vs client 55
+link_lr_yaw,Capsules,current,Mirror L/R yaw,bool,—,true?,,VERIFIED-code,Mic tab (client only),Mic,n/a,n/a,client-only
+align_horizontal,Capsules,current,Keep capsules horizontal,bool,—,true,,VERIFIED-code,Mic tab (client only),Mic,n/a,n/a,client-only
+centre_dz,Capsules,current,Centre capsule forward offset,±0.2,0,0,m,VERIFIED-code,Mic tab,Mic,Y,Y,
+ms_decode,Capsules,current,M/S decode of array,bool,false,false,,VERIFIED-code,Mic tab,Mic,Y,Y,
+colour_mode,Mic colour,current,Mic colouration model,MEASURED_SHELF|STRUCTURE_ONE_POLE|BYPASS|ASSUMED_TOYS,MEASURED_SHELF,MEASURED_SHELF,,VERIFIED-code,Mic tab,Mic,Y,Y,
+mic_preset_l,Mic colour,current,Measured mic preset capsule L (Franco et al. data),preset ids,ShureSM57,ShureSM57,,VERIFIED-code,Mic tab (UI: mic_preset_side / mic_preset_centre),Mic,Y,Y,"UI exposes side+centre, server takes l/c/r"
+mic_preset_c,Mic colour,current,Measured mic preset capsule C (Franco et al. data),preset ids,ShureSM57,ShureSM57,,VERIFIED-code,Mic tab (UI: mic_preset_side / mic_preset_centre),Mic,Y,Y,"UI exposes side+centre, server takes l/c/r"
+mic_preset_r,Mic colour,current,Measured mic preset capsule R (Franco et al. data),preset ids,ShureSM57,ShureSM57,,VERIFIED-code,Mic tab (UI: mic_preset_side / mic_preset_centre),Mic,Y,Y,"UI exposes side+centre, server takes l/c/r"
+mic_preset,Mic colour,current,Legacy single preset,preset id,—,—,,VERIFIED-code,state,Mic,?,?,DUPLICATE of mic_preset_l/c/r (legacy)
+mic_setup,Mic colour,current,Array preset name,ortf|…,ortf,ortf,,VERIFIED-code,Mic tab,Mic,Y,Y,
+preset_owns_pattern,Mic colour,current,Preset sets capsule pattern,bool,,,,VERIFIED-code,Mic tab,Mic,Y,Y,
+mic_hpf_engaged,Mic colour,current,Manufacturer HPF switch master,bool,,,,VERIFIED-code,Mic tab,Mic,Y,Y,≠ mic_hp_on (toy)
+mic_hpf_sides,Mic colour,current,Manufacturer HPF on side capsules,bool,,,,VERIFIED-code,Mic tab,Mic,Y,Y,
+mic_hpf_centre,Mic colour,current,Manufacturer HPF on centre capsule,bool,,,,VERIFIED-code,Mic tab,Mic,Y,Y,
+mic_hp_on,Mic toys,current,ASSUMED panel high-pass toy,bool,false,false,,ASSUMED,Mic tab (ASSUMED_TOYS),Mic (only when colour_mode=ASSUMED_TOYS),N? (not read by live_fdn_params),Y,CONFLICT/confusable with mic_hpf_*
+mic_hp_hz,Mic toys,current,Toy HP corner,20–200,40,40,Hz,ASSUMED,Mic tab,Mic (toys),N?,Y,
+mic_response_hz,Mic toys,current,Toy HF response corner,10000–20000,10000,10000,Hz,ASSUMED,Mic tab,Mic (toys),Y,Y,
+mic_proximity,Mic toys,current,Toy proximity bass lift,0–1,0.25,0.25,,ASSUMED,Mic tab,Mic (toys),N?,Y,
+capsule_mm,Mic toys,current,Capsule diameter (beaming LP toy),12–25,17,17,mm,ASSUMED,Mic tab,Mic (toys),Y,Y,
+early_wet,Mix,current,Early reflections level,0–?,0,0,lin,VERIFIED-code,Mix desk,Mix,Y,Y,
+fdn_wet,Mix,current,Late tail level,0–?,1,1,lin,VERIFIED-code,Mix desk,Mix,Y,Y,
+direct_wet,Mix,current,Direct path level,0–?,1,1,lin,VERIFIED-code,Mix desk,Mix,Y,Y,
+dry_gain,Mix,current,Unprocessed dry level,0–?,0,0,lin,VERIFIED-code,Mix desk,Mix,Y,Y,
+mic_gain_l,Mix,current,Capsule L gain,0–16,1,1,lin,VERIFIED-code,Mix desk,Mix,Y,Y,
+mic_pan_l,Mix,current,Capsule L pan,-1–1,-1,-1,,VERIFIED-code,Mix desk,Mix,Y,Y,
+mic_phase_l,Mix,current,Capsule L polarity flip,bool,false,false,,VERIFIED-code,Mix desk,Mix,Y,Y,
+mic_gain_c,Mix,current,Capsule C gain,0–16,1,1,lin,VERIFIED-code,Mix desk,Mix,Y,Y,
+mic_pan_c,Mix,current,Capsule C pan,-1–1,0,0,,VERIFIED-code,Mix desk,Mix,Y,Y,
+mic_phase_c,Mix,current,Capsule C polarity flip,bool,false,false,,VERIFIED-code,Mix desk,Mix,Y,Y,
+mic_gain_r,Mix,current,Capsule R gain,0–16,1,1,lin,VERIFIED-code,Mix desk,Mix,Y,Y,
+mic_pan_r,Mix,current,Capsule R pan,-1–1,1,1,,VERIFIED-code,Mix desk,Mix,Y,Y,
+mic_phase_r,Mix,current,Capsule R polarity flip,bool,false,false,,VERIFIED-code,Mix desk,Mix,Y,Y,
+trim_l,Mix desk (client),current,Trim l,±12 step 0.5,—,0,dB,VERIFIED-code,Mix tab,Mix,Y (folded into gains),Y,client-only; folded into server gains
+fader_l,Mix desk (client),current,Fader l,0–1,—,0.5,,VERIFIED-code,Mix tab,Mix,Y,Y,client-only
+mute_l,Mix desk (client),current,Bus mute l,bool,—,false,,VERIFIED-code,Mix tab,Mix,Y,Y,≠ surfaces_mute
+phase_l,Mix desk (client),current,Polarity l,bool,—,false,,VERIFIED-code,Mix tab,Mix,Y,Y,overlaps mic_phase_* for l/c/r: DUPLICATE
+trim_c,Mix desk (client),current,Trim c,±12 step 0.5,—,0,dB,VERIFIED-code,Mix tab,Mix,Y (folded into gains),Y,client-only; folded into server gains
+fader_c,Mix desk (client),current,Fader c,0–1,—,0.5,,VERIFIED-code,Mix tab,Mix,Y,Y,client-only
+mute_c,Mix desk (client),current,Bus mute c,bool,—,false,,VERIFIED-code,Mix tab,Mix,Y,Y,≠ surfaces_mute
+phase_c,Mix desk (client),current,Polarity c,bool,—,false,,VERIFIED-code,Mix tab,Mix,Y,Y,overlaps mic_phase_* for l/c/r: DUPLICATE
+trim_r,Mix desk (client),current,Trim r,±12 step 0.5,—,0,dB,VERIFIED-code,Mix tab,Mix,Y (folded into gains),Y,client-only; folded into server gains
+fader_r,Mix desk (client),current,Fader r,0–1,—,0.5,,VERIFIED-code,Mix tab,Mix,Y,Y,client-only
+mute_r,Mix desk (client),current,Bus mute r,bool,—,false,,VERIFIED-code,Mix tab,Mix,Y,Y,≠ surfaces_mute
+phase_r,Mix desk (client),current,Polarity r,bool,—,false,,VERIFIED-code,Mix tab,Mix,Y,Y,overlaps mic_phase_* for l/c/r: DUPLICATE
+trim_direct,Mix desk (client),current,Trim direct,±12 step 0.5,—,0,dB,VERIFIED-code,Mix tab,Mix,Y (folded into gains),Y,client-only; folded into server gains
+fader_direct,Mix desk (client),current,Fader direct,0–1,—,0.5,,VERIFIED-code,Mix tab,Mix,Y,Y,client-only
+mute_direct,Mix desk (client),current,Bus mute direct,bool,—,false,,VERIFIED-code,Mix tab,Mix,Y,Y,≠ surfaces_mute
+phase_direct,Mix desk (client),current,Polarity direct,bool,—,false,,VERIFIED-code,Mix tab,Mix,Y,Y,overlaps mic_phase_* for l/c/r: DUPLICATE
+trim_fdn,Mix desk (client),current,Trim fdn,±12 step 0.5,—,0,dB,VERIFIED-code,Mix tab,Mix,Y (folded into gains),Y,client-only; folded into server gains
+fader_fdn,Mix desk (client),current,Fader fdn,0–1,—,0.5,,VERIFIED-code,Mix tab,Mix,Y,Y,client-only
+mute_fdn,Mix desk (client),current,Bus mute fdn,bool,—,false,,VERIFIED-code,Mix tab,Mix,Y,Y,≠ surfaces_mute
+phase_fdn,Mix desk (client),current,Polarity fdn,bool,—,false,,VERIFIED-code,Mix tab,Mix,Y,Y,overlaps mic_phase_* for l/c/r: DUPLICATE
+trim_early,Mix desk (client),current,Trim early,±12 step 0.5,—,0,dB,VERIFIED-code,Mix tab,Mix,Y (folded into gains),Y,client-only; folded into server gains
+fader_early,Mix desk (client),current,Fader early,0–1,—,0,,VERIFIED-code,Mix tab,Mix,Y,Y,client-only
+mute_early,Mix desk (client),current,Bus mute early,bool,—,false,,VERIFIED-code,Mix tab,Mix,Y,Y,≠ surfaces_mute
+phase_early,Mix desk (client),current,Polarity early,bool,—,false,,VERIFIED-code,Mix tab,Mix,Y,Y,overlaps mic_phase_* for l/c/r: DUPLICATE
+trim_dry,Mix desk (client),current,Trim dry,±12 step 0.5,—,0,dB,VERIFIED-code,Mix tab,Mix,Y (folded into gains),Y,client-only; folded into server gains
+fader_dry,Mix desk (client),current,Fader dry,0–1,—,0,,VERIFIED-code,Mix tab,Mix,Y,Y,client-only
+mute_dry,Mix desk (client),current,Bus mute dry,bool,—,false,,VERIFIED-code,Mix tab,Mix,Y,Y,≠ surfaces_mute
+phase_dry,Mix desk (client),current,Polarity dry,bool,—,false,,VERIFIED-code,Mix tab,Mix,Y,Y,overlaps mic_phase_* for l/c/r: DUPLICATE
+pan_l,Mix desk (client),current,Desk pan l,-1–1,—,,,VERIFIED-code,Mix tab,Mix,Y,Y,DUPLICATE of mic_pan_* (client alias)
+pan_c,Mix desk (client),current,Desk pan c,-1–1,—,,,VERIFIED-code,Mix tab,Mix,Y,Y,DUPLICATE of mic_pan_* (client alias)
+pan_r,Mix desk (client),current,Desk pan r,-1–1,—,,,VERIFIED-code,Mix tab,Mix,Y,Y,DUPLICATE of mic_pan_* (client alias)
+solo_direct,Mix desk (client),current,Bus solo direct,bool,—,false,,VERIFIED-code,Mix tab,Mix,Y,Y,≠ surfaces_solo
+solo_fdn,Mix desk (client),current,Bus solo fdn,bool,—,false,,VERIFIED-code,Mix tab,Mix,Y,Y,≠ surfaces_solo
+solo_early,Mix desk (client),current,Bus solo early,bool,—,false,,VERIFIED-code,Mix tab,Mix,Y,Y,≠ surfaces_solo
+solo_dry,Mix desk (client),current,Bus solo dry,bool,—,false,,VERIFIED-code,Mix tab,Mix,Y,Y,≠ surfaces_solo
+stereo_mic,Mix desk (client),current,Stereo vs 3-capsule monitoring,bool,—,,,VERIFIED-code,Mix tab,Mix,Y,Y,
+natural_bus,Mix desk (client),current,Natural-bus preset toggle,bool,—,,,VERIFIED-code,Mix tab,Mix,Y,Y,
+live_drag_render,Mix desk (client),current,Re-render while dragging,bool,—,,,VERIFIED-code,panelMix,Advanced,n/a,n/a,UI behaviour
+fdn_g,Tail,current,Tail feedback gain (loop g),0–1,1,1,,Structure-derived,panelRoom/Tail,Lattice; Advanced,Y,Y,interplay with decay_lock
+decay_s,Tail,current,Target T60 when decay_lock,0.05–8,0,1.8,s,ASSUMED,Tail,Lattice,Y,Y,CONFLICT server 0 vs client 1.8; Phase 0 tail bug (2.6–4.5 s measured)
+decay_lock,Tail,current,Derive g from decay_s,bool,false,true,,ASSUMED,state (no checkbox found),Lattice,Y,Y,CONFLICT server/client; no UI control
+hadamard_n,Tail,current,FDN size N,8|16|32|64|128,32,32,lines,Structure-derived,"panelMix hadamardBlock (hidden on Floor, Mic)",Lattice; Advanced,N (fixed 32),Y,Render-only: Play/Render mismatch when ≠32
+diffusion_master,Tail,current,Master scale on Structure Dffs,−1–0,−0.5 (live),−0.5,,Structure-derived,none (state only),Advanced,Y,Y,CONFLICT fdn.py default −0.25 vs live −0.5; no UI
+ir_length_ms,Render,current,Render IR length,50–2000,1500,1500,ms,VERIFIED-code,panelMix,Advanced,N,Y,Render-only
+reaktor_parity,Render,current,Reaktor-parity geometry mode,bool,false,false,,Structure-derived,Floor/Advanced,Advanced,?,Y,
+sample_rate,System,current,Sample rate,44100/48000,48000?,ctx rate,Hz,VERIFIED-code,implicit,—,Y,Y,
+colour_rev,System,current,Colour cache revision,int,,,,VERIFIED-code,implicit,—,Y,Y,internal
+path_on,Paths,current,Moving-source path on,bool,false,false,,ASSUMED,Paths tab,Paths,N? (Play uses drag),Y,Render OLA only
+path_preset,Paths,current,Path shape,still|ellipse|…,still,still,,ASSUMED,Paths tab,Paths,N?,Y,
+ellipse_rate,Paths,current,Ellipse speed,,1,1,Hz?,ASSUMED,Paths tab,Paths,N?,Y,units ASSUMED
+ellipse_rx,Paths,current,Ellipse x radius,,0.42,0.42,frac of W?,ASSUMED,Paths tab,Paths,N?,Y,units ASSUMED
+ellipse_rz,Paths,current,Ellipse z radius,,0.35,0.35,frac of L?,ASSUMED,Paths tab,Paths,N?,Y,units ASSUMED
+humidity,Air,current,Structure humidity 1-pole amount,0–1,0.0,0.35,,Structure-derived,panelMix,Colour; Advanced,Y,Y,CONFLICT server 0.0 vs client 0.35; LOCK keep separate from ISO shelf
+air_lp,Air,current,Mix of Structure 1-pole,0–1,0.25,0.25,,Structure-derived,panelMix,Colour,Y,Y,
+air_shelf,Air,current,Mix of ASSUMED high shelf (to be replaced by ISO),0–1,1,1,,ASSUMED,panelMix,Colour,Y,Y,replaced by air_climate shelf in P2
+air_climate,Air,pending,ISO 9613-1 climate preset (dual_high_shelf fit),studio_20C_50RH|dry|humid|warm,studio_20C_50RH,,,BRIEF-pending (air_fitter),—,Colour; Advanced,P2,P2,"early + FDN inject only, never direct/return"
+surfaces,Surfaces,current,Six surface cards A..F (dict),"A Left,B Front,C Right,D Back,E Floor,F Ceiling",defaults,,,VERIFIED-code,Surfaces tab,Surfaces,Y (partial: absorb→tint/peaking),Y (full cascade),Play lacks per-hit cascade
+surfaces[X].absorb[7],Surfaces,current,Absorption α at 125–8000 Hz,0–0.95 (clamped),"0.05,0.06,0.08,0.10,0.14,0.18,0.22",,α,ASSUMED,Surfaces tab,Surfaces,Y,Y,|R|=√(1−α)
+surfaces[X].diffusion,Surfaces,current,Card diffusion (drives BOTH Δd jitter and Structure Dffs),0–1,0.15,0.15,,VERIFIED-code,Surfaces tab (diffusionSlider),Surfaces,Y,Y,CONFLICT: LOCK VIOLATION – single key drives two layers; split in P0.3
+surfaces[X].low_shelf_hz,Surfaces,current,Card EQ low shelf corner,20–2000,200,,Hz,ASSUMED,Surfaces tab,Surfaces,? (peaking only),Y,
+surfaces[X].low_shelf_db,Surfaces,current,Card EQ low shelf gain,±24,0,,dB,ASSUMED,Surfaces tab,Surfaces,?,Y,
+surfaces[X].high_shelf_hz,Surfaces,current,Card EQ high shelf corner,500–18000,5000,,Hz,ASSUMED,Surfaces tab,Surfaces,?,Y,
+surfaces[X].high_shelf_db,Surfaces,current,Card EQ high shelf gain,±24,0,,dB,ASSUMED,Surfaces tab,Surfaces,?,Y,
+surfaces[X].peak_hz,Surfaces,current,Card EQ peak freq,40–16000,1000,,Hz,ASSUMED,Surfaces tab,Surfaces,?,Y,
+surfaces[X].peak_db,Surfaces,current,Card EQ peak gain,±24,0,,dB,ASSUMED,Surfaces tab,Surfaces,?,Y,
+surfaces[X].peak_q,Surfaces,current,Card EQ peak Q,0.2–8,1,,,ASSUMED,Surfaces tab,Surfaces,?,Y,
+surfaces[X].assumed,Surfaces,current,Provenance flag,bool,true,,,VERIFIED-code,Surfaces tab badge,Surfaces,n/a,n/a,
+diffusion_seed,Surfaces,current,Seed for Δd jitter (SHA-256),int,0,0,,VERIFIED-code,Surfaces tab AND panelMix (diffusion_seed_mix),Surfaces,Y,Y,"DUPLICATE UI input (two controls, one key)"
+lambda_ref,Surfaces,current,Reference wavelength for Δd jitter,0–1,0.02,0.02,m,ASSUMED,Surfaces tab,Surfaces,Y,Y,
+surfaces[X].jitter_D,Surfaces,pending,Surfaces Δd jitter amount (split from diffusion),0–1,=old diffusion,,,BRIEF-pending/roadmap P0.3,—,Surfaces,P0.3,P0.3,new
+surfaces[X].structure_dif,Surfaces,pending,Structure Dffs contribution (split from diffusion),0–1,=old diffusion,,,Structure-derived/roadmap P0.3,—,Surfaces (Structure group) or Lattice,P0.3,P0.3,new
+surfaces[X].material_id,Surfaces,pending,Material preset (12 ASSUMED_TEXTBOOK) with role bans,preset ids,plaster etc.,,,BRIEF-pending Track A,—,Surfaces,P3A,P3A,no curtains on floor/ceiling (lock)
+surfaces_solo,Surfaces,pending,Solo one panel (exclusive),null|A..F,null,,,BRIEF-pending Track B,—,Surfaces,P3B,P3B,≠ Mix solo_*
+surfaces_mute,Surfaces,pending,"Mute panels (×0 inject, D=0 both layers)",{A..F: bool},all false,,,BRIEF-pending Track B,—,Surfaces,P3B,P3B,≠ Mix mute_*
+surfaces[X].scatter[7],Scattering,pending,Scattering coefficient per octave,0–1,0,,s,BRIEF-pending Track C,—,Surfaces,P5,P5,third separate diffusion concept
+surfaces[X].scatter_preset,Scattering,pending,Scattering preset (GRAS-derived etc.),ids,none,,,BRIEF-pending Track C,—,Surfaces,P5,P5,heavy_curtain preset ASSUMED (battens proxy); GRAS CC BY-SA
+scatter_amount,Scattering,pending,Global scattering scale,0–1,1 (once enabled),,,BRIEF-pending Track C,—,Surfaces; Advanced,P5,P5,
+scatter_pulses,Scattering,pending,Lambert cluster K,8–16,16 (8 with two sources),,pulses,BRIEF-pending Track C,—,Advanced,P5,P5,CPU shed item #1
+scatter_seed,Scattering,pending,Cluster seed,int,0,,,BRIEF-pending Track C,—,Advanced,P5,P5,
+two_sources,Source B,current,Enable second source (tank B),bool,false,false,,VERIFIED-code,panelRoom,Floor; Source,Y,Y,
+mirror_b,Source B,current,Mirror B about centre,bool,false,true,,VERIFIED-code,panelRoom,Floor; Source,Y,Y,CONFLICT server false vs client true
+source_balance,Source B,current,A/B balance,-1–1,0,0,,VERIFIED-code,panelRoom,Source,Y,Y,
+sx_b,Source B,current,Source B x,0–W,,,m,VERIFIED-code,Floor drag,Floor; Source,Y,Y,
+sy_b,Source B,current,Source B height,0–20,,,m,VERIFIED-code,Floor,Floor; Source,Y,Y,
+sz_b,Source B,current,Source B z,0–L,,,m,VERIFIED-code,Floor drag,Floor; Source,Y,Y,
+"src_rad.preset (A,B)",Source radiation,pending,Source directivity: preset,preset ids,omni,,,BRIEF-pending source_radiation P1,—,Source,P6,P6,; TU-derived presets licence-blocked
+"src_rad.yaw_deg (A,B)",Source radiation,pending,Source directivity: yaw_deg,±180,0,,deg,BRIEF-pending source_radiation P1,—,Source,P6,P6,facing handle on Floor
+"src_rad.pitch_deg (A,B)",Source radiation,pending,Source directivity: pitch_deg,±90,0,,deg,BRIEF-pending source_radiation P1,—,Source,P6,P6,
+"src_rad.roll_deg (A,B)",Source radiation,pending,Source directivity: roll_deg,±180,0,,deg,BRIEF-pending source_radiation P3,—,Source,P6,P6,
+"src_rad.size_m (A,B)",Source radiation,pending,Source directivity: size_m,null|m,null,,m,BRIEF-pending source_radiation P1,—,Source,P6,P6,
+"src_rad.level_ref (A,B)",Source radiation,pending,Source directivity: level_ref,on_axis|power,on_axis,,,BRIEF-pending source_radiation P1,—,Source,P6,P6,
+"src_rad.tail_follow (A,B)",Source radiation,pending,Source directivity: tail_follow,0–1,0,,,BRIEF-pending source_radiation P1,—,Source; Advanced,P6,P6,Advanced only
+"src_rad.size_jitter (A,B)",Source radiation,pending,Source directivity: size_jitter,bool,false,,,BRIEF-pending source_radiation P2,—,Source,P6,P6,
+"src_rad.emit_points (A,B)",Source radiation,pending,Source directivity: emit_points,1–?,1,,,BRIEF-pending source_radiation P3,—,Source,P6,P6,
+colourRefMode,Colour tab (UI),current,Colour tab reference curve mode,,—,,,VERIFIED-code,Colour tab,Colour,n/a,n/a,UI only
+colour_hold_a_b,Colour tab (UI),current,Hold A / Hold B comparison traces,,—,,,VERIFIED-code,Colour tab,Colour,n/a,n/a,UI only
+polar_show_l/c/r/sum,Polar (UI),current,Polar 3D visibility toggles,bool,—,,,VERIFIED-code,Polar 3D,Polar,n/a,n/a,UI only
+mic_designer_*,Mic colour,pending,Mic brief Phase 4 designer knobs,,,,,ASSUMED (mic brief v2.2 P4),—,Mic,?,?,not implemented; scope in brief

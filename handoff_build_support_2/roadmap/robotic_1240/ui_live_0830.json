@@ -1,0 +1,67 @@
+{
+ "phases": {
+  "room_idle": {
+   "secs": 6,
+   "live_params_posts": 0,
+   "LiveFDN_update_calls": 0,
+   "all_posts": {}
+  },
+  "source_idle": {
+   "secs": 5,
+   "live_params_posts": 0,
+   "LiveFDN_update_calls": 0,
+   "all_posts": {}
+  },
+  "surfaces_idle": {
+   "secs": 5,
+   "live_params_posts": 0,
+   "LiveFDN_update_calls": 0,
+   "all_posts": {}
+  },
+  "paths_idle": {
+   "secs": 5,
+   "live_params_posts": 0,
+   "LiveFDN_update_calls": 0,
+   "all_posts": {}
+  },
+  "polar_idle": {
+   "secs": 5,
+   "live_params_posts": 0,
+   "LiveFDN_update_calls": 0,
+   "all_posts": {}
+  },
+  "hall_idle": {
+   "secs": 6,
+   "live_params_posts": 0,
+   "LiveFDN_update_calls": 0,
+   "all_posts": {}
+  },
+  "hall_surfaces_idle": {
+   "secs": 5,
+   "live_params_posts": 0,
+   "LiveFDN_update_calls": 0,
+   "all_posts": {}
+  },
+  "hall_source_idle": {
+   "secs": 5,
+   "live_params_posts": 0,
+   "LiveFDN_update_calls": 0,
+   "all_posts": {}
+  }
+ },
+ "console": [
+  [
+   "warning",
+   "Scripts \"build/three.js\" and \"build/three.min.js\" are deprecated with r150+, and will be removed with r160. Please use ES Modules or alternatives: https://threejs.org/docs/index.html#manual/en/introdu"
+  ],
+  [
+   "error",
+   "Failed to load resource: the server responded with a status of 404 (Not Found)"
+  ],
+  [
+   "error",
+   "Failed to load resource: the server responded with a status of 404 (Not Found)"
+  ]
+ ],
+ "running": true
+}

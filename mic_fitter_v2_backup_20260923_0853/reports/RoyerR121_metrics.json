@@ -1,0 +1,44 @@
+{
+  "mic_id": "RoyerR121",
+  "display_name": "Royer R-121 \u2014 fig-8 ribbon",
+  "honesty": "MEASURED",
+  "family": "fig8_ribbon",
+  "source": "Franco et al. Zenodo 10.5281/zenodo.4633508 (Raw_IRs, 5m, 24-bit, selected angles)",
+  "params": {
+    "f0": 200.00000000000003,
+    "depth_max_db": -14.239383954227112,
+    "shelf_slope": 1.5000000000000002,
+    "f_lo": 399.97995603197336,
+    "depth_lo_db": -2.8793875557983624,
+    "res_hz": 1500.000000001187,
+    "lp_mix": 0.3264708838442886,
+    "fc_floor": 5642.736649099946,
+    "p": 0.6000000000000001
+  },
+  "train_rmse_db": 9.500430779809196,
+  "holdout_rmse_db": 3.7775703465627535,
+  "train_mse_db": 90.25818500194598,
+  "holdout_mse_db": 14.270037723230242,
+  "holdout_angles_deg": [
+    45.0,
+    135.0
+  ],
+  "train_angles_deg": [
+    0.0,
+    15.0,
+    30.0,
+    60.0,
+    90.0,
+    120.0,
+    150.0,
+    180.0
+  ],
+  "fit_message": "DE success=False nit=70 fun=91.407309; LS success=True cost=23392.412355",
+  "preset": "RoyerR121.json",
+  "plots": {
+    "polar": "plots/polars/RoyerR121_polar.png",
+    "colour": "plots/colour/RoyerR121_colour.png",
+    "fit_train": "plots/fit/RoyerR121_train.png",
+    "fit_holdout": "plots/fit/RoyerR121_holdout.png"
+  }
+}

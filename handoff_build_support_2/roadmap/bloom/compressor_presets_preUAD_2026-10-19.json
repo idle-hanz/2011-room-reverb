@@ -1,0 +1,1017 @@
+{
+  "schema": "bloom-compressor-presets/1",
+  "compiled": "2026-10-18 (Europe/London); circuit/SPICE update 2026-10-18 19:15",
+  "doc": "COMPRESSOR_RESEARCH.md (source keys S1..S33 are listed in section 7)",
+  "generic_model": {
+    "reference": "Giannoulis, Massberg & Reiss, JAES 60(6) 2012 [S28]",
+    "gain_computer": "soft-knee Eq.4: y=x if 2(x-T)<-W; x+(1/R-1)(x-T+W/2)^2/(2W) if |2(x-T)|<=W; T+(x-T)/R above. Optional second segment: ratio2 above knee2_db over threshold.",
+    "detector_default": "log-domain, after gain computer (Eq.23), smooth decoupled peak (Eq.17); alpha=exp(-1/(tau*fs))",
+    "release_models": {
+      "one_pole": "branching smooth detector (Eq.16) with tauR",
+      "dual_stage": "two branches on same target: fast(tauA,tauR_fast), slow(tau_charge,tauR_slow); combine max() or weighted w*fast+(1-w)*slow [S16]",
+      "constant_rate": "release ramps at rate_db_per_s in dB (dbx) [S17,S18]",
+      "opto_memory": "dual_stage weighted w=0.5 where tauR_slow = slow_min_s + M*(slow_max_s-slow_min_s); M charges from sustained GR with tau_mem_s",
+      "rc_network": "simulate the unit's actual release RC network as coupled one-pole states in 'detector volts', then map volts->GR with the unit's gain-element law (Fairchild, SSL). Exact for linear networks; costs 2-3 multiplies per state per sample.",
+      "series_two_section": "SSL Auto: two parallel-RC sections in series. Charging current i flows through both: dv1/dt=i/C1 - v1/(R1 C1); dv2/dt=i/C2 - v2/(R2 C2); control = v1+v2. Release = a1 e^-t/tau1 + a2 e^-t/tau2 exactly."
+    },
+    "bloom_law": "wet_gain_dB = clamp(Amount_dB + GR_dB, -MaxDuck_dB, +Amount_dB); applied to tail only; detector on dry (or dry+wet in self-keyed mode); per-sample detector; Amount=0 => bit-identical bypass",
+    "timing_definitions_rule": {
+      "value": "Fairchild and SSL panel release times ~= time to recover from ~10 dB GR to ~0.5-1 dB, i.e. ~2.1-2.5 x the RC time constant; not tau",
+      "status": "SPICE-derived",
+      "sources": [
+        "S12",
+        "S34",
+        "S35"
+      ]
+    }
+  },
+  "bloom_presets": [
+    {
+      "id": "natural",
+      "name": "Natural",
+      "emulates": [
+        "Teletronix LA-2A",
+        "Tube-Tech CL 1B (Fix/Man)"
+      ],
+      "default": true,
+      "detector": {
+        "value": "peak (opto behavioural)",
+        "status": "estimate"
+      },
+      "sidechain_filter": {
+        "value": null,
+        "status": "published",
+        "sources": [
+          "S6"
+        ],
+        "note": "LA-2A has optional HF-emphasis; off by default"
+      },
+      "ratio": {
+        "value": 4.0,
+        "status": "published",
+        "sources": [
+          "S9"
+        ],
+        "note": "2-LA-2 Compress ~4:1 program-dependent"
+      },
+      "knee_db": {
+        "value": 10.0,
+        "status": "derived",
+        "sources": [
+          "S6"
+        ],
+        "note": "compression 'gradually increases over the first 10 dB' then horizontal"
+      },
+      "ratio2": {
+        "value": "inf",
+        "status": "published",
+        "sources": [
+          "S6",
+          "S9"
+        ]
+      },
+      "knee2_db_above_threshold": {
+        "value": 10.0,
+        "status": "derived",
+        "sources": [
+          "S6"
+        ]
+      },
+      "attack_ms": {
+        "value": 10.0,
+        "status": "published",
+        "sources": [
+          "S7",
+          "S8"
+        ],
+        "note": "1966 manual 10 us conflict; SPICE closed loop of fitted cell gives 63% in ~20 ms; Moore 2025 measured 33-81 ms to stabilise on 6 real LA-2As"
+      },
+      "release": {
+        "model": "opto_memory_v2",
+        "form": "tau_rel = r0 + (r1-r0)*M2; M1,M2 cascaded lags (tm) charging while light is on, decaying with tm_decay when dark; applied to LDR conductance G; GR_dB = 20*log10(1+Rs*G)",
+        "r0_s": {
+          "value": 0.06,
+          "status": "behavioural-fit",
+          "sources": [
+            "S7",
+            "S36"
+          ],
+          "note": "short-peak floor; matches UA 60 ms-to-50% (tau 87 ms) and Stroe 90 ms after 300 ms burst"
+        },
+        "r1_s": {
+          "value": 1.59,
+          "status": "behavioural-fit",
+          "sources": [
+            "S36"
+          ],
+          "note": "fit to Stroe Table 6.6 CdS+Old-Modelled cell: 0.09/0.58/1.56 s after 0.3/1/5 s bursts (resid <= 47 ms)"
+        },
+        "tm_s": {
+          "value": 0.84,
+          "status": "behavioural-fit",
+          "sources": [
+            "S36"
+          ]
+        },
+        "tm_decay_s": {
+          "value": 20.0,
+          "status": "estimate",
+          "sources": [
+            "S36"
+          ],
+          "note": "Lawrence 1964 via Stroe: cell remembers GR from the last 20-30 s"
+        },
+        "spice_check": {
+          "value": "closed-loop release G-tau 0.14/0.57/1.51 s for 0.3/1/5 s bursts; 5 s burst recovers to 0.5 dB in 4.8 s (spec 0.5-5 s)",
+          "status": "SPICE-derived (behavioural)"
+        }
+      },
+      "link": {
+        "value": "linked",
+        "status": "published",
+        "sources": [
+          "S9"
+        ]
+      },
+      "bloom_defaults": {
+        "amount_db": 5,
+        "gr_target_db": "3-6",
+        "predelay_ms": 20,
+        "max_duck_db": 12
+      },
+      "confidence": "medium",
+      "confidence_note": "memory law now fitted to measured optical-cell data; LA-2A unit spread is large (release 0.45-1.67 s to stabilise across 6 units)",
+      "attack_two_stage": {
+        "w_fast": {
+          "value": 0.88,
+          "status": "behavioural-fit",
+          "sources": [
+            "S36"
+          ]
+        },
+        "a1_s": {
+          "value": 0.104,
+          "status": "behavioural-fit",
+          "sources": [
+            "S36"
+          ]
+        },
+        "a2_s": {
+          "value": 1.25,
+          "status": "behavioural-fit",
+          "sources": [
+            "S36"
+          ],
+          "note": "open-loop cell values; feedback loop makes the audible attack ~5x faster"
+        }
+      },
+      "curve": {
+        "gain_element": {
+          "value": "CdS LDR shunt attenuator: G = k*L^gamma, gamma 0.6 (0.6-0.85)",
+          "status": "published (datasheet class)",
+          "sources": [
+            "S38"
+          ]
+        },
+        "el_drive_exponent_n": {
+          "value": 3.0,
+          "status": "estimate"
+        },
+        "static_ratio": {
+          "value": "soft knee, local ratio rises 1.1 -> asymptote 1+gamma*n (2.8 with defaults); UA quotes ~4:1 so tune n*gamma ~3",
+          "status": "behavioural-fit"
+        },
+        "detector": {
+          "value": "no rectifier/RC: the EL panel + LDR are the detector (light-domain averaging)",
+          "status": "published",
+          "sources": [
+            "S6"
+          ]
+        },
+        "topology": {
+          "value": "feedback",
+          "status": "published (secondary)",
+          "sources": [
+            "S37"
+          ]
+        }
+      }
+    },
+    {
+      "id": "glue",
+      "name": "Glue",
+      "emulates": [
+        "SSL G-series bus compressor"
+      ],
+      "detector": {
+        "value": "full-wave rectifier -> diode -> attack R -> cap (peak-hold, linear volts, not RMS, not log)",
+        "status": "circuit-derived",
+        "sources": [
+          "S34",
+          "S35"
+        ]
+      },
+      "sidechain_filter": {
+        "value": null,
+        "status": "estimate",
+        "sources": [
+          "S14"
+        ],
+        "note": "Waves adds 21-500 Hz HPF; not confirmed on hardware"
+      },
+      "ratio": {
+        "value": 4.0,
+        "status": "published",
+        "sources": [
+          "S13"
+        ]
+      },
+      "knee_db": {
+        "value": 0.0,
+        "status": "circuit-derived",
+        "sources": [
+          "S34",
+          "S35"
+        ],
+        "note": "hard onset at the rectifier diode; softness comes from the rising ratio instead"
+      },
+      "attack_ms": {
+        "value": 10.0,
+        "status": "published",
+        "sources": [
+          "S13",
+          "S14",
+          "S15"
+        ],
+        "note": "RC = 82k*0.47uF = 38.5 ms; feedback shortens it: SPICE 63% = 26.7/14.5/9.4 ms at 4/8/13 dB GR (4:1). Labels hold at ~12 dB GR; slower at light GR, faster at heavy GR"
+      },
+      "release": {
+        "model": "series_two_section",
+        "combine": "sum",
+        "tau_fast_ms": {
+          "value": 42.8,
+          "status": "circuit-derived",
+          "sources": [
+            "S34",
+            "S35"
+          ],
+          "note": "91k || 0.47uF; values confirmed on a 1979 original card (GroupDIY)"
+        },
+        "tau_slow_ms": {
+          "value": 5100,
+          "status": "circuit-derived",
+          "sources": [
+            "S34",
+            "S35"
+          ],
+          "note": "750k || 6.8uF"
+        },
+        "w_slow_vs_burst": {
+          "value": "w_slow ~= d/(d+0.62 s), max 0.89 (750k/(91k+750k))",
+          "status": "SPICE-derived",
+          "sources": [
+            "S34"
+          ],
+          "note": "SPICE fit: 0.11/0.36/0.69/0.86/0.88 for 0.05/0.3/1/3/8 s bursts; two-exponential fit error 0.035 dB"
+        },
+        "superseded": "old estimate fast 100 ms / charge 300 ms / slow 1200 ms (max)",
+        "alt_clone": {
+          "value": "GSSL / gyraf clone swaps the resistors: 0.35 s and 0.62 s (much less program-dependent)",
+          "status": "published (clone docs)",
+          "sources": [
+            "S35"
+          ]
+        }
+      },
+      "link": {
+        "value": "always fully linked",
+        "status": "published",
+        "sources": [
+          "S13"
+        ]
+      },
+      "bloom_defaults": {
+        "amount_db": 3,
+        "gr_target_db": "1-4",
+        "predelay_ms": 15,
+        "max_duck_db": 8
+      },
+      "confidence": "medium-high",
+      "confidence_note": "timing parts read from the original drawings and confirmed on a real card; VCA scale assumed",
+      "fixed_release_tau_ms": {
+        "value": {
+          "0.1": 84.6,
+          "0.3": 126.9,
+          "0.6": 263.2,
+          "1.2": 564
+        },
+        "status": "circuit-derived",
+        "sources": [
+          "S34"
+        ],
+        "note": "labels ~= time from 8-10 dB to 1 dB (SPICE: 0.17/0.26/0.55/1.18 s)"
+      },
+      "ratio_vs_gr": {
+        "value": "local ratio ~= R0 + 0.115*GR_dB (feedback + linear detector + dB-linear VCA); SPICE 4:1 gives 3.9 -> 4.4 over 4-13 dB GR",
+        "status": "SPICE-derived",
+        "sources": [
+          "S34"
+        ],
+        "note": "KDB scale assumed; trend robust, exact slope not"
+      },
+      "topology_original": {
+        "value": "feedback via sidechain VCA mirroring the main VCA",
+        "status": "published (designer doc)",
+        "sources": [
+          "S28",
+          "S35"
+        ]
+      }
+    },
+    {
+      "id": "room_crush",
+      "name": "Room Crush",
+      "emulates": [
+        "UREI 1176LN all-buttons",
+        "Andy Johns room-mic technique"
+      ],
+      "detector": {
+        "value": "peak",
+        "status": "published",
+        "sources": [
+          "S1"
+        ]
+      },
+      "topology_original": {
+        "value": "feedback",
+        "status": "published",
+        "sources": [
+          "S5",
+          "S20"
+        ]
+      },
+      "sidechain_filter": {
+        "value": null,
+        "status": "published"
+      },
+      "ratio": {
+        "value": 16.0,
+        "status": "derived",
+        "sources": [
+          "S1",
+          "S4"
+        ],
+        "note": "all-buttons ratio ~12-20 and varying; add +-4 slow drift"
+      },
+      "knee_db": {
+        "value": 5.0,
+        "status": "estimate",
+        "sources": [
+          "S1"
+        ],
+        "note": "1176 is soft knee; width unpublished"
+      },
+      "attack_ms": {
+        "value": 0.4,
+        "status": "published",
+        "sources": [
+          "S1",
+          "S3"
+        ],
+        "note": "labels describe the start of the gain change. Circuit RC = up to 25k*220nF = 5.5 ms; KT clone measured ~0.5 ms to 37% but ~5 ms to full (GroupDIY). SPICE: 63% in 0.16 ms (8 dB GR) / 0.09 ms (16 dB GR) at fastest; 1.2 / 0.7 ms at slowest"
+      },
+      "attack_onset_lag_ms": {
+        "value": 2.0,
+        "status": "estimate",
+        "sources": [
+          "S1",
+          "S4"
+        ],
+        "note": "mechanism (jhaible PSpice study): all-buttons shorts part of the bias divider, pushing the FET past pinch-off so the cap must charge through a dead zone before GR starts; lag grows with slower attack settings and lighter drive. Our SPICE shows only tens of us at fastest attack, so 2 ms stays an estimate"
+      },
+      "release": {
+        "model": "one_pole",
+        "tauR_ms": {
+          "value": 300,
+          "status": "estimate",
+          "sources": [
+            "S1",
+            "S2",
+            "S39"
+          ],
+          "note": "range 59-1160 ms = (270k + 0..5M pot)*220nF (circuit-derived, matches manual 63% spec); 300 ms suits medium tempo"
+        }
+      },
+      "link": {
+        "value": "linked",
+        "status": "estimate"
+      },
+      "bloom_defaults": {
+        "amount_db": 8,
+        "gr_target_db": "5-10 (3-5 for 'nudging')",
+        "predelay_ms": 10,
+        "max_duck_db": 15
+      },
+      "confidence": "medium",
+      "attack_settle_ms": {
+        "value": 3.0,
+        "status": "measured-third-party",
+        "sources": [
+          "S39"
+        ],
+        "note": "second, slower stage of attack to full GR (0.5-5.5 ms); new field"
+      },
+      "curve": {
+        "gain_element": {
+          "value": "JFET shunt: Rds ~ Ron/(1-Vgs/Vp) (2N5457 Ron 273 ohm, 2N3819 130 ohm, vendor models); max GR ~30 dB",
+          "status": "SPICE-derived",
+          "sources": [
+            "S40",
+            "S41"
+          ]
+        },
+        "detector": {
+          "value": "full-wave peak rectifier with ratio-dependent bias + feedback gain (ratio buttons change both)",
+          "status": "third-party circuit analysis",
+          "sources": [
+            "S41"
+          ]
+        },
+        "level_dependent_times": {
+          "value": "attack and release speed up as GR increases (FET slope changes loop gain)",
+          "status": "SPICE-derived",
+          "sources": [
+            "S41"
+          ]
+        }
+      }
+    },
+    {
+      "id": "nuke",
+      "name": "Nuke",
+      "emulates": [
+        "Empirical Labs Distressor Nuke/20:1 on room mics"
+      ],
+      "detector": {
+        "value": "peak, special limiter detector",
+        "status": "published",
+        "sources": [
+          "S24"
+        ]
+      },
+      "sidechain_filter": {
+        "value": {
+          "type": "hpf",
+          "fc_hz": 100,
+          "slope_db_oct": 6
+        },
+        "status": "published",
+        "sources": [
+          "S24"
+        ]
+      },
+      "ratio": {
+        "value": "inf",
+        "status": "published",
+        "sources": [
+          "S24"
+        ],
+        "note": "'within 1 dB or so'"
+      },
+      "knee_db": {
+        "value": 0.0,
+        "status": "published",
+        "sources": [
+          "S24"
+        ],
+        "note": "20:1/Nuke are the curves without dominant knees"
+      },
+      "attack_ms": {
+        "value": 1.85,
+        "status": "derived",
+        "sources": [
+          "S24",
+          "S42"
+        ],
+        "note": "piecewise log taper anchored by EL manual: knob 0 = 0.05 ms, knob 3.5 ~ 0.8 ms (1176 range is \"below 3-3.5\"), knob 10 = 30 ms. knob 4 = 1.06 ms, 5 = 1.85 ms, 6 = 3.2 ms. Old estimate 1.2 ms"
+      },
+      "release": {
+        "model": "dual_stage",
+        "combine": "weighted",
+        "w_fast": {
+          "value": 0.67,
+          "status": "estimate",
+          "sources": [
+            "S16"
+          ]
+        },
+        "tauR_fast_ms": {
+          "value": 150,
+          "status": "estimate",
+          "sources": [
+            "S24"
+          ],
+          "note": "knob 2.5-3 under assumed log taper 0.05-3.5 s"
+        },
+        "tau_charge_ms": {
+          "value": 200,
+          "status": "estimate"
+        },
+        "tauR_slow_ms": {
+          "value": 1000,
+          "status": "estimate",
+          "sources": [
+            "S24"
+          ],
+          "note": "'logarithmic … lets off quickly at first and then slows'"
+        }
+      },
+      "link": {
+        "value": "optional",
+        "status": "published",
+        "sources": [
+          "S24"
+        ]
+      },
+      "bloom_defaults": {
+        "amount_db": 10,
+        "amount_cap_db": 12,
+        "gr_target_db": "15-20",
+        "predelay_ms": 10,
+        "max_duck_db": 24
+      },
+      "confidence": "medium",
+      "confidence_note": "behaviour and room recipe published; knob-to-time taper estimated",
+      "knob_taper": {
+        "attack": {
+          "value": "k<=3.5: 0.05*16^(k/3.5) ms; k>3.5: 0.8*37.5^((k-3.5)/6.5) ms",
+          "status": "derived",
+          "sources": [
+            "S42"
+          ]
+        },
+        "release": {
+          "value": "0.05*70^(k/10) s (unchanged)",
+          "status": "estimate",
+          "note": "manual \"1176: rel 1-10.5\" conflicts with 0.05-3.5 s range, not usable as anchor"
+        }
+      },
+      "curve": {
+        "detector": {
+          "value": "separate special detector circuitry for 2:1, 10:1 and Nuke; VCA gain element; no public schematic",
+          "status": "published",
+          "sources": [
+            "S42"
+          ]
+        },
+        "spice": {
+          "value": "not possible - no schematic published",
+          "status": "n/a"
+        }
+      }
+    },
+    {
+      "id": "swell",
+      "name": "Swell",
+      "emulates": [
+        "Fairchild 670 position 5",
+        "Manley Variable Mu"
+      ],
+      "detector": {
+        "value": "peak (vari-mu)",
+        "status": "estimate"
+      },
+      "topology_original": {
+        "value": "feedback",
+        "status": "published",
+        "sources": [
+          "S12"
+        ]
+      },
+      "sidechain_filter": {
+        "value": {
+          "type": "hpf",
+          "fc_hz": 100,
+          "slope_db_oct": 6
+        },
+        "status": "published",
+        "sources": [
+          "S25"
+        ]
+      },
+      "ratio": {
+        "value": 2.0,
+        "status": "published",
+        "sources": [
+          "S10"
+        ],
+        "note": "Fairchild 2:1 compressor end; ratio rises with level"
+      },
+      "knee_db": {
+        "value": 12.0,
+        "status": "estimate",
+        "sources": [
+          "S12"
+        ]
+      },
+      "ratio2": {
+        "value": 20.0,
+        "status": "published",
+        "sources": [
+          "S10",
+          "S25"
+        ]
+      },
+      "knee2_db_above_threshold": {
+        "value": 12.0,
+        "status": "published",
+        "sources": [
+          "S25"
+        ],
+        "note": "Manley Limit reaches 20:1 beyond 12 dB"
+      },
+      "max_gr_db": {
+        "value": 10.0,
+        "status": "published",
+        "sources": [
+          "S25"
+        ]
+      },
+      "attack_ms": {
+        "value": 25.0,
+        "status": "published",
+        "sources": [
+          "S25"
+        ],
+        "note": "Manley 25-70 ms; Fairchild 0.2-0.4 ms (manual) - SPICE network with an assumed 100 ohm source gives 0.2 ms"
+      },
+      "release": {
+        "model": "rc_network",
+        "network": "Fairchild pos 5: CT 4uF || RT 220k || (RU 100k + CU 8uF); pos 6 adds (RV 100k + CV 20uF)",
+        "sources": [
+          "S12"
+        ],
+        "pos5_eigen_tau_s": {
+          "value": [
+            0.219,
+            3.22
+          ],
+          "status": "circuit-derived",
+          "sources": [
+            "S12"
+          ]
+        },
+        "pos6_eigen_tau_s": {
+          "value": [
+            0.077,
+            1.12,
+            8.21
+          ],
+          "status": "circuit-derived",
+          "sources": [
+            "S12"
+          ]
+        },
+        "spice_release_from_10dB": {
+          "value": {
+            "pos5": "to 1 dB: 3.3 s after a 10 ms peak, 7.5 s after >=3 s; pos6: 0.29 s after a peak, 13 s after 1 s, 18.9 s (25 s to 0.5 dB) after >=10 s"
+          },
+          "status": "SPICE-derived",
+          "note": "matches manual 2/10 s and 0.3/10/25 s as recovery-to-~1 dB times"
+        },
+        "superseded": "old preset used 2 s / 10 s as tau - about 3x too slow"
+      },
+      "link": {
+        "value": "linked",
+        "status": "published",
+        "sources": [
+          "S25"
+        ]
+      },
+      "bloom_defaults": {
+        "amount_db": 5,
+        "gr_target_db": "3-6",
+        "predelay_ms": 30,
+        "max_duck_db": 10
+      },
+      "confidence": "high (timing), medium (curve)",
+      "curve": {
+        "gain_element": {
+          "value": "6386 remote-cutoff triode: GR_dB = -20 log10(gm(Vbias - Vsc)/gm(Vbias)); fit GR ~= 18.1*ln(1+V/8.06) (max err 1.3 dB, 0-30 V); ~1.9 dB/V at start, ~0.4 dB/V at 30 V",
+          "status": "SPICE-derived (DAFx-12 6386 model)",
+          "sources": [
+            "S12"
+          ]
+        },
+        "detector": {
+          "value": "push-pull sidechain amp (class-B first stage with DC-threshold crossover) -> bridge rectifier -> timing network; feedback",
+          "status": "published (paper)",
+          "sources": [
+            "S12"
+          ]
+        }
+      }
+    },
+    {
+      "id": "talkback",
+      "name": "Talkback (optional)",
+      "emulates": [
+        "SSL 4000E Listen Mic Compressor"
+      ],
+      "detector": {
+        "value": "precision full-wave rectifier -> 1k -> 15uF, no isolating diode: mean-absolute (average) detector, symmetric charge/discharge",
+        "status": "circuit-derived",
+        "sources": [
+          "S43"
+        ],
+        "note": "cap value read from a hand-drawn scan, \"15/25v\""
+      },
+      "sidechain_filter": {
+        "value": {
+          "type": "hpf",
+          "fc_hz": 150,
+          "slope_db_oct": 6
+        },
+        "status": "estimate"
+      },
+      "ratio": {
+        "value": "very high (limiter); max GR limited by 2N5486 Ron vs ~22k series: ~50 dB",
+        "status": "SPICE-derived",
+        "sources": [
+          "S43",
+          "S40"
+        ],
+        "note": "Korneff 100:1 model value kept as reference"
+      },
+      "knee_db": {
+        "value": 0.0,
+        "status": "estimate"
+      },
+      "attack_ms": {
+        "value": 3.0,
+        "status": "SPICE-derived",
+        "sources": [
+          "S43"
+        ],
+        "note": "RC 15 ms; feedback gives 63% in 4.3 ms (11 dB GR) / 2.3 ms (25 dB GR); 15 ms at light GR"
+      },
+      "release": {
+        "model": "one_pole",
+        "tauR_ms": {
+          "value": 15,
+          "status": "circuit-derived",
+          "sources": [
+            "S43"
+          ],
+          "note": "GR itself is gone in ~5 ms from 25 dB because the cap rests well below the FET pinch-off (dead zone) - SPICE, bias assumed"
+        }
+      },
+      "bloom_defaults": {
+        "amount_db": 12,
+        "gr_target_db": "20+",
+        "predelay_ms": 0,
+        "max_duck_db": 30
+      },
+      "confidence": "medium-low",
+      "note": "pair with a gate for the gated-room sound (out of scope)",
+      "curve": {
+        "gain_element": {
+          "value": "2N5486 JFET shunt (Siliconix model)",
+          "status": "circuit-derived",
+          "sources": [
+            "S43",
+            "S40"
+          ]
+        }
+      }
+    }
+  ],
+  "units": {
+    "LA-2A": {
+      "type": "opto/T4",
+      "topology": "feedback (medium confidence)",
+      "attack": "10 ms [S7,S8]; '10 usec' in 1966 manual [S6]",
+      "release": "~60 ms to 50%, then 0.5-5 s complete (spec) / 1-15 s (text), history-dependent [S6,S7,S8]",
+      "ratio": "Compress ~4:1, Limit up to inf, program-dependent [S9]",
+      "knee": "gradual over first 10 dB then horizontal [S6]",
+      "sidechain": "HF-emphasis adjust [S6]",
+      "link": "2-LA-2 Link/Dual [S9]"
+    },
+    "1176LN": {
+      "type": "FET",
+      "topology": "feedback [S5,S20]",
+      "attack": "20-800 us [S1,S3]",
+      "release": "50 ms-1.1 s, 63% recovery [S1,S2]",
+      "ratio": "4,8,12,20; higher ratio raises threshold; soft knee [S1]",
+      "all_buttons": "attack lag on initial transients, changing attack/release and bias; ~12-20:1 [S1,S4]",
+      "room_use": "all-buttons on rooms; Andy Johns 'nudging'; 3-5 dB room mic (Newland) [S1]"
+    },
+    "Fairchild 660/670": {
+      "type": "vari-mu tube",
+      "topology": "feedback [S12]",
+      "ratio": "1:1-20:1 above +2 dBm (spec); 2:1 to 30:1 (text) [S10]",
+      "time_constants": {
+        "1": "0.2 ms / 0.3 s",
+        "2": "0.2 ms / 0.8 s",
+        "3": "0.4 ms / 2 s",
+        "4": "0.4 ms / 5 s",
+        "5": "0.4 ms / 2 s single, 10 s multiple peaks",
+        "6": "0.2 ms / 0.3 s single, 10 s multiple, 25 s sustained"
+      },
+      "time_constants_source": "original manual [S10]; UA table differs on attack (pos4 800us, pos5 200us, pos6 400us) [S11]"
+    },
+    "SSL G bus": {
+      "type": "VCA",
+      "attack_ms": [
+        0.1,
+        0.3,
+        1,
+        3,
+        10,
+        30
+      ],
+      "release_s": [
+        0.1,
+        0.3,
+        0.6,
+        1.2,
+        "auto"
+      ],
+      "ratio": [
+        2,
+        4,
+        10
+      ],
+      "link": "always linked",
+      "sources": [
+        "S13",
+        "S14",
+        "S15"
+      ],
+      "auto": "program-dependent multi-stage, two stacked release networks [S13,S28]; constants unpublished"
+    },
+    "dbx 160": {
+      "type": "VCA, true RMS",
+      "topology": "feedforward [S19] (medium)",
+      "attack": "15 ms@10 dB, 5 ms@20 dB, 3 ms@30 dB over threshold [S17,S18]; fit t=438*dB^-1.465 ms (derived)",
+      "release": "120 dB/s (160) [S17]; 125 dB/s (160A) [S18]",
+      "ratio": "1:1-inf (160); to -1:1 (160A)",
+      "knee": "hard (160); OverEasy or hard (160A)",
+      "link": "true RMS power summing (160A)"
+    },
+    "API 2500": {
+      "type": "VCA, RMS detector",
+      "attack_ms": [
+        0.03,
+        0.1,
+        0.3,
+        1,
+        3,
+        10,
+        30
+      ],
+      "release_s": [
+        0.05,
+        0.1,
+        0.2,
+        0.5,
+        1,
+        2,
+        "var 0.05-3"
+      ],
+      "ratio": [
+        1.5,
+        2,
+        3,
+        4,
+        6,
+        10,
+        "inf"
+      ],
+      "knee": "hard/med/soft (widths unpublished)",
+      "thrust": "10 dB/decade SC filter before RMS detector; LOUD -15 dB@20 Hz, +15 dB@20 kHz",
+      "type_switch": "New=feedforward, Old=feedback",
+      "link": "IND, 50-100% with shape filters",
+      "sources": [
+        "S20",
+        "S21"
+      ]
+    },
+    "Neve 33609": {
+      "type": "diode bridge",
+      "compressor": {
+        "ratio": [
+          1.5,
+          2,
+          3,
+          4,
+          6
+        ],
+        "knee": "true ratio >5 dB above threshold",
+        "attack": "fast 3+-1 ms, slow 6+-1 ms with 100 Hz 1st-order SC HPF",
+        "recovery": "100-1500 ms; a1 100 ms/2000 ms; a2 50 ms/5000 ms"
+      },
+      "limiter": {
+        "ratio": "<0.1 dB change for 10 dB step (>100:1 derived)",
+        "attack": "2+-1 / 4+-1 ms",
+        "recovery": "50-800 ms; a1, a2 as above"
+      },
+      "link": "stereo links side-chains",
+      "sources": [
+        "S22"
+      ]
+    },
+    "Neve 2254/R": {
+      "type": "diode bridge, closed-loop side-chains",
+      "limiter": {
+        "ratio": ">100:1",
+        "attack": "5 ms or 0.1-2 ms fast",
+        "recovery": "100/200/800 ms/auto"
+      },
+      "compressor": {
+        "ratio": [
+          1.5,
+          2,
+          3,
+          4,
+          6
+        ],
+        "knee": "true ratio within 5-10 dB above threshold",
+        "attack": "5 ms",
+        "recovery": "CONFLICT: text 100/200/800/auto vs spec 400/800/1500/auto"
+      },
+      "sources": [
+        "S23"
+      ]
+    },
+    "Distressor": {
+      "ratio": [
+        "1:1",
+        "2:1",
+        "3:1",
+        "4:1",
+        "6:1",
+        "10:1 opto",
+        "20:1",
+        "Nuke"
+      ],
+      "attack": "50 us-30 ms",
+      "release": "0.05-3.5 s (also '3 s'); opto mode up to 20 s",
+      "nuke_release": "logarithmic: fast then slow",
+      "detector": "HPF 100 Hz 6 dB/oct; band emphasis ~6 kHz; link",
+      "room": "Nuke/20:1 [10,6,2.5,6] or att 5 rel 3; 15-20 dB GR",
+      "sources": [
+        "S24"
+      ]
+    },
+    "Manley Variable Mu": {
+      "attack": "25-70 ms",
+      "recovery_s": [
+        0.2,
+        0.4,
+        0.6,
+        4,
+        8
+      ],
+      "compress": "1.5:1 soft knee",
+      "limit": "4:1 rising to 20:1 beyond 12 dB",
+      "max_gr_db": 10,
+      "sc_hpf": "-3 dB @100 Hz, 6 dB/oct",
+      "sources": [
+        "S25"
+      ]
+    },
+    "Tube-Tech CL 1B": {
+      "type": "opto",
+      "ratio": "2:1-10:1",
+      "attack": "0.5-300 ms",
+      "release": "0.05-10 s",
+      "fixed": "1 ms / 50 ms",
+      "fix_man": "1 ms attack; fast release for short peaks then manual release; attack knob sets delay before slow release",
+      "threshold": "+20 to -40 dBu",
+      "sources": [
+        "S26",
+        "S27"
+      ]
+    },
+    "SSL Listen Mic": {
+      "times": "fixed, unpublished [S32]",
+      "ratio": "100:1 in Korneff model [S31]",
+      "history": "[S30]"
+    }
+  },
+  "confidence_labels": {
+    "published": "printed by manufacturer",
+    "derived": "calculated from published numbers",
+    "circuit-derived": "calculated from schematic component values",
+    "measured-third-party": "measured on hardware by a named third party",
+    "SPICE-derived": "ngspice simulation of schematic parts; device-model source noted",
+    "behavioural-fit": "behavioural model fitted to third-party measurements",
+    "estimate": "engineering guess, tune by ear"
+  },
+  "spice": {
+    "dir": "spice/",
+    "engine": "ngspice 44.2",
+    "note": "see COMPRESSOR_RESEARCH.md section 4B for how far to trust each model"
+  }
+}

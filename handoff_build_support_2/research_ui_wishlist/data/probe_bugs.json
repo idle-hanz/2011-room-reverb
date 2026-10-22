@@ -1,0 +1,246 @@
+{
+ "b2_default_capsules": [
+  {
+   "cap": "l",
+   "family": "cardioid",
+   "fam_disabled": true,
+   "polar": "0.5",
+   "polar_disabled": true,
+   "label": "Cardioid"
+  },
+  {
+   "cap": "c",
+   "family": "cardioid",
+   "fam_disabled": true,
+   "polar": "0.5",
+   "polar_disabled": true,
+   "label": "Cardioid"
+  },
+  {
+   "cap": "r",
+   "family": "cardioid",
+   "fam_disabled": true,
+   "polar": "0.5",
+   "polar_disabled": true,
+   "label": "Cardioid"
+  }
+ ],
+ "b2_colour_mode": "MEASURED_SHELF",
+ "b2_xy_90_capsules": [
+  {
+   "cap": "l",
+   "family": "cardioid",
+   "fam_disabled": true,
+   "polar": "0.5",
+   "polar_disabled": true,
+   "label": "Cardioid"
+  },
+  {
+   "cap": "c",
+   "family": "cardioid",
+   "fam_disabled": true,
+   "polar": "0.5",
+   "polar_disabled": true,
+   "label": "Cardioid"
+  },
+  {
+   "cap": "r",
+   "family": "cardioid",
+   "fam_disabled": true,
+   "polar": "0.5",
+   "polar_disabled": true,
+   "label": "Cardioid"
+  }
+ ],
+ "b2_xy_90_polar_body": {
+  "mic_setup": "xy_90",
+  "yaw_l_deg": -45,
+  "yaw_r_deg": 45,
+  "family_l": "cardioid",
+  "polar_l": 0.5,
+  "family_c": "cardioid",
+  "polar_c": 0.5,
+  "pattern_l": "cardioid",
+  "mic_preset_l": "ShureSM57",
+  "colour_mode": "MEASURED_SHELF"
+ },
+ "b2_ms_classic_capsules": [
+  {
+   "cap": "l",
+   "family": "bi",
+   "fam_disabled": true,
+   "polar": "0.5",
+   "polar_disabled": true,
+   "label": "Fig\u20118"
+  },
+  {
+   "cap": "c",
+   "family": "cardioid",
+   "fam_disabled": true,
+   "polar": "0.5",
+   "polar_disabled": true,
+   "label": "Cardioid"
+  },
+  {
+   "cap": "r",
+   "family": "bi",
+   "fam_disabled": true,
+   "polar": "0.5",
+   "polar_disabled": true,
+   "label": "Fig\u20118"
+  }
+ ],
+ "b2_ms_classic_polar_body": {
+  "mic_setup": "ms_classic",
+  "yaw_l_deg": -90,
+  "yaw_r_deg": 90,
+  "family_l": "bi",
+  "polar_l": 0.5,
+  "family_c": "cardioid",
+  "polar_c": 0.5,
+  "pattern_l": "fig8",
+  "mic_preset_l": "ShureSM57",
+  "colour_mode": "MEASURED_SHELF"
+ },
+ "b2_bypass_capsules": [
+  {
+   "cap": "l",
+   "family": "cardioid",
+   "fam_disabled": false,
+   "polar": "0.5",
+   "polar_disabled": false,
+   "label": "Cardioid"
+  },
+  {
+   "cap": "c",
+   "family": "cardioid",
+   "fam_disabled": false,
+   "polar": "0.5",
+   "polar_disabled": false,
+   "label": "Cardioid"
+  },
+  {
+   "cap": "r",
+   "family": "cardioid",
+   "fam_disabled": false,
+   "polar": "0.5",
+   "polar_disabled": false,
+   "label": "Cardioid"
+  }
+ ],
+ "b2_bypass_after_polar_l_0.9": {
+  "capsules": [
+   {
+    "cap": "l",
+    "family": "cardioid",
+    "fam_disabled": false,
+    "polar": "0.9",
+    "polar_disabled": false,
+    "label": "Supercardioid"
+   },
+   {
+    "cap": "c",
+    "family": "cardioid",
+    "fam_disabled": false,
+    "polar": "0.5",
+    "polar_disabled": false,
+    "label": "Cardioid"
+   },
+   {
+    "cap": "r",
+    "family": "cardioid",
+    "fam_disabled": false,
+    "polar": "0.9",
+    "polar_disabled": false,
+    "label": "Supercardioid"
+   }
+  ],
+  "canvas_changed": true,
+  "new_polar_requests": 1,
+  "last_body_polar_l": 0.9,
+  "last_body_pattern_l": "supercardioid"
+ },
+ "b8_my1.5": {
+  "meta": "Plane through L, R and the source \u00b7 centre added with its delay \u00b7 stack is frequency \u00b7 8 rings \u00b7 tilt 5.3\u00b0 \u00b7 Shure SM57 \u2014 dynamic cardioid",
+  "sy": "1.2",
+  "link_heights": false
+ },
+ "b8_my3.0": {
+  "meta": "Plane through L, R and the source \u00b7 centre added with its delay \u00b7 stack is frequency \u00b7 8 rings \u00b7 tilt 29.0\u00b0 \u00b7 Shure SM57 \u2014 dynamic cardioid",
+  "sy": "1.2",
+  "link_heights": false
+ },
+ "b8_my6.0": {
+  "meta": "Plane through L, R and the source \u00b7 centre added with its delay \u00b7 stack is frequency \u00b7 8 rings \u00b7 tilt 29.0\u00b0 \u00b7 Shure SM57 \u2014 dynamic cardioid",
+  "sy": "1.2",
+  "link_heights": false
+ },
+ "b5": [
+  {
+   "id": "pan_c",
+   "box": [
+    32,
+    32
+   ],
+   "range": [
+    "-1",
+    "1",
+    "0.01",
+    "0"
+   ],
+   "after_click_centre_then_drag_up60": "0",
+   "after_click_left_edge": "-1",
+   "after_click_centre_drag_right5": "0.63",
+   "after_click_centre_drag_right17": "1",
+   "after_wheel": "1",
+   "after_dblclick": "1"
+  },
+  {
+   "id": "trim_l",
+   "box": [
+    32,
+    32
+   ],
+   "range": [
+    "-12",
+    "12",
+    "0.5",
+    "0"
+   ],
+   "after_click_centre_then_drag_up60": "0",
+   "after_click_left_edge": "-12",
+   "after_click_centre_drag_right5": "7.5",
+   "after_click_centre_drag_right17": "12",
+   "after_wheel": "12",
+   "after_dblclick": "12"
+  },
+  {
+   "id": "trim_direct",
+   "box": [
+    32,
+    32
+   ],
+   "range": [
+    "-12",
+    "12",
+    "0.5",
+    "0"
+   ],
+   "after_click_centre_then_drag_up60": "0",
+   "after_click_left_edge": "-12",
+   "after_click_centre_drag_right5": "7.5",
+   "after_click_centre_drag_right17": "12",
+   "after_wheel": "12",
+   "after_dblclick": "12"
+  }
+ ],
+ "b1_source_presets": [
+  "talking_head",
+  "trumpet_byu",
+  "violin_byu",
+  "cab_1x12_closed",
+  "cab_4x12_closed",
+  "piano_grand_lid_open",
+  "omni"
+ ]
+}

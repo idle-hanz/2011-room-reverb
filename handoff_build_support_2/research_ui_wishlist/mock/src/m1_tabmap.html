@@ -1,0 +1,36 @@
+<!doctype html><html><head><meta charset="utf-8"><link rel="stylesheet" href="base.css"><style>
+table{border-collapse:separate;border-spacing:0 6px;width:100%}td,th{vertical-align:top;padding:8px 10px;text-align:left}
+th{color:var(--muted);font-size:11px;letter-spacing:.1em;text-transform:uppercase}
+td{background:var(--panel);border-top:1px solid var(--border);border-bottom:1px solid var(--border)}
+td:first-child{border-left:1px solid var(--border);border-radius:10px 0 0 10px;font-weight:700;width:120px}td:last-child{border-right:1px solid var(--border);border-radius:0 10px 10px 0}
+.p{display:inline-block;padding:2px 8px;border-radius:6px;background:var(--panel2);border:1px solid var(--border);margin:2px;font-size:11.5px}
+.bad{border-color:#7f1d1d;background:#2a1215;color:#fca5a5}.good{border-color:#115e59;background:#062925;color:#5eead4}.mv{border-color:#1e3a8a;background:#0b1630;color:#93c5fd}
+.cols{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+</style></head><body>
+<h1>Tab and sidebar map: before (18:15 tree) and after (proposal)</h1>
+<div class="sub">Red = clutter or wrong place (VERIFIED in the 18:15 tab tour). Green = new or kept on purpose. Blue = moved here.</div>
+<div class="cols"><div>
+<h2>Before: 9 tabs</h2>
+<table><tr><th>Tab</th><th>Main</th><th>Sidebar panels</th></tr>
+<tr><td>Room</td><td><span class="p">Floor</span><span class="p">3D room</span></td><td><span class="p">Room size</span><span class="p">Preview</span><span class="p">Advanced</span></td></tr>
+<tr><td>Source</td><td><span class="p">Sources</span><span class="p bad">Place &amp; face (small, 720×420 + 180 px)</span><span class="p">Radiation</span></td><td><span class="p">Room size</span><span class="p">Preview</span><span class="p">Advanced</span></td></tr>
+<tr><td>Mic</td><td><span class="p">Top/Side</span><span class="p">Combined 3D</span><span class="p">Source plane</span><span class="p bad">Each capsule (folded, lobes mirrored)</span></td><td><span class="p">Room size</span><span class="p">Listen</span><span class="p bad">Head rows always shown</span><span class="p">Advanced</span></td></tr>
+<tr><td>Mix</td><td><span class="p">Mics L/C/R</span><span class="p">Buses</span><span class="p bad">Tail: Feedback + Decay</span></td><td><span class="p">Room size</span><span class="p bad">Mix box: Hadamard, IR length, 4 Air controls, snapshot, bake IR, shared tail, seed</span><span class="p">Preview</span></td></tr>
+<tr><td>Lattice</td><td><span class="p bad">Lattice 3D (Hall: camera stuck inside)</span></td><td><span class="p">Room size</span><span class="p bad">Listen</span><span class="p bad">Mix box</span><span class="p">Preview</span></td></tr>
+<tr><td>Paths</td><td><span class="p bad">Paths 3D (front-on, right-drag orbit only)</span></td><td><span class="p">Room size</span><span class="p bad">Listen</span><span class="p bad">Mix box</span><span class="p">Preview</span></td></tr>
+<tr><td>Colour</td><td rowspan="1"><span class="p bad">Colour analyser + Surfaces + Polar field (one long page)</span></td><td><span class="p">Room size</span><span class="p bad">Mix box</span><span class="p">Preview</span></td></tr>
+<tr><td>Surfaces</td><td><span class="p bad">same page as Colour</span></td><td><span class="p">Room size</span><span class="p bad">Mix box</span><span class="p">Preview</span></td></tr>
+<tr><td>Polar 3D</td><td><span class="p bad">same page; polar field ~2000 px down</span></td><td><span class="p">Room size</span><span class="p">Listen</span><span class="p bad">Mix box</span><span class="p">Preview</span></td></tr>
+</table></div><div>
+<h2>After: 8 tabs, each with its own sidebar</h2>
+<table><tr><th>Tab</th><th>Main</th><th>Sidebar panels</th></tr>
+<tr><td>Room</td><td><span class="p">Floor</span><span class="p">3D room</span></td><td><span class="p">Room size</span><span class="p">Preview</span></td></tr>
+<tr><td>Source</td><td><span class="p good">Place &amp; face (full height)</span><span class="p good">Elevation</span><span class="p">Radiation (spectral colours)</span></td><td><span class="p">Room size</span><span class="p">Preview</span></td></tr>
+<tr><td>Mic</td><td><span class="p">Top/Side</span><span class="p">Combined 3D</span><span class="p good">Each mic (open, pattern live)</span></td><td><span class="p good">Listen: setup · link mode · 3rd mic role</span><span class="p good">Head (binaural only)</span></td></tr>
+<tr><td>Mix</td><td><span class="p good">Mic strips with Route (Stereo · M/S · L · R · Both)</span><span class="p">Buses</span><span class="p mv">Decay (s)</span></td><td><span class="p good">Output: Auto level</span><span class="p">Preview</span></td></tr>
+<tr><td>Space</td><td><span class="p good">chips: Lattice · Paths · Last legs</span><span class="p good">orbit/zoom/fit</span></td><td><span class="p">Room size</span><span class="p mv">Hadamard size</span></td></tr>
+<tr><td>Surfaces</td><td><span class="p">Room net · materials · faces</span><span class="p mv">Air card (amount, climate, ISO depth)</span></td><td><span class="p">Room size</span><span class="p">Preview</span></td></tr>
+<tr><td>Colour</td><td><span class="p good">Post-EQ only (flat by default) over the wet-IR analyser</span></td><td><span class="p">Preview</span></td></tr>
+<tr><td>Polar</td><td><span class="p good">chips: Combined · Each mic · At speakers (L / R)</span></td><td><span class="p">Listen</span></td></tr>
+<tr><td>Advanced</td><td colspan="2"><span class="p mv">2011 Reaktor parity + snapshot</span><span class="p mv">Feedback (Structure Gain, 2011 law)</span><span class="p mv">Air 1-pole (2011)</span><span class="p mv">IR length</span><span class="p mv">Shared tail</span><span class="p mv">Diffusion seed (one copy)</span><span class="p mv">Colour impl</span><span class="p mv">Bake IR on drop</span></td></tr>
+</table></div></div></body></html>

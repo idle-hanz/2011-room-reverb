@@ -1,0 +1,14 @@
+{
+ "md": {
+  "null_A_vs_swappedB_dB": -Infinity,
+  "ILD4k_A": 15.43,
+  "ILD4k_B": -15.43,
+  "max_oct_band_diff_dB": 0.0
+ },
+ "mf": {
+  "null_A_vs_swappedB_dB": -5.9,
+  "ILD4k_A": 11.78,
+  "ILD4k_B": -11.47,
+  "max_oct_band_diff_dB": 0.1
+ }
+}

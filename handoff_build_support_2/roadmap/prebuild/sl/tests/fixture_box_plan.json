@@ -1,0 +1,61 @@
+{
+ "source": "proto2/target_treated.json (box, 4 Oct)",
+ "rows": [
+  [
+   "F",
+   "porous",
+   null,
+   0.21
+  ],
+  [
+   "D",
+   "porous",
+   null,
+   0.21
+  ],
+  [
+   "A",
+   "porous",
+   null,
+   0.21
+  ],
+  [
+   "C",
+   "porous",
+   null,
+   0.21
+  ],
+  [
+   "D",
+   "membrane",
+   125.0,
+   0.5
+  ],
+  [
+   "F",
+   "membrane",
+   62.5,
+   0.215
+  ],
+  [
+   "D",
+   "helmholtz",
+   198.4,
+   0.19
+  ],
+  [
+   "B",
+   "helmholtz",
+   157.5,
+   0.474
+  ]
+ ],
+ "coverage": {
+  "A": 0.21,
+  "B": 0.474,
+  "C": 0.21,
+  "D": 0.9,
+  "E": 0,
+  "F": 0.425
+ }
+}

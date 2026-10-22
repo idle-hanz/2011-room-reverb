@@ -1,0 +1,3 @@
+filters=42 K=6: 2.693 ns/biquad/sample, 86.88 us per 128-sample block, 3.258% of one core at 48 kHz (acc 37.9079)
+filters=48 K=6: 2.705 ns/biquad/sample, 99.73 us per 128-sample block, 3.740% of one core at 48 kHz (acc 43.3234)
+filters=50 K=6: 2.705 ns/biquad/sample, 103.88 us per 128-sample block, 3.896% of one core at 48 kHz (acc 45.1285)

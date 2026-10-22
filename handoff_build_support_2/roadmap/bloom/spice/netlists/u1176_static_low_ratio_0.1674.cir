@@ -1,0 +1,24 @@
+* u1176_static_low_ratio_0.1674
+.include /workspace/compressors/spice/models/devices.lib
+Vin in 0 SIN(0 0.16739004142288563 1000)
+Vgate gt 0 PWL(0 1 0.6 1 0.6000099999999999 0)
+Bin in2 0 V=v(in)*v(gt)
+Rs in2 fet 8354.675320206132
+J1 fet g 0 2N5457
+Bg g 0 V=-1.82+v(c)+0.5*v(fet)
+Bout out 0 V=v(fet)*100
+Brec r 0 V=abs(v(out))*0.5-0.0
+D1 r d DSIG
+Ra d c 1600.0
+C27 c 0 220n
+Rr c 0 1270000.0
+
+.control
+set wr_singlescale
+set wr_vecnames
+option numdgt=7
+tran 2e-5 0.6 0 2e-5
+wrdata /workspace/compressors/spice/raw/u1176_static_low_ratio_0.1674.txt v(fet) v(in)
+quit
+.endc
+.end

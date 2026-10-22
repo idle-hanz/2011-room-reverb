@@ -1,0 +1,12 @@
+{
+ "server_DEFAULTS_early_wet": 0.0,
+ "client_state_early_wet": 0.0,
+ "client_state_fader_early": 0.0,
+ "client_heardMix": {
+  "early_default": 0,
+  "fader_half": 1
+ },
+ "early_bus_energy_db_re_total_first80ms_when_on": -17.7643973690419,
+ "default_vs_early_on_diff_db_first80ms": -16.868694345977207,
+ "fdn_part_unchanged_by_early_wet (max abs diff)": 5.251604272976662e-18
+}

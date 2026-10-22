@@ -1,0 +1,74 @@
+{
+ "_readme": "TEST-ONLY STAND-IN. NOT 2011 DATA. rebuild Play IR from tree F1-F3+F5 used as a fake reference",
+ "schema": "rr2011.capture.v1",
+ "capture": {
+  "date": "2026-09-__",
+  "host": "synthetic (box)",
+  "reaktor_version": "none",
+  "plugin_format": "VST2 / VST3 / standalone",
+  "sample_rate": 48000,
+  "bit_depth": "32-bit float",
+  "buffer_size": 512,
+  "impulse_file": "RR2011_impulse_48k_0dBFS.wav",
+  "impulse_at_s": 0.5,
+  "impulse_dbfs": 0.0,
+  "latency_samples": 0,
+  "take": 1
+ },
+ "room": {
+  "W": 6.0,
+  "H": 3.0,
+  "L": 8.0
+ },
+ "source": {
+  "SX_term23": 0.5,
+  "SZ_term24": 0.5,
+  "pad_note": "Sound Position pad; read terminals 23/24 by hover in Structure"
+ },
+ "mic": {
+  "MSS_term25": 0.25,
+  "MRa_term26": null,
+  "MY_term27": 1.5,
+  "HZ_term28": 6.5,
+  "Car_term29": 1.0,
+  "HF_term30": 20000,
+  "HpF_term31": null,
+  "Hp_term32": null,
+  "diverg_MDPC": null,
+  "panel": {
+   "Mic Response": null,
+   "Angle": null,
+   "Height": null,
+   "Depth": null,
+   "Car/Omni": null,
+   "Space": null
+  }
+ },
+ "fdn": {
+  "GainF": 1.0,
+  "diffusion_master": -0.5,
+  "surface_diffusion": {
+   "Sides": 0.5,
+   "Ahead": 0.5,
+   "Behind": 0.5,
+   "Floor": 0.5,
+   "Ceiling": 0.5
+  },
+  "diffuser_diffusion_in": null,
+  "dffs_voice1": null,
+  "dffs_voice2": null,
+  "dis_voice1": null
+ },
+ "air": {
+  "humidity_wet": 400
+ },
+ "other": {
+  "AGC": "Off",
+  "AGC_dB": null,
+  "Clip Diffusion": "On",
+  "volume_trim": null,
+  "stacked_macro": "All",
+  "surfaces_dB_all_zero": true,
+  "notes": ""
+ }
+}

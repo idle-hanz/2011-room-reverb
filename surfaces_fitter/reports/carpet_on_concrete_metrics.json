@@ -1,0 +1,41 @@
+{
+  "id": "carpet_on_concrete",
+  "display_name": "Carpet on concrete",
+  "candidate": "A",
+  "model": "dual_high_shelf",
+  "rmse_r_db": 0.04497485572908994,
+  "absorb_l1": 0.008391704592359743,
+  "candidate_rmse": {
+    "A": 0.04497485572908994,
+    "B": 0.04695456658720383
+  },
+  "params": {
+    "r0_db": -0.09460972493425533,
+    "f0": 1177.8627654989587,
+    "depth_db": -4.772941703086262,
+    "shelf_slope": 5.160598717766025,
+    "f0_hi": 6538.053217177187,
+    "depth_hi_db": -0.1226697417760207,
+    "shelf_slope_hi": 11.999999999999998
+  },
+  "roles": [
+    "floor"
+  ],
+  "banned_on": [
+    "wall",
+    "ceiling"
+  ],
+  "absorb": [
+    0.02,
+    0.06,
+    0.14,
+    0.37,
+    0.6,
+    0.65,
+    0.68
+  ],
+  "extras": {
+    "notes": "FLOOR ONLY. Ban on walls/ceiling unless Idle unlocks.",
+    "prefer_lf_candidate": false
+  }
+}

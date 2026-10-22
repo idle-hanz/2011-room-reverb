@@ -1,0 +1,72 @@
+{'pre': 'neve', 'signal': 'noise', 'rel_clip_db': -6, 'held_out': True, 'lin_err_db': -12.2, 'ham3_err_db': -16.2, 'ham5_err_db': -6.0, 'ham7_err_db': 2.3, 'ham5+volt_err_db': -6.2}
+{'pre': 'neve', 'signal': 'noise', 'rel_clip_db': -12, 'held_out': False, 'lin_err_db': -29.2, 'ham3_err_db': -30.6, 'ham5_err_db': -32.5, 'ham7_err_db': -31.2, 'ham5+volt_err_db': -33.2}
+{'pre': 'neve', 'signal': 'ess', 'rel_clip_db': -3, 'held_out': False, 'lin_err_db': -30.9, 'ham3_err_db': -35.4, 'ham5_err_db': -30.9, 'ham7_err_db': -28.8, 'ham5+volt_err_db': -32.5}
+{'pre': 'neve', 'signal': 'mix', 'rel_clip_db': -6, 'held_out': True, 'lin_err_db': -37.8, 'ham3_err_db': -36.9, 'ham5_err_db': -37.0, 'ham7_err_db': -36.7, 'ham5+volt_err_db': -37.0}
+{'pre': 'neve', 'signal': 'mix', 'rel_clip_db': 0, 'held_out': True, 'lin_err_db': -37.6, 'ham3_err_db': -35.7, 'ham5_err_db': -34.4, 'ham7_err_db': -34.2, 'ham5+volt_err_db': -35.0}
+{'pre': 'neve', 'signal': 'vocal', 'rel_clip_db': -6, 'held_out': True, 'lin_err_db': -53.6, 'ham3_err_db': -41.8, 'ham5_err_db': -46.0, 'ham7_err_db': -47.5, 'ham5+volt_err_db': -45.7}
+{'pre': 'neve', 'signal': 'vocal', 'rel_clip_db': 0, 'held_out': True, 'lin_err_db': -40.4, 'ham3_err_db': -36.0, 'ham5_err_db': -26.3, 'ham7_err_db': -16.2, 'ham5+volt_err_db': -27.3}
+{'pre': 'neve', 'signal': 'drums', 'rel_clip_db': -6, 'held_out': True, 'lin_err_db': -27.8, 'ham3_err_db': -26.8, 'ham5_err_db': -26.7, 'ham7_err_db': -26.4, 'ham5+volt_err_db': -26.7}
+{'pre': 'neve', 'signal': 'drums', 'rel_clip_db': 0, 'held_out': True, 'lin_err_db': -27.7, 'ham3_err_db': -26.7, 'ham5_err_db': -26.6, 'ham7_err_db': -26.2, 'ham5+volt_err_db': -26.7}
+{'pre': 'neve', 'signal': 'wetmix', 'rel_clip_db': -6, 'held_out': True, 'lin_err_db': -43.4, 'ham3_err_db': -41.9, 'ham5_err_db': -42.7, 'ham7_err_db': -43.0, 'ham5+volt_err_db': -42.7}
+{'pre': 'neve', 'signal': 'wetmix', 'rel_clip_db': 0, 'held_out': True, 'lin_err_db': -42.8, 'ham3_err_db': -38.8, 'ham5_err_db': -32.9, 'ham7_err_db': -31.6, 'ham5+volt_err_db': -33.8}
+neve done 30s
+{'pre': 'u610a', 'signal': 'noise', 'rel_clip_db': -6, 'held_out': True, 'lin_err_db': -11.2, 'ham3_err_db': -17.5, 'ham5_err_db': -4.7, 'ham7_err_db': -4.7, 'ham5+volt_err_db': -4.6}
+{'pre': 'u610a', 'signal': 'noise', 'rel_clip_db': -12, 'held_out': False, 'lin_err_db': -27.9, 'ham3_err_db': -30.6, 'ham5_err_db': -32.9, 'ham7_err_db': -32.9, 'ham5+volt_err_db': -32.7}
+{'pre': 'u610a', 'signal': 'ess', 'rel_clip_db': -3, 'held_out': False, 'lin_err_db': -16.6, 'ham3_err_db': -23.1, 'ham5_err_db': -24.4, 'ham7_err_db': -24.4, 'ham5+volt_err_db': -25.5}
+{'pre': 'u610a', 'signal': 'mix', 'rel_clip_db': -6, 'held_out': True, 'lin_err_db': -35.4, 'ham3_err_db': -31.6, 'ham5_err_db': -35.1, 'ham7_err_db': -35.1, 'ham5+volt_err_db': -34.9}
+{'pre': 'u610a', 'signal': 'mix', 'rel_clip_db': 0, 'held_out': True, 'lin_err_db': -27.0, 'ham3_err_db': -28.9, 'ham5_err_db': -31.9, 'ham7_err_db': -31.9, 'ham5+volt_err_db': -31.6}
+{'pre': 'u610a', 'signal': 'vocal', 'rel_clip_db': -6, 'held_out': True, 'lin_err_db': -47.2, 'ham3_err_db': -32.9, 'ham5_err_db': -42.4, 'ham7_err_db': -42.4, 'ham5+volt_err_db': -37.2}
+{'pre': 'u610a', 'signal': 'vocal', 'rel_clip_db': 0, 'held_out': True, 'lin_err_db': -12.5, 'ham3_err_db': -20.6, 'ham5_err_db': -23.7, 'ham7_err_db': -23.7, 'ham5+volt_err_db': -23.5}
+{'pre': 'u610a', 'signal': 'drums', 'rel_clip_db': -6, 'held_out': True, 'lin_err_db': -25.5, 'ham3_err_db': -24.3, 'ham5_err_db': -25.3, 'ham7_err_db': -25.3, 'ham5+volt_err_db': -25.3}
+{'pre': 'u610a', 'signal': 'drums', 'rel_clip_db': 0, 'held_out': True, 'lin_err_db': -24.9, 'ham3_err_db': -24.0, 'ham5_err_db': -25.1, 'ham7_err_db': -25.1, 'ham5+volt_err_db': -25.0}
+{'pre': 'u610a', 'signal': 'wetmix', 'rel_clip_db': -6, 'held_out': True, 'lin_err_db': -40.3, 'ham3_err_db': -33.4, 'ham5_err_db': -40.2, 'ham7_err_db': -40.2, 'ham5+volt_err_db': -39.6}
+{'pre': 'u610a', 'signal': 'wetmix', 'rel_clip_db': 0, 'held_out': True, 'lin_err_db': -24.0, 'ham3_err_db': -28.8, 'ham5_err_db': -31.4, 'ham7_err_db': -31.4, 'ham5+volt_err_db': -31.3}
+u610a done 30s
+{'pre': 'u610b', 'signal': 'noise', 'rel_clip_db': -6, 'held_out': True, 'lin_err_db': -24.0, 'ham3_err_db': -25.6, 'ham5_err_db': -27.8, 'ham7_err_db': -27.7, 'ham5+volt_err_db': -27.7}
+{'pre': 'u610b', 'signal': 'noise', 'rel_clip_db': -12, 'held_out': False, 'lin_err_db': -41.6, 'ham3_err_db': -41.8, 'ham5_err_db': -39.6, 'ham7_err_db': -39.6, 'ham5+volt_err_db': -39.7}
+{'pre': 'u610b', 'signal': 'ess', 'rel_clip_db': -3, 'held_out': False, 'lin_err_db': -31.5, 'ham3_err_db': -31.9, 'ham5_err_db': -31.6, 'ham7_err_db': -31.6, 'ham5+volt_err_db': -31.7}
+{'pre': 'u610b', 'signal': 'mix', 'rel_clip_db': -6, 'held_out': True, 'lin_err_db': -30.8, 'ham3_err_db': -30.9, 'ham5_err_db': -30.7, 'ham7_err_db': -30.7, 'ham5+volt_err_db': -30.7}
+{'pre': 'u610b', 'signal': 'mix', 'rel_clip_db': 0, 'held_out': True, 'lin_err_db': -30.7, 'ham3_err_db': -30.8, 'ham5_err_db': -30.7, 'ham7_err_db': -30.7, 'ham5+volt_err_db': -30.7}
+{'pre': 'u610b', 'signal': 'vocal', 'rel_clip_db': -6, 'held_out': True, 'lin_err_db': -49.4, 'ham3_err_db': -53.5, 'ham5_err_db': -52.9, 'ham7_err_db': -53.0, 'ham5+volt_err_db': -54.2}
+{'pre': 'u610b', 'signal': 'vocal', 'rel_clip_db': 0, 'held_out': True, 'lin_err_db': -37.7, 'ham3_err_db': -43.8, 'ham5_err_db': -43.5, 'ham7_err_db': -43.1, 'ham5+volt_err_db': -44.5}
+{'pre': 'u610b', 'signal': 'drums', 'rel_clip_db': -6, 'held_out': True, 'lin_err_db': -23.8, 'ham3_err_db': -23.6, 'ham5_err_db': -23.4, 'ham7_err_db': -23.4, 'ham5+volt_err_db': -23.4}
+{'pre': 'u610b', 'signal': 'drums', 'rel_clip_db': 0, 'held_out': True, 'lin_err_db': -23.8, 'ham3_err_db': -23.6, 'ham5_err_db': -23.4, 'ham7_err_db': -23.4, 'ham5+volt_err_db': -23.4}
+{'pre': 'u610b', 'signal': 'wetmix', 'rel_clip_db': -6, 'held_out': True, 'lin_err_db': -33.3, 'ham3_err_db': -33.4, 'ham5_err_db': -33.3, 'ham7_err_db': -33.3, 'ham5+volt_err_db': -33.3}
+{'pre': 'u610b', 'signal': 'wetmix', 'rel_clip_db': 0, 'held_out': True, 'lin_err_db': -33.2, 'ham3_err_db': -33.4, 'ham5_err_db': -33.2, 'ham7_err_db': -33.2, 'ham5+volt_err_db': -33.3}
+u610b done 30s
+{'pre': 'api', 'signal': 'noise', 'rel_clip_db': -6, 'held_out': True, 'lin_err_db': -14.3, 'ham3_err_db': -14.5, 'ham5_err_db': -17.9, 'ham7_err_db': -3.9, 'ham5+volt_err_db': -17.8}
+{'pre': 'api', 'signal': 'noise', 'rel_clip_db': -12, 'held_out': False, 'lin_err_db': -38.1, 'ham3_err_db': -37.2, 'ham5_err_db': -37.2, 'ham7_err_db': -33.6, 'ham5+volt_err_db': -37.2}
+{'pre': 'api', 'signal': 'ess', 'rel_clip_db': -3, 'held_out': False, 'lin_err_db': -39.3, 'ham3_err_db': -39.5, 'ham5_err_db': -39.1, 'ham7_err_db': -35.6, 'ham5+volt_err_db': -39.7}
+{'pre': 'api', 'signal': 'mix', 'rel_clip_db': -6, 'held_out': True, 'lin_err_db': -33.7, 'ham3_err_db': -33.5, 'ham5_err_db': -33.4, 'ham7_err_db': -33.2, 'ham5+volt_err_db': -33.4}
+{'pre': 'api', 'signal': 'mix', 'rel_clip_db': 0, 'held_out': True, 'lin_err_db': -33.4, 'ham3_err_db': -33.2, 'ham5_err_db': -33.2, 'ham7_err_db': -32.5, 'ham5+volt_err_db': -33.2}
+{'pre': 'api', 'signal': 'vocal', 'rel_clip_db': -6, 'held_out': True, 'lin_err_db': -53.8, 'ham3_err_db': -56.8, 'ham5_err_db': -57.6, 'ham7_err_db': -45.9, 'ham5+volt_err_db': -62.4}
+{'pre': 'api', 'signal': 'vocal', 'rel_clip_db': 0, 'held_out': True, 'lin_err_db': -23.4, 'ham3_err_db': -23.5, 'ham5_err_db': -25.0, 'ham7_err_db': -20.2, 'ham5+volt_err_db': -24.5}
+{'pre': 'api', 'signal': 'drums', 'rel_clip_db': -6, 'held_out': True, 'lin_err_db': -23.8, 'ham3_err_db': -23.5, 'ham5_err_db': -23.4, 'ham7_err_db': -23.2, 'ham5+volt_err_db': -23.4}
+{'pre': 'api', 'signal': 'drums', 'rel_clip_db': 0, 'held_out': True, 'lin_err_db': -23.8, 'ham3_err_db': -23.5, 'ham5_err_db': -23.3, 'ham7_err_db': -23.2, 'ham5+volt_err_db': -23.3}
+{'pre': 'api', 'signal': 'wetmix', 'rel_clip_db': -6, 'held_out': True, 'lin_err_db': -38.9, 'ham3_err_db': -39.1, 'ham5_err_db': -39.0, 'ham7_err_db': -38.7, 'ham5+volt_err_db': -39.0}
+{'pre': 'api', 'signal': 'wetmix', 'rel_clip_db': 0, 'held_out': True, 'lin_err_db': -35.0, 'ham3_err_db': -35.1, 'ham5_err_db': -35.9, 'ham7_err_db': -32.6, 'ham5+volt_err_db': -35.6}
+api done 31s
+{'pre': 'sslE', 'signal': 'noise', 'rel_clip_db': -6, 'held_out': True, 'lin_err_db': -16.8, 'ham3_err_db': -16.8, 'ham5_err_db': -18.1, 'ham7_err_db': -17.1, 'ham5+volt_err_db': -18.0}
+{'pre': 'sslE', 'signal': 'noise', 'rel_clip_db': -12, 'held_out': False, 'lin_err_db': -42.0, 'ham3_err_db': -40.1, 'ham5_err_db': -38.5, 'ham7_err_db': -36.4, 'ham5+volt_err_db': -38.5}
+{'pre': 'sslE', 'signal': 'ess', 'rel_clip_db': -3, 'held_out': False, 'lin_err_db': -39.4, 'ham3_err_db': -39.3, 'ham5_err_db': -38.6, 'ham7_err_db': -37.8, 'ham5+volt_err_db': -38.9}
+{'pre': 'sslE', 'signal': 'mix', 'rel_clip_db': -6, 'held_out': True, 'lin_err_db': -32.9, 'ham3_err_db': -32.7, 'ham5_err_db': -32.6, 'ham7_err_db': -32.5, 'ham5+volt_err_db': -32.5}
+{'pre': 'sslE', 'signal': 'mix', 'rel_clip_db': 0, 'held_out': True, 'lin_err_db': -32.8, 'ham3_err_db': -32.7, 'ham5_err_db': -32.5, 'ham7_err_db': -32.4, 'ham5+volt_err_db': -32.5}
+{'pre': 'sslE', 'signal': 'vocal', 'rel_clip_db': -6, 'held_out': True, 'lin_err_db': -60.3, 'ham3_err_db': -63.5, 'ham5_err_db': -62.2, 'ham7_err_db': -62.2, 'ham5+volt_err_db': -59.9}
+{'pre': 'sslE', 'signal': 'vocal', 'rel_clip_db': 0, 'held_out': True, 'lin_err_db': -34.5, 'ham3_err_db': -34.5, 'ham5_err_db': -35.7, 'ham7_err_db': -31.8, 'ham5+volt_err_db': -34.8}
+{'pre': 'sslE', 'signal': 'drums', 'rel_clip_db': -6, 'held_out': True, 'lin_err_db': -22.7, 'ham3_err_db': -22.5, 'ham5_err_db': -22.3, 'ham7_err_db': -22.2, 'ham5+volt_err_db': -22.3}
+{'pre': 'sslE', 'signal': 'drums', 'rel_clip_db': 0, 'held_out': True, 'lin_err_db': -22.7, 'ham3_err_db': -22.5, 'ham5_err_db': -22.3, 'ham7_err_db': -22.2, 'ham5+volt_err_db': -22.3}
+{'pre': 'sslE', 'signal': 'wetmix', 'rel_clip_db': -6, 'held_out': True, 'lin_err_db': -38.9, 'ham3_err_db': -38.8, 'ham5_err_db': -38.7, 'ham7_err_db': -38.7, 'ham5+volt_err_db': -38.7}
+{'pre': 'sslE', 'signal': 'wetmix', 'rel_clip_db': 0, 'held_out': True, 'lin_err_db': -38.4, 'ham3_err_db': -38.3, 'ham5_err_db': -38.3, 'ham7_err_db': -38.3, 'ham5+volt_err_db': -38.2}
+sslE done 30s
+{'pre': 'manley', 'signal': 'noise', 'rel_clip_db': -6, 'held_out': True, 'lin_err_db': -21.0, 'ham3_err_db': -20.2, 'ham5_err_db': -6.4, 'ham7_err_db': 8.0, 'ham5+volt_err_db': -7.6}
+{'pre': 'manley', 'signal': 'noise', 'rel_clip_db': -12, 'held_out': False, 'lin_err_db': -40.3, 'ham3_err_db': -35.2, 'ham5_err_db': -32.0, 'ham7_err_db': -26.6, 'ham5+volt_err_db': -26.4}
+{'pre': 'manley', 'signal': 'ess', 'rel_clip_db': -3, 'held_out': False, 'lin_err_db': -13.1, 'ham3_err_db': -17.7, 'ham5_err_db': -14.3, 'ham7_err_db': -17.7, 'ham5+volt_err_db': -16.0}
+{'pre': 'manley', 'signal': 'mix', 'rel_clip_db': -6, 'held_out': True, 'lin_err_db': -28.3, 'ham3_err_db': -28.2, 'ham5_err_db': -26.9, 'ham7_err_db': -27.7, 'ham5+volt_err_db': -24.8}
+{'pre': 'manley', 'signal': 'mix', 'rel_clip_db': 0, 'held_out': True, 'lin_err_db': -28.3, 'ham3_err_db': -26.7, 'ham5_err_db': -22.9, 'ham7_err_db': -22.5, 'ham5+volt_err_db': -20.9}
+{'pre': 'manley', 'signal': 'vocal', 'rel_clip_db': -6, 'held_out': True, 'lin_err_db': -54.1, 'ham3_err_db': -41.7, 'ham5_err_db': -38.7, 'ham7_err_db': -23.9, 'ham5+volt_err_db': -24.6}
+{'pre': 'manley', 'signal': 'vocal', 'rel_clip_db': 0, 'held_out': True, 'lin_err_db': -29.7, 'ham3_err_db': -30.7, 'ham5_err_db': -10.1, 'ham7_err_db': -5.8, 'ham5+volt_err_db': -12.0}
+{'pre': 'manley', 'signal': 'drums', 'rel_clip_db': -6, 'held_out': True, 'lin_err_db': -22.1, 'ham3_err_db': -21.8, 'ham5_err_db': -21.5, 'ham7_err_db': -21.6, 'ham5+volt_err_db': -21.2}
+{'pre': 'manley', 'signal': 'drums', 'rel_clip_db': 0, 'held_out': True, 'lin_err_db': -22.1, 'ham3_err_db': -21.8, 'ham5_err_db': -21.1, 'ham7_err_db': -21.1, 'ham5+volt_err_db': -20.5}
+{'pre': 'manley', 'signal': 'wetmix', 'rel_clip_db': -6, 'held_out': True, 'lin_err_db': -30.7, 'ham3_err_db': -30.4, 'ham5_err_db': -28.5, 'ham7_err_db': -29.0, 'ham5+volt_err_db': -25.7}
+{'pre': 'manley', 'signal': 'wetmix', 'rel_clip_db': 0, 'held_out': True, 'lin_err_db': -30.6, 'ham3_err_db': -27.6, 'ham5_err_db': -20.0, 'ham7_err_db': -18.8, 'ham5+volt_err_db': -19.5}
+manley done 29s

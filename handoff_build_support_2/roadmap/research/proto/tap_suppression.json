@@ -1,0 +1,56 @@
+{
+ "ORTF cardioids \u00b155\u00b0, 17 cm": {
+  "pattern_gain_below_-20dB_l": 0,
+  "level_20dB_below_loudest_l": 18,
+  "pattern_gain_below_-20dB_r": 0,
+  "level_20dB_below_loudest_r": 15,
+  "wasted_on_both_capsules": 8,
+  "early_energy_gain_dB_if_loudest32_of_128": 0.01,
+  "overlap_loudest32_with_LIVE_32": 25
+ },
+ "XY cardioids \u00b145\u00b0": {
+  "pattern_gain_below_-20dB_l": 0,
+  "level_20dB_below_loudest_l": 19,
+  "pattern_gain_below_-20dB_r": 0,
+  "level_20dB_below_loudest_r": 15,
+  "wasted_on_both_capsules": 9,
+  "early_energy_gain_dB_if_loudest32_of_128": -0.0,
+  "overlap_loudest32_with_LIVE_32": 28
+ },
+ "Blumlein fig-8 \u00b145\u00b0": {
+  "pattern_gain_below_-20dB_l": 0,
+  "level_20dB_below_loudest_l": 19,
+  "pattern_gain_below_-20dB_r": 0,
+  "level_20dB_below_loudest_r": 15,
+  "wasted_on_both_capsules": 8,
+  "early_energy_gain_dB_if_loudest32_of_128": 0.2,
+  "overlap_loudest32_with_LIVE_32": 23
+ },
+ "MS: cardioid M + fig-8 S (ms_decode)": {
+  "pattern_gain_below_-20dB_l": 4,
+  "level_20dB_below_loudest_l": 15,
+  "pattern_gain_below_-20dB_r": 2,
+  "level_20dB_below_loudest_r": 19,
+  "wasted_on_both_capsules": 9,
+  "early_energy_gain_dB_if_loudest32_of_128": 0.0,
+  "overlap_loudest32_with_LIVE_32": 25
+ },
+ "MS: omni M + fig-8 S (ms_decode)": {
+  "pattern_gain_below_-20dB_l": 0,
+  "level_20dB_below_loudest_l": 15,
+  "pattern_gain_below_-20dB_r": 0,
+  "level_20dB_below_loudest_r": 19,
+  "wasted_on_both_capsules": 9,
+  "early_energy_gain_dB_if_loudest32_of_128": 0.16,
+  "overlap_loudest32_with_LIVE_32": 20
+ },
+ "Fig-8 side pair L/R \u00b190\u00b0 (2-mic S)": {
+  "pattern_gain_below_-20dB_l": 11,
+  "level_20dB_below_loudest_l": 10,
+  "pattern_gain_below_-20dB_r": 11,
+  "level_20dB_below_loudest_r": 9,
+  "wasted_on_both_capsules": 9,
+  "early_energy_gain_dB_if_loudest32_of_128": 1.24,
+  "overlap_loudest32_with_LIVE_32": 12
+ }
+}

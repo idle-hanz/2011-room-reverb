@@ -1,0 +1,22 @@
+{
+ "render": {
+  "tail_energy_delta_db": [
+   -0.13,
+   -0.04
+  ],
+  "tail_null_db": [
+   -24.8,
+   -29.6
+  ]
+ },
+ "play": {
+  "tail_energy_delta_db": [
+   -0.13,
+   -0.04
+  ],
+  "tail_null_db": [
+   -24.8,
+   -29.6
+  ]
+ }
+}

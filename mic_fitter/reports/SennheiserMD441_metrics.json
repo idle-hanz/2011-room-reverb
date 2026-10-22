@@ -1,0 +1,44 @@
+{
+  "mic_id": "SennheiserMD441",
+  "display_name": "Sennheiser MD 441 \u2014 dynamic hypercardioid",
+  "honesty": "MEASURED",
+  "family": "hypercardioid",
+  "source": "Franco et al. Zenodo 10.5281/zenodo.4633508 (Raw_IRs, 5m, 24-bit, selected angles)",
+  "params": {
+    "f0": 200.00104884992794,
+    "depth_max_db": -21.261527748576714,
+    "shelf_slope": 0.651182849036821,
+    "f_lo": 219.8475288973311,
+    "depth_lo_db": 0.00989414074661616,
+    "res_hz": 1500.002986319497,
+    "lp_mix": 0.2712688479112171,
+    "fc_floor": 5118.467525845489,
+    "p": 0.6000000000000001
+  },
+  "train_rmse_db": 3.275094633967355,
+  "holdout_rmse_db": 5.663945101816893,
+  "train_mse_db": 10.726244861441762,
+  "holdout_mse_db": 32.08027411639557,
+  "holdout_angles_deg": [
+    45.0,
+    135.0
+  ],
+  "train_angles_deg": [
+    0.0,
+    15.0,
+    30.0,
+    60.0,
+    90.0,
+    120.0,
+    150.0,
+    180.0
+  ],
+  "fit_message": "DE success=False nit=70 fun=10.921157; LS success=True cost=2793.996413",
+  "preset": "SennheiserMD441.json",
+  "plots": {
+    "polar": "plots/polars/SennheiserMD441_polar.png",
+    "colour": "plots/colour/SennheiserMD441_colour.png",
+    "fit_train": "plots/fit/SennheiserMD441_train.png",
+    "fit_holdout": "plots/fit/SennheiserMD441_holdout.png"
+  }
+}

@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><title>T2 prebuild · L/R buttons</title>
+<link rel="stylesheet" href="/static/css/app.css">
+<link rel="stylesheet" href="/static/prebuild/rr_controls.css">
+<style>
+body{padding:18px}
+.demo-wrap{display:flex;gap:14px;align-items:flex-start}
+.lr-strip{width:150px;background:var(--panel);border:1px solid var(--border);border-radius:var(--radius);padding:10px;display:flex;flex-direction:column;align-items:center;gap:8px}
+.lr-strip h3{margin:0;font-size:.85rem}
+.lr-strip[data-cap=l] h3{color:var(--left)} .lr-strip[data-cap=c] h3{color:var(--accent)} .lr-strip[data-cap=r] h3{color:var(--right)}
+.lr-row{display:flex;gap:6px}
+.lr-btn{width:46px;height:30px;border-radius:8px;border:1px solid var(--border);background:#10131a;color:var(--faint);font:700 .8rem var(--mono);cursor:pointer}
+.lr-btn[data-v="1"]{background:var(--accent-dim);border-color:var(--accent);color:var(--text)}
+.lr-btn[data-v="-1"]{background:rgba(244,114,182,.14);border-color:var(--danger);color:var(--danger)}
+.lr-pot{font:600 .7rem var(--mono);color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+.lr-pot.off{color:var(--faint);opacity:.5}
+.lr-route{font:600 .72rem var(--mono);color:var(--muted)}
+.lr-w{font:600 .72rem var(--mono);color:var(--text);background:var(--panel2);border-radius:6px;padding:3px 6px}
+.lr-tag{font-size:.62rem;color:var(--warn);min-height:1em}
+.lr-solo{font:700 .62rem var(--font);letter-spacing:.08em;border:1px solid var(--border);background:#10131a;color:var(--muted);border-radius:999px;padding:3px 10px}
+.side{max-width:520px}
+.side table{border-collapse:collapse;font:.72rem var(--mono);color:var(--muted)}
+.side td,.side th{border-bottom:1px solid var(--border-soft);padding:3px 8px;text-align:left}
+.side th{color:var(--text)}
+.preset{margin:0 6px 10px 0}
+</style></head><body>
+<h2 style="margin:0 0 4px">T2 prebuild · L / R buttons with polarity (D‑UI31)</h2>
+<p style="color:var(--muted);margin:0 0 12px;font-size:.8rem">Click a button: off → on → Ø (polarity flipped) → off. The engine fields below are what app.js would post; no new routes.</p>
+<div style="margin-bottom:10px">
+  <button class="btn preset" id="pORTF">Load ORTF desk</button>
+  <button class="btn preset" id="pMS">Load MS classic desk</button>
+  <button class="btn preset" id="pMS3">Load MS 3-mic (preset c)</button>
+</div>
+<div class="demo-wrap">
+  <div id="strips" class="demo-wrap"></div>
+  <div class="side panel" style="padding:10px">
+    <div class="panel-head"><h2>Speaker weights (L out, R out)</h2></div>
+    <table id="wt"><tr><th>Strip</th><th>Buttons</th><th>route</th><th>phase</th><th>pot</th><th>L out</th><th>R out</th></tr></table>
+    <p style="font-size:.72rem;color:var(--muted)">Weights use app.js <code>pair()</code> (linear law) at fader 0 dB, trim 0.</p>
+  </div>
+</div>
+<script src="/static/prebuild/lr_buttons.js"></script>
+<script>
+var st;
+function reset(kind){
+  st={pair_mode:"stereo",ms_m:"c",ms_s:"l",mic_route_l:"pan",mic_route_c:"pan",mic_route_r:"pan",phase_l:1,phase_c:1,phase_r:1,
+      mute_l:false,mute_c:true,mute_r:false,pan_l:-1,pan_c:0,pan_r:1,gain_exact_c:null};
+  if(kind==="ms"){Object.assign(st,{pair_mode:"ms",mic_route_l:"s",mic_route_c:"both",mute_c:false,mute_r:true,gain_exact_c:1.5});}
+  if(kind==="ms3"){Object.assign(st,{pair_mode:"ms",mic_route_l:"s",mic_route_c:"both",mic_route_r:"s",phase_r:-1,mute_c:false,mute_r:false,gain_exact_c:1.5});}
+  paint();
+}
+function paint(){
+  var host=document.getElementById("strips"); host.innerHTML="";
+  var tb=document.getElementById("wt"); while(tb.rows.length>1) tb.deleteRow(1);
+  RRLR.CAPS.forEach(function(cap){
+    var f=RRLR.fromRoute(st["mic_route_"+cap],st["phase_"+cap],st["mute_"+cap],{msMid:RRLR.isMsMid(st,cap),pan:st["pan_"+cap]});
+    var btn=st["mute_"+cap]?{l:0,r:0}:f.btn;
+    var t=RRLR.toRoute(btn,{msMid:RRLR.isMsMid(st,cap),legacyBoth:f.legacyBoth,forcePan:f.forcePan});
+    var d=document.createElement("div"); d.className="lr-strip"; d.dataset.cap=cap;
+    var name={l:"Left",c:"Centre",r:"Right"}[cap];
+    var tag=RRLR.isMsMid(st,cap)?"MS Mid · L+R = both":(t.route==="s"?"Side (S)":"");
+    d.innerHTML='<h3>'+name+'</h3><div class="lr-tag">'+tag+'</div><div class="lr-row"></div>'+
+      '<div class="lr-pot '+(t.pot==="none"?"off":"")+'">'+RRLR.potLabel(t.pot)+'</div>'+
+      '<div class="lr-route">'+(t.mute?"muted":"route "+t.route+(t.phase<0?" · Ø":""))+'</div>'+
+      '<button class="lr-solo" type="button" title="Hear only this mic (solo-in-place)">SOLO</button>';
+    ["l","r"].forEach(function(side){
+      var b=document.createElement("button"); b.type="button"; b.className="lr-btn"; b.dataset.side=side; b.dataset.cap=cap;
+      var lab=RRLR.buttonLabel(side,btn[side]); b.textContent=lab.text; b.title=lab.title; b.dataset.v=String(btn[side]);
+      b.addEventListener("click",function(){ var p=RRLR.clickPatch(st,cap,side); Object.assign(st,p.patch); paint(); });
+      d.querySelector(".lr-row").appendChild(b);
+    });
+    host.appendChild(d);
+    var a=cap==="c"&&st.gain_exact_c!=null?st.gain_exact_c:1;
+    var w=t.mute?[0,0]:RRLR.weights(t.route,a,st["pan_"+cap],t.phase);
+    var r=tb.insertRow(); [name,(btn.l===-1?"LØ":btn.l?"L":"·")+" "+(btn.r===-1?"RØ":btn.r?"R":"·"),t.mute?"—":t.route,t.phase,t.pot,w[0].toFixed(3),w[1].toFixed(3)].forEach(function(v){r.insertCell().textContent=v;});
+  });
+}
+document.getElementById("pORTF").onclick=function(){reset("ortf")};
+document.getElementById("pMS").onclick=function(){reset("ms")};
+document.getElementById("pMS3").onclick=function(){reset("ms3")};
+reset("ortf");
+</script></body></html>

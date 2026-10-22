@@ -1,0 +1,121 @@
+16:22:44 0 {'S_reb': 2.1096, 'S_nf': 2.0832, 'S_scalar': 2.0908, 'S_nf_scalar': 2.0075, 'A_reb': 1.8553}
+16:24:09 1 {'S_reb': 2.0376, 'S_nf': 2.0355, 'S_scalar': 2.0367, 'S_nf_scalar': 2.0002, 'A_reb': 1.8421}
+16:25:34 2 {'S_reb': 2.0535, 'S_nf': 2.0564, 'S_scalar': 2.1395, 'S_nf_scalar': 1.9934, 'A_reb': 1.8383}
+16:27:00 3 {'S_reb': 2.0982, 'S_nf': 2.0845, 'S_scalar': 2.0884, 'S_nf_scalar': 2.0602, 'A_reb': 1.8713}
+16:28:28 4 {'S_reb': 2.1098, 'S_nf': 2.0759, 'S_scalar': 2.062, 'S_nf_scalar': 2.0191, 'A_reb': 1.8653}
+16:29:54 5 {'S_reb': 2.0448, 'S_nf': 2.0644, 'S_scalar': 2.1103, 'S_nf_scalar': 2.0403, 'A_reb': 1.8994}
+16:31:21 6 {'S_reb': 2.1181, 'S_nf': 2.1032, 'S_scalar': 2.0872, 'S_nf_scalar': 2.0611, 'A_reb': 1.8795}
+16:32:47 7 {'S_reb': 2.0488, 'S_nf': 2.0317, 'S_scalar': 2.1377, 'S_nf_scalar': 2.0442, 'A_reb': 1.8587}
+{
+ "shared_tail": false,
+ "rounds": 8,
+ "wasm_sha1": {
+  "S_reb": "6892c2a6a3e7",
+  "S_nf": "7972ed78b1ea",
+  "S_scalar": "55fdf8f3f094",
+  "S_nf_scalar": "3af56f1e16ea",
+  "A_reb": "4cb2e56010e4"
+ },
+ "S_reb": {
+  "mean": 2.1532,
+  "median": 2.0758,
+  "p90": 2.2426,
+  "sil_late_median": 2.0854,
+  "median_spread": [
+   2.0376,
+   2.1181
+  ]
+ },
+ "S_nf": {
+  "mean": 2.141,
+  "median": 2.0701,
+  "p90": 2.1837,
+  "sil_late_median": 12.4151,
+  "median_spread": [
+   2.0317,
+   2.1032
+  ],
+  "paired_pct_vs_S_reb": {
+   "median": -0.68,
+   "all": [
+    -1.2,
+    -0.1,
+    0.1,
+    -0.7,
+    -1.6,
+    1.0,
+    -0.7,
+    -0.8
+   ]
+  }
+ },
+ "S_scalar": {
+  "mean": 2.1589,
+  "median": 2.0896,
+  "p90": 2.2341,
+  "sil_late_median": 2.1108,
+  "median_spread": [
+   2.0367,
+   2.1395
+  ],
+  "paired_pct_vs_S_reb": {
+   "median": -0.25,
+   "all": [
+    -0.9,
+    -0.0,
+    4.2,
+    -0.5,
+    -2.3,
+    3.2,
+    -1.5,
+    4.3
+   ]
+  }
+ },
+ "S_nf_scalar": {
+  "mean": 2.0703,
+  "median": 2.0297,
+  "p90": 2.1356,
+  "sil_late_median": 15.065,
+  "median_spread": [
+   1.9934,
+   2.0611
+  ],
+  "paired_pct_vs_S_reb": {
+   "median": -2.26,
+   "all": [
+    -4.8,
+    -1.8,
+    -2.9,
+    -1.8,
+    -4.3,
+    -0.2,
+    -2.7,
+    -0.2
+   ]
+  }
+ },
+ "A_reb": {
+  "mean": 1.9182,
+  "median": 1.862,
+  "p90": 1.9695,
+  "sil_late_median": 1.8759,
+  "median_spread": [
+   1.8383,
+   1.8994
+  ],
+  "paired_pct_vs_S_reb": {
+   "median": -10.65,
+   "all": [
+    -12.1,
+    -9.6,
+    -10.5,
+    -10.8,
+    -11.6,
+    -7.1,
+    -11.3,
+    -9.3
+   ]
+  }
+ }
+}

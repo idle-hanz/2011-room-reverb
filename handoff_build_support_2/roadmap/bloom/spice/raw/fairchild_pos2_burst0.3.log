@@ -1,0 +1,23 @@
+
+Note: No compatibility mode selected!
+
+
+Circuit: * fairchild_pos2_burst0.3
+
+Doing analysis at TEMP = 27.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+
+Initial Transient Solution
+--------------------------
+
+Node                                   Voltage
+----                                   -------
+drv                                          0
+a                                 -2.16048e-20
+sc                                -2.15904e-20
+vd#branch                          1.44032e-25
+
+
+No. of Data Rows : 20045
+ngspice-44.2 done

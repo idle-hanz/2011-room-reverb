@@ -1,0 +1,516 @@
+{
+ "sw": "/workspace/build_support_2/work/p6/software",
+ "summary": {
+  "PASS": 60,
+  "FAIL": 2,
+  "XFAIL": 22,
+  "SKIP": 0
+ },
+ "results": [
+  {
+   "test": "test_colour_sos::test_colour_tables_match_presets",
+   "status": "PASS",
+   "secs": 0.3,
+   "detail": ""
+  },
+  {
+   "test": "test_colour_sos::test_colour_at_c1_48k_within_0p5db",
+   "status": "PASS",
+   "secs": 0.0,
+   "detail": ""
+  },
+  {
+   "test": "test_colour_sos::test_colour_at_c4_44k1_within_0p6db",
+   "status": "PASS",
+   "secs": 0.0,
+   "detail": ""
+  },
+  {
+   "test": "test_colour_sos::test_colour_44k1_tables_match_presets",
+   "status": "PASS",
+   "secs": 0.0,
+   "detail": ""
+  },
+  {
+   "test": "test_colour_sos::test_colour_unsupported_rate_disabled_with_notice[32000]",
+   "status": "PASS",
+   "secs": 0.0,
+   "detail": ""
+  },
+  {
+   "test": "test_colour_sos::test_colour_unsupported_rate_disabled_with_notice[88200]",
+   "status": "PASS",
+   "secs": 0.0,
+   "detail": ""
+  },
+  {
+   "test": "test_colour_sos::test_colour_unsupported_rate_disabled_with_notice[96000]",
+   "status": "PASS",
+   "secs": 0.0,
+   "detail": ""
+  },
+  {
+   "test": "test_colour_sos::test_colour_sos_stable[44100]",
+   "status": "PASS",
+   "secs": 0.0,
+   "detail": ""
+  },
+  {
+   "test": "test_colour_sos::test_colour_sos_stable[48000]",
+   "status": "PASS",
+   "secs": 0.0,
+   "detail": ""
+  },
+  {
+   "test": "test_colour_sos::test_colour_hpf_on_low_end[44100]",
+   "status": "PASS",
+   "secs": 0.5,
+   "detail": ""
+  },
+  {
+   "test": "test_colour_sos::test_colour_hpf_on_low_end[48000]",
+   "status": "PASS",
+   "secs": 0.0,
+   "detail": ""
+  },
+  {
+   "test": "test_colour_sos::test_colour_play_bank_fits_two_sources_apart",
+   "status": "FAIL",
+   "secs": 0.4,
+   "detail": "AssertionError: 146 colour entries > MAX_IRS 128 (live_stereo.c) -> Play colour silently off with two sources assert 146 <= 128"
+  },
+  {
+   "test": "test_colour_sos::test_colour_cpu_active",
+   "status": "PASS",
+   "secs": 4.6,
+   "detail": ""
+  },
+  {
+   "test": "test_colour_sos::test_colour_numpy_sos_matches_loop",
+   "status": "PASS",
+   "secs": 0.1,
+   "detail": ""
+  },
+  {
+   "test": "test_decisions_2026_09_28::test_k1_single_yaw_convention",
+   "status": "PASS",
+   "secs": 0.0,
+   "detail": ""
+  },
+  {
+   "test": "test_decisions_2026_09_28::test_k1_left_source_L_louder_and_earlier_play[xy_90]",
+   "status": "PASS",
+   "secs": 1.0,
+   "detail": ""
+  },
+  {
+   "test": "test_decisions_2026_09_28::test_k1_left_source_L_louder_and_earlier_play[xy_120]",
+   "status": "PASS",
+   "secs": 1.1,
+   "detail": ""
+  },
+  {
+   "test": "test_decisions_2026_09_28::test_k1_left_source_L_louder_and_earlier_play[ortf]",
+   "status": "PASS",
+   "secs": 1.0,
+   "detail": ""
+  },
+  {
+   "test": "test_decisions_2026_09_28::test_k1_left_source_L_louder_and_earlier_play[nos]",
+   "status": "PASS",
+   "secs": 1.0,
+   "detail": ""
+  },
+  {
+   "test": "test_decisions_2026_09_28::test_k1_left_source_L_louder_and_earlier_play[din]",
+   "status": "PASS",
+   "secs": 1.0,
+   "detail": ""
+  },
+  {
+   "test": "test_decisions_2026_09_28::test_k1_left_source_L_louder_and_earlier_play[ms]",
+   "status": "PASS",
+   "secs": 1.1,
+   "detail": ""
+  },
+  {
+   "test": "test_decisions_2026_09_28::test_k1_left_source_L_louder_and_earlier_render[ortf]",
+   "status": "PASS",
+   "secs": 3.8,
+   "detail": ""
+  },
+  {
+   "test": "test_decisions_2026_09_28::test_k1_left_source_L_louder_and_earlier_render[xy_90]",
+   "status": "PASS",
+   "secs": 3.5,
+   "detail": ""
+  },
+  {
+   "test": "test_decisions_2026_09_28::test_k1_left_source_L_louder_and_earlier_render[ms]",
+   "status": "PASS",
+   "secs": 3.5,
+   "detail": ""
+  },
+  {
+   "test": "test_decisions_2026_09_28::test_k2_air_1pole_default_zero",
+   "status": "PASS",
+   "secs": 0.0,
+   "detail": ""
+  },
+  {
+   "test": "test_decisions_2026_09_28::test_k3_default_source_29_distinct_delays",
+   "status": "PASS",
+   "secs": 0.0,
+   "detail": ""
+  },
+  {
+   "test": "test_decisions_2026_09_28::test_k3_client_default_matches",
+   "status": "PASS",
+   "secs": 0.0,
+   "detail": ""
+  },
+  {
+   "test": "test_decisions_2026_09_28::test_k4_fdn_first_defaults",
+   "status": "PASS",
+   "secs": 0.0,
+   "detail": ""
+  },
+  {
+   "test": "test_decisions_2026_09_28::test_k4_raise_early_fader_no_stale_replay",
+   "status": "PASS",
+   "secs": 1.6,
+   "detail": ""
+  },
+  {
+   "test": "test_decisions_2026_09_28::test_headroom_trim_table",
+   "status": "PASS",
+   "secs": 0.0,
+   "detail": ""
+  },
+  {
+   "test": "test_decisions_2026_09_28::test_headroom_t14_fdn_level_matches_pre_f2",
+   "status": "PASS",
+   "secs": 3.2,
+   "detail": ""
+  },
+  {
+   "test": "test_decisions_2026_09_28::test_headroom_t14_whole_mix_informational",
+   "status": "XFAIL",
+   "secs": 2.6,
+   "detail": "whole mix +1.61 dB vs pre-F2 (peak 0.56 vs 0.512): direct/early not trimmed - DECISION"
+  },
+  {
+   "test": "test_locks::test_lock_unscaled_pm1_hadamard_render",
+   "status": "PASS",
+   "secs": 0.0,
+   "detail": ""
+  },
+  {
+   "test": "test_locks::test_lock_unscaled_pm1_hadamard_play",
+   "status": "PASS",
+   "secs": 0.0,
+   "detail": ""
+  },
+  {
+   "test": "test_locks::test_lock_geometric_level_inverse_square",
+   "status": "PASS",
+   "secs": 0.0,
+   "detail": ""
+  },
+  {
+   "test": "test_locks::test_lock_early_images_excite_fdn",
+   "status": "PASS",
+   "secs": 0.0,
+   "detail": ""
+  },
+  {
+   "test": "test_locks::test_lock_two_diffusion_layers_separate_keys",
+   "status": "XFAIL",
+   "secs": 0.0,
+   "detail": "P0.3 diffusion key split not in tree (card \"diffusion\" still feeds both layers)"
+  },
+  {
+   "test": "test_p0_engine::test_p0_1_denormal_guard_in_source",
+   "status": "PASS",
+   "secs": 0.0,
+   "detail": ""
+  },
+  {
+   "test": "test_p0_engine::test_p0_1_silence_cost[colour_off-over0-0.5]",
+   "status": "PASS",
+   "secs": 2.1,
+   "detail": ""
+  },
+  {
+   "test": "test_p0_engine::test_p0_1_silence_cost[colour_on-over1-0.75]",
+   "status": "PASS",
+   "secs": 2.8,
+   "detail": ""
+  },
+  {
+   "test": "test_p0_engine::test_p0_2_t60_play_within_8pct[std_lock18]",
+   "status": "PASS",
+   "secs": 0.8,
+   "detail": ""
+  },
+  {
+   "test": "test_p0_engine::test_p0_2_t60_play_within_8pct[small_lock08]",
+   "status": "FAIL",
+   "secs": 1.1,
+   "detail": "AssertionError: Play T30 {500: 0.885, 1000: 0.805, 2000: 0.783, 4000: 0.777, 8000: 0.761} vs dial 0.8 s (+-8%); out: {500: 0.885} assert not {500: 0.885}"
+  },
+  {
+   "test": "test_p0_engine::test_p0_2_t60_play_within_8pct[hall_lock40]",
+   "status": "PASS",
+   "secs": 2.0,
+   "detail": ""
+  },
+  {
+   "test": "test_p0_engine::test_p0_2_t60_play_independent_of_dffs[0.0]",
+   "status": "PASS",
+   "secs": 0.9,
+   "detail": ""
+  },
+  {
+   "test": "test_p0_engine::test_p0_2_t60_play_independent_of_dffs[-0.5]",
+   "status": "PASS",
+   "secs": 0.9,
+   "detail": ""
+  },
+  {
+   "test": "test_p0_engine::test_p0_2_t60_play_independent_of_dffs[-0.9]",
+   "status": "PASS",
+   "secs": 0.9,
+   "detail": ""
+  },
+  {
+   "test": "test_p0_engine::test_p0_2_hf_residue_play",
+   "status": "PASS",
+   "secs": 0.8,
+   "detail": ""
+  },
+  {
+   "test": "test_p0_engine::test_p0_2_t60_render_within_8pct",
+   "status": "PASS",
+   "secs": 29.6,
+   "detail": ""
+  },
+  {
+   "test": "test_p0_engine::test_p0_2_decay_lock_off_unchanged",
+   "status": "PASS",
+   "secs": 0.3,
+   "detail": ""
+  },
+  {
+   "test": "test_p0_engine::test_p0_3_two_diffusion_layers_independent",
+   "status": "XFAIL",
+   "secs": 0.0,
+   "detail": "P0.3 diffusion key split not in tree (card \"diffusion\" still feeds both layers)"
+  },
+  {
+   "test": "test_p0_engine::test_p0_4_fdn_tail_null_play_vs_render",
+   "status": "XFAIL",
+   "secs": 0.0,
+   "detail": "P0.4 loop semantics not decided/landed (no build_mix / loop_semantics / packed loop_mix) - F5 is DECISION FOR IDLE"
+  },
+  {
+   "test": "test_p0_engine::test_p0_5_server_defaults_equal_client_state",
+   "status": "XFAIL",
+   "secs": 0.1,
+   "detail": "P0.5b: client does not load /api/defaults (hard-coded state in app.js); 10 shared-key mismatches: decay_lock False/True, decay_s 0.0/1.8, early_wet 0.0/1, humidity 0.0/0.35, mic_proximity 0.0/0.25, mirror_b False/True, space 0.25/0.17, toe_half_deg None/55, yaw_l_deg None/-55, yaw_r_deg None/55"
+  },
+  {
+   "test": "test_p0_engine::test_p0_5_scipy_in_requirements",
+   "status": "PASS",
+   "secs": 0.0,
+   "detail": ""
+  },
+  {
+   "test": "test_p0_engine::test_p0_5_loop_mix_not_dead_payload",
+   "status": "XFAIL",
+   "secs": 0.0,
+   "detail": "P0.5a: loop_mix still computed in render_pipeline.py but never packed/used by Play (dead payload); delete it or consume it with F5 (DECISION FOR IDLE with the loop-semantics choice)"
+  },
+  {
+   "test": "test_p0_engine::test_p0_5_diffusion_master_clamped",
+   "status": "PASS",
+   "secs": 0.0,
+   "detail": ""
+  },
+  {
+   "test": "test_p0_engine::test_p0_5_diffusion_master_single_value",
+   "status": "PASS",
+   "secs": 0.0,
+   "detail": ""
+  },
+  {
+   "test": "test_p1_blob::test_p1_worklet_ver_consistent_everywhere",
+   "status": "PASS",
+   "secs": 0.0,
+   "detail": ""
+  },
+  {
+   "test": "test_p1_blob::test_p1_blob_len_matches_packer",
+   "status": "PASS",
+   "secs": 0.1,
+   "detail": ""
+  },
+  {
+   "test": "test_p1_blob::test_p1_wasm_matches_source",
+   "status": "PASS",
+   "secs": 1.9,
+   "detail": ""
+  },
+  {
+   "test": "test_p1_blob::test_p1_blob_v2_header_and_sections",
+   "status": "XFAIL",
+   "secs": 0.0,
+   "detail": "P1 blob v2 header/section table not in tree (magic 1 only)"
+  },
+  {
+   "test": "test_p1_blob::test_p1_max_blob_raised",
+   "status": "XFAIL",
+   "secs": 0.0,
+   "detail": "P1 blob v2 header/section table not in tree (magic 1 only)"
+  },
+  {
+   "test": "test_p1_blob::test_p1_old_wasm_silent_on_v2_blob",
+   "status": "XFAIL",
+   "secs": 0.0,
+   "detail": "P1 blob v2 header/section table not in tree (magic 1 only)"
+  },
+  {
+   "test": "test_p2_air::test_lock_direct_is_air_free_play",
+   "status": "PASS",
+   "secs": 1.0,
+   "detail": ""
+  },
+  {
+   "test": "test_p2_air::test_lock_direct_is_air_free_render",
+   "status": "PASS",
+   "secs": 3.2,
+   "detail": ""
+  },
+  {
+   "test": "test_p2_air::test_lock_no_air_on_fdn_return_play",
+   "status": "PASS",
+   "secs": 0.0,
+   "detail": ""
+  },
+  {
+   "test": "test_p2_air::test_lock_no_air_on_fdn_return_render",
+   "status": "PASS",
+   "secs": 0.0,
+   "detail": ""
+  },
+  {
+   "test": "test_p2_air::test_lock_humidity_one_pole_separate_from_shelf",
+   "status": "PASS",
+   "secs": 0.0,
+   "detail": ""
+  },
+  {
+   "test": "test_p2_air::test_lock_render_stage_order",
+   "status": "PASS",
+   "secs": 0.0,
+   "detail": ""
+  },
+  {
+   "test": "test_p2_air::test_p2_iso_air_fit_within_tolerance",
+   "status": "XFAIL",
+   "secs": 0.0,
+   "detail": "P2 ISO 9613-1 air not in tree (no engine/air_iso.py, no air_climate)"
+  },
+  {
+   "test": "test_p2_air::test_p2_air_shelf_zero_nulls_iso_off",
+   "status": "XFAIL",
+   "secs": 0.0,
+   "detail": "P2 ISO 9613-1 air not in tree (no engine/air_iso.py, no air_climate)"
+  },
+  {
+   "test": "test_p2_air::test_p2_play_render_early_null",
+   "status": "XFAIL",
+   "secs": 0.0,
+   "detail": "P2 ISO 9613-1 air not in tree (no engine/air_iso.py, no air_climate)"
+  },
+  {
+   "test": "test_p3_p4_surfaces::test_lock_per_hit_cascade_is_serial_render",
+   "status": "PASS",
+   "secs": 0.0,
+   "detail": ""
+  },
+  {
+   "test": "test_p3_p4_surfaces::test_lock_render_passes_every_hit",
+   "status": "PASS",
+   "secs": 0.0,
+   "detail": ""
+  },
+  {
+   "test": "test_p3_p4_surfaces::test_p3a_curtain_wall_only_real_materials",
+   "status": "XFAIL",
+   "secs": 0.0,
+   "detail": "P3A Track A materials/role bans not in tree"
+  },
+  {
+   "test": "test_p3_p4_surfaces::test_p3b_mute_all_panels_leaves_direct_and_fdn",
+   "status": "XFAIL",
+   "secs": 0.0,
+   "detail": "P3B surfaces Solo/Mute not in tree"
+  },
+  {
+   "test": "test_p3_p4_surfaces::test_p4_play_render_early_null",
+   "status": "XFAIL",
+   "secs": 0.0,
+   "detail": "P4 Play per-hit surface cascade not in tree"
+  },
+  {
+   "test": "test_p3_p4_surfaces::test_p4_flat_cards_bit_exact_bypass",
+   "status": "XFAIL",
+   "secs": 0.0,
+   "detail": "P4 Play per-hit surface cascade not in tree"
+  },
+  {
+   "test": "test_p3_p4_surfaces::test_p4_cpu_budget",
+   "status": "XFAIL",
+   "secs": 0.0,
+   "detail": "P4 Play per-hit surface cascade not in tree"
+  },
+  {
+   "test": "test_p5_p6::test_lock_no_scattering_inside_fdn_loop",
+   "status": "PASS",
+   "secs": 0.0,
+   "detail": ""
+  },
+  {
+   "test": "test_p5_p6::test_p5_scatter_zero_is_bit_identical",
+   "status": "XFAIL",
+   "secs": 0.0,
+   "detail": "P5 scattering (Track C) not in tree"
+  },
+  {
+   "test": "test_p5_p6::test_p5_scatter_after_air",
+   "status": "XFAIL",
+   "secs": 0.0,
+   "detail": "P5 scattering (Track C) not in tree"
+  },
+  {
+   "test": "test_p5_p6::test_p5_energy_and_feed_forward",
+   "status": "XFAIL",
+   "secs": 0.0,
+   "detail": "P5 scattering (Track C) not in tree"
+  },
+  {
+   "test": "test_p5_p6::test_p6_omni_source_bit_identical",
+   "status": "XFAIL",
+   "secs": 0.0,
+   "detail": "P6 source radiation not in tree"
+  },
+  {
+   "test": "test_p5_p6::test_p6_tail_invariant_to_source_yaw",
+   "status": "XFAIL",
+   "secs": 0.0,
+   "detail": "P6 source radiation not in tree"
+  }
+ ],
+ "pytest_tail": "...........F...................x....x....F.......xxx.x.....xxx......xxx. [ 85%]\n.xxxxx.xxxxx                                                             [100%]\n=================================== FAILURES ===================================\n_________________ test_colour_play_bank_fits_two_sources_apart _________________\n\nsw = PosixPath('/workspace/build_support_2/work/p6/software')\nctx = <run_all.Ctx object at 0x7f6af4ecc6e0>\nsrc = <function src.<locals>.read at 0x7f6af4f289a0>\n\n    @pytest.mark.phase('COLOUR')\n    def test_colour_play_bank_fits_two_sources_apart(sw, ctx, src):\n        \"\"\"Two sources placed apart must not overflow the Play colour bank (MAX_IRS) - otherwise the worklet\n        fails 'Live mic filters are too long.' and colour is silently not applied.\"\"\"\n        m = re.search(r'MAX_IRS\\s*=\\s*(\\d+)', src('engine/live_stereo.c'))\n        assert m, 'MAX_IRS not found'\n        cap = int(m.group(1))\n        P = json.loads(open(ctx.params({\"decay_lock\": True, \"decay_s\": 1.8, \"humidity\": 0.5, \"early_wet\": 1.0,\n                                        \"two_sources\": True, \"sx_b\": 1.5, \"sz_b\": 5.5})).read())\n        n = len((P.get('colour') or {}).get('irs') or [])\n>       assert n <= cap, f'{n} colour entries > MAX_IRS {cap} (live_stereo.c) -> Play colour silently off with two sources'\nE       AssertionError: 146 colour entries > MAX_IRS 128 (live_stereo.c) -> Play colour silently off with two sources\nE       assert 146 <= 128\n\ntests/test_colour_sos.py:142: AssertionError\n_________________ test_p0_2_t60_play_within_8pct[small_lock08] _________________\n\nsw = PosixPath('/workspace/build_support_2/work/p6/software')\nctx = <run_all.Ctx object at 0x7f6af4ecc6e0>\nRA = <module 'run_all' from '/workspace/build_support_2/3_phase_acceptance_tests/harness/run_all.py'>\nscene = 'small_lock08'\n\n    @pytest.mark.phase('P0.2')\n    @pytest.mark.parametrize('scene', ['std_lock18', 'small_lock08', 'hall_lock40'])\n    def test_p0_2_t60_play_within_8pct(sw, ctx, RA, scene):\n        PR.need(PR.f2_line_absorption, sw)\n        dial = RA.SCENES[scene]['decay_s']\n        x = ctx.play_ir(scene, FDN_ONLY, max(4, 2.5 * dial))\n        t, bad = _t60_bad(x, dial)\n>       assert not bad, f'Play T30 {t} vs dial {dial} s (+-{T60_TOL:.0%}); out: {bad}'\nE       AssertionError: Play T30 {500: 0.885, 1000: 0.805, 2000: 0.783, 4000: 0.777, 8000: 0.761} vs dial 0.8 s (+-8%); out: {500: 0.885}\nE       assert not {500: 0.885}\n\ntests/test_p0_engine.py:52: AssertionError\n2 failed, 60 passed, 22 xfailed in 79.45s (0:01:19)\n"
+}

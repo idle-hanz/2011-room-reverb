@@ -1,0 +1,300 @@
+diff -ruN a/engine/fdn.py b/engine/fdn.py
+--- a/engine/fdn.py	2026-10-01 07:46:53.018339172 +0100
++++ b/engine/fdn.py	2026-10-01 07:46:53.034339122 +0100
+@@ -726,6 +726,7 @@
+         n: Optional[int] = None,
+         dffs: Optional[Sequence[float]] = None,
+         mic_g: Optional[Sequence[float]] = None,
++        line_t60: float = 0.0,
+     ) -> None:
+         n_lines = int(n) if n is not None else len(delays)
+         if n_lines < 1 or (n_lines & (n_lines - 1)) != 0:
+@@ -734,9 +735,19 @@
+             raise ValueError(f"need {n_lines} delays, got {len(delays)}")
+         self.n = n_lines
+         # Unscaled Hadamard: stable only if g < 1/√N. Structure is Gain/N.
+-        lim = 0.99 / math.sqrt(float(self.n))
++        # With line absorption (decay lock) every line loses gain < 1 per
++        # trip, so the loop may run at the lossless g = 1/√N.
++        self.line_t60 = float(line_t60 or 0.0)
++        lim = (1.0 if self.line_t60 > 0.05 else 0.99) / math.sqrt(float(self.n))
+         self.g = float(max(0.0, min(lim, g)))
+         self.delays = [int(d) for d in delays]
++        # lg_i = 10^(-3 d_i / (sr T60)): delay-proportional absorption (Jot).
++        self._lg = None
++        if self.line_t60 > 0.05:
++            self._lg = np.asarray(
++                [10.0 ** (-3.0 * float(d) / (float(sr) * self.line_t60)) for d in self.delays],
++                dtype=np.float64,
++            )
+         self.max_d = max(self.delays) if self.delays else 0
+         self.bufs = [np.zeros(d, dtype=np.float64) for d in self.delays]
+         self.idx = [0] * self.n
+@@ -814,7 +825,7 @@
+         Prefers fdn_core.so (C) when N==32; otherwise Python+numpy.
+         """
+         assert inject.shape[1] == self.n
+-        if _FDN_CORE is not None and self.n == 32 and not self._any_dffs and not self._any_mic:
++        if _FDN_CORE is not None and self.n == 32 and not self._any_dffs and not self._any_mic and self._lg is None:
+             return self._process_block_c(inject)
+         return self._process_block_py(inject)
+ 
+@@ -846,9 +857,12 @@
+         any_mic = self._any_mic
+         mg = self.mic_g
+         mz = self._mic_z
++        lg = self._lg
+         for t in range(n_samp):
+             for i in range(n):
+                 reads[i] = bufs[i][idx[i]]
++            if lg is not None:
++                reads *= lg
+             if peaking:
+                 for i in range(n):
+                     if use_peak[i]:
+diff -ruN a/engine/live_stereo.c b/engine/live_stereo.c
+--- a/engine/live_stereo.c	2026-10-01 07:46:53.018339172 +0100
++++ b/engine/live_stereo.c	2026-10-01 07:46:53.034339122 +0100
+@@ -87,6 +87,8 @@
+     double sb0b, sb1b, sb2b, sa1b, sa2b;
+     double sz1, sz2, sz1e, sz2e, sz1b, sz2b, sz1f, sz2f;
+     double pz1, pz2, pz1b, pz2b;
++    /* Per-line absorption for the decay lock: lg = 10^(-3 d / (sr T60)). 1 = off. */
++    double lg, lgB;
+     int w;
+ } Line;
+ 
+@@ -124,6 +126,7 @@
+     int n_irs;
+     int direct_index;
+     double g, fdn_wet, direct_wet, early_wet, dry_gain, makeup, gain_a, gain_b;
++    double lineT60;
+     double micG[3], micPan[3], micPh[3];
+     int peakOn[3];
+     double pb0[3], pb1[3], pb2[3], pa1[3], pa2[3];
+@@ -480,6 +483,8 @@
+             st->bus[b].line[i].delayBT = 64.0;
+             st->bus[b].line[i].sb0 = 1.0;
+             st->bus[b].line[i].sb0b = 1.0;
++            st->bus[b].line[i].lg = 1.0;
++            st->bus[b].line[i].lgB = 1.0;
+         }
+     }
+ }
+@@ -714,6 +719,24 @@
+         bus->dirGainB = clampf(rf(&r), -2.0, 2.0);
+         bus->anyDffsB = anyB;
+     }
++    /* Optional trailing float (blob length 1982): line T60 in seconds.
++     * > 0.05 turns on delay-proportional line absorption so every path through
++     * the loop (Hadamard or the Dffs allpass self-loop) loses 60 dB per T60.
++     * lg uses the TARGET delay (delayT); delay glides to it within ~10 ms. */
++    st->lineT60 = rf(&r);
++    for (b = 0; b < 3; b++) {
++        for (i = 0; i < N; i++) {
++            Line *line = &st->bus[b].line[i];
++            if (st->lineT60 > 0.05) {
++                double k = -6.907755278982137 / ((double)st->sr * st->lineT60);
++                line->lg = ls_exp(k * line->delayT);
++                line->lgB = ls_exp(k * line->delayBT);
++            } else {
++                line->lg = 1.0;
++                line->lgB = 1.0;
++            }
++        }
++    }
+ }
+ 
+ static void zero_filts(LiveStereo *st) {
+@@ -971,7 +994,7 @@
+     double v, yi, nz1, nz2;
+     int ax = i % 3;
+     double *z1, *z2;
+-    v = read_lane(ring, lane, line->w, delay, st->cap);
++    v = (bankB ? line->lgB : line->lg) * read_lane(ring, lane, line->w, delay, st->cap);
+     if (!st->peakOn[ax]) return v;
+     z1 = bankB ? &line->pz1b : &line->pz1;
+     z2 = bankB ? &line->pz2b : &line->pz2;
+diff -ruN a/render_pipeline.py b/render_pipeline.py
+--- a/render_pipeline.py	2026-10-01 07:46:53.022339160 +0100
++++ b/render_pipeline.py	2026-10-01 07:46:53.034339122 +0100
+@@ -578,6 +578,7 @@
+     apply_mic=False,
+     weights=None,
+     colour=None,
++    line_t60=0.0,
+ ):
+     """2011 wet: L / C / R Diffuser Delay loops + Hadamard feedback + Mixer fold.
+ 
+@@ -627,6 +628,7 @@
+             n=n_lines,
+             dffs=dffs,
+             mic_g=mic_g,
++            line_t60=line_t60,
+         )
+         poly = fdn.process_block_poly(inj)
+         if colour is not None and colour.measured and n_t:
+@@ -750,6 +752,8 @@
+     mic_phase_c: float = 1.0,
+     mic_phase_r: float = 1.0,
+     colour=None,
++    line_t60: float = 0.0,
++    loop_g=None,
+ ):
+     weights = capsule_speaker_weights(
+         mic_gain_l, mic_gain_c, mic_gain_r,
+@@ -776,7 +780,7 @@
+         taps, sr, fdn_ms, n_lines=hadamard_n, weights=weights, colour=colour,
+     )
+     Lf, Rf = render_fdn_ir(
+-        taps, room, sr, c, fdn_ms, fdn_g, DEFAULT_DEPTH, delays,
++        taps, room, sr, c, fdn_ms, fdn_g if loop_g is None else loop_g, DEFAULT_DEPTH, delays,
+         n_lines=hadamard_n, surfaces=surfaces, humidity=humidity,
+         air_lp=air_lp, air_shelf=air_shelf,
+         diffusion_master=diffusion_master,
+@@ -785,6 +789,7 @@
+         apply_mic=False,
+         weights=weights,
+         colour=colour,
++        line_t60=line_t60,
+     )
+     n = max(len(Le), len(Lf), len(Ld))
+     def _pad(a):
+@@ -1012,10 +1017,14 @@
+             taps_b, prep_b = taps_for(bx, by, bz)
+             delays = fdn_delays_from_taps(taps, sr=sr, c=c, n=n_had)
+             g_split = g
++            line_t60 = 0.0
+             if decay_lock and float(decay_s) > 0.05:
+                 g_split = structure_gain_for_rt60(delays, float(decay_s), sr, n_had) / float(n_had)
+                 lim = 0.99 / math.sqrt(float(n_had))
+                 g_split = float(max(0.0, min(lim, g_split)))
++                line_t60 = float(decay_s)
++            # Loop runs lossless when line absorption carries the decay; makeup keeps g_split.
++            g_loop = (1.0 / math.sqrt(float(n_had))) if line_t60 > 0.05 else g_split
+             weights = capsule_speaker_weights(
+                 mic_gain_l, mic_gain_c, mic_gain_r,
+                 mic_pan_l, mic_pan_c, mic_pan_r,
+@@ -1070,7 +1079,7 @@
+ 
+             def _fdn_stereo(taps_src):
+                 left, right = render_fdn_ir(
+-                    taps_src, room, sr, c, fdn_ms, g_split, DEFAULT_DEPTH, delays,
++                    taps_src, room, sr, c, fdn_ms, g_loop, DEFAULT_DEPTH, delays,
+                     n_lines=n_had, surfaces=surfaces, humidity=humidity,
+                     air_lp=air_lp, air_shelf=air_shelf,
+                     diffusion_master=diffusion_master,
+@@ -1079,6 +1088,7 @@
+                     apply_mic=False,
+                     weights=weights,
+                     colour=mic_colour,
++                    line_t60=line_t60,
+                 )
+                 return float(fdn_wet) * mk * left, float(fdn_wet) * mk * right
+ 
+@@ -1146,10 +1156,12 @@
+         else:
+             taps, prep = taps_at(sox, soz)
+         delays = fdn_delays_from_taps(taps, sr=sr, c=c, n=n_had)
++        line_t60 = 0.0
+         if decay_lock and float(decay_s) > 0.05:
+             g = structure_gain_for_rt60(delays, float(decay_s), sr, n_had) / float(n_had)
+             lim = 0.99 / math.sqrt(float(n_had))
+             g = float(max(0.0, min(lim, g)))
++            line_t60 = float(decay_s)
+         ir_L, ir_R = combined_ir(
+             taps,
+             room,
+@@ -1180,6 +1192,8 @@
+             mic_pan_l=mic_pan_l, mic_pan_c=mic_pan_c, mic_pan_r=mic_pan_r,
+             mic_phase_l=mic_phase_l, mic_phase_c=mic_phase_c, mic_phase_r=mic_phase_r,
+             colour=mic_colour,
++            line_t60=line_t60,
++            loop_g=(1.0 / math.sqrt(float(n_had))) if line_t60 > 0.05 else None,
+         )
+         yL = fft_convolve(dry, ir_L)
+         yR = fft_convolve(dry, ir_R)
+@@ -1243,10 +1257,12 @@
+         )
+         taps, last_prep = taps_at(sox_v, soz_v)
+         delays = fdn_delays_from_taps(taps, sr=sr, c=c, n=n_had)
++        line_t60 = 0.0
+         if decay_lock and float(decay_s) > 0.05:
+             g = structure_gain_for_rt60(delays, float(decay_s), sr, n_had) / float(n_had)
+             lim = 0.99 / math.sqrt(float(n_had))
+             g = float(max(0.0, min(lim, g)))
++            line_t60 = float(decay_s)
+         ir_L, ir_R = combined_ir(
+             taps,
+             room,
+@@ -1276,6 +1292,8 @@
+             mic_pan_l=mic_pan_l, mic_pan_c=mic_pan_c, mic_pan_r=mic_pan_r,
+             mic_phase_l=mic_phase_l, mic_phase_c=mic_phase_c, mic_phase_r=mic_phase_r,
+             colour=mic_colour,
++            line_t60=line_t60,
++            loop_g=(1.0 / math.sqrt(float(n_had))) if line_t60 > 0.05 else None,
+         )
+         end = min(start + frame, n_dry)
+         block = np.zeros(frame, dtype=np.float64)
+@@ -1458,6 +1476,10 @@
+         g = structure_gain_for_rt60(dly_mean, decay_s, rate, n_had) / float(n_had)
+     lim = 0.99 / math.sqrt(float(n_had))
+     g = float(max(0.0, min(lim, g)))
++    # Decay lock: the loop runs lossless (g = 1/√N) and each line carries
++    # 10^(-3 d/(sr T60)) (live_stereo.c line_t60). makeup/decay_out keep g.
++    line_t60 = float(decay_s) if (decay_lock and decay_s > 0.05) else 0.0
++    g_loop = (1.0 / math.sqrt(float(n_had))) if line_t60 > 0.0 else g
+     di = direct_line_index(taps, n_had)
+     makeup = ir_rms_makeup_from_inject(
+         buses["l"]["inject"], buses["c"]["inject"], buses["r"]["inject"],
+@@ -1558,14 +1580,16 @@
+         p.get("sample_rate"), p.get("colour_rev") or "",
+     )
+     for _ch in ("l", "c", "r"):
+-        _attach_loop_mix(buses[_ch], g)
++        _attach_loop_mix(buses[_ch], g_loop)
+         _bb = buses[_ch].get("b")
+         if isinstance(_bb, dict):
+-            _attach_loop_mix(_bb, g)
++            _attach_loop_mix(_bb, g_loop)
+     return {
+         "ok": True,
+         "n": n_had,
+-        "g": g,
++        "g": g_loop,
++        "g_decay": g,
++        "line_t60": line_t60,
+         "fdn_wet": float(p.get("fdn_wet", 1.0)),
+         "direct_wet": float(p.get("direct_wet", 1.0)),
+         "early_wet": float(p.get("early_wet", 0.0)),
+diff -ruN a/static/js/fdn_worklet.js b/static/js/fdn_worklet.js
+--- a/static/js/fdn_worklet.js	2026-10-01 07:46:53.022339160 +0100
++++ b/static/js/fdn_worklet.js	2026-10-01 07:46:53.034339122 +0100
+@@ -6,7 +6,7 @@
+  * This thread has no fetch.
+  */
+ 
+-var BLOB_LEN = 1981;
++var BLOB_LEN = 1982;
+ var ROUTE_LEN = 230;
+ var MAX_AUDIO = 2048;
+ var MAX_IRS = 128;
+@@ -77,6 +77,7 @@
+     pushSide(a, bus, di);
+     pushSide(a, bus && bus.b, di);
+   }
++  a.push(num(data.line_t60, 0));
+   return a;
+ }
+ 
+diff -ruN a/static/js/live_fdn.js b/static/js/live_fdn.js
+--- a/static/js/live_fdn.js	2026-10-01 07:46:53.022339160 +0100
++++ b/static/js/live_fdn.js	2026-10-01 07:46:53.034339122 +0100
+@@ -280,6 +280,7 @@
+       makeup: params.makeup,
+       direct_index: params.direct_index,
+       max_delay_ms: params.max_delay_ms,
++      line_t60: params.line_t60 || 0,
+       peaking: params.peaking,
+       two_sources: !!params.two_sources && !monoFile,
+       gain_a: params.gain_a,

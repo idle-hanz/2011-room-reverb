@@ -1,0 +1,44 @@
+{
+  "mic_id": "RodeNT2ABidirect",
+  "display_name": "R\u00f8de NT2-A Bidirect (fig-8)",
+  "honesty": "MEASURED",
+  "family": "fig8",
+  "source": "Franco et al. Zenodo 10.5281/zenodo.4633508 (Raw_IRs, 5m, 24-bit, selected angles)",
+  "params": {
+    "f0": 4667.743547563702,
+    "depth_max_db": -15.875810506692973,
+    "shelf_slope": 0.6000000000000001,
+    "f_lo": 207.18670604294732,
+    "depth_lo_db": -0.819885946067054,
+    "res_hz": 1500.0000000000002,
+    "lp_mix": 0.2892804701424431,
+    "fc_floor": 3987.049413373144,
+    "p": 0.6000000000000001
+  },
+  "train_rmse_db": 4.461003793664815,
+  "holdout_rmse_db": 2.2602131414605036,
+  "train_mse_db": 19.900554847091865,
+  "holdout_mse_db": 5.108563444830759,
+  "holdout_angles_deg": [
+    45.0,
+    135.0
+  ],
+  "train_angles_deg": [
+    0.0,
+    15.0,
+    30.0,
+    60.0,
+    90.0,
+    120.0,
+    150.0,
+    180.0
+  ],
+  "fit_message": "DE success=False nit=70 fun=20.143980; LS success=True cost=5150.002529",
+  "preset": "RodeNT2ABidirect.json",
+  "plots": {
+    "polar": "plots/polars/RodeNT2ABidirect_polar.png",
+    "colour": "plots/colour/RodeNT2ABidirect_colour.png",
+    "fit_train": "plots/fit/RodeNT2ABidirect_train.png",
+    "fit_holdout": "plots/fit/RodeNT2ABidirect_holdout.png"
+  }
+}

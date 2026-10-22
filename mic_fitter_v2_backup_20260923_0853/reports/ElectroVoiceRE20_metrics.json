@@ -1,0 +1,44 @@
+{
+  "mic_id": "ElectroVoiceRE20",
+  "display_name": "Electro-Voice RE20 \u2014 dynamic cardioid",
+  "honesty": "MEASURED",
+  "family": "dynamic_cardioid",
+  "source": "Franco et al. Zenodo 10.5281/zenodo.4633508 (Raw_IRs, 5m, 24-bit, selected angles)",
+  "params": {
+    "f0": 200.00000000000003,
+    "depth_max_db": -16.527150333825006,
+    "shelf_slope": 1.5000000000000002,
+    "f_lo": 241.43195352940631,
+    "depth_lo_db": -1.4036990114538708,
+    "res_hz": 14506.36713938076,
+    "lp_mix": 0.27770182016585737,
+    "fc_floor": 3593.017587490806,
+    "p": 0.9308441860944817
+  },
+  "train_rmse_db": 3.4193282549923714,
+  "holdout_rmse_db": 3.620985883612335,
+  "train_mse_db": 11.691805715389174,
+  "holdout_mse_db": 13.111538769319804,
+  "holdout_angles_deg": [
+    45.0,
+    135.0
+  ],
+  "train_angles_deg": [
+    0.0,
+    15.0,
+    30.0,
+    60.0,
+    90.0,
+    120.0,
+    150.0,
+    180.0
+  ],
+  "fit_message": "DE success=False nit=70 fun=12.040421; LS success=True cost=3081.577337",
+  "preset": "ElectroVoiceRE20.json",
+  "plots": {
+    "polar": "plots/polars/ElectroVoiceRE20_polar.png",
+    "colour": "plots/colour/ElectroVoiceRE20_colour.png",
+    "fit_train": "plots/fit/ElectroVoiceRE20_train.png",
+    "fit_holdout": "plots/fit/ElectroVoiceRE20_holdout.png"
+  }
+}

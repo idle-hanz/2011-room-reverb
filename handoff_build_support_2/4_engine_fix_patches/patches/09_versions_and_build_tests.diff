@@ -1,0 +1,97 @@
+--- a/static/index.html
++++ b/static/index.html
+@@ -614,14 +614,14 @@
+     </main>
+   </div>
+   <script src="/static/js/vendor/three.min.js"></script>
+-  <script src="/static/js/room_math.js?v=13"></script>
++  <script src="/static/js/room_math.js?v=14"></script>
+   <script src="/static/js/room_3d.js?v=16"></script>
+   <script src="/static/js/room_editor.js?v=12"></script>
+   <script src="/static/js/image_views.js?v=12"></script>
+   <script src="/static/js/colour_surfaces.js"></script>
+   <script src="/static/js/polar_field.js?v=4"></script>
+-  <script src="/static/js/mic_desk.js?v=7"></script>
+-  <script src="/static/js/live_fdn.js?v=31"></script>
+-  <script src="/static/js/app.js?v=21"></script>
++  <script src="/static/js/mic_desk.js?v=8"></script>
++  <script src="/static/js/live_fdn.js?v=32"></script>
++  <script src="/static/js/app.js?v=22"></script>
+ </body>
+ </html>
+--- a/static/js/live_fdn.js
++++ b/static/js/live_fdn.js
+@@ -15,7 +15,7 @@
+   var monoFile = false;
+   var colourRev = "";
+   var bank = null;
+-  var WORKLET_VER = 31;
++  var WORKLET_VER = 32;
+   var ROUTE_LEN = 230;
+ 
+   function status(msg) {
+--- a/tests/test_live_stereo.py
++++ b/tests/test_live_stereo.py
+@@ -466,9 +466,9 @@
+     work = (ROOT / "static" / "js" / "fdn_worklet.js").read_text(encoding="utf-8")
+     page = (ROOT / "static" / "index.html").read_text(encoding="utf-8")
+     assert "createConvolver" not in live
+-    assert "WORKLET_VER = 31" in live
++    assert "WORKLET_VER = 32" in live
+     assert "LANES = 4" in text
+-    assert "live_fdn.js?v=31" in page
++    assert "live_fdn.js?v=32" in page
+     assert "MAX_SOS" in text
+     assert "design_sos" in text
+     assert "LS_DC" in text
+--- a/tests/test_mic_colour_relative.py
++++ b/tests/test_mic_colour_relative.py
+@@ -337,7 +337,7 @@
+             self.theta_r = 0.0
+             self.theta_c = theta_c
+ 
+-    sr = 8000
++    sr = 48000  # decision 7 (28 Sep 2026): SOS colour only at 44.1/48 kHz
+     c = 340.0
+     n_lines = 8
+     taps = []
+@@ -403,7 +403,7 @@
+         prep, car_omni=1.0, yaw_l_deg=-40.0, yaw_c_deg=0.0, yaw_r_deg=50.0,
+     )
+     taps = compute_taps(room, prep.source, stand, hadamard_n=8, include_offaxis_shelf=False)
+-    sr = 16000
++    sr = 48000  # decision 7 (28 Sep 2026): SOS colour only at 44.1/48 kHz
+     c = 340.0
+     wall = precompute_wall_peaking_coeffs(room, sr, c, 1.5)
+     ap = {0: None, 1: allpass_ir_for_stages(1, sr), 2: allpass_ir_for_stages(2, sr)}
+@@ -436,14 +436,15 @@
+     wet = rp.render_early_ir(taps, room, sr, c, 15.0, 0.0, 1.0, wall, ap, air_lp=1.0, air_shelf=0.0, early_toys=False)
+     assert float(np.max(np.abs(dry[0] - wet[0]))) > 1e-8
+     colour = MicColour("MEASURED_SHELF", "SM57", "SM57", "SM57", sr)
++    # K1 (28 Sep 2026): with the yaw flip the extreme-theta taps arrive at 24-30 ms, so 40 ms window (was 15).
+     ordered = sorted(taps, key=lambda t: t.theta_l)
+     pair = [ordered[0], ordered[-1]]
+     assert abs(pair[0].theta_l - pair[1].theta_l) > 0.05
+-    both = rp.render_early_ir(pair, room, sr, c, 15.0, 0.0, 0.0, wall, ap, early_toys=False, colour=colour)
+-    a = rp.render_early_ir([pair[0]], room, sr, c, 15.0, 0.0, 0.0, wall, ap, early_toys=False, colour=colour)
+-    b = rp.render_early_ir([pair[1]], room, sr, c, 15.0, 0.0, 0.0, wall, ap, early_toys=False, colour=colour)
++    both = rp.render_early_ir(pair, room, sr, c, 40.0, 0.0, 0.0, wall, ap, early_toys=False, colour=colour)
++    a = rp.render_early_ir([pair[0]], room, sr, c, 40.0, 0.0, 0.0, wall, ap, early_toys=False, colour=colour)
++    b = rp.render_early_ir([pair[1]], room, sr, c, 40.0, 0.0, 0.0, wall, ap, early_toys=False, colour=colour)
+     assert np.allclose(both[0], a[0] + b[0])
+-    raw = rp.render_early_ir(pair, room, sr, c, 15.0, 0.0, 0.0, wall, ap, early_toys=False)
++    raw = rp.render_early_ir(pair, room, sr, c, 40.0, 0.0, 0.0, wall, ap, early_toys=False)
+     wrong = colour.apply(raw[0], pair[0].theta_l, "l")
+     assert not np.allclose(both[0], wrong, atol=1e-8)
+     src = inspect.getsource(rp.render_early_ir)
+@@ -890,8 +891,8 @@
+     assert "apply_mic=True" not in pipe
+     assert "mic_one_pole_coeff" not in pipe
+     stereo = (SOFTWARE / "engine" / "live_stereo.c").read_text(encoding="utf-8")
+-    assert "WORKLET_VER = 31" in live_js
+-    assert "live_fdn.js?v=31" in page
++    assert "WORKLET_VER = 32" in live_js
++    assert "live_fdn.js?v=32" in page
+     assert "design_sos" in stereo
+     assert "MAX_SOS" in stereo
+ 

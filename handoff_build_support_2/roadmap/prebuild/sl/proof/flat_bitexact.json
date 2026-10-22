@@ -1,0 +1,63 @@
+{
+ "what": "Flat (2011) mode: render() output sha256, pristine build 51 copy (A) vs SL-patched copy (B), box, numpy float64 path",
+ "script": "tests/hash_scenes.py",
+ "scenes": {
+  "default_golden_body": {
+   "pristine": "2d7bcb7289ad45852543d974d8c6a1bb5efb089d3e86f3cd5a119eac8b155956",
+   "patched": "2d7bcb7289ad45852543d974d8c6a1bb5efb089d3e86f3cd5a119eac8b155956",
+   "n": 133984,
+   "identical": true
+  },
+  "default_lock_off": {
+   "pristine": "aeb636a235fdb73567a3be85e93d66ca64689e82e1537905ced2965ff1715895",
+   "patched": "aeb636a235fdb73567a3be85e93d66ca64689e82e1537905ced2965ff1715895",
+   "n": 72064,
+   "identical": true
+  },
+  "default_explicit_flat": {
+   "pristine": "2d7bcb7289ad45852543d974d8c6a1bb5efb089d3e86f3cd5a119eac8b155956",
+   "patched": "2d7bcb7289ad45852543d974d8c6a1bb5efb089d3e86f3cd5a119eac8b155956",
+   "n": 133984,
+   "identical": true
+  },
+  "default_flat_with_rows": {
+   "pristine": "2d7bcb7289ad45852543d974d8c6a1bb5efb089d3e86f3cd5a119eac8b155956",
+   "patched": "2d7bcb7289ad45852543d974d8c6a1bb5efb089d3e86f3cd5a119eac8b155956",
+   "n": 133984,
+   "identical": true
+  },
+  "ortf_c_on": {
+   "pristine": "d119f9bbdd4b5ca300bdaab11bcc01b72f1e4fbe6bd58b31d7725bb75c280a31",
+   "patched": "d119f9bbdd4b5ca300bdaab11bcc01b72f1e4fbe6bd58b31d7725bb75c280a31",
+   "n": 133984,
+   "identical": true
+  },
+  "two_sources": {
+   "pristine": "2d7bcb7289ad45852543d974d8c6a1bb5efb089d3e86f3cd5a119eac8b155956",
+   "patched": "2d7bcb7289ad45852543d974d8c6a1bb5efb089d3e86f3cd5a119eac8b155956",
+   "n": 133984,
+   "identical": true
+  },
+  "dry_short_lock_off": {
+   "pristine": "d6f19ad92eecc97c64b05718e70e62bd7f8c3b1bb5eac0c32e93ee640c89557f",
+   "patched": "d6f19ad92eecc97c64b05718e70e62bd7f8c3b1bb5eac0c32e93ee640c89557f",
+   "n": 19264,
+   "identical": true
+  },
+  "ui_default_body": {
+   "pristine": "048207acb72ef9e4bfd679e1a35be2c5b2fbe86426fa37725ff8e07d469d17de",
+   "patched": "048207acb72ef9e4bfd679e1a35be2c5b2fbe86426fa37725ff8e07d469d17de",
+   "n": 133984,
+   "identical": true
+  },
+  "ui_default_body_flat_rows": {
+   "pristine": "048207acb72ef9e4bfd679e1a35be2c5b2fbe86426fa37725ff8e07d469d17de",
+   "patched": "048207acb72ef9e4bfd679e1a35be2c5b2fbe86426fa37725ff8e07d469d17de",
+   "n": 133984,
+   "identical": true
+  }
+ },
+ "identical": 9,
+ "total": 9,
+ "note": "two_sources hash equals the default: the scene body probably did not engage the two-source path; Build re-checks with t19 goldens on the PC (the real gate)."
+}

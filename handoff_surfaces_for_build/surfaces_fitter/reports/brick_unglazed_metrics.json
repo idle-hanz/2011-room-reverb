@@ -1,0 +1,41 @@
+{
+  "id": "brick_unglazed",
+  "display_name": "Brick (unglazed)",
+  "candidate": "A",
+  "model": "dual_high_shelf",
+  "rmse_r_db": 0.0015015313418094488,
+  "absorb_l1": 0.0005669674878868604,
+  "candidate_rmse": {
+    "A": 0.0015015313418094488,
+    "B": 0.004046629744847519
+  },
+  "params": {
+    "r0_db": -0.13191496787748666,
+    "f0": 788.4860314278202,
+    "depth_db": -0.05056183914507467,
+    "shelf_slope": 11.999999999999998,
+    "f0_hi": 2959.677870500915,
+    "depth_hi_db": -0.18325001959640264,
+    "shelf_slope_hi": 6.7813252375336805
+  },
+  "roles": [
+    "wall"
+  ],
+  "banned_on": [
+    "floor",
+    "ceiling"
+  ],
+  "absorb": [
+    0.03,
+    0.03,
+    0.03,
+    0.04,
+    0.05,
+    0.07,
+    0.08
+  ],
+  "extras": {
+    "notes": "Dense masonry; mostly reflective.",
+    "prefer_lf_candidate": false
+  }
+}

@@ -1,0 +1,52 @@
+{
+  "schema": "mic_fitter.preset.v2",
+  "mic_id": "proxy_sdc_cardioid",
+  "display_name": "ASSUMED SDC Cardioid (KM184-ish)",
+  "honesty": "ASSUMED",
+  "family": "sdc_cardioid",
+  "source": "synthetic_proxy_curves_mimicking_published_off_axis_shapes",
+  "model": "dual_shelf_plus_soft_one_pole",
+  "angle_law": "0.5*(1-cos(theta))^p",
+  "params": {
+    "f0": 2249.922523002871,
+    "depth_max_db": -23.999999999999996,
+    "shelf_slope": 2.9758326051794985,
+    "f_lo": 219.11015205845752,
+    "depth_lo_db": 0.07626673556896008,
+    "res_hz": 10428.684459730428,
+    "lp_mix": 0.2689523669710197,
+    "fc_floor": 1303.9555471098702,
+    "p": 0.8555851230990111
+  },
+  "metrics": {
+    "train_rmse_db": 0.3201344458131009,
+    "holdout_rmse_db": 0.37268040427604504,
+    "train_mse_db": 0.10248606339606123,
+    "holdout_mse_db": 0.13889068373135638,
+    "n_train_angles": 8,
+    "n_holdout_angles": 2,
+    "train_angles_deg": [
+      0.0,
+      15.0,
+      30.0,
+      60.0,
+      90.0,
+      120.0,
+      150.0,
+      180.0
+    ],
+    "holdout_angles_deg": [
+      45.0,
+      135.0
+    ],
+    "freq_range_hz": [
+      20.0,
+      16000.0
+    ]
+  },
+  "notes": "Structure LP / room engine path is SEPARATE \u2014 these presets are off-axis magnitude colour only. Fits are ASSUMED when honesty=ASSUMED. v2: dual shelf (high + mild low) + soft one-pole; shelves preferred over LP.",
+  "fit": {
+    "success": true,
+    "message": "DE success=False nit=40 fun=0.248293; LS success=True cost=62.593724"
+  }
+}

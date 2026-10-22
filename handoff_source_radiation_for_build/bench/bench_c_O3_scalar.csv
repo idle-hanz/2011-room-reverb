@@ -1,0 +1,8 @@
+C box benchmark (per 128-sample block, 3 buses => lines = 3*N)
+N_images,lines,static_us,ramp_us,coef_recompute_us(all lines),x4_multipoint_static_us
+#lines_outer_us=52.60 simd8_us=18.49
+32,96,28.88,68.68,6.19,185.75
+#lines_outer_us=105.86 simd8_us=36.76
+64,192,57.88,140.67,12.50,374.04
+#lines_outer_us=209.22 simd8_us=72.35
+128,384,114.68,284.02,24.74,879.28

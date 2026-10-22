@@ -1,0 +1,112 @@
+--- A/software/engine/live_stereo.c	2026-10-04 20:48:42.574857766 +0100
++++ B/software/engine/live_stereo.c	2026-10-04 21:06:56.582857766 +0100
+@@ -125,6 +125,7 @@
+ static const double LS_TINY = 1.0e-20;
+ static const double LS_DC = 1.0e-18;
+ 
++#define SL_SEC 3
+ typedef struct Line {
+     double delay, delayT, delayB, delayBT;
+     double dffs, dffsB, inj, injB;
+@@ -190,6 +191,12 @@
+     double g, fdn_wet, direct_wet, early_wet, dry_gain, makeup, gain_a, gain_b;
+     double lineT60;
+     double micG[3], micPan[3], micPh[3];
++    int slOn;                         /* SL3: per-line Surfaces sections on (0 = Flat 2011 path) */
++    double slBuf[3 * N * SL_SEC * 5]; /* JS writes [bus][line][section][b0 b1 b2 a1 a2] here (Float64) */
++    /* Structure-of-arrays copy for the batched (SIMD-friendly) pass: [bus][section][coef][line],
++       state [bus][bank][section][z1|z2][line]. */
++    LS_ALIGN16 double slC[3][SL_SEC][5][N];
++    LS_ALIGN16 double slZ[3][2][SL_SEC][2][N];
+     int peakOn[3];
+     double pb0[3], pb1[3], pb2[3], pa1[3], pa2[3];
+     Bus bus[3];
+@@ -940,6 +947,30 @@
+ }
+ 
+ LS_EXPORT("live_blob_ptr") float *live_blob_ptr(LiveStereo *st) { return st ? st->blob : 0; }
++/* SL3: Surfaces sections. JS fills live_surf_ptr() (Float64, 3 x 32 x 3 x 5) then calls
++   live_load_surf(st, 1). Any non-finite or unstable section (|pole| >= 1) refuses the whole set
++   and leaves slOn = 0 (Flat). live_load_surf(st, 0) turns it off. Returns 1 if on. */
++LS_EXPORT("live_surf_ptr") double *live_surf_ptr(LiveStereo *st) { return st ? st->slBuf : 0; }
++LS_EXPORT("live_load_surf") int live_load_surf(LiveStereo *st, int on) {
++    int b, i, k, j;
++    if (!st) return 0;
++    if (!on) { st->slOn = 0; return 0; }
++    for (j = 0; j < 3 * N * SL_SEC * 5; j++) if (!finite_d(st->slBuf[j])) { st->slOn = 0; return 0; }
++    for (j = 0; j < 3 * N * SL_SEC; j++) {
++        const double *c = &st->slBuf[5 * j];
++        /* Stable 2nd-order denominator: |a2| < 1 and |a1| < 1 + a2 (Jury). */
++        if (!(c[4] < 1.0 && c[4] > -1.0 && c[3] < 1.0 + c[4] && -c[3] < 1.0 + c[4])) { st->slOn = 0; return 0; }
++    }
++    for (b = 0; b < 3; b++) for (i = 0; i < N; i++) for (k = 0; k < SL_SEC; k++) {
++        for (j = 0; j < 5; j++) st->slC[b][k][j][i] = st->slBuf[((b * N + i) * SL_SEC + k) * 5 + j];
++        if (!st->slOn) {
++            st->slZ[b][0][k][0][i] = st->slZ[b][0][k][1][i] = 0.0;
++            st->slZ[b][1][k][0][i] = st->slZ[b][1][k][1][i] = 0.0;
++        }
++    }
++    st->slOn = 1;
++    return 1;
++}
+ LS_EXPORT("live_ir_ptr") float *live_ir_ptr(LiveStereo *st) { return st ? st->irScratch : 0; }
+ LS_EXPORT("live_len_ptr") int *live_len_ptr(LiveStereo *st) { return st ? st->lenScratch : 0; }
+ LS_EXPORT("live_route_ptr") int *live_route_ptr(LiveStereo *st) { return st ? st->routeScratch : 0; }
+@@ -1890,6 +1921,26 @@
+     return xin;
+ }
+ 
++/* SL3: apply the 3 Surfaces sections to st->delayed[0..hn) of bus b, bank bankB, in one batched pass
++   (all lines per section, so -O2 -msimd128 vectorises it). LTI cascade: order against the per-axis
++   peak in read_peaked does not change the result beyond rounding. */
++static void surf_batch(LiveStereo *st, int b, int bankB, int hn) {
++    int k, i;
++    double *v = st->delayed;
++    for (k = 0; k < SL_SEC; k++) {
++        const double *c0 = st->slC[b][k][0], *c1 = st->slC[b][k][1], *c2 = st->slC[b][k][2];
++        const double *c3 = st->slC[b][k][3], *c4 = st->slC[b][k][4];
++        double *z1 = st->slZ[b][bankB][k][0], *z2 = st->slZ[b][bankB][k][1];
++        for (i = 0; i < hn; i++) {
++            double x = v[i];
++            double y = c0[i] * x + z1[i];
++            z1[i] = c1[i] * x - c3[i] * y + z2[i];
++            z2[i] = c2[i] * x - c4[i] * y;
++            v[i] = y;
++        }
++    }
++}
++
+ static double read_peaked(LiveStereo *st, Line *line, const float *ring, int lane, int i, int bankB, double delay) {
+     double v, yi, nz1, nz2;
+     int ax = i % 3;
+@@ -1982,12 +2033,14 @@
+                 st->delayed[i] = read_peaked(st, &bus->line[i], st->ring[b][i], LANE_FDN, i, 0, bus->line[i].delay);
+                 st->reads[i] = st->delayed[i];
+             }
++            if (st->slOn) { surf_batch(st, b, 0, hn); for (i = 0; i < hn; i++) st->reads[i] = st->delayed[i]; }
+             for (i = hn; i < N; i++) st->reads[i] = 0.0;
+             doFwht(st->reads);
+         } else if (mix1) {
+             for (i = 0; i < hn; i++) {
+                 st->delayed[i] = read_peaked(st, &bus->line[i], st->ring[b][i], LANE_FDN, i, 0, bus->line[i].delay);
+             }
++            if (st->slOn) surf_batch(st, b, 0, hn);
+         }
+         /* Lines at or past hn are outside this Hadamard. The tail loop only
+          * keeps their write pointer moving. Kind 0 tints once: the image
+@@ -2087,6 +2140,7 @@
+             } else if (st->surfOn) st->xinArr[i] = tint(line, 0.5 * st->srcSmp[i] * injUse, 0) + LS_DC;
+             else st->xinArr[i] = tint(line, 0.5 * xA * injUse, 0) + LS_DC;
+         }
++        if (st->slOn) { surf_batch(st, b, 0, hn); for (i = 0; i < hn; i++) st->reads[i] = st->delayed[i]; }
+         if (mixA) doDiff(st, b, 0, st->xinArr, bus->fb, st->yA);
+         else {
+             for (i = hn; i < N; i++) st->reads[i] = 0.0;
+@@ -2113,6 +2167,7 @@
+             } else if (st->surfOn) st->xinArr[i] = tint(line, 0.5 * st->srcSmpB[i] * injUse, 3) + LS_DC;
+             else st->xinArr[i] = tint(line, 0.5 * xB * injUse, 3) + LS_DC;
+         }
++        if (st->slOn) { surf_batch(st, b, 1, hn); for (i = 0; i < hn; i++) st->reads[i] = st->delayed[i]; }
+         if (mixB) {
+             doDiff(st, b, 1, st->xinArr, bus->fbB, st->yB);
+             for (i = 0; i < N; i++) {

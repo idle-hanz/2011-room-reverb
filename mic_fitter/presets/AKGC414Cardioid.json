@@ -1,0 +1,58 @@
+{
+  "schema": "mic_fitter.preset.v3",
+  "mic_id": "AKGC414Cardioid",
+  "display_name": "AKG C414 Cardioid \u2014 LDC multipattern",
+  "honesty": "MEASURED",
+  "family": "ldc_cardioid",
+  "source": "Franco et al. Zenodo 10.5281/zenodo.4633508 (Raw_IRs, 5m, 24-bit, selected angles)",
+  "model": "dual_shelf_plus_soft_one_pole",
+  "angle_law": "0.5*(1-cos(theta))^p",
+  "params": {
+    "f0": 363.3790361787889,
+    "depth_max_db": -18.534848059937737,
+    "shelf_slope": 1.463408226221397,
+    "f_lo": 219.73914572617107,
+    "depth_lo_db": 0.018758254659365065,
+    "res_hz": 1500.009731315695,
+    "lp_mix": 0.27418992584783775,
+    "fc_floor": 5874.955571009443,
+    "p": 0.6704385487789598
+  },
+  "metrics": {
+    "train_rmse_db": 3.5006798172233653,
+    "holdout_rmse_db": 3.3182157365655476,
+    "train_mse_db": 12.254759182715015,
+    "holdout_mse_db": 11.010555674391238,
+    "n_train_angles": 8,
+    "n_holdout_angles": 2,
+    "train_angles_deg": [
+      0.0,
+      15.0,
+      30.0,
+      60.0,
+      90.0,
+      120.0,
+      150.0,
+      180.0
+    ],
+    "holdout_angles_deg": [
+      45.0,
+      135.0
+    ],
+    "freq_range_hz": [
+      20.0,
+      16000.0
+    ]
+  },
+  "switches": {
+    "hpf_hz": 160.0,
+    "hpf_slope": 12,
+    "hpf_engaged": false,
+    "manufacturer_note": "C414 XLII bass-cut options ~40/80/160 Hz; default doc 160"
+  },
+  "notes": "Structure LP / room engine path is SEPARATE \u2014 these presets are off-axis magnitude colour only. Fits are ASSUMED when honesty=ASSUMED. v3: freer shelf_slope (0.6\u201312.0); optional HPF switches are manufacturer defaults only \u2014 NOT fitted from Zenodo (apply_hpf when engaged).",
+  "fit": {
+    "success": true,
+    "message": "DE success=False nit=70 fun=12.424547; LS success=True cost=3180.168415"
+  }
+}

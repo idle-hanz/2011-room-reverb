@@ -1,0 +1,55 @@
+{
+  "schema": "scattering_fitter.material_scatter.v1",
+  "id": "heavy_curtain",
+  "honesty": "ASSUMED",
+  "scatter_hz": [
+    125.0,
+    250.0,
+    500.0,
+    1000.0,
+    2000.0,
+    4000.0,
+    8000.0
+  ],
+  "scatter": [
+    0.0015,
+    0.0117,
+    0.0782,
+    0.2788,
+    0.412,
+    0.4384,
+    0.442
+  ],
+  "scatter_data_octave": [
+    0.0033,
+    0.0167,
+    0.0733,
+    0.27,
+    0.44,
+    0.4133,
+    null
+  ],
+  "model": "logistic_log2f",
+  "params": {
+    "s_lo": 0.0,
+    "s_hi": 0.44247,
+    "fc": 836.75755,
+    "k": 2.07093
+  },
+  "rmse_s": 0.06566,
+  "n_points": 18,
+  "fit_range_hz": [
+    100,
+    5000
+  ],
+  "source": "Cox & D'Antonio, Acoustic Absorbers and Diffusers, 3rd ed., CRC 2016/2017, doi:10.1201/9781315369211, Appendix D (ISO 17497-1 measured, credited per row), printed pp. 497-502 \u2014 values read via the row-by-row transcription at https://jmrplens.github.io/phonometry/reference/catalogues/ (secondary transcription; primary book page not viewed by us)",
+  "source_key": "periodic_1d_battens_h5cm",
+  "odeon_anchor": null,
+  "note": "No curtain s table found. ASSUMED proxy: folds ~5 cm deep \u2248 Cox App.D periodic battens h=w=5 cm (measured, different object).",
+  "usage": "Per hit: E_spec *= (1 - s_b); E_scatter = 1 - prod(1 - s_b). Specular tap amplitude sqrt(prod(1-s)); scattered share -> short Lambert-envelope velvet cluster, feed-forward on the early tap only. Muted face contributes neither absorption nor scattering.",
+  "locks": {
+    "measured_by_us": false,
+    "honesty_note": "never promote to MEASURED; cite source",
+    "live_software": "do not import into live software/ until Idle says go"
+  }
+}

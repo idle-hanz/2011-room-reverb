@@ -1,0 +1,44 @@
+{
+  "mic_id": "SchoepsCMC5UOmni",
+  "display_name": "Schoeps CMC5-U Omni \u2014 SDC",
+  "honesty": "MEASURED",
+  "family": "omni",
+  "source": "Franco et al. Zenodo 10.5281/zenodo.4633508 (Raw_IRs, 5m, 24-bit, selected angles)",
+  "params": {
+    "f0": 10529.557321107039,
+    "depth_max_db": -22.312846297318863,
+    "shelf_slope": 4.757575588170816,
+    "f_lo": 224.1169462242109,
+    "depth_lo_db": -0.1257197256379913,
+    "res_hz": 5409.448041361462,
+    "lp_mix": 0.2523749471644026,
+    "fc_floor": 5244.871084191734,
+    "p": 0.6000000000000001
+  },
+  "train_rmse_db": 1.0306010481145347,
+  "holdout_rmse_db": 1.3496049275714004,
+  "train_mse_db": 1.0621385203747773,
+  "holdout_mse_db": 1.8214334605250047,
+  "holdout_angles_deg": [
+    45.0,
+    135.0
+  ],
+  "train_angles_deg": [
+    0.0,
+    15.0,
+    30.0,
+    60.0,
+    90.0,
+    120.0,
+    150.0,
+    180.0
+  ],
+  "fit_message": "DE success=False nit=70 fun=1.172212; LS success=True cost=300.066534",
+  "preset": "SchoepsCMC5UOmni.json",
+  "plots": {
+    "polar": "plots/polars/SchoepsCMC5UOmni_polar.png",
+    "colour": "plots/colour/SchoepsCMC5UOmni_colour.png",
+    "fit_train": "plots/fit/SchoepsCMC5UOmni_train.png",
+    "fit_holdout": "plots/fit/SchoepsCMC5UOmni_holdout.png"
+  }
+}

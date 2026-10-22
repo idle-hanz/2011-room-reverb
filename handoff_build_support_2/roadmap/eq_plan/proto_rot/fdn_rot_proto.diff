@@ -1,0 +1,70 @@
+--- /workspace/audit_1852/software/engine/fdn.py	2026-10-02 18:53:18.000000000 +0100
++++ /workspace/scratch_rot/sw/engine/fdn.py	2026-10-04 06:51:13.401699627 +0100
+@@ -120,6 +120,38 @@
+ )
+ 
+ 
++# ---- BOX-ONLY PROTOTYPE (scratch copy, not software\): rotating FWHT stage ----
++import os as _os
++_ROT_EPS = float(_os.environ.get("ROT_EPS", "0"))      # fraction of pi
++_ROT_HZ = float(_os.environ.get("ROT_HZ", "0.3"))
++_ROT_H = int(_os.environ.get("ROT_STAGE", "16"))       # butterfly distance of the rotated stage
++_ROT_SR = 48000.0
++_GUITAR = _os.environ.get("GUITAR_NPY")
++
++
++def _rot_mix(H, v, n_abs):
++    """H·D·v as an in-place Sylvester FWHT; stage _ROT_H uses Ref(theta), theta = pi/4 + eps*pi*sin(2 pi f t).
++    Unscaled like H: a stage is sqrt2*[[c, s], [s, -c]] (= [[1,1],[1,-1]] at pi/4). Orthogonal at every t."""
++    if _ROT_EPS == 0.0 or H.shape[0] != 32:
++        return H @ v
++    x = v * LOOP_COLUMN_D
++    th = math.pi / 4 + _ROT_EPS * math.pi * math.sin(2 * math.pi * _ROT_HZ * n_abs / _ROT_SR)
++    c = math.sqrt(2.0) * math.cos(th); s = math.sqrt(2.0) * math.sin(th)
++    h = 1
++    while h < 32:
++        a = x.reshape(-1, 2, h)
++        u = a[:, 0, :].copy(); w = a[:, 1, :].copy()
++        if h == _ROT_H:
++            a[:, 0, :] = c * u + s * w
++            a[:, 1, :] = s * u - c * w
++        else:
++            a[:, 0, :] = u + w
++            a[:, 1, :] = u - w
++        x = a.reshape(32)
++        h *= 2
++    return x
++
++
+ def loop_hadamard(n: int, parity: bool = False) -> "np.ndarray":
+     """Feedback matrix. n=32 without parity is H·D. Otherwise plain H."""
+     H = unscaled_hadamard_matrix(int(n))
+@@ -904,6 +936,10 @@
+ 
+         Always Python — Mix Direct/tail split needs per-line taps. ASSUMED.
+         """
++        if _GUITAR:
++            from scipy.signal import fftconvolve as _fc
++            _g = np.load(_GUITAR)
++            inject = np.stack([_fc(inject[:, i], _g)[: inject.shape[0]] for i in range(inject.shape[1])], 1)
+         n_samp = inject.shape[0]
+         n = self.n
+         out = np.zeros((n_samp, n), dtype=np.float64)
+@@ -941,7 +977,7 @@
+             inj_t = inject[t]
+             if not any_dffs:
+                 # No Dffs: same-sample FDN. This is Play's !mix1 path.
+-                mixed = g * (H @ reads)
++                mixed = g * _rot_mix(H, reads, t)
+                 for i in range(n):
+                     wi = idx[i]
+                     x = mixed[i] + inj_t[i]
+@@ -956,7 +992,7 @@
+                 # D3: z^-1, Play's DIFFUSE_FN. H is H·D, or plain H under parity.
+                 sv = inj_t + hy
+                 yv = reads - dffs * sv
+-                hy = g * (H @ yv)
++                hy = g * _rot_mix(H, yv, t)
+                 for i in range(n):
+                     wi = idx[i]
+                     s = float(sv[i])

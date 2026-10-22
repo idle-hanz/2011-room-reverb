@@ -1,0 +1,26 @@
+digraph G {
+  rankdir=LR; splines=true; nodesep=0.35; ranksep=0.6;
+  node [shape=box, style="rounded,filled", fontname="Helvetica", fontsize=11, fillcolor="#eef3fb", color="#4a6fa5"];
+  edge [color="#555555", arrowsize=0.7];
+  J5  [label="J5 Blob v2 (P1)\nM · 0.4 session"];
+  J6  [label="J6 ISO 9613-1 air (P2)\nS–M · 0.4"];
+  J13 [label="J13 Mirror Fix B\nS · 0.3", fillcolor="#fdf1d6"];
+  J12 [label="J12 Binaural gaps\nM · 0.7", fillcolor="#fdf1d6"];
+  J14 [label="J14 Cleanups P0.5 / K4\nS · 0.3"];
+  J15 [label="J15 Goldens regen\n+ small-room tol\nS · 0.15 (repeat)", fillcolor="#e8f5e9"];
+  J1  [label="J1 Source radiation (P6)\nengine + Play + Source UI\nXL · 2 sessions", fillcolor="#dbe8ff", penwidth=2];
+  J9  [label="J9 Surfaces A+B (P3A/P3B)\n+ P0.3 diffusion split\nM–L · 1"];
+  J8  [label="J8 Play per-hit cascade (P4)\nM–L · 1"];
+  J4  [label="J4 Scattering Track C (P5)\nL · 1.5", penwidth=2];
+  J7  [label="J7 F5 loop semantics (P0.4)\n+ Play=Render parity\nL · 1", fillcolor="#ffe0e0"];
+  J10 [label="J10 Freq-dependent decay\n(wall-tone, Eyring+air)\nM–L · 1", fillcolor="#ffe0e0"];
+  J11 [label="J11 Realism fixes\n(pre-echo, level law, 1st order)\nM · 1", fillcolor="#ffe0e0"];
+  J2  [label="J2 C migration (P7)\nXL · 3 sessions", fillcolor="#dbe8ff", penwidth=2];
+  J3  [label="J3 Studio One plug-in (P8)\nXL · 3+ sessions", fillcolor="#dbe8ff", penwidth=2];
+  CAP [label="2011 captures (Idle, Reaktor)\n60–90 min", shape=note, fillcolor="#fff7c2", color="#b59b00"];
+  J5 -> J6; J5 -> J1; J6 -> J1; J5 -> J9; J9 -> J8; J8 -> J4; J6 -> J4;
+  J9 -> J10; J6 -> J10; J13 -> J15; J14 -> J15;
+  CAP -> J7 [style=dashed]; CAP -> J11 [style=dashed];
+  J7 -> J2; J5 -> J2; J1 -> J2; J4 -> J2; J2 -> J3;
+  J7 -> J12 [style=dotted, label="re-check tail IC", fontsize=9];
+}

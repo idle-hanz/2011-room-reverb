@@ -1,0 +1,44 @@
+{
+  "mic_id": "DPA4006",
+  "display_name": "DPA 4006 \u2014 measurement omni",
+  "honesty": "MEASURED",
+  "family": "omni",
+  "source": "Franco et al. Zenodo 10.5281/zenodo.4633508 (Raw_IRs, 5m, 24-bit, selected angles)",
+  "params": {
+    "f0": 11044.036356110752,
+    "depth_max_db": -17.12874911813715,
+    "shelf_slope": 8.190175905459276,
+    "f_lo": 219.98400886436144,
+    "depth_lo_db": 0.0035863408480218554,
+    "res_hz": 6797.162778604721,
+    "lp_mix": 0.25209998372183756,
+    "fc_floor": 4830.7413662843255,
+    "p": 0.6000000000000001
+  },
+  "train_rmse_db": 0.8740134535287772,
+  "holdout_rmse_db": 0.9309008715999614,
+  "train_mse_db": 0.7638995169493001,
+  "holdout_mse_db": 0.8665764327455677,
+  "holdout_angles_deg": [
+    45.0,
+    135.0
+  ],
+  "train_angles_deg": [
+    0.0,
+    15.0,
+    30.0,
+    60.0,
+    90.0,
+    120.0,
+    150.0,
+    180.0
+  ],
+  "fit_message": "DE success=False nit=70 fun=0.851471; LS success=True cost=217.919702",
+  "preset": "DPA4006.json",
+  "plots": {
+    "polar": "plots/polars/DPA4006_polar.png",
+    "colour": "plots/colour/DPA4006_colour.png",
+    "fit_train": "plots/fit/DPA4006_train.png",
+    "fit_holdout": "plots/fit/DPA4006_holdout.png"
+  }
+}

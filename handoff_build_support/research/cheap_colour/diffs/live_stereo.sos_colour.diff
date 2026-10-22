@@ -1,0 +1,120 @@
+--- a/software/engine/live_stereo.c	2026-09-27 19:14:28.762440907 +0100
++++ b/software/engine/live_stereo.c	2026-09-27 19:14:28.762440907 +0100
+@@ -53,6 +53,7 @@
+     MAX_PART = 64,
+     MAX_IRS = 64,
+     MAX_FILT = 112,
++    MAX_SOS = 6,
+     /* 1000 ms is the delay cap. These extra samples cover the fractional read. */
+     RING_GUARD = 8,
+     CAP_MAX = 192000,
+@@ -105,6 +106,7 @@
+     int cold;
+     int seen;
+     float prev[PART];
++    double sz[MAX_SOS][2];   /* SOS colour state (TDF-II), used when irSos[ir] > 0 */
+ } Filt;
+ 
+ struct LiveStereo {
+@@ -130,6 +132,8 @@
+     int directBIdx[3];
+     int irLen[MAX_IRS];
+     int irNpart[MAX_IRS];
++    int irSos[MAX_IRS];                 /* >0: colour entry is a K-biquad cascade, not an FIR */
++    double sos[MAX_IRS][MAX_SOS * 5];   /* b0 b1 b2 a1 a2 per section (a0 = 1) */
+     Filt filt[MAX_FILT];
+     float *dir[3];
+     float *dirB[3];
+@@ -711,13 +715,32 @@
+     ls_zero(st->fdlIm, n * (int)sizeof(float));
+     for (i = 0; i < MAX_FILT; i++) {
+         ls_zero(st->filt[i].prev, PART * (int)sizeof(float));
++        ls_zero(st->filt[i].sz, (int)sizeof(st->filt[i].sz));
+         st->filt[i].pos = 0;
+         st->filt[i].cold = MAX_PART;
+     }
+ }
+ 
++/* Colour entry format: an FIR impulse, or an SOS record [-2011, K, (b0 b1 b2 a1 a2) x K].
++ * The magic -2011 cannot start a real colour FIR (|h[0]| <= a few). */
++static int design_sos(LiveStereo *st, int ir, const float *src, int len) {
++    int k, j;
++    if (len < 7 || src[0] != -2011.0f) return 0;
++    k = (int)src[1];
++    if (k > MAX_SOS) k = MAX_SOS;
++    if (k > (len - 2) / 5) k = (len - 2) / 5;
++    if (k < 1) return 0;
++    for (j = 0; j < 5 * k; j++) st->sos[ir][j] = (double)src[2 + j];
++    st->irSos[ir] = k;
++    st->irLen[ir] = len;
++    st->irNpart[ir] = 1;
++    return 1;
++}
++
+ static void design_ir(LiveStereo *st, int ir, const float *src, int len) {
+     int p, npart, i, base;
++    st->irSos[ir] = 0;
++    if (design_sos(st, ir, src, len)) return;
+     if (len < 1) len = 1;
+     if (len > 8192) len = 8192;
+     npart = (len + PART - 1) / PART;
+@@ -1141,7 +1164,7 @@
+         if (f->npart < 1) f->npart = 1;
+         f->cold = MAX_PART;
+         f->seen = 1;
+-        {
++        if (st->irSos[ir] <= 0) {
+             int fi = freeSlot;
+             int nfloat = MAX_PART * FFTN;
+             ls_zero(st->fdlRe + fi * nfloat, nfloat * (int)sizeof(float));
+@@ -1187,9 +1210,50 @@
+     }
+ }
+ 
++/* K biquads in series, transposed direct form II, double state. Same causal minimum-phase
++ * response as the FIR it replaces (fitted server-side to the same relative_db). */
++static void run_sos(LiveStereo *st, Filt *f, const float *in, float *out) {
++    int k = st->irSos[f->ir], s, i, silent = 1;
++    const double *c = st->sos[f->ir];
++    double buf[PART];
++    for (i = 0; i < PART; i++) {
++        if (in[i] != 0.0f) { silent = 0; break; }
++    }
++    if (silent) {
++        double m = 0.0;
++        for (s = 0; s < k; s++) {
++            double a = f->sz[s][0], b = f->sz[s][1];
++            m += (a < 0 ? -a : a) + (b < 0 ? -b : b);
++        }
++        if (m < 1.0e-20) {
++            for (s = 0; s < k; s++) { f->sz[s][0] = 0; f->sz[s][1] = 0; }
++            for (i = 0; i < PART; i++) out[i] = 0;
++            return;
++        }
++    }
++    for (i = 0; i < PART; i++) buf[i] = (double)in[i];
++    for (s = 0; s < k; s++) {
++        double b0 = c[5 * s], b1 = c[5 * s + 1], b2 = c[5 * s + 2], a1 = c[5 * s + 3], a2 = c[5 * s + 4];
++        double z1 = f->sz[s][0], z2 = f->sz[s][1];
++        for (i = 0; i < PART; i++) {
++            double x = buf[i];
++            double y = b0 * x + z1;
++            z1 = b1 * x - a1 * y + z2;
++            z2 = b2 * x - a2 * y;
++            buf[i] = y;
++        }
++        if (z1 < 1.0e-30 && z1 > -1.0e-30) z1 = 0;
++        if (z2 < 1.0e-30 && z2 > -1.0e-30) z2 = 0;
++        f->sz[s][0] = z1;
++        f->sz[s][1] = z2;
++    }
++    for (i = 0; i < PART; i++) out[i] = (float)buf[i];
++}
++
+ static void run_fir(LiveStereo *st, Filt *f, const float *in, float *out) {
+     int i, p, base, npart, pos, silent;
+     float *hre, *him, *xre, *xim;
++    if (st->irSos[f->ir] > 0) { run_sos(st, f, in, out); return; }
+     silent = 1;
+     for (i = 0; i < PART; i++) {
+         if (in[i] > 1.0e-12f || in[i] < -1.0e-12f) { silent = 0; break; }

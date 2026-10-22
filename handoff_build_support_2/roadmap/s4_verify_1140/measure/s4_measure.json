@@ -1,0 +1,143 @@
+{
+ "A_boot_vs_0830": {
+  "play_max_abs_diff": 0.0,
+  "render_max_abs_diff": 0.0
+ },
+ "B_old_save_vs_0830": {
+  "play_max_abs_diff": 0.0,
+  "render_max_abs_diff": 0.0,
+  "vs_boot_render_max_abs_diff": null
+ },
+ "C_split_all_faces_0.9": {
+  "jitter_D": {
+   "play_early_only_max_diff": 0.0,
+   "render_early_only_max_diff": 0.031959862739313394,
+   "play_full_max_diff": 0.0,
+   "render_full_max_diff": 0.031959861516952515,
+   "play_dffs_unchanged": true,
+   "play_delays_unchanged": true
+  },
+  "structure_dif": {
+   "play_early_only_max_diff": 0.0,
+   "render_early_only_max_diff": 0.0,
+   "play_full_max_diff": 0.06543785962276161,
+   "render_full_max_diff": 1.1975437521468848,
+   "play_dffs_unchanged": false,
+   "play_delays_unchanged": true
+  }
+ },
+ "D_solo_mute": {
+  "direct_peak_sample": {
+   "play": 464,
+   "render": 464
+  },
+  "none": {
+   "play_direct_db_vs_none": 0.0,
+   "play_early_db_vs_none": 0.0,
+   "render_direct_db_vs_none": 0.0,
+   "render_early_db_vs_none": 0.0,
+   "play_fdn_db_vs_none": 0.0,
+   "render_fdn_db_vs_none": 0.0,
+   "play_solo_mute_gates": [
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0
+   ],
+   "play_inject_lines_zero": 0,
+   "render_minus_play_early_db": -5.51
+  },
+  "mute_A": {
+   "play_direct_db_vs_none": 0.0,
+   "play_early_db_vs_none": -1.0,
+   "render_direct_db_vs_none": 0.0,
+   "render_early_db_vs_none": 0.28,
+   "play_fdn_db_vs_none": -0.64,
+   "render_fdn_db_vs_none": -0.62,
+   "play_solo_mute_gates": [
+    0.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0
+   ],
+   "play_inject_lines_zero": 10,
+   "render_minus_play_early_db": -4.23
+  },
+  "mute_E": {
+   "play_direct_db_vs_none": 0.0,
+   "play_early_db_vs_none": -2.78,
+   "render_direct_db_vs_none": 0.0,
+   "render_early_db_vs_none": 0.31,
+   "play_fdn_db_vs_none": -1.67,
+   "render_fdn_db_vs_none": -2.36,
+   "play_solo_mute_gates": [
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    0.0,
+    1.0
+   ],
+   "play_inject_lines_zero": 16,
+   "render_minus_play_early_db": -2.42
+  },
+  "mute_all": {
+   "play_direct_db_vs_none": 0.0,
+   "play_early_db_vs_none": -29.83,
+   "render_direct_db_vs_none": 0.0,
+   "render_early_db_vs_none": 1.09,
+   "play_fdn_db_vs_none": -4.74,
+   "render_fdn_db_vs_none": -6.2,
+   "play_solo_mute_gates": [
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0
+   ],
+   "play_inject_lines_zero": 31,
+   "render_minus_play_early_db": 25.41
+  },
+  "solo_E": {
+   "play_direct_db_vs_none": 0.0,
+   "play_early_db_vs_none": -5.28,
+   "render_direct_db_vs_none": 0.0,
+   "render_early_db_vs_none": 0.78,
+   "play_fdn_db_vs_none": -3.82,
+   "render_fdn_db_vs_none": -5.05,
+   "play_solo_mute_gates": [
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0
+   ],
+   "play_inject_lines_zero": 30,
+   "render_minus_play_early_db": 0.55
+  },
+  "solo_A": {
+   "play_direct_db_vs_none": 0.0,
+   "play_early_db_vs_none": -10.24,
+   "render_direct_db_vs_none": 0.0,
+   "render_early_db_vs_none": 0.86,
+   "play_fdn_db_vs_none": -4.61,
+   "render_fdn_db_vs_none": -6.04,
+   "play_solo_mute_gates": [
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0
+   ],
+   "play_inject_lines_zero": 30,
+   "render_minus_play_early_db": 5.59
+  }
+ }
+}

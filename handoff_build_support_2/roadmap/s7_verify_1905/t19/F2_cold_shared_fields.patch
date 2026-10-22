@@ -1,0 +1,106 @@
+--- a/engine/live_stereo.c
++++ b/engine/live_stereo.c
+@@ -128,9 +128,6 @@
+     /* Per-line absorption for the decay lock: lg = 10^(-3 d / (sr T60)). 1 = off. */
+     double lg, lgB;
+     int w;
+-    /* Shared-tail taps. Unused while shared is off. */
+-    double jit, jitB;
+-    double injS, injSB, rS;
+ } Line;
+ 
+ typedef struct Bus {
+@@ -256,6 +253,9 @@
+     int sharedReq;
+     int shared;
+     unsigned delaySig;
++    /* Shared-tail taps, kept out of the hot Line struct. */
++    double shJit[3][N], shJitB[3][N];
++    double shInjS[N], shInjSB[N], shRS[N];
+ };
+ 
+ static LS_ALIGN16 float g_wre[FFTN];
+@@ -1080,9 +1080,9 @@
+             eb[mics[b]] += m->inj * m->inj;
+             ebB[mics[b]] += m->injB * m->injB;
+         }
+-        c->injS = (s < 0.0 ? -1.0 : 1.0) * ls_sqrt(q / 3.0);
+-        c->injSB = (sB < 0.0 ? -1.0 : 1.0) * ls_sqrt(qB / 3.0);
+-        c->rS = c->inj != 0.0 ? c->injS / c->inj : 0.0;
++        st->shInjS[i] = (s < 0.0 ? -1.0 : 1.0) * ls_sqrt(q / 3.0);
++        st->shInjSB[i] = (sB < 0.0 ? -1.0 : 1.0) * ls_sqrt(qB / 3.0);
++        st->shRS[i] = c->inj != 0.0 ? st->shInjS[i] / c->inj : 0.0;
+         es += q / 3.0;
+         esB += qB / 3.0;
+     }
+@@ -1090,8 +1090,8 @@
+         int key = b == BUS_L ? BUS_R : (b == BUS_R ? BUS_L : BUS_C);
+         for (i = 0; i < N; i++) {
+             Line *m = &st->bus[b].line[i];
+-            m->jit = js * shared_jit(st->bus[key].line[i].delayT + (b == BUS_C ? 0.5 : 0.0));
+-            m->jitB = js * shared_jit(st->bus[key].line[i].delayBT + (b == BUS_C ? 0.5 : 0.0));
++            st->shJit[b][i] = js * shared_jit(st->bus[key].line[i].delayT + (b == BUS_C ? 0.5 : 0.0));
++            st->shJitB[b][i] = js * shared_jit(st->bus[key].line[i].delayBT + (b == BUS_C ? 0.5 : 0.0));
+         }
+         st->bus[b].shG = es > 0.0 ? ls_sqrt(eb[b] / es) : 0.0;
+         st->bus[b].shGB = esB > 0.0 ? ls_sqrt(ebB[b] / esB) : 0.0;
+@@ -1579,6 +1579,7 @@
+     int runEarly = st->early_wet > 1.0e-4;
+     double dA, dB = 0.0, early = 0.0;
+     /* Only the centre bus runs the shared network. L and R keep direct and early. */
++    const int shC = st->shared && b == BUS_C;
+     if (st->shared && b != BUS_C) runFdn = 0;
+     for (i = 0; i < N; i++) {
+         Line *line = &bus->line[i];
+@@ -1628,7 +1629,7 @@
+             if (st->radA) {
+                 double earlyIn = tint(line, st->srcSmp[i] * line->inj, 1);
+                 double injLoop = line->inj;
+-                if (st->shared && b == BUS_C) injLoop = line->injS;
++                if (shC) injLoop = st->shInjS[i];
+                 xin = tint(line, st->diffSmp * injLoop, 0);
+                 if (runEarly) {
+                     double ev = early_mul(st, b, i, 0, read_lane(st->ring[b][i], LANE_EARLY, line->w, line->delay, cap));
+@@ -1636,11 +1637,11 @@
+                     early += ev;
+                 }
+                 write_lane(st->ring[b][i], line->w, LANE_EARLY, (float)earlyIn);
+-            } else if (st->shared && b == BUS_C) {
++            } else if (shC) {
+                 /* Centre early keeps its own inject. Tint is linear, so the loop
+                    input is that tint scaled by injS/inj. */
+                 double ein = tint(line, x * line->inj, 0);
+-                xin = line->inj != 0.0 ? ein * line->rS : tint(line, x * line->injS, 1);
++                xin = line->inj != 0.0 ? ein * st->shRS[i] : tint(line, x * st->shInjS[i], 1);
+                 if (runEarly) {
+                     double ev = early_mul(st, b, i, 0, read_lane(st->ring[b][i], LANE_EARLY, line->w, line->delay, cap));
+                     st->eaBlk[b][i][t] = ev;
+@@ -1701,7 +1702,7 @@
+         for (i = 0; i < hn; i++) {
+             Line *line = &bus->line[i];
+             double injUse = line->inj;
+-            if (st->shared && b == BUS_C) injUse = line->injS;
++            if (shC) injUse = st->shInjS[i];
+             st->delayed[i] = read_peaked(st, line, st->ring[b][i], LANE_FDN, i, 0, line->delay);
+             st->reads[i] = st->delayed[i];
+             if (st->radA) st->xinArr[i] = tint(line, 0.5 * st->diffSmp * injUse, 0) + LS_DC;
+@@ -1724,7 +1725,7 @@
+         for (i = 0; i < hn; i++) {
+             Line *line = &bus->line[i];
+             double injUse = line->injB;
+-            if (st->shared && b == BUS_C) injUse = line->injSB;
++            if (shC) injUse = st->shInjSB[i];
+             st->delayed[i] = read_peaked(st, line, st->ring[b][i], LANE_FDNB, i, 1, line->delayB);
+             st->reads[i] = st->delayed[i];
+             if (st->radB) st->xinArr[i] = tint(line, 0.5 * st->diffSmpB * injUse, 3) + LS_DC;
+@@ -2331,8 +2332,8 @@
+                             offA += st->bus[bb].line[i].delay - st->bus[BUS_C].line[i].delay;
+                             offB += st->bus[bb].line[i].delayB - st->bus[BUS_C].line[i].delayB;
+                         }
+-                        offA += st->bus[bb].line[i].jit;
+-                        offB += st->bus[bb].line[i].jitB;
++                        offA += st->shJit[bb][i];
++                        offB += st->shJitB[bb][i];
+                         ia = hl->w - (int)(offA + 0.5);
+                         ib = hl->w - (int)(offB + 0.5);
+                         while (ia < 0) ia += st->cap;

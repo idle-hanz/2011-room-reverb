@@ -1,0 +1,49 @@
+{
+  "schema": "mic_fitter.preset.v1",
+  "mic_id": "proxy_dynamic_cardioid",
+  "display_name": "ASSUMED Dynamic Cardioid (SM57-ish)",
+  "honesty": "ASSUMED",
+  "family": "dynamic_cardioid",
+  "source": "synthetic_proxy_curves_mimicking_published_off_axis_shapes",
+  "model": "high_shelf_plus_soft_one_pole",
+  "angle_law": "0.5*(1-cos(theta))^p",
+  "params": {
+    "f0": 1450.9395744832543,
+    "depth_max_db": -23.999999999999996,
+    "res_hz": 9725.431112344228,
+    "lp_mix": 0.9999999999999999,
+    "fc_floor": 1470.1188366104998,
+    "p": 0.9340477729111533
+  },
+  "metrics": {
+    "train_rmse_db": 0.6531231339624931,
+    "holdout_rmse_db": 0.8654015709008408,
+    "train_mse_db": 0.4265698281169887,
+    "holdout_mse_db": 0.748919878917643,
+    "n_train_angles": 8,
+    "n_holdout_angles": 2,
+    "train_angles_deg": [
+      0.0,
+      15.0,
+      30.0,
+      60.0,
+      90.0,
+      120.0,
+      150.0,
+      180.0
+    ],
+    "holdout_angles_deg": [
+      45.0,
+      135.0
+    ],
+    "freq_range_hz": [
+      200.0,
+      16000.0
+    ]
+  },
+  "notes": "Structure LP / room engine path is SEPARATE \u2014 these presets are off-axis magnitude colour only. Fits are ASSUMED when honesty=ASSUMED.",
+  "fit": {
+    "success": true,
+    "message": "DE success=False nit=40 fun=0.428624; LS success=True cost=109.429903"
+  }
+}

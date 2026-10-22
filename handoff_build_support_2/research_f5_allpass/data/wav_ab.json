@@ -1,0 +1,34 @@
+{
+ "default|P_old": {
+  "file": "default__Play_today_z1.wav",
+  "raw_minus_Rcur_db": -1.83
+ },
+ "default|P_f5": {
+  "file": "default__Play_F5_same_sample.wav",
+  "raw_minus_Rcur_db": -1.7
+ },
+ "default|R_cur": {
+  "file": "default__Render_today_same_sample.wav",
+  "raw_minus_Rcur_db": 0.0
+ },
+ "default|R_z1": {
+  "file": "default__Render_new_z1_like_Play.wav",
+  "raw_minus_Rcur_db": -0.13
+ },
+ "hall_preset|P_old": {
+  "file": "hall_preset__Play_today_z1.wav",
+  "raw_minus_Rcur_db": -1.7
+ },
+ "hall_preset|P_f5": {
+  "file": "hall_preset__Play_F5_same_sample.wav",
+  "raw_minus_Rcur_db": -1.7
+ },
+ "hall_preset|R_cur": {
+  "file": "hall_preset__Render_today_same_sample.wav",
+  "raw_minus_Rcur_db": 0.0
+ },
+ "hall_preset|R_z1": {
+  "file": "hall_preset__Render_new_z1_like_Play.wav",
+  "raw_minus_Rcur_db": -0.0
+ }
+}

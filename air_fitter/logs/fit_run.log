@@ -1,0 +1,36 @@
+2026-09-23 17:01:54,891 INFO === air_fitter run start ===
+2026-09-23 17:01:54,891 INFO ISO studio α(1000 Hz) = 0.003498 dB/m
+2026-09-23 17:01:54,891 INFO ISO studio α(4000 Hz) = 0.005906 dB/m
+2026-09-23 17:01:54,891 INFO ISO studio α(8000 Hz) = 0.013578 dB/m
+2026-09-23 17:01:54,892 INFO ISO studio α(16000 Hz) = 0.044264 dB/m
+2026-09-23 17:01:54,892 INFO Fitting studio_20C_50RH …
+2026-09-23 17:01:56,364 INFO   done in 1.5s | winner=C | joint RMSE=0.01121 dB | flat=0.22236 | winner=C (dual_high_shelf); DE success=False nit=80 fun=0.000130375; LS success=True cost=0.0241128
+2026-09-23 17:01:56,364 INFO   params={'f0': 500.00000000012307, 'depth_db_per_m': -0.00655233332616923, 'shelf_slope': 1.1217329192186143, 'f0_hi': 15999.999999999645, 'depth_hi_db_per_m': -0.07448108131080945, 'shelf_slope_hi': 7.053415484505896}
+2026-09-23 17:01:57,325 INFO Fitting dry_20C_20RH …
+2026-09-23 17:01:58,822 INFO   done in 1.5s | winner=C | joint RMSE=0.00966 dB | flat=0.21764 | winner=C (dual_high_shelf); DE success=False nit=80 fun=9.35775e-05; LS success=True cost=0.0179044
+2026-09-23 17:01:58,822 INFO   params={'f0': 7999.999999655233, 'depth_db_per_m': -0.00731179164937025, 'shelf_slope': 0.7255599034851314, 'f0_hi': 15999.999999999998, 'depth_hi_db_per_m': -0.07453046939096905, 'shelf_slope_hi': 6.943995090816494}
+2026-09-23 17:01:59,572 INFO Fitting humid_20C_80RH …
+2026-09-23 17:02:00,968 INFO   done in 1.4s | winner=C | joint RMSE=0.01418 dB | flat=0.23126 | winner=C (dual_high_shelf); DE success=False nit=80 fun=0.000206475; LS success=True cost=0.0386279
+2026-09-23 17:02:00,969 INFO   params={'f0': 500.0000000000019, 'depth_db_per_m': -0.00912276299802007, 'shelf_slope': 1.3699487604857439, 'f0_hi': 15999.999999999998, 'depth_hi_db_per_m': -0.07343110569022904, 'shelf_slope_hi': 7.34625271358996}
+2026-09-23 17:02:01,638 INFO Fitting warm_22C_40RH …
+2026-09-23 17:02:03,045 INFO   done in 1.4s | winner=C | joint RMSE=0.01104 dB | flat=0.22233 | winner=C (dual_high_shelf); DE success=False nit=80 fun=0.00012558; LS success=True cost=0.0233854
+2026-09-23 17:02:03,045 INFO   params={'f0': 500.0000000045118, 'depth_db_per_m': -0.006380612520158538, 'shelf_slope': 1.0774956971836434, 'f0_hi': 15999.999999999998, 'depth_hi_db_per_m': -0.0748390862778581, 'shelf_slope_hi': 7.023806524995857}
+2026-09-23 17:02:37,129 INFO === air_fitter run start ===
+2026-09-23 17:02:37,130 INFO ISO studio α(1000 Hz) = 0.003498 dB/m
+2026-09-23 17:02:37,130 INFO ISO studio α(4000 Hz) = 0.005906 dB/m
+2026-09-23 17:02:37,130 INFO ISO studio α(8000 Hz) = 0.013578 dB/m
+2026-09-23 17:02:37,130 INFO ISO studio α(16000 Hz) = 0.044264 dB/m
+2026-09-23 17:02:37,130 INFO Fitting studio_20C_50RH …
+2026-09-23 17:02:38,662 INFO   done in 1.5s | winner=C | joint RMSE=0.01121 dB | flat=0.22236 | winner=C (dual_high_shelf); DE success=False nit=80 fun=0.000130375; LS success=True cost=0.0241128
+2026-09-23 17:02:38,663 INFO   params={'f0': 500.00000000012307, 'depth_db_per_m': -0.00655233332616923, 'shelf_slope': 1.1217329192186143, 'f0_hi': 15999.999999999645, 'depth_hi_db_per_m': -0.07448108131080945, 'shelf_slope_hi': 7.053415484505896}
+2026-09-23 17:02:39,651 INFO Fitting dry_20C_20RH …
+2026-09-23 17:02:41,118 INFO   done in 1.5s | winner=C | joint RMSE=0.00966 dB | flat=0.21764 | winner=C (dual_high_shelf); DE success=False nit=80 fun=9.35775e-05; LS success=True cost=0.0179044
+2026-09-23 17:02:41,118 INFO   params={'f0': 7999.999999655233, 'depth_db_per_m': -0.00731179164937025, 'shelf_slope': 0.7255599034851314, 'f0_hi': 15999.999999999998, 'depth_hi_db_per_m': -0.07453046939096905, 'shelf_slope_hi': 6.943995090816494}
+2026-09-23 17:02:41,807 INFO Fitting humid_20C_80RH …
+2026-09-23 17:02:43,194 INFO   done in 1.4s | winner=C | joint RMSE=0.01418 dB | flat=0.23126 | winner=C (dual_high_shelf); DE success=False nit=80 fun=0.000206475; LS success=True cost=0.0386279
+2026-09-23 17:02:43,194 INFO   params={'f0': 500.0000000000019, 'depth_db_per_m': -0.00912276299802007, 'shelf_slope': 1.3699487604857439, 'f0_hi': 15999.999999999998, 'depth_hi_db_per_m': -0.07343110569022904, 'shelf_slope_hi': 7.34625271358996}
+2026-09-23 17:02:43,885 INFO Fitting warm_22C_40RH …
+2026-09-23 17:02:45,342 INFO   done in 1.5s | winner=C | joint RMSE=0.01104 dB | flat=0.22233 | winner=C (dual_high_shelf); DE success=False nit=80 fun=0.00012558; LS success=True cost=0.0233854
+2026-09-23 17:02:45,343 INFO   params={'f0': 500.0000000045118, 'depth_db_per_m': -0.006380612520158538, 'shelf_slope': 1.0774956971836434, 'f0_hi': 15999.999999999998, 'depth_hi_db_per_m': -0.0748390862778581, 'shelf_slope_hi': 7.023806524995857}
+2026-09-23 17:02:46,222 INFO === air_fitter done in 9.1s ===
+2026-09-23 17:02:46,222 INFO PRIMARY studio: candidate C / dual_high_shelf | RMSE=0.011207 (flat naive 0.222358)

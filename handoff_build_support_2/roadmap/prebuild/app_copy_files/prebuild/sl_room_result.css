@@ -1,0 +1,25 @@
+/* SL1/SL5/SL6 prebuild panel. Uses the app variables (--muted, --text) only. */
+.sl-rr { margin: 10px 0; }
+.sl-rr .sl-mode, .sl-rr .sl-toggles, .sl-rr .sl-autotreat { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; margin: 6px 0; }
+.sl-rr .sl-label { font-weight: 600; margin-right: 4px; }
+.sl-rr canvas { width: 100%; max-width: 760px; height: auto; display: block; background: rgba(0,0,0,.18); border-radius: 6px; }
+.sl-rr.sl-flat canvas { opacity: .85; }
+.sl-rr .chip.on, .sl-treat .chip.on { outline: 2px solid rgba(120,200,255,.8); }
+.sl-rr .sl-primary { font-weight: 600; }
+.sl-readout { font-size: .78rem; color: var(--muted); margin-left: 8px; }
+.sl-autotreat input[type=number] { width: 4.5em; }
+.sl-unit { font-size: .75rem; color: var(--muted); }
+.sl-suggest { margin: 4px 0 8px; }
+.sl-sug-head { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin: 4px 0; }
+.sl-treat { margin: 8px 0; padding: 6px 8px; border: 1px solid rgba(128,128,128,.3); border-radius: 6px; }
+.sl-treat-head { display: flex; gap: 10px; align-items: baseline; }
+.sl-treat-head h3 { margin: 2px 0; font-size: .9rem; }
+.sl-row { display: grid; grid-template-columns: 22px minmax(150px, 1.1fr) minmax(160px, 2fr) 4.2em 14px 5.5em auto auto; gap: 6px; align-items: center; font-size: .8rem; padding: 2px 0; }
+.sl-row-sug { background: rgba(120,200,255,.07); }
+.sl-row-off { opacity: .5; }
+.sl-row .sl-build { color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.sl-row .sl-face { font-weight: 700; text-align: center; }
+.sl-row input.sl-cov { width: 4em; }
+.sl-row .sl-area { color: var(--muted); text-align: right; }
+.sl-add { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; margin-top: 6px; }
+.sl-add input[type=number] { width: 4.5em; }

@@ -1,0 +1,188 @@
+0 {'ship': (np.float64(2.028), np.float64(1.896)), 'SURF_K4': (np.float64(2.109), np.float64(1.998)), 'SURF_K4D2': (np.float64(2.071), np.float64(1.967))}
+1 {'ship': (np.float64(1.918), np.float64(1.888)), 'SURF_K4': (np.float64(2.028), np.float64(1.977)), 'SURF_K4D2': (np.float64(2.005), np.float64(1.977))}
+2 {'ship': (np.float64(1.937), np.float64(1.9)), 'SURF_K4': (np.float64(1.968), np.float64(1.964)), 'SURF_K4D2': (np.float64(2.032), np.float64(1.972))}
+3 {'ship': (np.float64(1.877), np.float64(1.871)), 'SURF_K4': (np.float64(2.014), np.float64(1.969)), 'SURF_K4D2': (np.float64(2.172), np.float64(1.977))}
+4 {'ship': (np.float64(2.047), np.float64(1.89)), 'SURF_K4': (np.float64(2.449), np.float64(2.028)), 'SURF_K4D2': (np.float64(1.951), np.float64(1.939))}
+5 {'ship': (np.float64(2.115), np.float64(1.9)), 'SURF_K4': (np.float64(2.032), np.float64(1.989)), 'SURF_K4D2': (np.float64(2.031), np.float64(1.964))}
+6 {'ship': (np.float64(2.041), np.float64(1.913)), 'SURF_K4': (np.float64(2.418), np.float64(2.459)), 'SURF_K4D2': (np.float64(2.189), np.float64(2.001))}
+7 {'ship': (np.float64(2.155), np.float64(1.913)), 'SURF_K4': (np.float64(2.122), np.float64(2.016)), 'SURF_K4D2': (np.float64(2.007), np.float64(1.956))}
+{
+ "ship": {
+  "mean": {
+   "min": 1.8772,
+   "median": 2.0345,
+   "spread": [
+    1.877,
+    2.155
+   ]
+  },
+  "median": {
+   "min": 1.8711,
+   "median": 1.8984,
+   "spread": [
+    1.871,
+    1.913
+   ]
+  },
+  "trim3": {
+   "min": 1.8772,
+   "median": 2.0345,
+   "spread": [
+    1.877,
+    2.155
+   ]
+  },
+  "sil_late_mean": {
+   "min": 1.9135,
+   "median": 1.958,
+   "spread": [
+    1.913,
+    2.098
+   ]
+  },
+  "sil_late_median": {
+   "min": 1.8907,
+   "median": 1.9152,
+   "spread": [
+    1.891,
+    1.932
+   ]
+  }
+ },
+ "SURF_K4": {
+  "mean": {
+   "min": 1.9676,
+   "median": 2.0707,
+   "spread": [
+    1.968,
+    2.449
+   ]
+  },
+  "median": {
+   "min": 1.9636,
+   "median": 1.9934,
+   "spread": [
+    1.964,
+    2.459
+   ]
+  },
+  "trim3": {
+   "min": 1.9676,
+   "median": 2.061,
+   "spread": [
+    1.968,
+    2.426
+   ]
+  },
+  "sil_late_mean": {
+   "min": 1.9789,
+   "median": 2.1366,
+   "spread": [
+    1.979,
+    2.619
+   ]
+  },
+  "sil_late_median": {
+   "min": 1.9727,
+   "median": 2.0113,
+   "spread": [
+    1.973,
+    2.205
+   ]
+  },
+  "paired_pct_vs_ship_mean": {
+   "median": 4.86,
+   "all": [
+    4.0,
+    5.7,
+    1.6,
+    7.3,
+    19.6,
+    -3.9,
+    18.5,
+    -1.5
+   ]
+  },
+  "paired_pct_vs_ship_median": {
+   "median": 5.3,
+   "all": [
+    5.4,
+    4.7,
+    3.3,
+    5.3,
+    7.3,
+    4.6,
+    28.6,
+    5.3
+   ]
+  }
+ },
+ "SURF_K4D2": {
+  "mean": {
+   "min": 1.9511,
+   "median": 2.0313,
+   "spread": [
+    1.951,
+    2.189
+   ]
+  },
+  "median": {
+   "min": 1.9391,
+   "median": 1.9692,
+   "spread": [
+    1.939,
+    2.001
+   ]
+  },
+  "trim3": {
+   "min": 1.9511,
+   "median": 2.0232,
+   "spread": [
+    1.951,
+    2.189
+   ]
+  },
+  "sil_late_mean": {
+   "min": 1.9678,
+   "median": 2.0907,
+   "spread": [
+    1.968,
+    3.147
+   ]
+  },
+  "sil_late_median": {
+   "min": 1.9365,
+   "median": 1.9956,
+   "spread": [
+    1.936,
+    3.536
+   ]
+  },
+  "paired_pct_vs_ship_mean": {
+   "median": 3.33,
+   "all": [
+    2.1,
+    4.5,
+    4.9,
+    15.7,
+    -4.7,
+    -4.0,
+    7.3,
+    -6.9
+   ]
+  },
+  "paired_pct_vs_ship_median": {
+   "median": 3.73,
+   "all": [
+    3.7,
+    4.8,
+    3.7,
+    5.7,
+    2.6,
+    3.3,
+    4.6,
+    2.2
+   ]
+  }
+ }
+}

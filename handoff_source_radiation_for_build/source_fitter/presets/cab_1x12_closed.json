@@ -1,0 +1,88 @@
+{
+  "schema": "source_fitter.preset.v1",
+  "id": "cab_1x12_closed",
+  "label": "Guitar cab 1x12 closed-back (ASSUMED, derived)",
+  "category": "guitar_amp",
+  "tag": "ASSUMED",
+  "model": "radiation_shelf_plus_soft_one_pole",
+  "level_reference": "on_axis (0 dB when facing the receiver; omni = exact null)",
+  "frame": {
+    "x": "facing (radiation reference axis of the dataset)",
+    "y": "source left",
+    "z": "up",
+    "facing_definition": ""
+  },
+  "params": {
+    "lp_order": 2.0,
+    "lo_db": -1.0,
+    "hi_db": -26.61841,
+    "f0": 2130.51994,
+    "shelf_s": 1.0,
+    "p": 0.74349,
+    "q": 0.0,
+    "b_ud": -0.04347,
+    "b_lr": 0.03303,
+    "aim_az": 1.02809,
+    "aim_el": 1.77029,
+    "lp_hz": 215.28444,
+    "lp_mix": 0.78837,
+    "p_lo": 0.3185,
+    "dip": 1.0
+  },
+  "size": {
+    "a_eq_m": 0.0254,
+    "beaming_onset_hz": 2130.5,
+    "rule": "a_eq = c/(2*pi*f0), c=340 m/s as engine (piston ka=1); UI size slider sets size_scale = a_user/a_eq -> f0, lp_hz divided by size_scale"
+  },
+  "di_db": {
+    "125": 1.77,
+    "250": 3.8,
+    "500": 6.97,
+    "1000": 10.33,
+    "2000": 14.46,
+    "4000": 17.93,
+    "8000": 19.76,
+    "16000": 20.64
+  },
+  "diffuse_inject": {
+    "gain_db": -2.1439726115813893,
+    "shelf_f0": 1042.6852123641204,
+    "shelf_gain_db": -17.29601008606224,
+    "shelf_s": 0.7,
+    "fit_rmse_db": 1.0837695170825377,
+    "target_db": {
+      "50": -0.860625443806265,
+      "104": -1.4701106456312163,
+      "218": -3.286278057424892,
+      "455": -6.514327611195999,
+      "951": -10.07106544049929,
+      "1986": -14.42020070988471,
+      "4148": -18.060818324142602,
+      "8662": -19.906678488955038
+    }
+  },
+  "fit": {
+    "note": "no measured data found for this cabinet type"
+  },
+  "dsp": {
+    "stages": [
+      "broadband_gain(k_lo*lo_db)",
+      "rbj_high_shelf(f0, k*hi_db, shelf_s)",
+      "soft_beaming_lp(lp_hz/k_hi, lp_mix, lp_order 1|2 cascaded one-poles)"
+    ],
+    "fs_ref_hz": 48000,
+    "k": "k_hi = A*u^p*(1-q*u^8); k_lo = A*((1-dip)*u^p_lo*(1-q*u^8) + dip*4u(1-u)); both 0 on axis",
+    "slot": "FIRST stage of each image's serial cascade (before surfaces/air/mic)"
+  },
+  "provenance": {
+    "dataset": "none \u2014 derived",
+    "derived_from": "combo_1x12 (BYU Fender Deluxe Reverb fit)",
+    "rule": "derived from combo_1x12 MEASURED fit: q->0 (no open-back rear lobe), lo_db>=-1 (closed box ~omni at LF)",
+    "measurement": "ASSUMED (no open 4x12 / closed 1x12 spherical dataset found; DirPat cab data rejected, see report)"
+  },
+  "tags": {
+    "params": "ASSUMED design values",
+    "model_form": "ASSUMED (engineering model, mirrors mic_fitter v3)",
+    "size_rule": "VERIFIED physics (piston ka=1) applied as ASSUMED mapping"
+  }
+}

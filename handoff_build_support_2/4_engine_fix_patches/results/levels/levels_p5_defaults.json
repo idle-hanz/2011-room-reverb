@@ -1,0 +1,63 @@
+{
+ "p5": {
+  "std_lock18": {
+   "fdn": {
+    "play_db": -6.27,
+    "render_db": -6.43
+   },
+   "direct": {
+    "play_db": 0.04,
+    "render_db": 0.04
+   },
+   "early": {
+    "play_db": -7.14
+   },
+   "all": {
+    "play_db": 3.43,
+    "render_db": 2.28
+   }
+  },
+  "small_lock08": {
+   "fdn": {
+    "play_db": -6.63,
+    "render_db": -4.66
+   },
+   "direct": {
+    "play_db": -2.7,
+    "render_db": -2.7
+   },
+   "early": {
+    "play_db": -8.23
+   },
+   "all": {
+    "play_db": 2.39,
+    "render_db": 1.0
+   }
+  },
+  "hall_lock40": {
+   "fdn": {
+    "play_db": -6.68,
+    "render_db": -5.51
+   },
+   "direct": {
+    "play_db": 0.03,
+    "render_db": 0.03
+   },
+   "early": {
+    "play_db": -4.5
+   },
+   "all": {
+    "play_db": 3.96,
+    "render_db": 3.89
+   }
+  },
+  "t14": {
+   "play_peak": 0.5594,
+   "play_rms_db": -16.24
+  },
+  "t14_pinned_src": {
+   "play_peak": 0.6644,
+   "play_rms_db": -13.8
+  }
+ }
+}

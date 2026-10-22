@@ -1,0 +1,92 @@
+{
+ "method": "Play IR via wasm_run.js ir mode, 20 s, one source, FDN only (direct, early and dry at 0). First 8 s of the clean guitar, fft convolve, first 12 s kept. Limiter not applied. In-process monkeypatch for the before file: surf_loop._k_cached returned k_for_dial(8) and ignored the room. That value is the F13 boot k. A full-mix pair was rendered first and replaced: the direct hit sat near -4 dBFS and hid the tail.",
+ "guitar": "C:\\Users\\IdleHanz\\Desktop\\2011 Room Reverb\\handoff_build_support_2\\roadmap\\robotic_1240\\test_guitar_dualmono_clean.wav",
+ "body": {
+  "W": 57.0,
+  "H": 34.2,
+  "L": 97.0,
+  "decay_lock": true,
+  "decay_s": 8.0,
+  "two_sources": false,
+  "direct_wet": 0.0,
+  "early_wet": 0.0,
+  "dry_gain": 0.0,
+  "fdn_wet": 1.0
+ },
+ "k_before": 0.15200528288314788,
+ "k_after_calls": [
+  {
+   "W": 57.0,
+   "H": 34.2,
+   "L": 97.0,
+   "dial": 8.0,
+   "k": 1.6640124255430147,
+   "at": false
+  }
+ ],
+ "peaks_before_boost_dbfs": {
+  "before": -11.26,
+  "after": -12.41
+ },
+ "boost_db": 8.26,
+ "peaks_after_boost_dbfs": {
+  "before": -3.0,
+  "after": -4.15
+ },
+ "limiter": "off",
+ "t30_ir": {
+  "before": {
+   "L": {
+    "125": 37.4325,
+    "250": 37.6395,
+    "500": 36.393,
+    "1000": 28.4285,
+    "2000": 16.3533,
+    "4000": 6.3265,
+    "8000": 4.5212,
+    "11000": 4.0086,
+    "broadband": 37.4566
+   },
+   "R": {
+    "125": 38.245,
+    "250": 38.1943,
+    "500": 36.492,
+    "1000": 28.5474,
+    "2000": 16.6099,
+    "4000": 6.3938,
+    "8000": 4.5851,
+    "11000": 4.1193,
+    "broadband": 37.5828
+   }
+  },
+  "after": {
+   "L": {
+    "125": 13.5808,
+    "250": 11.9309,
+    "500": 9.4962,
+    "1000": 7.0408,
+    "2000": 4.8572,
+    "4000": 2.9397,
+    "8000": 2.5987,
+    "11000": 2.4796,
+    "broadband": 10.1644
+   },
+   "R": {
+    "125": 13.4711,
+    "250": 11.6723,
+    "500": 9.4814,
+    "1000": 7.0757,
+    "2000": 4.8672,
+    "4000": 2.9845,
+    "8000": 2.631,
+    "11000": 2.5243,
+    "broadband": 9.9086
+   }
+  }
+ },
+ "files": [
+  "C:\\Users\\IdleHanz\\Desktop\\2011 Room Reverb\\handoff_build_support_2\\roadmap\\perroomk\\listen\\hall_d8_before.wav",
+  "C:\\Users\\IdleHanz\\Desktop\\2011 Room Reverb\\handoff_build_support_2\\roadmap\\perroomk\\listen\\hall_d8_after.wav"
+ ],
+ "note": "Before rings about 34-37 s. After should have about 8 s mids and shorter highs. The files are 12 s, so the before tail is still up at the end and the after tail has started to fall."
+}

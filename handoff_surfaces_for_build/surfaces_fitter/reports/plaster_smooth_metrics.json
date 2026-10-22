@@ -1,0 +1,41 @@
+{
+  "id": "plaster_smooth",
+  "display_name": "Plaster (smooth)",
+  "candidate": "A",
+  "model": "dual_high_shelf",
+  "rmse_r_db": 0.0030478413805857993,
+  "absorb_l1": 0.0009342979023178362,
+  "candidate_rmse": {
+    "A": 0.0030478413805857993,
+    "B": 0.00205244911852898
+  },
+  "params": {
+    "r0_db": -0.08631690424417518,
+    "f0": 714.0560259220359,
+    "depth_db": -0.13826348891990398,
+    "shelf_slope": 5.599635884583102,
+    "f0_hi": 13870.040538140334,
+    "depth_hi_db": -6.441181098471628e-13,
+    "shelf_slope_hi": 11.842721413448551
+  },
+  "roles": [
+    "wall",
+    "ceiling"
+  ],
+  "banned_on": [
+    "floor"
+  ],
+  "absorb": [
+    0.02,
+    0.02,
+    0.03,
+    0.04,
+    0.05,
+    0.05,
+    0.05
+  ],
+  "extras": {
+    "notes": "Hard reflective finish; mild HF rise.",
+    "prefer_lf_candidate": false
+  }
+}

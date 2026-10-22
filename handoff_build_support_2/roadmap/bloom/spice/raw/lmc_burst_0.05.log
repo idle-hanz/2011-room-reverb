@@ -1,0 +1,31 @@
+
+Note: No compatibility mode selected!
+
+
+Circuit: * lmc_burst_0.05
+
+Doing analysis at TEMP = 27.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+
+Initial Transient Solution
+--------------------------
+
+Node                                   Voltage
+----                                   -------
+in                                           0
+gt                                           1
+in2                                          0
+fet                                 -1.012e-07
+g                                        -4.35
+c                                    -0.599996
+r                                    -0.599996
+brec#branch                                  0
+bg#branch                              9.2e-12
+bin#branch                            -4.6e-12
+vgate#branch                                 0
+vin#branch                                   0
+
+ Reference value :  3.66232e-01
+No. of Data Rows : 90014
+ngspice-44.2 done

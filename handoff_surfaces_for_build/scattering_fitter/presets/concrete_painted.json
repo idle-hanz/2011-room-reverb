@@ -1,0 +1,63 @@
+{
+  "schema": "scattering_fitter.material_scatter.v1",
+  "id": "concrete_painted",
+  "honesty": "VERIFIED_CITED_EST",
+  "scatter_hz": [
+    125.0,
+    250.0,
+    500.0,
+    1000.0,
+    2000.0,
+    4000.0,
+    8000.0
+  ],
+  "scatter": [
+    0.0098,
+    0.0167,
+    0.0328,
+    0.0614,
+    0.0937,
+    0.1157,
+    0.1261
+  ],
+  "scatter_data_octave": [
+    0.0113,
+    0.0147,
+    0.0343,
+    0.0627,
+    0.0913,
+    0.1167,
+    0.1253
+  ],
+  "model": "logistic_log2f",
+  "params": {
+    "s_lo": 0.00588,
+    "s_hi": 0.13245,
+    "fc": 1173.55476,
+    "k": 1.06273
+  },
+  "rmse_s": 0.00208,
+  "n_points": 21,
+  "fit_range_hz": [
+    100.0,
+    10000.0
+  ],
+  "source": "Asp\u00f6ck, Brinkmann, Ackermann, Weinzierl, Vorl\u00e4nder: GRAS \u2013 Ground Truth for Room Acoustical Simulation, TU Berlin DepositOnce, 3_surface_descriptions.zip, https://depositonce.tu-berlin.de/items/19a794ad-0359-410e-bc9c-ad96df1434d5 ; CSV line 3 = scattering; material descr files: 'Estimated data for absorption and scattering coefficients'; documentation \u00a72.3: 'Scattering coefficients were estimated according to structural dimensions of the materials.'",
+  "source_key": "mat_scene08_paintedConcrete",
+  "odeon_anchor": {
+    "odeon_class": "smooth_painted_concrete",
+    "range_707": [
+      0.005,
+      0.02
+    ],
+    "model_707": 0.0457,
+    "inside": false
+  },
+  "note": "GRAS scene08 painted concrete (estimated). ODEON guidance is lower (0.005-0.02 @707 Hz).",
+  "usage": "Per hit: E_spec *= (1 - s_b); E_scatter = 1 - prod(1 - s_b). Specular tap amplitude sqrt(prod(1-s)); scattered share -> short Lambert-envelope velvet cluster, feed-forward on the early tap only. Muted face contributes neither absorption nor scattering.",
+  "locks": {
+    "measured_by_us": false,
+    "honesty_note": "never promote to MEASURED; cite source",
+    "live_software": "do not import into live software/ until Idle says go"
+  }
+}

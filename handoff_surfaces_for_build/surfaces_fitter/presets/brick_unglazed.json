@@ -1,0 +1,72 @@
+{
+  "schema": "surfaces_fitter.material.v1",
+  "id": "brick_unglazed",
+  "display_name": "Brick (unglazed)",
+  "honesty": "ASSUMED_TEXTBOOK",
+  "roles": [
+    "wall"
+  ],
+  "banned_on": [
+    "floor",
+    "ceiling"
+  ],
+  "absorb_hz": [
+    125.0,
+    250.0,
+    500.0,
+    1000.0,
+    2000.0,
+    4000.0,
+    8000.0
+  ],
+  "absorb": [
+    0.03,
+    0.03,
+    0.03,
+    0.04,
+    0.05,
+    0.07,
+    0.08
+  ],
+  "alpha_octave": [
+    0.03,
+    0.03,
+    0.03,
+    0.04,
+    0.05,
+    0.07,
+    0.08
+  ],
+  "model": "dual_high_shelf",
+  "candidate": "A",
+  "params": {
+    "r0_db": -0.13191496787748666,
+    "f0": 788.4860314278202,
+    "depth_db": -0.05056183914507467,
+    "shelf_slope": 11.999999999999998,
+    "f0_hi": 2959.677870500915,
+    "depth_hi_db": -0.18325001959640264,
+    "shelf_slope_hi": 6.7813252375336805
+  },
+  "rmse_r_db": 0.0015015313418094488,
+  "absorb_l1": 0.0005669674878868604,
+  "candidate_rmse_r_db": {
+    "A": 0.0015015313418094488,
+    "B": 0.004046629744847519
+  },
+  "freq_range_hz": [
+    20.0,
+    16000.0
+  ],
+  "source_note": "Sengpiel / unglazed brick wall typical table",
+  "usage": "One bounce: apply R(f); multi-bounce: cascade product along hit list. Do not put curtain/carpet roles on illegal faces.",
+  "fit": {
+    "success": true,
+    "message": "DE success=False; LS success=True cost=0.0002164"
+  },
+  "locks": {
+    "live_software": "do not import into live software/ engine in this pack",
+    "honesty": "ASSUMED_TEXTBOOK \u2014 not Structure VERIFIED",
+    "depth": "absolute per bounce (not per metre)"
+  }
+}

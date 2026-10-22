@@ -1,0 +1,40 @@
+{
+  "id": "concrete_painted",
+  "display_name": "Concrete (painted)",
+  "candidate": "A",
+  "model": "dual_high_shelf",
+  "rmse_r_db": 0.001924564171818272,
+  "absorb_l1": 0.0008099463008513601,
+  "candidate_rmse": {
+    "A": 0.001924564171818272,
+    "B": 0.0060335310342717035
+  },
+  "params": {
+    "r0_db": -0.043026055802491976,
+    "f0": 351.4789320900464,
+    "depth_db": -0.04473161987762263,
+    "shelf_slope": 11.999999999999998,
+    "f0_hi": 2866.8201140295564,
+    "depth_hi_db": -0.04570385694056147,
+    "shelf_slope_hi": 11.999999999999998
+  },
+  "roles": [
+    "floor",
+    "wall",
+    "ceiling"
+  ],
+  "banned_on": [],
+  "absorb": [
+    0.01,
+    0.01,
+    0.02,
+    0.02,
+    0.02,
+    0.03,
+    0.03
+  ],
+  "extras": {
+    "notes": "Very reflective; legal on all faces.",
+    "prefer_lf_candidate": false
+  }
+}

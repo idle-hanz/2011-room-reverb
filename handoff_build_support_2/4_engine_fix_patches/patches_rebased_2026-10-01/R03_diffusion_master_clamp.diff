@@ -1,0 +1,12 @@
+diff -ruN a/app_server.py b/app_server.py
+--- a/app_server.py	2026-10-01 07:46:53.026339147 +0100
++++ b/app_server.py	2026-10-01 07:46:53.042339098 +0100
+@@ -339,7 +339,7 @@
+         "humidity": _f(body.get("humidity"), 0.0),
+         "air_lp": _f(body.get("air_lp"), 0.25),
+         "air_shelf": _f(body.get("air_shelf"), 1.0),
+-        "diffusion_master": _f(body.get("diffusion_master"), -0.5),
++        "diffusion_master": _span(body.get("diffusion_master"), -0.5, -1.0, 0.0),
+         "decay_s": _f(body.get("decay_s"), 0.0),
+         "decay_lock": _b(body.get("decay_lock"), False),
+         "mic_gain_l": _span(body.get("mic_gain_l"), 1.0, 0.0, 16.0),

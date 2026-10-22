@@ -1,0 +1,6 @@
+default mix {'after_gain_db': np.float64(-0.184), 'shared_norm_db': np.float64(-0.72), 'null_after_vs_before_db': np.float64(-27.9)}
+default tailonly {'after_gain_db': np.float64(-0.74), 'shared_norm_db': np.float64(6.84), 'null_after_vs_before_db': np.float64(-25.1)}
+hs6_allfaces mix {'after_gain_db': np.float64(-0.167), 'shared_norm_db': np.float64(-0.73), 'null_after_vs_before_db': np.float64(-26.8)}
+hs6_allfaces tailonly {'after_gain_db': np.float64(-0.742), 'shared_norm_db': np.float64(6.84), 'null_after_vs_before_db': np.float64(-23.2)}
+carpet_floor mix {'after_gain_db': np.float64(-0.532), 'shared_norm_db': np.float64(-0.55), 'null_after_vs_before_db': np.float64(-19.1)}
+carpet_floor tailonly {'after_gain_db': np.float64(-1.997), 'shared_norm_db': np.float64(7.48), 'null_after_vs_before_db': np.float64(-15.3)}

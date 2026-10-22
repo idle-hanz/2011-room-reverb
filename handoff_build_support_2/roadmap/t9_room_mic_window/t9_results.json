@@ -1,0 +1,208 @@
+{
+  "port": 51038,
+  "idle_7860_left_alone": false,
+  "page_errors": [],
+  "closed": {
+    "l": true,
+    "c": true,
+    "r": true
+  },
+  "box_hidden": true,
+  "id_counts": {
+    "room_l_x": 1,
+    "room_l_z": 1,
+    "room_l_y": 1,
+    "room_l_yaw": 1,
+    "room_c_x": 1,
+    "room_c_z": 1,
+    "room_c_y": 1,
+    "room_c_yaw": 1,
+    "room_r_x": 1,
+    "room_r_z": 1,
+    "room_r_y": 1,
+    "room_r_yaw": 1,
+    "roomFields": 1,
+    "micPolarC": 1
+  },
+  "open_rows": {
+    "l": true,
+    "c": true,
+    "r": false
+  },
+  "title": "Room mic (R)",
+  "painted": {
+    "source": "Source: 3.3 m",
+    "wall": "Nearest wall: 1.5 m",
+    "expectSource": "Source: 3.3 m",
+    "expectWall": "Nearest wall: 1.5 m",
+    "live": "Src 2.60,4.75 @ 1.20 m  \u00b7  Mic 3.00,1.50 @ 1.50 m  \u00b7  |S\u2212C| 3.29 m",
+    "spot": {
+      "x": 3.085,
+      "y": 1.5,
+      "z": 1.5
+    },
+    "src": {
+      "x": 2.6,
+      "y": 1.2,
+      "z": 4.75
+    }
+  },
+  "polar": {
+    "yaw": "55",
+    "pe": "none",
+    "w": 140
+  },
+  "pattern_home": {
+    "presetInRoom": false,
+    "patternHidden": true,
+    "splitParent": "sidePatternSplit"
+  },
+  "pattern_split": {
+    "presetInRoom": true,
+    "famInRoom": true,
+    "polInRoom": true,
+    "hpfInRoom": true,
+    "patternHidden": true
+  },
+  "pattern_mirror": "sidePatternSplit",
+  "typed": {
+    "x": "1",
+    "z": "6",
+    "y": "1.50"
+  },
+  "pixel": {
+    "r": 52,
+    "g": 211,
+    "b": 153,
+    "px": 316,
+    "py": 190,
+    "oldR": 28,
+    "oldG": 30,
+    "oldB": 34
+  },
+  "dragged": {
+    "x": "2.5",
+    "z": "4",
+    "y": "1.5"
+  },
+  "after_return": {
+    "l": true,
+    "c": true,
+    "r": true
+  },
+  "place_r": "true",
+  "prior_centre_pressed": "true",
+  "centre_open": true,
+  "centre_parked": {
+    "preset": true,
+    "fam": true,
+    "pol": true,
+    "hpf": true,
+    "patternHidden": true
+  },
+  "centre_back": {
+    "hidden": true,
+    "third": "centre",
+    "presetHome": true
+  },
+  "binaural": {
+    "third": true,
+    "linkLabel": true,
+    "sourceLinkHidden": false,
+    "align": true,
+    "space": false,
+    "hint": "Head: SADIE II KU100. Left and right ears.",
+    "badge": "Head: SADIE II KU100",
+    "metres": "space 0.18 m \u00b7 1.50 m high",
+    "cCol": true
+  },
+  "before_mono": {
+    "space": "0.17",
+    "align": true
+  },
+  "mono_snap": {
+    "space": "0",
+    "align": true,
+    "setup": "mono_c"
+  },
+  "mono": {
+    "link": true,
+    "third": true,
+    "offDisabled": true,
+    "align": false,
+    "space": false,
+    "spaceValue": "0",
+    "alignOn": true
+  },
+  "wide": {
+    "sw": 1280,
+    "cw": 1280,
+    "controls": [
+      {
+        "id": "room_r_x",
+        "left": 895,
+        "right": 1247,
+        "width": 352,
+        "n": 1
+      },
+      {
+        "id": "room_r_z",
+        "left": 895,
+        "right": 1247,
+        "width": 352,
+        "n": 1
+      },
+      {
+        "id": "room_r_y",
+        "left": 895,
+        "right": 1247,
+        "width": 352,
+        "n": 1
+      },
+      {
+        "id": "room_r_yaw",
+        "left": 895,
+        "right": 1247,
+        "width": 352,
+        "n": 1
+      }
+    ],
+    "off": []
+  },
+  "phone": {
+    "sw": 390,
+    "cw": 390,
+    "controls": [
+      {
+        "id": "room_r_x",
+        "left": 21,
+        "right": 367,
+        "width": 346,
+        "n": 1
+      },
+      {
+        "id": "room_r_z",
+        "left": 21,
+        "right": 367,
+        "width": 346,
+        "n": 1
+      },
+      {
+        "id": "room_r_y",
+        "left": 21,
+        "right": 367,
+        "width": 346,
+        "n": 1
+      },
+      {
+        "id": "room_r_yaw",
+        "left": 21,
+        "right": 367,
+        "width": 346,
+        "n": 1
+      }
+    ],
+    "off": []
+  },
+  "banned_keys": []
+}

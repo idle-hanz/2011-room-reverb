@@ -1,0 +1,80 @@
+diff -ruN a/static/index.html b/static/index.html
+--- a/static/index.html	2026-10-01 07:46:53.066339024 +0100
++++ b/static/index.html	2026-10-01 07:47:03.494306942 +0100
+@@ -614,14 +614,14 @@
+     </main>
+   </div>
+   <script src="/static/js/vendor/three.min.js"></script>
+-  <script src="/static/js/room_math.js?v=13"></script>
++  <script src="/static/js/room_math.js?v=14"></script>
+   <script src="/static/js/room_3d.js?v=16"></script>
+   <script src="/static/js/room_editor.js?v=12"></script>
+   <script src="/static/js/image_views.js?v=12"></script>
+   <script src="/static/js/colour_surfaces.js"></script>
+   <script src="/static/js/polar_field.js?v=4"></script>
+-  <script src="/static/js/mic_desk.js?v=7"></script>
+-  <script src="/static/js/live_fdn.js?v=33"></script>
+-  <script src="/static/js/app.js?v=21"></script>
++  <script src="/static/js/mic_desk.js?v=8"></script>
++  <script src="/static/js/live_fdn.js?v=34"></script>
++  <script src="/static/js/app.js?v=22"></script>
+ </body>
+ </html>
+diff -ruN a/static/js/live_fdn.js b/static/js/live_fdn.js
+--- a/static/js/live_fdn.js	2026-10-01 07:46:53.066339024 +0100
++++ b/static/js/live_fdn.js	2026-10-01 07:47:03.494306942 +0100
+@@ -16,7 +16,7 @@
+   var colourRev = "";
+   var bank = null;
+   var lastCapLine = "";
+-  var WORKLET_VER = 33;
++  var WORKLET_VER = 34;
+   var COLOUR_CAP = 128;
+   var ROUTE_LEN = 230;
+ 
+diff -ruN a/tests/test_live_stereo.py b/tests/test_live_stereo.py
+--- a/tests/test_live_stereo.py	2026-10-01 07:46:53.066339024 +0100
++++ b/tests/test_live_stereo.py	2026-10-01 07:47:03.498306930 +0100
+@@ -552,9 +552,9 @@
+     work = (ROOT / "static" / "js" / "fdn_worklet.js").read_text(encoding="utf-8")
+     page = (ROOT / "static" / "index.html").read_text(encoding="utf-8")
+     assert "createConvolver" not in live
+-    assert "WORKLET_VER = 33" in live
++    assert "WORKLET_VER = 34" in live
+     assert "LANES = 4" in text
+-    assert "live_fdn.js?v=33" in page
++    assert "live_fdn.js?v=34" in page
+     assert "MAX_SOS" in text
+     assert "design_sos" in text
+     assert "LS_DC" in text
+diff -ruN a/tests/test_mic_colour_relative.py b/tests/test_mic_colour_relative.py
+--- a/tests/test_mic_colour_relative.py	2026-10-01 07:46:53.066339024 +0100
++++ b/tests/test_mic_colour_relative.py	2026-10-01 07:47:03.498306930 +0100
+@@ -439,11 +439,12 @@
+     ordered = sorted(taps, key=lambda t: t.theta_l)
+     pair = [ordered[0], ordered[-1]]
+     assert abs(pair[0].theta_l - pair[1].theta_l) > 0.05
+-    both = rp.render_early_ir(pair, room, sr, c, 15.0, 0.0, 0.0, wall, ap, early_toys=False, colour=colour)
+-    a = rp.render_early_ir([pair[0]], room, sr, c, 15.0, 0.0, 0.0, wall, ap, early_toys=False, colour=colour)
+-    b = rp.render_early_ir([pair[1]], room, sr, c, 15.0, 0.0, 0.0, wall, ap, early_toys=False, colour=colour)
++    # K1 (28 Sep 2026): with the yaw flip the extreme-theta taps arrive at 24-30 ms, so 40 ms window (was 15).
++    both = rp.render_early_ir(pair, room, sr, c, 40.0, 0.0, 0.0, wall, ap, early_toys=False, colour=colour)
++    a = rp.render_early_ir([pair[0]], room, sr, c, 40.0, 0.0, 0.0, wall, ap, early_toys=False, colour=colour)
++    b = rp.render_early_ir([pair[1]], room, sr, c, 40.0, 0.0, 0.0, wall, ap, early_toys=False, colour=colour)
+     assert np.allclose(both[0], a[0] + b[0])
+-    raw = rp.render_early_ir(pair, room, sr, c, 15.0, 0.0, 0.0, wall, ap, early_toys=False)
++    raw = rp.render_early_ir(pair, room, sr, c, 40.0, 0.0, 0.0, wall, ap, early_toys=False)
+     wrong = colour.apply(raw[0], pair[0].theta_l, "l")
+     assert not np.allclose(both[0], wrong, atol=1e-8)
+     src = inspect.getsource(rp.render_early_ir)
+@@ -936,8 +937,8 @@
+     assert "apply_mic=True" not in pipe
+     assert "mic_one_pole_coeff" not in pipe
+     stereo = (SOFTWARE / "engine" / "live_stereo.c").read_text(encoding="utf-8")
+-    assert "WORKLET_VER = 33" in live_js
+-    assert "live_fdn.js?v=33" in page
++    assert "WORKLET_VER = 34" in live_js
++    assert "live_fdn.js?v=34" in page
+     assert "MAX_IRS = 128" in stereo
+     assert "var MAX_IRS = 128" in work
+     assert "Mic colour is OFF:" in live_js

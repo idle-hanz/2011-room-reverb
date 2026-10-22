@@ -1,0 +1,3714 @@
+[
+{
+"id": "rprog_la2as_pr50_drums_a",
+"plugin": "uaudio_teletronix_la-2a_silver",
+"params": {
+"peak_reduct": "50",
+"gain": "30",
+"comp_limit": "Comp"
+},
+"input": "real_drums.npy",
+"gain_db": -17.358
+},
+{
+"id": "rprog_la2as_pr50_drums_b",
+"plugin": "uaudio_teletronix_la-2a_silver",
+"params": {
+"peak_reduct": "50",
+"gain": "30",
+"comp_limit": "Comp"
+},
+"input": "real_drums.npy",
+"gain_db": -9.358
+},
+{
+"id": "rprog_la2as_pr50_bass_a",
+"plugin": "uaudio_teletronix_la-2a_silver",
+"params": {
+"peak_reduct": "50",
+"gain": "30",
+"comp_limit": "Comp"
+},
+"input": "real_bass.npy",
+"gain_db": -17.358
+},
+{
+"id": "rprog_la2as_pr50_bass_b",
+"plugin": "uaudio_teletronix_la-2a_silver",
+"params": {
+"peak_reduct": "50",
+"gain": "30",
+"comp_limit": "Comp"
+},
+"input": "real_bass.npy",
+"gain_db": -9.358
+},
+{
+"id": "rprog_la2as_pr50_guitar_a",
+"plugin": "uaudio_teletronix_la-2a_silver",
+"params": {
+"peak_reduct": "50",
+"gain": "30",
+"comp_limit": "Comp"
+},
+"input": "real_guitar.npy",
+"gain_db": -17.358
+},
+{
+"id": "rprog_la2as_pr50_guitar_b",
+"plugin": "uaudio_teletronix_la-2a_silver",
+"params": {
+"peak_reduct": "50",
+"gain": "30",
+"comp_limit": "Comp"
+},
+"input": "real_guitar.npy",
+"gain_db": -9.358
+},
+{
+"id": "rprog_la2as_pr50_vocal_a",
+"plugin": "uaudio_teletronix_la-2a_silver",
+"params": {
+"peak_reduct": "50",
+"gain": "30",
+"comp_limit": "Comp"
+},
+"input": "real_vocal.npy",
+"gain_db": -17.358
+},
+{
+"id": "rprog_la2as_pr50_vocal_b",
+"plugin": "uaudio_teletronix_la-2a_silver",
+"params": {
+"peak_reduct": "50",
+"gain": "30",
+"comp_limit": "Comp"
+},
+"input": "real_vocal.npy",
+"gain_db": -9.358
+},
+{
+"id": "rprog_la2as_pr50_mix_a",
+"plugin": "uaudio_teletronix_la-2a_silver",
+"params": {
+"peak_reduct": "50",
+"gain": "30",
+"comp_limit": "Comp"
+},
+"input": "real_mix.npy",
+"gain_db": -17.358
+},
+{
+"id": "rprog_la2as_pr50_mix_b",
+"plugin": "uaudio_teletronix_la-2a_silver",
+"params": {
+"peak_reduct": "50",
+"gain": "30",
+"comp_limit": "Comp"
+},
+"input": "real_mix.npy",
+"gain_db": -9.358
+},
+{
+"id": "al_la2as_pr50_7000_-24",
+"plugin": "uaudio_teletronix_la-2a_silver",
+"params": {
+"peak_reduct": "50",
+"gain": "30",
+"comp_limit": "Comp"
+},
+"input": "al_7000.npy",
+"gain_db": -24.0
+},
+{
+"id": "al_la2as_pr50_7000_-12",
+"plugin": "uaudio_teletronix_la-2a_silver",
+"params": {
+"peak_reduct": "50",
+"gain": "30",
+"comp_limit": "Comp"
+},
+"input": "al_7000.npy",
+"gain_db": -12.0
+},
+{
+"id": "al_la2as_pr50_7000_-6",
+"plugin": "uaudio_teletronix_la-2a_silver",
+"params": {
+"peak_reduct": "50",
+"gain": "30",
+"comp_limit": "Comp"
+},
+"input": "al_7000.npy",
+"gain_db": -6.0
+},
+{
+"id": "al_la2as_pr50_7000_+0",
+"plugin": "uaudio_teletronix_la-2a_silver",
+"params": {
+"peak_reduct": "50",
+"gain": "30",
+"comp_limit": "Comp"
+},
+"input": "al_7000.npy",
+"gain_db": 0.0
+},
+{
+"id": "al_la2as_pr50_9000_-24",
+"plugin": "uaudio_teletronix_la-2a_silver",
+"params": {
+"peak_reduct": "50",
+"gain": "30",
+"comp_limit": "Comp"
+},
+"input": "al_9000.npy",
+"gain_db": -24.0
+},
+{
+"id": "al_la2as_pr50_9000_-12",
+"plugin": "uaudio_teletronix_la-2a_silver",
+"params": {
+"peak_reduct": "50",
+"gain": "30",
+"comp_limit": "Comp"
+},
+"input": "al_9000.npy",
+"gain_db": -12.0
+},
+{
+"id": "al_la2as_pr50_9000_-6",
+"plugin": "uaudio_teletronix_la-2a_silver",
+"params": {
+"peak_reduct": "50",
+"gain": "30",
+"comp_limit": "Comp"
+},
+"input": "al_9000.npy",
+"gain_db": -6.0
+},
+{
+"id": "al_la2as_pr50_9000_+0",
+"plugin": "uaudio_teletronix_la-2a_silver",
+"params": {
+"peak_reduct": "50",
+"gain": "30",
+"comp_limit": "Comp"
+},
+"input": "al_9000.npy",
+"gain_db": 0.0
+},
+{
+"id": "al_la2as_pr50_13000_-24",
+"plugin": "uaudio_teletronix_la-2a_silver",
+"params": {
+"peak_reduct": "50",
+"gain": "30",
+"comp_limit": "Comp"
+},
+"input": "al_13000.npy",
+"gain_db": -24.0
+},
+{
+"id": "al_la2as_pr50_13000_-12",
+"plugin": "uaudio_teletronix_la-2a_silver",
+"params": {
+"peak_reduct": "50",
+"gain": "30",
+"comp_limit": "Comp"
+},
+"input": "al_13000.npy",
+"gain_db": -12.0
+},
+{
+"id": "al_la2as_pr50_13000_-6",
+"plugin": "uaudio_teletronix_la-2a_silver",
+"params": {
+"peak_reduct": "50",
+"gain": "30",
+"comp_limit": "Comp"
+},
+"input": "al_13000.npy",
+"gain_db": -6.0
+},
+{
+"id": "al_la2as_pr50_13000_+0",
+"plugin": "uaudio_teletronix_la-2a_silver",
+"params": {
+"peak_reduct": "50",
+"gain": "30",
+"comp_limit": "Comp"
+},
+"input": "al_13000.npy",
+"gain_db": 0.0
+},
+{
+"id": "al_la2as_pr50_17000_-24",
+"plugin": "uaudio_teletronix_la-2a_silver",
+"params": {
+"peak_reduct": "50",
+"gain": "30",
+"comp_limit": "Comp"
+},
+"input": "al_17000.npy",
+"gain_db": -24.0
+},
+{
+"id": "al_la2as_pr50_17000_-12",
+"plugin": "uaudio_teletronix_la-2a_silver",
+"params": {
+"peak_reduct": "50",
+"gain": "30",
+"comp_limit": "Comp"
+},
+"input": "al_17000.npy",
+"gain_db": -12.0
+},
+{
+"id": "al_la2as_pr50_17000_-6",
+"plugin": "uaudio_teletronix_la-2a_silver",
+"params": {
+"peak_reduct": "50",
+"gain": "30",
+"comp_limit": "Comp"
+},
+"input": "al_17000.npy",
+"gain_db": -6.0
+},
+{
+"id": "al_la2as_pr50_17000_+0",
+"plugin": "uaudio_teletronix_la-2a_silver",
+"params": {
+"peak_reduct": "50",
+"gain": "30",
+"comp_limit": "Comp"
+},
+"input": "al_17000.npy",
+"gain_db": 0.0
+},
+{
+"id": "alsw_la2as_pr50_-12",
+"plugin": "uaudio_teletronix_la-2a_silver",
+"params": {
+"peak_reduct": "50",
+"gain": "30",
+"comp_limit": "Comp"
+},
+"input": "al_sweep.npy",
+"gain_db": -12.0
+},
+{
+"id": "alsw_la2as_pr50_+0",
+"plugin": "uaudio_teletronix_la-2a_silver",
+"params": {
+"peak_reduct": "50",
+"gain": "30",
+"comp_limit": "Comp"
+},
+"input": "al_sweep.npy",
+"gain_db": 0.0
+},
+{
+"id": "rprog_ssl_4_auto_drums_a",
+"plugin": "uaudio_ssl_g_bus_compressor",
+"params": {
+"thresh": 0.0,
+"make_up": 0.0,
+"ratio": "4:1",
+"attack": 10.0,
+"release": "Auto"
+},
+"input": "real_drums.npy",
+"gain_db": -21.449
+},
+{
+"id": "rprog_ssl_4_auto_drums_b",
+"plugin": "uaudio_ssl_g_bus_compressor",
+"params": {
+"thresh": 0.0,
+"make_up": 0.0,
+"ratio": "4:1",
+"attack": 10.0,
+"release": "Auto"
+},
+"input": "real_drums.npy",
+"gain_db": -13.449
+},
+{
+"id": "rprog_ssl_4_auto_bass_a",
+"plugin": "uaudio_ssl_g_bus_compressor",
+"params": {
+"thresh": 0.0,
+"make_up": 0.0,
+"ratio": "4:1",
+"attack": 10.0,
+"release": "Auto"
+},
+"input": "real_bass.npy",
+"gain_db": -21.449
+},
+{
+"id": "rprog_ssl_4_auto_bass_b",
+"plugin": "uaudio_ssl_g_bus_compressor",
+"params": {
+"thresh": 0.0,
+"make_up": 0.0,
+"ratio": "4:1",
+"attack": 10.0,
+"release": "Auto"
+},
+"input": "real_bass.npy",
+"gain_db": -13.449
+},
+{
+"id": "rprog_ssl_4_auto_guitar_a",
+"plugin": "uaudio_ssl_g_bus_compressor",
+"params": {
+"thresh": 0.0,
+"make_up": 0.0,
+"ratio": "4:1",
+"attack": 10.0,
+"release": "Auto"
+},
+"input": "real_guitar.npy",
+"gain_db": -21.449
+},
+{
+"id": "rprog_ssl_4_auto_guitar_b",
+"plugin": "uaudio_ssl_g_bus_compressor",
+"params": {
+"thresh": 0.0,
+"make_up": 0.0,
+"ratio": "4:1",
+"attack": 10.0,
+"release": "Auto"
+},
+"input": "real_guitar.npy",
+"gain_db": -13.449
+},
+{
+"id": "rprog_ssl_4_auto_vocal_a",
+"plugin": "uaudio_ssl_g_bus_compressor",
+"params": {
+"thresh": 0.0,
+"make_up": 0.0,
+"ratio": "4:1",
+"attack": 10.0,
+"release": "Auto"
+},
+"input": "real_vocal.npy",
+"gain_db": -21.449
+},
+{
+"id": "rprog_ssl_4_auto_vocal_b",
+"plugin": "uaudio_ssl_g_bus_compressor",
+"params": {
+"thresh": 0.0,
+"make_up": 0.0,
+"ratio": "4:1",
+"attack": 10.0,
+"release": "Auto"
+},
+"input": "real_vocal.npy",
+"gain_db": -13.449
+},
+{
+"id": "rprog_ssl_4_auto_mix_a",
+"plugin": "uaudio_ssl_g_bus_compressor",
+"params": {
+"thresh": 0.0,
+"make_up": 0.0,
+"ratio": "4:1",
+"attack": 10.0,
+"release": "Auto"
+},
+"input": "real_mix.npy",
+"gain_db": -21.449
+},
+{
+"id": "rprog_ssl_4_auto_mix_b",
+"plugin": "uaudio_ssl_g_bus_compressor",
+"params": {
+"thresh": 0.0,
+"make_up": 0.0,
+"ratio": "4:1",
+"attack": 10.0,
+"release": "Auto"
+},
+"input": "real_mix.npy",
+"gain_db": -13.449
+},
+{
+"id": "al_ssl_4_auto_7000_-24",
+"plugin": "uaudio_ssl_g_bus_compressor",
+"params": {
+"thresh": 0.0,
+"make_up": 0.0,
+"ratio": "4:1",
+"attack": 10.0,
+"release": "Auto"
+},
+"input": "al_7000.npy",
+"gain_db": -24.0
+},
+{
+"id": "al_ssl_4_auto_7000_-12",
+"plugin": "uaudio_ssl_g_bus_compressor",
+"params": {
+"thresh": 0.0,
+"make_up": 0.0,
+"ratio": "4:1",
+"attack": 10.0,
+"release": "Auto"
+},
+"input": "al_7000.npy",
+"gain_db": -12.0
+},
+{
+"id": "al_ssl_4_auto_7000_-6",
+"plugin": "uaudio_ssl_g_bus_compressor",
+"params": {
+"thresh": 0.0,
+"make_up": 0.0,
+"ratio": "4:1",
+"attack": 10.0,
+"release": "Auto"
+},
+"input": "al_7000.npy",
+"gain_db": -6.0
+},
+{
+"id": "al_ssl_4_auto_7000_+0",
+"plugin": "uaudio_ssl_g_bus_compressor",
+"params": {
+"thresh": 0.0,
+"make_up": 0.0,
+"ratio": "4:1",
+"attack": 10.0,
+"release": "Auto"
+},
+"input": "al_7000.npy",
+"gain_db": 0.0
+},
+{
+"id": "al_ssl_4_auto_9000_-24",
+"plugin": "uaudio_ssl_g_bus_compressor",
+"params": {
+"thresh": 0.0,
+"make_up": 0.0,
+"ratio": "4:1",
+"attack": 10.0,
+"release": "Auto"
+},
+"input": "al_9000.npy",
+"gain_db": -24.0
+},
+{
+"id": "al_ssl_4_auto_9000_-12",
+"plugin": "uaudio_ssl_g_bus_compressor",
+"params": {
+"thresh": 0.0,
+"make_up": 0.0,
+"ratio": "4:1",
+"attack": 10.0,
+"release": "Auto"
+},
+"input": "al_9000.npy",
+"gain_db": -12.0
+},
+{
+"id": "al_ssl_4_auto_9000_-6",
+"plugin": "uaudio_ssl_g_bus_compressor",
+"params": {
+"thresh": 0.0,
+"make_up": 0.0,
+"ratio": "4:1",
+"attack": 10.0,
+"release": "Auto"
+},
+"input": "al_9000.npy",
+"gain_db": -6.0
+},
+{
+"id": "al_ssl_4_auto_9000_+0",
+"plugin": "uaudio_ssl_g_bus_compressor",
+"params": {
+"thresh": 0.0,
+"make_up": 0.0,
+"ratio": "4:1",
+"attack": 10.0,
+"release": "Auto"
+},
+"input": "al_9000.npy",
+"gain_db": 0.0
+},
+{
+"id": "al_ssl_4_auto_13000_-24",
+"plugin": "uaudio_ssl_g_bus_compressor",
+"params": {
+"thresh": 0.0,
+"make_up": 0.0,
+"ratio": "4:1",
+"attack": 10.0,
+"release": "Auto"
+},
+"input": "al_13000.npy",
+"gain_db": -24.0
+},
+{
+"id": "al_ssl_4_auto_13000_-12",
+"plugin": "uaudio_ssl_g_bus_compressor",
+"params": {
+"thresh": 0.0,
+"make_up": 0.0,
+"ratio": "4:1",
+"attack": 10.0,
+"release": "Auto"
+},
+"input": "al_13000.npy",
+"gain_db": -12.0
+},
+{
+"id": "al_ssl_4_auto_13000_-6",
+"plugin": "uaudio_ssl_g_bus_compressor",
+"params": {
+"thresh": 0.0,
+"make_up": 0.0,
+"ratio": "4:1",
+"attack": 10.0,
+"release": "Auto"
+},
+"input": "al_13000.npy",
+"gain_db": -6.0
+},
+{
+"id": "al_ssl_4_auto_13000_+0",
+"plugin": "uaudio_ssl_g_bus_compressor",
+"params": {
+"thresh": 0.0,
+"make_up": 0.0,
+"ratio": "4:1",
+"attack": 10.0,
+"release": "Auto"
+},
+"input": "al_13000.npy",
+"gain_db": 0.0
+},
+{
+"id": "al_ssl_4_auto_17000_-24",
+"plugin": "uaudio_ssl_g_bus_compressor",
+"params": {
+"thresh": 0.0,
+"make_up": 0.0,
+"ratio": "4:1",
+"attack": 10.0,
+"release": "Auto"
+},
+"input": "al_17000.npy",
+"gain_db": -24.0
+},
+{
+"id": "al_ssl_4_auto_17000_-12",
+"plugin": "uaudio_ssl_g_bus_compressor",
+"params": {
+"thresh": 0.0,
+"make_up": 0.0,
+"ratio": "4:1",
+"attack": 10.0,
+"release": "Auto"
+},
+"input": "al_17000.npy",
+"gain_db": -12.0
+},
+{
+"id": "al_ssl_4_auto_17000_-6",
+"plugin": "uaudio_ssl_g_bus_compressor",
+"params": {
+"thresh": 0.0,
+"make_up": 0.0,
+"ratio": "4:1",
+"attack": 10.0,
+"release": "Auto"
+},
+"input": "al_17000.npy",
+"gain_db": -6.0
+},
+{
+"id": "al_ssl_4_auto_17000_+0",
+"plugin": "uaudio_ssl_g_bus_compressor",
+"params": {
+"thresh": 0.0,
+"make_up": 0.0,
+"ratio": "4:1",
+"attack": 10.0,
+"release": "Auto"
+},
+"input": "al_17000.npy",
+"gain_db": 0.0
+},
+{
+"id": "alsw_ssl_4_auto_-12",
+"plugin": "uaudio_ssl_g_bus_compressor",
+"params": {
+"thresh": 0.0,
+"make_up": 0.0,
+"ratio": "4:1",
+"attack": 10.0,
+"release": "Auto"
+},
+"input": "al_sweep.npy",
+"gain_db": -12.0
+},
+{
+"id": "alsw_ssl_4_auto_+0",
+"plugin": "uaudio_ssl_g_bus_compressor",
+"params": {
+"thresh": 0.0,
+"make_up": 0.0,
+"ratio": "4:1",
+"attack": 10.0,
+"release": "Auto"
+},
+"input": "al_sweep.npy",
+"gain_db": 0.0
+},
+{
+"id": "rprog_fet_all_drums_a",
+"plugin": "uaudio_ua_1176",
+"params": {
+"input": -20.0,
+"output": -20.0,
+"ratio": "ALL",
+"attack": 4.0,
+"release": 5.0
+},
+"input": "real_drums.npy",
+"gain_db": -27.112
+},
+{
+"id": "rprog_fet_all_drums_b",
+"plugin": "uaudio_ua_1176",
+"params": {
+"input": -20.0,
+"output": -20.0,
+"ratio": "ALL",
+"attack": 4.0,
+"release": 5.0
+},
+"input": "real_drums.npy",
+"gain_db": -19.112
+},
+{
+"id": "rprog_fet_all_bass_a",
+"plugin": "uaudio_ua_1176",
+"params": {
+"input": -20.0,
+"output": -20.0,
+"ratio": "ALL",
+"attack": 4.0,
+"release": 5.0
+},
+"input": "real_bass.npy",
+"gain_db": -27.112
+},
+{
+"id": "rprog_fet_all_bass_b",
+"plugin": "uaudio_ua_1176",
+"params": {
+"input": -20.0,
+"output": -20.0,
+"ratio": "ALL",
+"attack": 4.0,
+"release": 5.0
+},
+"input": "real_bass.npy",
+"gain_db": -19.112
+},
+{
+"id": "rprog_fet_all_guitar_a",
+"plugin": "uaudio_ua_1176",
+"params": {
+"input": -20.0,
+"output": -20.0,
+"ratio": "ALL",
+"attack": 4.0,
+"release": 5.0
+},
+"input": "real_guitar.npy",
+"gain_db": -27.112
+},
+{
+"id": "rprog_fet_all_guitar_b",
+"plugin": "uaudio_ua_1176",
+"params": {
+"input": -20.0,
+"output": -20.0,
+"ratio": "ALL",
+"attack": 4.0,
+"release": 5.0
+},
+"input": "real_guitar.npy",
+"gain_db": -19.112
+},
+{
+"id": "rprog_fet_all_vocal_a",
+"plugin": "uaudio_ua_1176",
+"params": {
+"input": -20.0,
+"output": -20.0,
+"ratio": "ALL",
+"attack": 4.0,
+"release": 5.0
+},
+"input": "real_vocal.npy",
+"gain_db": -27.112
+},
+{
+"id": "rprog_fet_all_vocal_b",
+"plugin": "uaudio_ua_1176",
+"params": {
+"input": -20.0,
+"output": -20.0,
+"ratio": "ALL",
+"attack": 4.0,
+"release": 5.0
+},
+"input": "real_vocal.npy",
+"gain_db": -19.112
+},
+{
+"id": "rprog_fet_all_mix_a",
+"plugin": "uaudio_ua_1176",
+"params": {
+"input": -20.0,
+"output": -20.0,
+"ratio": "ALL",
+"attack": 4.0,
+"release": 5.0
+},
+"input": "real_mix.npy",
+"gain_db": -27.112
+},
+{
+"id": "rprog_fet_all_mix_b",
+"plugin": "uaudio_ua_1176",
+"params": {
+"input": -20.0,
+"output": -20.0,
+"ratio": "ALL",
+"attack": 4.0,
+"release": 5.0
+},
+"input": "real_mix.npy",
+"gain_db": -19.112
+},
+{
+"id": "al_fet_all_7000_-24",
+"plugin": "uaudio_ua_1176",
+"params": {
+"input": -20.0,
+"output": -20.0,
+"ratio": "ALL",
+"attack": 4.0,
+"release": 5.0
+},
+"input": "al_7000.npy",
+"gain_db": -24.0
+},
+{
+"id": "al_fet_all_7000_-12",
+"plugin": "uaudio_ua_1176",
+"params": {
+"input": -20.0,
+"output": -20.0,
+"ratio": "ALL",
+"attack": 4.0,
+"release": 5.0
+},
+"input": "al_7000.npy",
+"gain_db": -12.0
+},
+{
+"id": "al_fet_all_7000_-6",
+"plugin": "uaudio_ua_1176",
+"params": {
+"input": -20.0,
+"output": -20.0,
+"ratio": "ALL",
+"attack": 4.0,
+"release": 5.0
+},
+"input": "al_7000.npy",
+"gain_db": -6.0
+},
+{
+"id": "al_fet_all_7000_+0",
+"plugin": "uaudio_ua_1176",
+"params": {
+"input": -20.0,
+"output": -20.0,
+"ratio": "ALL",
+"attack": 4.0,
+"release": 5.0
+},
+"input": "al_7000.npy",
+"gain_db": 0.0
+},
+{
+"id": "al_fet_all_9000_-24",
+"plugin": "uaudio_ua_1176",
+"params": {
+"input": -20.0,
+"output": -20.0,
+"ratio": "ALL",
+"attack": 4.0,
+"release": 5.0
+},
+"input": "al_9000.npy",
+"gain_db": -24.0
+},
+{
+"id": "al_fet_all_9000_-12",
+"plugin": "uaudio_ua_1176",
+"params": {
+"input": -20.0,
+"output": -20.0,
+"ratio": "ALL",
+"attack": 4.0,
+"release": 5.0
+},
+"input": "al_9000.npy",
+"gain_db": -12.0
+},
+{
+"id": "al_fet_all_9000_-6",
+"plugin": "uaudio_ua_1176",
+"params": {
+"input": -20.0,
+"output": -20.0,
+"ratio": "ALL",
+"attack": 4.0,
+"release": 5.0
+},
+"input": "al_9000.npy",
+"gain_db": -6.0
+},
+{
+"id": "al_fet_all_9000_+0",
+"plugin": "uaudio_ua_1176",
+"params": {
+"input": -20.0,
+"output": -20.0,
+"ratio": "ALL",
+"attack": 4.0,
+"release": 5.0
+},
+"input": "al_9000.npy",
+"gain_db": 0.0
+},
+{
+"id": "al_fet_all_13000_-24",
+"plugin": "uaudio_ua_1176",
+"params": {
+"input": -20.0,
+"output": -20.0,
+"ratio": "ALL",
+"attack": 4.0,
+"release": 5.0
+},
+"input": "al_13000.npy",
+"gain_db": -24.0
+},
+{
+"id": "al_fet_all_13000_-12",
+"plugin": "uaudio_ua_1176",
+"params": {
+"input": -20.0,
+"output": -20.0,
+"ratio": "ALL",
+"attack": 4.0,
+"release": 5.0
+},
+"input": "al_13000.npy",
+"gain_db": -12.0
+},
+{
+"id": "al_fet_all_13000_-6",
+"plugin": "uaudio_ua_1176",
+"params": {
+"input": -20.0,
+"output": -20.0,
+"ratio": "ALL",
+"attack": 4.0,
+"release": 5.0
+},
+"input": "al_13000.npy",
+"gain_db": -6.0
+},
+{
+"id": "al_fet_all_13000_+0",
+"plugin": "uaudio_ua_1176",
+"params": {
+"input": -20.0,
+"output": -20.0,
+"ratio": "ALL",
+"attack": 4.0,
+"release": 5.0
+},
+"input": "al_13000.npy",
+"gain_db": 0.0
+},
+{
+"id": "al_fet_all_17000_-24",
+"plugin": "uaudio_ua_1176",
+"params": {
+"input": -20.0,
+"output": -20.0,
+"ratio": "ALL",
+"attack": 4.0,
+"release": 5.0
+},
+"input": "al_17000.npy",
+"gain_db": -24.0
+},
+{
+"id": "al_fet_all_17000_-12",
+"plugin": "uaudio_ua_1176",
+"params": {
+"input": -20.0,
+"output": -20.0,
+"ratio": "ALL",
+"attack": 4.0,
+"release": 5.0
+},
+"input": "al_17000.npy",
+"gain_db": -12.0
+},
+{
+"id": "al_fet_all_17000_-6",
+"plugin": "uaudio_ua_1176",
+"params": {
+"input": -20.0,
+"output": -20.0,
+"ratio": "ALL",
+"attack": 4.0,
+"release": 5.0
+},
+"input": "al_17000.npy",
+"gain_db": -6.0
+},
+{
+"id": "al_fet_all_17000_+0",
+"plugin": "uaudio_ua_1176",
+"params": {
+"input": -20.0,
+"output": -20.0,
+"ratio": "ALL",
+"attack": 4.0,
+"release": 5.0
+},
+"input": "al_17000.npy",
+"gain_db": 0.0
+},
+{
+"id": "alsw_fet_all_-12",
+"plugin": "uaudio_ua_1176",
+"params": {
+"input": -20.0,
+"output": -20.0,
+"ratio": "ALL",
+"attack": 4.0,
+"release": 5.0
+},
+"input": "al_sweep.npy",
+"gain_db": -12.0
+},
+{
+"id": "alsw_fet_all_+0",
+"plugin": "uaudio_ua_1176",
+"params": {
+"input": -20.0,
+"output": -20.0,
+"ratio": "ALL",
+"attack": 4.0,
+"release": 5.0
+},
+"input": "al_sweep.npy",
+"gain_db": 0.0
+},
+{
+"id": "rprog_fc_t5_drums_a",
+"plugin": "uaudio_fairchild_670",
+"params": {
+"l_input": 0.0,
+"r_input": 0.0,
+"l_thresh": 5.0,
+"r_thresh": 5.0,
+"l_timecnst": 5.0,
+"r_timecnst": 5.0
+},
+"input": "real_drums.npy",
+"gain_db": -14.454
+},
+{
+"id": "rprog_fc_t5_drums_b",
+"plugin": "uaudio_fairchild_670",
+"params": {
+"l_input": 0.0,
+"r_input": 0.0,
+"l_thresh": 5.0,
+"r_thresh": 5.0,
+"l_timecnst": 5.0,
+"r_timecnst": 5.0
+},
+"input": "real_drums.npy",
+"gain_db": -6.454
+},
+{
+"id": "rprog_fc_t5_bass_a",
+"plugin": "uaudio_fairchild_670",
+"params": {
+"l_input": 0.0,
+"r_input": 0.0,
+"l_thresh": 5.0,
+"r_thresh": 5.0,
+"l_timecnst": 5.0,
+"r_timecnst": 5.0
+},
+"input": "real_bass.npy",
+"gain_db": -14.454
+},
+{
+"id": "rprog_fc_t5_bass_b",
+"plugin": "uaudio_fairchild_670",
+"params": {
+"l_input": 0.0,
+"r_input": 0.0,
+"l_thresh": 5.0,
+"r_thresh": 5.0,
+"l_timecnst": 5.0,
+"r_timecnst": 5.0
+},
+"input": "real_bass.npy",
+"gain_db": -6.454
+},
+{
+"id": "rprog_fc_t5_guitar_a",
+"plugin": "uaudio_fairchild_670",
+"params": {
+"l_input": 0.0,
+"r_input": 0.0,
+"l_thresh": 5.0,
+"r_thresh": 5.0,
+"l_timecnst": 5.0,
+"r_timecnst": 5.0
+},
+"input": "real_guitar.npy",
+"gain_db": -14.454
+},
+{
+"id": "rprog_fc_t5_guitar_b",
+"plugin": "uaudio_fairchild_670",
+"params": {
+"l_input": 0.0,
+"r_input": 0.0,
+"l_thresh": 5.0,
+"r_thresh": 5.0,
+"l_timecnst": 5.0,
+"r_timecnst": 5.0
+},
+"input": "real_guitar.npy",
+"gain_db": -6.454
+},
+{
+"id": "rprog_fc_t5_vocal_a",
+"plugin": "uaudio_fairchild_670",
+"params": {
+"l_input": 0.0,
+"r_input": 0.0,
+"l_thresh": 5.0,
+"r_thresh": 5.0,
+"l_timecnst": 5.0,
+"r_timecnst": 5.0
+},
+"input": "real_vocal.npy",
+"gain_db": -14.454
+},
+{
+"id": "rprog_fc_t5_vocal_b",
+"plugin": "uaudio_fairchild_670",
+"params": {
+"l_input": 0.0,
+"r_input": 0.0,
+"l_thresh": 5.0,
+"r_thresh": 5.0,
+"l_timecnst": 5.0,
+"r_timecnst": 5.0
+},
+"input": "real_vocal.npy",
+"gain_db": -6.454
+},
+{
+"id": "rprog_fc_t5_mix_a",
+"plugin": "uaudio_fairchild_670",
+"params": {
+"l_input": 0.0,
+"r_input": 0.0,
+"l_thresh": 5.0,
+"r_thresh": 5.0,
+"l_timecnst": 5.0,
+"r_timecnst": 5.0
+},
+"input": "real_mix.npy",
+"gain_db": -14.454
+},
+{
+"id": "rprog_fc_t5_mix_b",
+"plugin": "uaudio_fairchild_670",
+"params": {
+"l_input": 0.0,
+"r_input": 0.0,
+"l_thresh": 5.0,
+"r_thresh": 5.0,
+"l_timecnst": 5.0,
+"r_timecnst": 5.0
+},
+"input": "real_mix.npy",
+"gain_db": -6.454
+},
+{
+"id": "al_fc_t5_7000_-24",
+"plugin": "uaudio_fairchild_670",
+"params": {
+"l_input": 0.0,
+"r_input": 0.0,
+"l_thresh": 5.0,
+"r_thresh": 5.0,
+"l_timecnst": 5.0,
+"r_timecnst": 5.0
+},
+"input": "al_7000.npy",
+"gain_db": -24.0
+},
+{
+"id": "al_fc_t5_7000_-12",
+"plugin": "uaudio_fairchild_670",
+"params": {
+"l_input": 0.0,
+"r_input": 0.0,
+"l_thresh": 5.0,
+"r_thresh": 5.0,
+"l_timecnst": 5.0,
+"r_timecnst": 5.0
+},
+"input": "al_7000.npy",
+"gain_db": -12.0
+},
+{
+"id": "al_fc_t5_7000_-6",
+"plugin": "uaudio_fairchild_670",
+"params": {
+"l_input": 0.0,
+"r_input": 0.0,
+"l_thresh": 5.0,
+"r_thresh": 5.0,
+"l_timecnst": 5.0,
+"r_timecnst": 5.0
+},
+"input": "al_7000.npy",
+"gain_db": -6.0
+},
+{
+"id": "al_fc_t5_7000_+0",
+"plugin": "uaudio_fairchild_670",
+"params": {
+"l_input": 0.0,
+"r_input": 0.0,
+"l_thresh": 5.0,
+"r_thresh": 5.0,
+"l_timecnst": 5.0,
+"r_timecnst": 5.0
+},
+"input": "al_7000.npy",
+"gain_db": 0.0
+},
+{
+"id": "al_fc_t5_9000_-24",
+"plugin": "uaudio_fairchild_670",
+"params": {
+"l_input": 0.0,
+"r_input": 0.0,
+"l_thresh": 5.0,
+"r_thresh": 5.0,
+"l_timecnst": 5.0,
+"r_timecnst": 5.0
+},
+"input": "al_9000.npy",
+"gain_db": -24.0
+},
+{
+"id": "al_fc_t5_9000_-12",
+"plugin": "uaudio_fairchild_670",
+"params": {
+"l_input": 0.0,
+"r_input": 0.0,
+"l_thresh": 5.0,
+"r_thresh": 5.0,
+"l_timecnst": 5.0,
+"r_timecnst": 5.0
+},
+"input": "al_9000.npy",
+"gain_db": -12.0
+},
+{
+"id": "al_fc_t5_9000_-6",
+"plugin": "uaudio_fairchild_670",
+"params": {
+"l_input": 0.0,
+"r_input": 0.0,
+"l_thresh": 5.0,
+"r_thresh": 5.0,
+"l_timecnst": 5.0,
+"r_timecnst": 5.0
+},
+"input": "al_9000.npy",
+"gain_db": -6.0
+},
+{
+"id": "al_fc_t5_9000_+0",
+"plugin": "uaudio_fairchild_670",
+"params": {
+"l_input": 0.0,
+"r_input": 0.0,
+"l_thresh": 5.0,
+"r_thresh": 5.0,
+"l_timecnst": 5.0,
+"r_timecnst": 5.0
+},
+"input": "al_9000.npy",
+"gain_db": 0.0
+},
+{
+"id": "al_fc_t5_13000_-24",
+"plugin": "uaudio_fairchild_670",
+"params": {
+"l_input": 0.0,
+"r_input": 0.0,
+"l_thresh": 5.0,
+"r_thresh": 5.0,
+"l_timecnst": 5.0,
+"r_timecnst": 5.0
+},
+"input": "al_13000.npy",
+"gain_db": -24.0
+},
+{
+"id": "al_fc_t5_13000_-12",
+"plugin": "uaudio_fairchild_670",
+"params": {
+"l_input": 0.0,
+"r_input": 0.0,
+"l_thresh": 5.0,
+"r_thresh": 5.0,
+"l_timecnst": 5.0,
+"r_timecnst": 5.0
+},
+"input": "al_13000.npy",
+"gain_db": -12.0
+},
+{
+"id": "al_fc_t5_13000_-6",
+"plugin": "uaudio_fairchild_670",
+"params": {
+"l_input": 0.0,
+"r_input": 0.0,
+"l_thresh": 5.0,
+"r_thresh": 5.0,
+"l_timecnst": 5.0,
+"r_timecnst": 5.0
+},
+"input": "al_13000.npy",
+"gain_db": -6.0
+},
+{
+"id": "al_fc_t5_13000_+0",
+"plugin": "uaudio_fairchild_670",
+"params": {
+"l_input": 0.0,
+"r_input": 0.0,
+"l_thresh": 5.0,
+"r_thresh": 5.0,
+"l_timecnst": 5.0,
+"r_timecnst": 5.0
+},
+"input": "al_13000.npy",
+"gain_db": 0.0
+},
+{
+"id": "al_fc_t5_17000_-24",
+"plugin": "uaudio_fairchild_670",
+"params": {
+"l_input": 0.0,
+"r_input": 0.0,
+"l_thresh": 5.0,
+"r_thresh": 5.0,
+"l_timecnst": 5.0,
+"r_timecnst": 5.0
+},
+"input": "al_17000.npy",
+"gain_db": -24.0
+},
+{
+"id": "al_fc_t5_17000_-12",
+"plugin": "uaudio_fairchild_670",
+"params": {
+"l_input": 0.0,
+"r_input": 0.0,
+"l_thresh": 5.0,
+"r_thresh": 5.0,
+"l_timecnst": 5.0,
+"r_timecnst": 5.0
+},
+"input": "al_17000.npy",
+"gain_db": -12.0
+},
+{
+"id": "al_fc_t5_17000_-6",
+"plugin": "uaudio_fairchild_670",
+"params": {
+"l_input": 0.0,
+"r_input": 0.0,
+"l_thresh": 5.0,
+"r_thresh": 5.0,
+"l_timecnst": 5.0,
+"r_timecnst": 5.0
+},
+"input": "al_17000.npy",
+"gain_db": -6.0
+},
+{
+"id": "al_fc_t5_17000_+0",
+"plugin": "uaudio_fairchild_670",
+"params": {
+"l_input": 0.0,
+"r_input": 0.0,
+"l_thresh": 5.0,
+"r_thresh": 5.0,
+"l_timecnst": 5.0,
+"r_timecnst": 5.0
+},
+"input": "al_17000.npy",
+"gain_db": 0.0
+},
+{
+"id": "alsw_fc_t5_-12",
+"plugin": "uaudio_fairchild_670",
+"params": {
+"l_input": 0.0,
+"r_input": 0.0,
+"l_thresh": 5.0,
+"r_thresh": 5.0,
+"l_timecnst": 5.0,
+"r_timecnst": 5.0
+},
+"input": "al_sweep.npy",
+"gain_db": -12.0
+},
+{
+"id": "alsw_fc_t5_+0",
+"plugin": "uaudio_fairchild_670",
+"params": {
+"l_input": 0.0,
+"r_input": 0.0,
+"l_thresh": 5.0,
+"r_thresh": 5.0,
+"l_timecnst": 5.0,
+"r_timecnst": 5.0
+},
+"input": "al_sweep.npy",
+"gain_db": 0.0
+},
+{
+"id": "rprog_dis_nuke_room_drums_a",
+"plugin": "uaudio_distressor",
+"params": {
+"input": 5.0,
+"ratio": "NUKE",
+"attack": 4.5,
+"release": 2.5,
+"output": 5.0,
+"detector": "HP",
+"audio": "Norm"
+},
+"input": "real_drums.npy",
+"gain_db": -1.642
+},
+{
+"id": "rprog_dis_nuke_room_drums_b",
+"plugin": "uaudio_distressor",
+"params": {
+"input": 5.0,
+"ratio": "NUKE",
+"attack": 4.5,
+"release": 2.5,
+"output": 5.0,
+"detector": "HP",
+"audio": "Norm"
+},
+"input": "real_drums.npy",
+"gain_db": 6.358
+},
+{
+"id": "rprog_dis_nuke_room_bass_a",
+"plugin": "uaudio_distressor",
+"params": {
+"input": 5.0,
+"ratio": "NUKE",
+"attack": 4.5,
+"release": 2.5,
+"output": 5.0,
+"detector": "HP",
+"audio": "Norm"
+},
+"input": "real_bass.npy",
+"gain_db": -1.642
+},
+{
+"id": "rprog_dis_nuke_room_bass_b",
+"plugin": "uaudio_distressor",
+"params": {
+"input": 5.0,
+"ratio": "NUKE",
+"attack": 4.5,
+"release": 2.5,
+"output": 5.0,
+"detector": "HP",
+"audio": "Norm"
+},
+"input": "real_bass.npy",
+"gain_db": 6.358
+},
+{
+"id": "rprog_dis_nuke_room_guitar_a",
+"plugin": "uaudio_distressor",
+"params": {
+"input": 5.0,
+"ratio": "NUKE",
+"attack": 4.5,
+"release": 2.5,
+"output": 5.0,
+"detector": "HP",
+"audio": "Norm"
+},
+"input": "real_guitar.npy",
+"gain_db": -1.642
+},
+{
+"id": "rprog_dis_nuke_room_guitar_b",
+"plugin": "uaudio_distressor",
+"params": {
+"input": 5.0,
+"ratio": "NUKE",
+"attack": 4.5,
+"release": 2.5,
+"output": 5.0,
+"detector": "HP",
+"audio": "Norm"
+},
+"input": "real_guitar.npy",
+"gain_db": 6.358
+},
+{
+"id": "rprog_dis_nuke_room_vocal_a",
+"plugin": "uaudio_distressor",
+"params": {
+"input": 5.0,
+"ratio": "NUKE",
+"attack": 4.5,
+"release": 2.5,
+"output": 5.0,
+"detector": "HP",
+"audio": "Norm"
+},
+"input": "real_vocal.npy",
+"gain_db": -1.642
+},
+{
+"id": "rprog_dis_nuke_room_vocal_b",
+"plugin": "uaudio_distressor",
+"params": {
+"input": 5.0,
+"ratio": "NUKE",
+"attack": 4.5,
+"release": 2.5,
+"output": 5.0,
+"detector": "HP",
+"audio": "Norm"
+},
+"input": "real_vocal.npy",
+"gain_db": 6.358
+},
+{
+"id": "rprog_dis_nuke_room_mix_a",
+"plugin": "uaudio_distressor",
+"params": {
+"input": 5.0,
+"ratio": "NUKE",
+"attack": 4.5,
+"release": 2.5,
+"output": 5.0,
+"detector": "HP",
+"audio": "Norm"
+},
+"input": "real_mix.npy",
+"gain_db": -1.642
+},
+{
+"id": "rprog_dis_nuke_room_mix_b",
+"plugin": "uaudio_distressor",
+"params": {
+"input": 5.0,
+"ratio": "NUKE",
+"attack": 4.5,
+"release": 2.5,
+"output": 5.0,
+"detector": "HP",
+"audio": "Norm"
+},
+"input": "real_mix.npy",
+"gain_db": 6.358
+},
+{
+"id": "al_dis_nuke_room_7000_-24",
+"plugin": "uaudio_distressor",
+"params": {
+"input": 5.0,
+"ratio": "NUKE",
+"attack": 4.5,
+"release": 2.5,
+"output": 5.0,
+"detector": "HP",
+"audio": "Norm"
+},
+"input": "al_7000.npy",
+"gain_db": -24.0
+},
+{
+"id": "al_dis_nuke_room_7000_-12",
+"plugin": "uaudio_distressor",
+"params": {
+"input": 5.0,
+"ratio": "NUKE",
+"attack": 4.5,
+"release": 2.5,
+"output": 5.0,
+"detector": "HP",
+"audio": "Norm"
+},
+"input": "al_7000.npy",
+"gain_db": -12.0
+},
+{
+"id": "al_dis_nuke_room_7000_-6",
+"plugin": "uaudio_distressor",
+"params": {
+"input": 5.0,
+"ratio": "NUKE",
+"attack": 4.5,
+"release": 2.5,
+"output": 5.0,
+"detector": "HP",
+"audio": "Norm"
+},
+"input": "al_7000.npy",
+"gain_db": -6.0
+},
+{
+"id": "al_dis_nuke_room_7000_+0",
+"plugin": "uaudio_distressor",
+"params": {
+"input": 5.0,
+"ratio": "NUKE",
+"attack": 4.5,
+"release": 2.5,
+"output": 5.0,
+"detector": "HP",
+"audio": "Norm"
+},
+"input": "al_7000.npy",
+"gain_db": 0.0
+},
+{
+"id": "al_dis_nuke_room_9000_-24",
+"plugin": "uaudio_distressor",
+"params": {
+"input": 5.0,
+"ratio": "NUKE",
+"attack": 4.5,
+"release": 2.5,
+"output": 5.0,
+"detector": "HP",
+"audio": "Norm"
+},
+"input": "al_9000.npy",
+"gain_db": -24.0
+},
+{
+"id": "al_dis_nuke_room_9000_-12",
+"plugin": "uaudio_distressor",
+"params": {
+"input": 5.0,
+"ratio": "NUKE",
+"attack": 4.5,
+"release": 2.5,
+"output": 5.0,
+"detector": "HP",
+"audio": "Norm"
+},
+"input": "al_9000.npy",
+"gain_db": -12.0
+},
+{
+"id": "al_dis_nuke_room_9000_-6",
+"plugin": "uaudio_distressor",
+"params": {
+"input": 5.0,
+"ratio": "NUKE",
+"attack": 4.5,
+"release": 2.5,
+"output": 5.0,
+"detector": "HP",
+"audio": "Norm"
+},
+"input": "al_9000.npy",
+"gain_db": -6.0
+},
+{
+"id": "al_dis_nuke_room_9000_+0",
+"plugin": "uaudio_distressor",
+"params": {
+"input": 5.0,
+"ratio": "NUKE",
+"attack": 4.5,
+"release": 2.5,
+"output": 5.0,
+"detector": "HP",
+"audio": "Norm"
+},
+"input": "al_9000.npy",
+"gain_db": 0.0
+},
+{
+"id": "al_dis_nuke_room_13000_-24",
+"plugin": "uaudio_distressor",
+"params": {
+"input": 5.0,
+"ratio": "NUKE",
+"attack": 4.5,
+"release": 2.5,
+"output": 5.0,
+"detector": "HP",
+"audio": "Norm"
+},
+"input": "al_13000.npy",
+"gain_db": -24.0
+},
+{
+"id": "al_dis_nuke_room_13000_-12",
+"plugin": "uaudio_distressor",
+"params": {
+"input": 5.0,
+"ratio": "NUKE",
+"attack": 4.5,
+"release": 2.5,
+"output": 5.0,
+"detector": "HP",
+"audio": "Norm"
+},
+"input": "al_13000.npy",
+"gain_db": -12.0
+},
+{
+"id": "al_dis_nuke_room_13000_-6",
+"plugin": "uaudio_distressor",
+"params": {
+"input": 5.0,
+"ratio": "NUKE",
+"attack": 4.5,
+"release": 2.5,
+"output": 5.0,
+"detector": "HP",
+"audio": "Norm"
+},
+"input": "al_13000.npy",
+"gain_db": -6.0
+},
+{
+"id": "al_dis_nuke_room_13000_+0",
+"plugin": "uaudio_distressor",
+"params": {
+"input": 5.0,
+"ratio": "NUKE",
+"attack": 4.5,
+"release": 2.5,
+"output": 5.0,
+"detector": "HP",
+"audio": "Norm"
+},
+"input": "al_13000.npy",
+"gain_db": 0.0
+},
+{
+"id": "al_dis_nuke_room_17000_-24",
+"plugin": "uaudio_distressor",
+"params": {
+"input": 5.0,
+"ratio": "NUKE",
+"attack": 4.5,
+"release": 2.5,
+"output": 5.0,
+"detector": "HP",
+"audio": "Norm"
+},
+"input": "al_17000.npy",
+"gain_db": -24.0
+},
+{
+"id": "al_dis_nuke_room_17000_-12",
+"plugin": "uaudio_distressor",
+"params": {
+"input": 5.0,
+"ratio": "NUKE",
+"attack": 4.5,
+"release": 2.5,
+"output": 5.0,
+"detector": "HP",
+"audio": "Norm"
+},
+"input": "al_17000.npy",
+"gain_db": -12.0
+},
+{
+"id": "al_dis_nuke_room_17000_-6",
+"plugin": "uaudio_distressor",
+"params": {
+"input": 5.0,
+"ratio": "NUKE",
+"attack": 4.5,
+"release": 2.5,
+"output": 5.0,
+"detector": "HP",
+"audio": "Norm"
+},
+"input": "al_17000.npy",
+"gain_db": -6.0
+},
+{
+"id": "al_dis_nuke_room_17000_+0",
+"plugin": "uaudio_distressor",
+"params": {
+"input": 5.0,
+"ratio": "NUKE",
+"attack": 4.5,
+"release": 2.5,
+"output": 5.0,
+"detector": "HP",
+"audio": "Norm"
+},
+"input": "al_17000.npy",
+"gain_db": 0.0
+},
+{
+"id": "alsw_dis_nuke_room_-12",
+"plugin": "uaudio_distressor",
+"params": {
+"input": 5.0,
+"ratio": "NUKE",
+"attack": 4.5,
+"release": 2.5,
+"output": 5.0,
+"detector": "HP",
+"audio": "Norm"
+},
+"input": "al_sweep.npy",
+"gain_db": -12.0
+},
+{
+"id": "alsw_dis_nuke_room_+0",
+"plugin": "uaudio_distressor",
+"params": {
+"input": 5.0,
+"ratio": "NUKE",
+"attack": 4.5,
+"release": 2.5,
+"output": 5.0,
+"detector": "HP",
+"audio": "Norm"
+},
+"input": "al_sweep.npy",
+"gain_db": 0.0
+},
+{
+"id": "rpprog_neve_drums_+0",
+"plugin": "uaudio_neve_1073",
+"params": {
+"input_select": "Mic",
+"impedance": "Hi",
+"pad": 0.0,
+"mic_gain": "M -50 dB",
+"eql": "Out",
+"hp_filt": "Off",
+"output": 0.0
+},
+"input": "real_drums.npy",
+"gain_db": -36.0
+},
+{
+"id": "rpprog_neve_drums_-6",
+"plugin": "uaudio_neve_1073",
+"params": {
+"input_select": "Mic",
+"impedance": "Hi",
+"pad": 0.0,
+"mic_gain": "M -50 dB",
+"eql": "Out",
+"hp_filt": "Off",
+"output": 0.0
+},
+"input": "real_drums.npy",
+"gain_db": -42.0
+},
+{
+"id": "rpprog_neve_bass_+0",
+"plugin": "uaudio_neve_1073",
+"params": {
+"input_select": "Mic",
+"impedance": "Hi",
+"pad": 0.0,
+"mic_gain": "M -50 dB",
+"eql": "Out",
+"hp_filt": "Off",
+"output": 0.0
+},
+"input": "real_bass.npy",
+"gain_db": -36.0
+},
+{
+"id": "rpprog_neve_bass_-6",
+"plugin": "uaudio_neve_1073",
+"params": {
+"input_select": "Mic",
+"impedance": "Hi",
+"pad": 0.0,
+"mic_gain": "M -50 dB",
+"eql": "Out",
+"hp_filt": "Off",
+"output": 0.0
+},
+"input": "real_bass.npy",
+"gain_db": -42.0
+},
+{
+"id": "rpprog_neve_guitar_+0",
+"plugin": "uaudio_neve_1073",
+"params": {
+"input_select": "Mic",
+"impedance": "Hi",
+"pad": 0.0,
+"mic_gain": "M -50 dB",
+"eql": "Out",
+"hp_filt": "Off",
+"output": 0.0
+},
+"input": "real_guitar.npy",
+"gain_db": -36.0
+},
+{
+"id": "rpprog_neve_guitar_-6",
+"plugin": "uaudio_neve_1073",
+"params": {
+"input_select": "Mic",
+"impedance": "Hi",
+"pad": 0.0,
+"mic_gain": "M -50 dB",
+"eql": "Out",
+"hp_filt": "Off",
+"output": 0.0
+},
+"input": "real_guitar.npy",
+"gain_db": -42.0
+},
+{
+"id": "rpprog_neve_vocal_+0",
+"plugin": "uaudio_neve_1073",
+"params": {
+"input_select": "Mic",
+"impedance": "Hi",
+"pad": 0.0,
+"mic_gain": "M -50 dB",
+"eql": "Out",
+"hp_filt": "Off",
+"output": 0.0
+},
+"input": "real_vocal.npy",
+"gain_db": -36.0
+},
+{
+"id": "rpprog_neve_vocal_-6",
+"plugin": "uaudio_neve_1073",
+"params": {
+"input_select": "Mic",
+"impedance": "Hi",
+"pad": 0.0,
+"mic_gain": "M -50 dB",
+"eql": "Out",
+"hp_filt": "Off",
+"output": 0.0
+},
+"input": "real_vocal.npy",
+"gain_db": -42.0
+},
+{
+"id": "rpprog_neve_mix_+0",
+"plugin": "uaudio_neve_1073",
+"params": {
+"input_select": "Mic",
+"impedance": "Hi",
+"pad": 0.0,
+"mic_gain": "M -50 dB",
+"eql": "Out",
+"hp_filt": "Off",
+"output": 0.0
+},
+"input": "real_mix.npy",
+"gain_db": -36.0
+},
+{
+"id": "rpprog_neve_mix_-6",
+"plugin": "uaudio_neve_1073",
+"params": {
+"input_select": "Mic",
+"impedance": "Hi",
+"pad": 0.0,
+"mic_gain": "M -50 dB",
+"eql": "Out",
+"hp_filt": "Off",
+"output": 0.0
+},
+"input": "real_mix.npy",
+"gain_db": -42.0
+},
+{
+"id": "al_neve_7000_-12",
+"plugin": "uaudio_neve_1073",
+"params": {
+"input_select": "Mic",
+"impedance": "Hi",
+"pad": 0.0,
+"mic_gain": "M -50 dB",
+"eql": "Out",
+"hp_filt": "Off",
+"output": 0.0
+},
+"input": "al_7000.npy",
+"gain_db": -48.0
+},
+{
+"id": "al_neve_7000_-6",
+"plugin": "uaudio_neve_1073",
+"params": {
+"input_select": "Mic",
+"impedance": "Hi",
+"pad": 0.0,
+"mic_gain": "M -50 dB",
+"eql": "Out",
+"hp_filt": "Off",
+"output": 0.0
+},
+"input": "al_7000.npy",
+"gain_db": -42.0
+},
+{
+"id": "al_neve_7000_+0",
+"plugin": "uaudio_neve_1073",
+"params": {
+"input_select": "Mic",
+"impedance": "Hi",
+"pad": 0.0,
+"mic_gain": "M -50 dB",
+"eql": "Out",
+"hp_filt": "Off",
+"output": 0.0
+},
+"input": "al_7000.npy",
+"gain_db": -36.0
+},
+{
+"id": "al_neve_7000_+6",
+"plugin": "uaudio_neve_1073",
+"params": {
+"input_select": "Mic",
+"impedance": "Hi",
+"pad": 0.0,
+"mic_gain": "M -50 dB",
+"eql": "Out",
+"hp_filt": "Off",
+"output": 0.0
+},
+"input": "al_7000.npy",
+"gain_db": -30.0
+},
+{
+"id": "al_neve_9000_-12",
+"plugin": "uaudio_neve_1073",
+"params": {
+"input_select": "Mic",
+"impedance": "Hi",
+"pad": 0.0,
+"mic_gain": "M -50 dB",
+"eql": "Out",
+"hp_filt": "Off",
+"output": 0.0
+},
+"input": "al_9000.npy",
+"gain_db": -48.0
+},
+{
+"id": "al_neve_9000_-6",
+"plugin": "uaudio_neve_1073",
+"params": {
+"input_select": "Mic",
+"impedance": "Hi",
+"pad": 0.0,
+"mic_gain": "M -50 dB",
+"eql": "Out",
+"hp_filt": "Off",
+"output": 0.0
+},
+"input": "al_9000.npy",
+"gain_db": -42.0
+},
+{
+"id": "al_neve_9000_+0",
+"plugin": "uaudio_neve_1073",
+"params": {
+"input_select": "Mic",
+"impedance": "Hi",
+"pad": 0.0,
+"mic_gain": "M -50 dB",
+"eql": "Out",
+"hp_filt": "Off",
+"output": 0.0
+},
+"input": "al_9000.npy",
+"gain_db": -36.0
+},
+{
+"id": "al_neve_9000_+6",
+"plugin": "uaudio_neve_1073",
+"params": {
+"input_select": "Mic",
+"impedance": "Hi",
+"pad": 0.0,
+"mic_gain": "M -50 dB",
+"eql": "Out",
+"hp_filt": "Off",
+"output": 0.0
+},
+"input": "al_9000.npy",
+"gain_db": -30.0
+},
+{
+"id": "al_neve_13000_-12",
+"plugin": "uaudio_neve_1073",
+"params": {
+"input_select": "Mic",
+"impedance": "Hi",
+"pad": 0.0,
+"mic_gain": "M -50 dB",
+"eql": "Out",
+"hp_filt": "Off",
+"output": 0.0
+},
+"input": "al_13000.npy",
+"gain_db": -48.0
+},
+{
+"id": "al_neve_13000_-6",
+"plugin": "uaudio_neve_1073",
+"params": {
+"input_select": "Mic",
+"impedance": "Hi",
+"pad": 0.0,
+"mic_gain": "M -50 dB",
+"eql": "Out",
+"hp_filt": "Off",
+"output": 0.0
+},
+"input": "al_13000.npy",
+"gain_db": -42.0
+},
+{
+"id": "al_neve_13000_+0",
+"plugin": "uaudio_neve_1073",
+"params": {
+"input_select": "Mic",
+"impedance": "Hi",
+"pad": 0.0,
+"mic_gain": "M -50 dB",
+"eql": "Out",
+"hp_filt": "Off",
+"output": 0.0
+},
+"input": "al_13000.npy",
+"gain_db": -36.0
+},
+{
+"id": "al_neve_13000_+6",
+"plugin": "uaudio_neve_1073",
+"params": {
+"input_select": "Mic",
+"impedance": "Hi",
+"pad": 0.0,
+"mic_gain": "M -50 dB",
+"eql": "Out",
+"hp_filt": "Off",
+"output": 0.0
+},
+"input": "al_13000.npy",
+"gain_db": -30.0
+},
+{
+"id": "al_neve_17000_-12",
+"plugin": "uaudio_neve_1073",
+"params": {
+"input_select": "Mic",
+"impedance": "Hi",
+"pad": 0.0,
+"mic_gain": "M -50 dB",
+"eql": "Out",
+"hp_filt": "Off",
+"output": 0.0
+},
+"input": "al_17000.npy",
+"gain_db": -48.0
+},
+{
+"id": "al_neve_17000_-6",
+"plugin": "uaudio_neve_1073",
+"params": {
+"input_select": "Mic",
+"impedance": "Hi",
+"pad": 0.0,
+"mic_gain": "M -50 dB",
+"eql": "Out",
+"hp_filt": "Off",
+"output": 0.0
+},
+"input": "al_17000.npy",
+"gain_db": -42.0
+},
+{
+"id": "al_neve_17000_+0",
+"plugin": "uaudio_neve_1073",
+"params": {
+"input_select": "Mic",
+"impedance": "Hi",
+"pad": 0.0,
+"mic_gain": "M -50 dB",
+"eql": "Out",
+"hp_filt": "Off",
+"output": 0.0
+},
+"input": "al_17000.npy",
+"gain_db": -36.0
+},
+{
+"id": "al_neve_17000_+6",
+"plugin": "uaudio_neve_1073",
+"params": {
+"input_select": "Mic",
+"impedance": "Hi",
+"pad": 0.0,
+"mic_gain": "M -50 dB",
+"eql": "Out",
+"hp_filt": "Off",
+"output": 0.0
+},
+"input": "al_17000.npy",
+"gain_db": -30.0
+},
+{
+"id": "alsw_neve_+0",
+"plugin": "uaudio_neve_1073",
+"params": {
+"input_select": "Mic",
+"impedance": "Hi",
+"pad": 0.0,
+"mic_gain": "M -50 dB",
+"eql": "Out",
+"hp_filt": "Off",
+"output": 0.0
+},
+"input": "al_sweep.npy",
+"gain_db": -36.0
+},
+{
+"id": "alsw_neve_+6",
+"plugin": "uaudio_neve_1073",
+"params": {
+"input_select": "Mic",
+"impedance": "Hi",
+"pad": 0.0,
+"mic_gain": "M -50 dB",
+"eql": "Out",
+"hp_filt": "Off",
+"output": 0.0
+},
+"input": "al_sweep.npy",
+"gain_db": -30.0
+},
+{
+"id": "pst3_neve_40",
+"plugin": "uaudio_neve_1073",
+"params": {
+"input_select": "Mic",
+"impedance": "Hi",
+"pad": 0.0,
+"mic_gain": "M -50 dB",
+"eql": "Out",
+"hp_filt": "Off",
+"output": 0.0
+},
+"input": "pst3_neve_40.npy",
+"keep": [
+[
+12000,
+24000
+],
+[
+36000,
+48000
+],
+[
+60000,
+72000
+],
+[
+84000,
+96000
+],
+[
+108000,
+120000
+],
+[
+132000,
+144000
+],
+[
+156000,
+168000
+],
+[
+180000,
+192000
+],
+[
+204000,
+216000
+],
+[
+228000,
+240000
+],
+[
+252000,
+264000
+],
+[
+276000,
+288000
+],
+[
+300000,
+312000
+],
+[
+324000,
+336000
+],
+[
+348000,
+360000
+],
+[
+372000,
+384000
+],
+[
+396000,
+408000
+],
+[
+420000,
+432000
+],
+[
+444000,
+456000
+],
+[
+468000,
+480000
+],
+[
+492000,
+504000
+],
+[
+516000,
+528000
+]
+],
+"levels": [
+-66.0,
+-64.0,
+-62.0,
+-60.0,
+-58.0,
+-56.0,
+-54.0,
+-52.0,
+-50.0,
+-48.0,
+-46.0,
+-44.0,
+-42.0,
+-40.0,
+-38.0,
+-36.0,
+-34.0,
+-32.0,
+-30.0,
+-28.0,
+-26.0,
+-24.0
+]
+},
+{
+"id": "pst3_neve_100",
+"plugin": "uaudio_neve_1073",
+"params": {
+"input_select": "Mic",
+"impedance": "Hi",
+"pad": 0.0,
+"mic_gain": "M -50 dB",
+"eql": "Out",
+"hp_filt": "Off",
+"output": 0.0
+},
+"input": "pst3_neve_100.npy",
+"keep": [
+[
+12000,
+24000
+],
+[
+36000,
+48000
+],
+[
+60000,
+72000
+],
+[
+84000,
+96000
+],
+[
+108000,
+120000
+],
+[
+132000,
+144000
+],
+[
+156000,
+168000
+],
+[
+180000,
+192000
+],
+[
+204000,
+216000
+],
+[
+228000,
+240000
+],
+[
+252000,
+264000
+],
+[
+276000,
+288000
+],
+[
+300000,
+312000
+],
+[
+324000,
+336000
+],
+[
+348000,
+360000
+],
+[
+372000,
+384000
+],
+[
+396000,
+408000
+],
+[
+420000,
+432000
+],
+[
+444000,
+456000
+],
+[
+468000,
+480000
+],
+[
+492000,
+504000
+],
+[
+516000,
+528000
+]
+],
+"levels": [
+-66.0,
+-64.0,
+-62.0,
+-60.0,
+-58.0,
+-56.0,
+-54.0,
+-52.0,
+-50.0,
+-48.0,
+-46.0,
+-44.0,
+-42.0,
+-40.0,
+-38.0,
+-36.0,
+-34.0,
+-32.0,
+-30.0,
+-28.0,
+-26.0,
+-24.0
+]
+},
+{
+"id": "pst3_neve_1000",
+"plugin": "uaudio_neve_1073",
+"params": {
+"input_select": "Mic",
+"impedance": "Hi",
+"pad": 0.0,
+"mic_gain": "M -50 dB",
+"eql": "Out",
+"hp_filt": "Off",
+"output": 0.0
+},
+"input": "pst3_neve_1000.npy",
+"keep": [
+[
+12000,
+24000
+],
+[
+36000,
+48000
+],
+[
+60000,
+72000
+],
+[
+84000,
+96000
+],
+[
+108000,
+120000
+],
+[
+132000,
+144000
+],
+[
+156000,
+168000
+],
+[
+180000,
+192000
+],
+[
+204000,
+216000
+],
+[
+228000,
+240000
+],
+[
+252000,
+264000
+],
+[
+276000,
+288000
+],
+[
+300000,
+312000
+],
+[
+324000,
+336000
+],
+[
+348000,
+360000
+],
+[
+372000,
+384000
+],
+[
+396000,
+408000
+],
+[
+420000,
+432000
+],
+[
+444000,
+456000
+],
+[
+468000,
+480000
+],
+[
+492000,
+504000
+],
+[
+516000,
+528000
+]
+],
+"levels": [
+-66.0,
+-64.0,
+-62.0,
+-60.0,
+-58.0,
+-56.0,
+-54.0,
+-52.0,
+-50.0,
+-48.0,
+-46.0,
+-44.0,
+-42.0,
+-40.0,
+-38.0,
+-36.0,
+-34.0,
+-32.0,
+-30.0,
+-28.0,
+-26.0,
+-24.0
+]
+},
+{
+"id": "pst3_neve_5000",
+"plugin": "uaudio_neve_1073",
+"params": {
+"input_select": "Mic",
+"impedance": "Hi",
+"pad": 0.0,
+"mic_gain": "M -50 dB",
+"eql": "Out",
+"hp_filt": "Off",
+"output": 0.0
+},
+"input": "pst3_neve_5000.npy",
+"keep": [
+[
+12000,
+24000
+],
+[
+36000,
+48000
+],
+[
+60000,
+72000
+],
+[
+84000,
+96000
+],
+[
+108000,
+120000
+],
+[
+132000,
+144000
+],
+[
+156000,
+168000
+],
+[
+180000,
+192000
+],
+[
+204000,
+216000
+],
+[
+228000,
+240000
+],
+[
+252000,
+264000
+],
+[
+276000,
+288000
+],
+[
+300000,
+312000
+],
+[
+324000,
+336000
+],
+[
+348000,
+360000
+],
+[
+372000,
+384000
+],
+[
+396000,
+408000
+],
+[
+420000,
+432000
+],
+[
+444000,
+456000
+],
+[
+468000,
+480000
+],
+[
+492000,
+504000
+],
+[
+516000,
+528000
+]
+],
+"levels": [
+-66.0,
+-64.0,
+-62.0,
+-60.0,
+-58.0,
+-56.0,
+-54.0,
+-52.0,
+-50.0,
+-48.0,
+-46.0,
+-44.0,
+-42.0,
+-40.0,
+-38.0,
+-36.0,
+-34.0,
+-32.0,
+-30.0,
+-28.0,
+-26.0,
+-24.0
+]
+},
+{
+"id": "rpprog_u610a_drums_+0",
+"plugin": "uaudio_610_a",
+"params": {
+"input_select": "Mic",
+"input_pad": "Off",
+"input_gain": "Hi",
+"level": "0.0 dB",
+"output": "0.00 dB",
+"low_eq_gain": 0.0,
+"hi_eq_gain": 0.0
+},
+"input": "real_drums.npy",
+"gain_db": -57.0
+},
+{
+"id": "rpprog_u610a_drums_-6",
+"plugin": "uaudio_610_a",
+"params": {
+"input_select": "Mic",
+"input_pad": "Off",
+"input_gain": "Hi",
+"level": "0.0 dB",
+"output": "0.00 dB",
+"low_eq_gain": 0.0,
+"hi_eq_gain": 0.0
+},
+"input": "real_drums.npy",
+"gain_db": -63.0
+},
+{
+"id": "rpprog_u610a_bass_+0",
+"plugin": "uaudio_610_a",
+"params": {
+"input_select": "Mic",
+"input_pad": "Off",
+"input_gain": "Hi",
+"level": "0.0 dB",
+"output": "0.00 dB",
+"low_eq_gain": 0.0,
+"hi_eq_gain": 0.0
+},
+"input": "real_bass.npy",
+"gain_db": -57.0
+},
+{
+"id": "rpprog_u610a_bass_-6",
+"plugin": "uaudio_610_a",
+"params": {
+"input_select": "Mic",
+"input_pad": "Off",
+"input_gain": "Hi",
+"level": "0.0 dB",
+"output": "0.00 dB",
+"low_eq_gain": 0.0,
+"hi_eq_gain": 0.0
+},
+"input": "real_bass.npy",
+"gain_db": -63.0
+},
+{
+"id": "rpprog_u610a_guitar_+0",
+"plugin": "uaudio_610_a",
+"params": {
+"input_select": "Mic",
+"input_pad": "Off",
+"input_gain": "Hi",
+"level": "0.0 dB",
+"output": "0.00 dB",
+"low_eq_gain": 0.0,
+"hi_eq_gain": 0.0
+},
+"input": "real_guitar.npy",
+"gain_db": -57.0
+},
+{
+"id": "rpprog_u610a_guitar_-6",
+"plugin": "uaudio_610_a",
+"params": {
+"input_select": "Mic",
+"input_pad": "Off",
+"input_gain": "Hi",
+"level": "0.0 dB",
+"output": "0.00 dB",
+"low_eq_gain": 0.0,
+"hi_eq_gain": 0.0
+},
+"input": "real_guitar.npy",
+"gain_db": -63.0
+},
+{
+"id": "rpprog_u610a_vocal_+0",
+"plugin": "uaudio_610_a",
+"params": {
+"input_select": "Mic",
+"input_pad": "Off",
+"input_gain": "Hi",
+"level": "0.0 dB",
+"output": "0.00 dB",
+"low_eq_gain": 0.0,
+"hi_eq_gain": 0.0
+},
+"input": "real_vocal.npy",
+"gain_db": -57.0
+},
+{
+"id": "rpprog_u610a_vocal_-6",
+"plugin": "uaudio_610_a",
+"params": {
+"input_select": "Mic",
+"input_pad": "Off",
+"input_gain": "Hi",
+"level": "0.0 dB",
+"output": "0.00 dB",
+"low_eq_gain": 0.0,
+"hi_eq_gain": 0.0
+},
+"input": "real_vocal.npy",
+"gain_db": -63.0
+},
+{
+"id": "rpprog_u610a_mix_+0",
+"plugin": "uaudio_610_a",
+"params": {
+"input_select": "Mic",
+"input_pad": "Off",
+"input_gain": "Hi",
+"level": "0.0 dB",
+"output": "0.00 dB",
+"low_eq_gain": 0.0,
+"hi_eq_gain": 0.0
+},
+"input": "real_mix.npy",
+"gain_db": -57.0
+},
+{
+"id": "rpprog_u610a_mix_-6",
+"plugin": "uaudio_610_a",
+"params": {
+"input_select": "Mic",
+"input_pad": "Off",
+"input_gain": "Hi",
+"level": "0.0 dB",
+"output": "0.00 dB",
+"low_eq_gain": 0.0,
+"hi_eq_gain": 0.0
+},
+"input": "real_mix.npy",
+"gain_db": -63.0
+},
+{
+"id": "al_u610a_7000_-12",
+"plugin": "uaudio_610_a",
+"params": {
+"input_select": "Mic",
+"input_pad": "Off",
+"input_gain": "Hi",
+"level": "0.0 dB",
+"output": "0.00 dB",
+"low_eq_gain": 0.0,
+"hi_eq_gain": 0.0
+},
+"input": "al_7000.npy",
+"gain_db": -69.0
+},
+{
+"id": "al_u610a_7000_-6",
+"plugin": "uaudio_610_a",
+"params": {
+"input_select": "Mic",
+"input_pad": "Off",
+"input_gain": "Hi",
+"level": "0.0 dB",
+"output": "0.00 dB",
+"low_eq_gain": 0.0,
+"hi_eq_gain": 0.0
+},
+"input": "al_7000.npy",
+"gain_db": -63.0
+},
+{
+"id": "al_u610a_7000_+0",
+"plugin": "uaudio_610_a",
+"params": {
+"input_select": "Mic",
+"input_pad": "Off",
+"input_gain": "Hi",
+"level": "0.0 dB",
+"output": "0.00 dB",
+"low_eq_gain": 0.0,
+"hi_eq_gain": 0.0
+},
+"input": "al_7000.npy",
+"gain_db": -57.0
+},
+{
+"id": "al_u610a_7000_+6",
+"plugin": "uaudio_610_a",
+"params": {
+"input_select": "Mic",
+"input_pad": "Off",
+"input_gain": "Hi",
+"level": "0.0 dB",
+"output": "0.00 dB",
+"low_eq_gain": 0.0,
+"hi_eq_gain": 0.0
+},
+"input": "al_7000.npy",
+"gain_db": -51.0
+},
+{
+"id": "al_u610a_9000_-12",
+"plugin": "uaudio_610_a",
+"params": {
+"input_select": "Mic",
+"input_pad": "Off",
+"input_gain": "Hi",
+"level": "0.0 dB",
+"output": "0.00 dB",
+"low_eq_gain": 0.0,
+"hi_eq_gain": 0.0
+},
+"input": "al_9000.npy",
+"gain_db": -69.0
+},
+{
+"id": "al_u610a_9000_-6",
+"plugin": "uaudio_610_a",
+"params": {
+"input_select": "Mic",
+"input_pad": "Off",
+"input_gain": "Hi",
+"level": "0.0 dB",
+"output": "0.00 dB",
+"low_eq_gain": 0.0,
+"hi_eq_gain": 0.0
+},
+"input": "al_9000.npy",
+"gain_db": -63.0
+},
+{
+"id": "al_u610a_9000_+0",
+"plugin": "uaudio_610_a",
+"params": {
+"input_select": "Mic",
+"input_pad": "Off",
+"input_gain": "Hi",
+"level": "0.0 dB",
+"output": "0.00 dB",
+"low_eq_gain": 0.0,
+"hi_eq_gain": 0.0
+},
+"input": "al_9000.npy",
+"gain_db": -57.0
+},
+{
+"id": "al_u610a_9000_+6",
+"plugin": "uaudio_610_a",
+"params": {
+"input_select": "Mic",
+"input_pad": "Off",
+"input_gain": "Hi",
+"level": "0.0 dB",
+"output": "0.00 dB",
+"low_eq_gain": 0.0,
+"hi_eq_gain": 0.0
+},
+"input": "al_9000.npy",
+"gain_db": -51.0
+},
+{
+"id": "al_u610a_13000_-12",
+"plugin": "uaudio_610_a",
+"params": {
+"input_select": "Mic",
+"input_pad": "Off",
+"input_gain": "Hi",
+"level": "0.0 dB",
+"output": "0.00 dB",
+"low_eq_gain": 0.0,
+"hi_eq_gain": 0.0
+},
+"input": "al_13000.npy",
+"gain_db": -69.0
+},
+{
+"id": "al_u610a_13000_-6",
+"plugin": "uaudio_610_a",
+"params": {
+"input_select": "Mic",
+"input_pad": "Off",
+"input_gain": "Hi",
+"level": "0.0 dB",
+"output": "0.00 dB",
+"low_eq_gain": 0.0,
+"hi_eq_gain": 0.0
+},
+"input": "al_13000.npy",
+"gain_db": -63.0
+},
+{
+"id": "al_u610a_13000_+0",
+"plugin": "uaudio_610_a",
+"params": {
+"input_select": "Mic",
+"input_pad": "Off",
+"input_gain": "Hi",
+"level": "0.0 dB",
+"output": "0.00 dB",
+"low_eq_gain": 0.0,
+"hi_eq_gain": 0.0
+},
+"input": "al_13000.npy",
+"gain_db": -57.0
+},
+{
+"id": "al_u610a_13000_+6",
+"plugin": "uaudio_610_a",
+"params": {
+"input_select": "Mic",
+"input_pad": "Off",
+"input_gain": "Hi",
+"level": "0.0 dB",
+"output": "0.00 dB",
+"low_eq_gain": 0.0,
+"hi_eq_gain": 0.0
+},
+"input": "al_13000.npy",
+"gain_db": -51.0
+},
+{
+"id": "al_u610a_17000_-12",
+"plugin": "uaudio_610_a",
+"params": {
+"input_select": "Mic",
+"input_pad": "Off",
+"input_gain": "Hi",
+"level": "0.0 dB",
+"output": "0.00 dB",
+"low_eq_gain": 0.0,
+"hi_eq_gain": 0.0
+},
+"input": "al_17000.npy",
+"gain_db": -69.0
+},
+{
+"id": "al_u610a_17000_-6",
+"plugin": "uaudio_610_a",
+"params": {
+"input_select": "Mic",
+"input_pad": "Off",
+"input_gain": "Hi",
+"level": "0.0 dB",
+"output": "0.00 dB",
+"low_eq_gain": 0.0,
+"hi_eq_gain": 0.0
+},
+"input": "al_17000.npy",
+"gain_db": -63.0
+},
+{
+"id": "al_u610a_17000_+0",
+"plugin": "uaudio_610_a",
+"params": {
+"input_select": "Mic",
+"input_pad": "Off",
+"input_gain": "Hi",
+"level": "0.0 dB",
+"output": "0.00 dB",
+"low_eq_gain": 0.0,
+"hi_eq_gain": 0.0
+},
+"input": "al_17000.npy",
+"gain_db": -57.0
+},
+{
+"id": "al_u610a_17000_+6",
+"plugin": "uaudio_610_a",
+"params": {
+"input_select": "Mic",
+"input_pad": "Off",
+"input_gain": "Hi",
+"level": "0.0 dB",
+"output": "0.00 dB",
+"low_eq_gain": 0.0,
+"hi_eq_gain": 0.0
+},
+"input": "al_17000.npy",
+"gain_db": -51.0
+},
+{
+"id": "alsw_u610a_+0",
+"plugin": "uaudio_610_a",
+"params": {
+"input_select": "Mic",
+"input_pad": "Off",
+"input_gain": "Hi",
+"level": "0.0 dB",
+"output": "0.00 dB",
+"low_eq_gain": 0.0,
+"hi_eq_gain": 0.0
+},
+"input": "al_sweep.npy",
+"gain_db": -57.0
+},
+{
+"id": "alsw_u610a_+6",
+"plugin": "uaudio_610_a",
+"params": {
+"input_select": "Mic",
+"input_pad": "Off",
+"input_gain": "Hi",
+"level": "0.0 dB",
+"output": "0.00 dB",
+"low_eq_gain": 0.0,
+"hi_eq_gain": 0.0
+},
+"input": "al_sweep.npy",
+"gain_db": -51.0
+},
+{
+"id": "pst3_u610a_40",
+"plugin": "uaudio_610_a",
+"params": {
+"input_select": "Mic",
+"input_pad": "Off",
+"input_gain": "Hi",
+"level": "0.0 dB",
+"output": "0.00 dB",
+"low_eq_gain": 0.0,
+"hi_eq_gain": 0.0
+},
+"input": "pst3_u610a_40.npy",
+"keep": [
+[
+12000,
+24000
+],
+[
+36000,
+48000
+],
+[
+60000,
+72000
+],
+[
+84000,
+96000
+],
+[
+108000,
+120000
+],
+[
+132000,
+144000
+],
+[
+156000,
+168000
+],
+[
+180000,
+192000
+],
+[
+204000,
+216000
+],
+[
+228000,
+240000
+],
+[
+252000,
+264000
+],
+[
+276000,
+288000
+],
+[
+300000,
+312000
+],
+[
+324000,
+336000
+],
+[
+348000,
+360000
+],
+[
+372000,
+384000
+],
+[
+396000,
+408000
+],
+[
+420000,
+432000
+],
+[
+444000,
+456000
+],
+[
+468000,
+480000
+],
+[
+492000,
+504000
+],
+[
+516000,
+528000
+]
+],
+"levels": [
+-87.0,
+-85.0,
+-83.0,
+-81.0,
+-79.0,
+-77.0,
+-75.0,
+-73.0,
+-71.0,
+-69.0,
+-67.0,
+-65.0,
+-63.0,
+-61.0,
+-59.0,
+-57.0,
+-55.0,
+-53.0,
+-51.0,
+-49.0,
+-47.0,
+-45.0
+]
+},
+{
+"id": "pst3_u610a_100",
+"plugin": "uaudio_610_a",
+"params": {
+"input_select": "Mic",
+"input_pad": "Off",
+"input_gain": "Hi",
+"level": "0.0 dB",
+"output": "0.00 dB",
+"low_eq_gain": 0.0,
+"hi_eq_gain": 0.0
+},
+"input": "pst3_u610a_100.npy",
+"keep": [
+[
+12000,
+24000
+],
+[
+36000,
+48000
+],
+[
+60000,
+72000
+],
+[
+84000,
+96000
+],
+[
+108000,
+120000
+],
+[
+132000,
+144000
+],
+[
+156000,
+168000
+],
+[
+180000,
+192000
+],
+[
+204000,
+216000
+],
+[
+228000,
+240000
+],
+[
+252000,
+264000
+],
+[
+276000,
+288000
+],
+[
+300000,
+312000
+],
+[
+324000,
+336000
+],
+[
+348000,
+360000
+],
+[
+372000,
+384000
+],
+[
+396000,
+408000
+],
+[
+420000,
+432000
+],
+[
+444000,
+456000
+],
+[
+468000,
+480000
+],
+[
+492000,
+504000
+],
+[
+516000,
+528000
+]
+],
+"levels": [
+-87.0,
+-85.0,
+-83.0,
+-81.0,
+-79.0,
+-77.0,
+-75.0,
+-73.0,
+-71.0,
+-69.0,
+-67.0,
+-65.0,
+-63.0,
+-61.0,
+-59.0,
+-57.0,
+-55.0,
+-53.0,
+-51.0,
+-49.0,
+-47.0,
+-45.0
+]
+},
+{
+"id": "pst3_u610a_1000",
+"plugin": "uaudio_610_a",
+"params": {
+"input_select": "Mic",
+"input_pad": "Off",
+"input_gain": "Hi",
+"level": "0.0 dB",
+"output": "0.00 dB",
+"low_eq_gain": 0.0,
+"hi_eq_gain": 0.0
+},
+"input": "pst3_u610a_1000.npy",
+"keep": [
+[
+12000,
+24000
+],
+[
+36000,
+48000
+],
+[
+60000,
+72000
+],
+[
+84000,
+96000
+],
+[
+108000,
+120000
+],
+[
+132000,
+144000
+],
+[
+156000,
+168000
+],
+[
+180000,
+192000
+],
+[
+204000,
+216000
+],
+[
+228000,
+240000
+],
+[
+252000,
+264000
+],
+[
+276000,
+288000
+],
+[
+300000,
+312000
+],
+[
+324000,
+336000
+],
+[
+348000,
+360000
+],
+[
+372000,
+384000
+],
+[
+396000,
+408000
+],
+[
+420000,
+432000
+],
+[
+444000,
+456000
+],
+[
+468000,
+480000
+],
+[
+492000,
+504000
+],
+[
+516000,
+528000
+]
+],
+"levels": [
+-87.0,
+-85.0,
+-83.0,
+-81.0,
+-79.0,
+-77.0,
+-75.0,
+-73.0,
+-71.0,
+-69.0,
+-67.0,
+-65.0,
+-63.0,
+-61.0,
+-59.0,
+-57.0,
+-55.0,
+-53.0,
+-51.0,
+-49.0,
+-47.0,
+-45.0
+]
+},
+{
+"id": "pst3_u610a_5000",
+"plugin": "uaudio_610_a",
+"params": {
+"input_select": "Mic",
+"input_pad": "Off",
+"input_gain": "Hi",
+"level": "0.0 dB",
+"output": "0.00 dB",
+"low_eq_gain": 0.0,
+"hi_eq_gain": 0.0
+},
+"input": "pst3_u610a_5000.npy",
+"keep": [
+[
+12000,
+24000
+],
+[
+36000,
+48000
+],
+[
+60000,
+72000
+],
+[
+84000,
+96000
+],
+[
+108000,
+120000
+],
+[
+132000,
+144000
+],
+[
+156000,
+168000
+],
+[
+180000,
+192000
+],
+[
+204000,
+216000
+],
+[
+228000,
+240000
+],
+[
+252000,
+264000
+],
+[
+276000,
+288000
+],
+[
+300000,
+312000
+],
+[
+324000,
+336000
+],
+[
+348000,
+360000
+],
+[
+372000,
+384000
+],
+[
+396000,
+408000
+],
+[
+420000,
+432000
+],
+[
+444000,
+456000
+],
+[
+468000,
+480000
+],
+[
+492000,
+504000
+],
+[
+516000,
+528000
+]
+],
+"levels": [
+-87.0,
+-85.0,
+-83.0,
+-81.0,
+-79.0,
+-77.0,
+-75.0,
+-73.0,
+-71.0,
+-69.0,
+-67.0,
+-65.0,
+-63.0,
+-61.0,
+-59.0,
+-57.0,
+-55.0,
+-53.0,
+-51.0,
+-49.0,
+-47.0,
+-45.0
+]
+}
+]

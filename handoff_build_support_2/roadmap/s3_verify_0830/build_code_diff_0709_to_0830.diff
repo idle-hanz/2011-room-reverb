@@ -1,0 +1,2274 @@
+diff -ruN -x __pycache__ -x .pytest_cache -x '*.wasm' -x '*.orig' snapshot_2026-10-02_0709/software/app_server.py snapshot_2026-10-02_0830/software/app_server.py
+--- snapshot_2026-10-02_0709/software/app_server.py	2026-10-02 07:00:11.000000000 +0100
++++ snapshot_2026-10-02_0830/software/app_server.py	2026-10-02 08:07:44.000000000 +0100
+@@ -15,6 +15,7 @@
+ import uvicorn
+ 
+ from image_geometry import build_images_payload
++import source_radiation as source_radiation
+ from mic_display import (
+     clamp_inside_room,
+     format_position_readout,
+@@ -245,7 +246,8 @@
+         "mic_hp_on": _b(body.get("mic_hp_on"), False),
+         "mic_hp_hz": max(12.0, min(250.0, _f(body.get("mic_hp_hz"), 40.0))),
+         "mic_response_hz": max(10000.0, min(20000.0, _f(body.get("mic_response_hz"), 10000.0))),
+-        "mic_proximity": max(0.0, min(1.0, _f(body.get("mic_proximity"), 0.0))),
++        "mic_proximity": max(0.0, min(1.0, _f(
++            body.get("mic_proximity") if "mic_proximity" in body else 0.25, 0.25))),
+         "ms_decode": _b(body.get("ms_decode"), False) or str(body.get("mic_setup") or "") == "ms_classic",
+         "capsule_mm": max(8.0, min(34.0, _f(body.get("capsule_mm"), 17.0))),
+     }
+@@ -302,7 +304,7 @@
+     sox, soz, mz = prepare_from_metres(W, L, sx, sz, mcz)
+     cap = _capsule_from_body(body)
+     mic_colour_fields = _mic_colour_fields(body, cap)
+-    mirror_b = _b(body.get("mirror_b"), False)
++    mirror_b = _b(body.get("mirror_b") if "mirror_b" in body else True, True)
+     if mirror_b:
+         sx_b, sy_b, sz_b = mirror_source_b(W, sx, sy, sz)
+     else:
+@@ -347,7 +349,7 @@
+         "mic_proximity": cap["mic_proximity"],
+         "ms_decode": cap["ms_decode"],
+         "capsule_mm": cap["capsule_mm"],
+-        "early_wet": _f(body.get("early_wet"), DEFAULTS["early_wet"]),
++        "early_wet": _f(body.get("early_wet") if "early_wet" in body else 1.0, 1.0),
+         "fdn_wet": _f(body.get("fdn_wet"), DEFAULTS["fdn_wet"]),
+         "direct_wet": _f(body.get("direct_wet"), DEFAULTS["direct_wet"]),
+         "dry_gain": _f(body.get("dry_gain"), DEFAULTS["dry_gain"]),
+@@ -363,20 +365,22 @@
+         "surfaces": parse_surfaces(body.get("surfaces")),
+         "diffusion_seed": parse_diffusion_seed(body.get("diffusion_seed"), DEFAULT_DIFFUSION_SEED),
+         "lambda_ref": parse_lambda_ref(body.get("lambda_ref"), DEFAULT_LAMBDA_REF_M),
+-        "humidity": _f(body.get("humidity"), 0.0),
++        "humidity": _f(body.get("humidity") if "humidity" in body else 0.35, 0.35),
+         "air_lp": _f(body.get("air_lp"), 0.0),  # K2 locked: 1-pole kept, default mix 0
+         "air_shelf": _f(body.get("air_shelf"), 1.0),
+         "air_climate": str(body.get("air_climate") or DEFAULTS["air_climate"]),
+-        "air_iso": _b(body.get("air_iso"), DEFAULTS["air_iso"]),
++        # Parity keeps the 2011 one-pole (air_lp) and turns the ISO shelves off.
++        "air_iso": False if parity else _b(body.get("air_iso"), DEFAULTS["air_iso"]),
+         "source_radiation": str(body.get("source_radiation") or DEFAULTS["source_radiation"]),
+         "source_yaw": _f(body.get("source_yaw"), DEFAULTS["source_yaw"]),
+         "source_pitch": _f(body.get("source_pitch"), DEFAULTS["source_pitch"]),
+         "source_radiation_b": str(body.get("source_radiation_b") or body.get("source_radiation") or DEFAULTS["source_radiation"]),
+         "source_yaw_b": body.get("source_yaw_b"),
+         "source_pitch_b": _f(body.get("source_pitch_b"), _f(body.get("source_pitch"), DEFAULTS["source_pitch"])),
++        "source_size_m": body.get("source_size_m"),
+         "diffusion_master": _span(body.get("diffusion_master"), DIFFUSION_MASTER_DEFAULT, DIFFUSION_MASTER_MIN, 0.0),
+-        "decay_s": _f(body.get("decay_s"), 0.0),
+-        "decay_lock": _b(body.get("decay_lock"), False),
++        "decay_s": _f(body.get("decay_s") if "decay_s" in body else 1.8, 1.8),
++        "decay_lock": _b(body.get("decay_lock") if "decay_lock" in body else True, True),
+         "mic_setup": mic_setup,
+         "head_yaw_deg": head_yaw,
+         "binaural_preset": preset_id,
+@@ -598,9 +602,99 @@
+         sx_b=p.get("sx_b"), sy_b=p.get("sy_b"), sz_b=p.get("sz_b"),
+     )
+     payload["geometry"] = geometry_payload(p)
++    _annotate_images(payload, p)
+     return payload
+ 
+ 
++def _annotate_images(payload: dict, p: dict) -> None:
++    """Path hover: emission angle in the source frame, and 1 kHz / 4 kHz level."""
++    geo = payload.get("geometry") or {}
++    mic_c = geo.get("mic_centre") or {}
++    mic = (mic_c.get("x", 0.0), mic_c.get("y", 0.0), mic_c.get("z", 0.0))
++    size = p.get("source_size_m")
++    for mic_id, taps in (payload.get("per_mic") or {}).items():
++        cap = (payload.get("mics") or {}).get(mic_id) or mic
++        if isinstance(cap, dict):
++            cap = (cap.get("x", 0.0), cap.get("y", 0.0), cap.get("z", 0.0))
++        source_radiation.annotate_taps(
++            taps, p.get("source_radiation"), p.get("source_yaw") or 0.0,
++            p.get("source_pitch") or 0.0, cap, size,
++        )
++    if payload.get("per_mic_b"):
++        yaw_b = p.get("source_yaw_b")
++        if yaw_b is None:
++            yaw_b = p.get("source_yaw") or 0.0
++        pitch_b = p.get("source_pitch_b")
++        if pitch_b is None:
++            pitch_b = p.get("source_pitch") or 0.0
++        preset_b = p.get("source_radiation_b") or p.get("source_radiation")
++        for mic_id, taps in payload["per_mic_b"].items():
++            cap = (payload.get("mics") or {}).get(mic_id) or mic
++            if isinstance(cap, dict):
++                cap = (cap.get("x", 0.0), cap.get("y", 0.0), cap.get("z", 0.0))
++            source_radiation.annotate_taps(taps, preset_b, yaw_b, pitch_b, cap, size)
++    payload["source_facing"] = {
++        "yaw": p.get("source_yaw") or 0.0,
++        "pitch": p.get("source_pitch") or 0.0,
++        "preset": p.get("source_radiation") or "omni",
++    }
++
++
++@app.get("/api/source_presets")
++def api_source_presets():
++    return {"presets": source_radiation.catalog()}
++
++
++@app.post("/api/source_preview")
++async def api_source_preview(body: dict):
++    """Polar in the source frame, plus what the centre mic hears on the direct."""
++    try:
++        p = params_from_body(body or {})
++        freq = float((body or {}).get("freq") or 1000.0)
++        if freq < 20.0:
++            freq = 20.0
++        if freq > 20000.0:
++            freq = 20000.0
++        geo = geometry_payload(p)
++        mic = geo["mic_centre"]
++        src = geo["source"]
++        which = str((body or {}).get("which") or "a")
++        if which == "b" and geo.get("source_b"):
++            src = geo["source_b"]
++            yaw = p.get("source_yaw_b")
++            if yaw is None:
++                yaw = p.get("source_yaw") or 0.0
++            pitch = p.get("source_pitch") if p.get("source_pitch_b") is None else p.get("source_pitch_b")
++            preset = p.get("source_radiation_b") or p.get("source_radiation")
++        else:
++            yaw = p.get("source_yaw") or 0.0
++            pitch = p.get("source_pitch") or 0.0
++            preset = p.get("source_radiation")
++        pattern = source_radiation.preview_pattern(preset, p.get("source_size_m"), 48000.0)
++        face = source_radiation.yaw_pitch_toward(
++            (src["x"], src["y"], src["z"]),
++            (mic["x"], mic["y"], mic["z"]),
++        )
++        db = source_radiation.direct_db(
++            preset, yaw, pitch,
++            (src["x"], src["y"], src["z"]),
++            (mic["x"], mic["y"], mic["z"]),
++            freq, p.get("source_size_m"), 48000.0,
++        )
++        pattern["direct_db"] = round(db, 2)
++        pattern["freq"] = freq
++        pattern["yaw"] = yaw
++        pattern["pitch"] = pitch
++        pattern["yaw_to_face"] = round(face[0], 2)
++        pattern["pitch_to_face"] = round(face[1], 2)
++        pattern["off_mic_deg"] = round(
++            ((yaw - face[0] + 540.0) % 360.0) - 180.0, 2,
++        )
++        return pattern
++    except Exception as e:
++        return JSONResponse({"ok": False, "error": f"source_preview: {e}"}, status_code=500)
++
++
+ @app.post("/api/render")
+ async def api_render(
+     file: UploadFile = File(...),
+diff -ruN -x __pycache__ -x .pytest_cache -x '*.wasm' -x '*.orig' snapshot_2026-10-02_0709/software/engine/live_stereo.c snapshot_2026-10-02_0830/software/engine/live_stereo.c
+--- snapshot_2026-10-02_0709/software/engine/live_stereo.c	2026-10-02 05:17:29.000000000 +0100
++++ snapshot_2026-10-02_0830/software/engine/live_stereo.c	2026-10-02 07:51:44.000000000 +0100
+@@ -33,7 +33,8 @@
+  * Blob v2: magic 2, major 2, minor, n_sections, total_len, then
+  *   n_sections × {id, offset, length, section_version}.
+  *   1 CORE = the v1 body without the magic, plus 8 reserved floats.
+- *     Those reserves are not applied (order stays 32, one-sample feedback, unity).
++ *     Reserve 0 is hadamard_n. 8, 16, and 32 size the FWHT. Anything else
++ *     stays 32, so a 32-line blob is unchanged. One-sample feedback, unity.
+  *   2 AIR = second shelf, 1152 floats, or length 0 (bypass).
+  *   3 SURF, 4 SCATTER length 0 until a later phase.
+  *   5 SRC_RAD length 0 (omni, the current sound) or 716 floats:
+@@ -224,6 +225,10 @@
+     double diffSmp, diffSmpB;
+     double dirSmp[3];
+     double dirSmpB[3];
++    /* Hadamard order in {8, 16, 32}. 32 is the bit-exact default. */
++    int hn;
++    /* 1 after a block that ran the FDN. The off→on edge clears the tail. */
++    int fdnWas;
+ };
+ 
+ static LS_ALIGN16 float g_wre[FFTN];
+@@ -513,6 +518,8 @@
+         }
+     }
+     st->g = 0.03;
++    st->hn = 32;
++    st->fdnWas = 0;
+     st->fdn_wet = 1.0;
+     st->direct_wet = 1.0;
+     st->gain_a = 1.0;
+@@ -648,6 +655,41 @@
+     }
+ }
+ 
++/* earlyToo: also drop the early lanes (Hadamard order changed).
++   Otherwise only the FDN lanes and their feedback, so Early stays continuous. */
++static void clear_line_lanes(LiveStereo *st, int earlyToo) {
++    int b, i, t;
++    for (b = 0; b < 3; b++) {
++        Bus *bus = &st->bus[b];
++        for (i = 0; i < N; i++) {
++            Line *line = &bus->line[i];
++            float *ring = st->ring[b][i];
++            for (t = 0; t < st->cap; t++) {
++                ring[t * LANES + LANE_FDN] = 0;
++                ring[t * LANES + LANE_FDNB] = 0;
++                if (earlyToo) {
++                    ring[t * LANES + LANE_EARLY] = 0;
++                    ring[t * LANES + LANE_EARLYB] = 0;
++                }
++            }
++            line->airZ = 0; line->sz1 = 0; line->sz2 = 0;
++            line->h2z1 = 0; line->h2z2 = 0;
++            line->airZf = 0; line->sz1f = 0; line->sz2f = 0;
++            line->h2z1f = 0; line->h2z2f = 0;
++            line->pz1 = 0; line->pz2 = 0;
++            line->pz1b = 0; line->pz2b = 0;
++            bus->fb[i] = 0;
++            bus->fbB[i] = 0;
++            if (earlyToo) {
++                line->airZe = 0; line->sz1e = 0; line->sz2e = 0;
++                line->h2z1e = 0; line->h2z2e = 0;
++                line->airZb = 0; line->sz1b = 0; line->sz2b = 0;
++                line->h2z1b = 0; line->h2z2b = 0;
++            }
++        }
++    }
++}
++
+ typedef struct Rd { const float *p; int i, n; } Rd;
+ static double rf(Rd *r) {
+     if (r->i >= r->n) return 0.0;
+@@ -783,10 +825,23 @@
+             }
+         }
+     }
+-    /* Eight reserved CORE floats. Not applied (N stays 32, one-sample feedback, unity). */
+-    if (r.n - r.i >= 8) {
+-        int k;
+-        for (k = 0; k < 8; k++) (void)rf(&r);
++    /* Eight reserved CORE floats. First is hadamard_n (8/16/32). Else stay 32. */
++    {
++        int prevHn = st->hn;
++        int nowFdn;
++        if (prevHn != 8 && prevHn != 16 && prevHn != 32) prevHn = 32;
++        st->hn = 32;
++        if (r.n - r.i >= 8) {
++            int hn = (int)(rf(&r) + 0.5);
++            int k;
++            if (hn == 8 || hn == 16 || hn == 32) st->hn = hn;
++            for (k = 1; k < 8; k++) (void)rf(&r);
++        }
++        nowFdn = st->fdn_wet > 1.0e-4;
++        /* Rising FDN edge drops the frozen tail. An order change drops every lane. */
++        if (st->hn != prevHn) clear_line_lanes(st, 1);
++        else if (nowFdn && !st->fdnWas) clear_line_lanes(st, 0);
++        st->fdnWas = nowFdn;
+     }
+ }
+ 
+@@ -1177,11 +1232,12 @@
+     *w = n;
+ }
+ 
+-static void fwht(double *a) {
++static void fwht(double *a, int n) {
+     int len, step, i, j;
+-    for (len = 1; len < N; len = step) {
++    if (n != 8 && n != 16 && n != 32) n = N;
++    for (len = 1; len < n; len = step) {
+         step = len << 1;
+-        for (i = 0; i < N; i += step) {
++        for (i = 0; i < n; i += step) {
+             for (j = 0; j < len; j++) {
+                 double u = a[i + j];
+                 double v = a[i + j + len];
+@@ -1284,11 +1340,12 @@
+     return yi;
+ }
+ 
+-static void diffuse(LiveStereo *st, int b, int bankB, const double *xin, double *fb, double *yOut) {
++static void diffuse(LiveStereo *st, int b, int bankB, const double *xin, double *fb, double *yOut, int hn) {
+     Bus *bus = &st->bus[b];
+     int i;
+     double g;
+-    for (i = 0; i < N; i++) {
++    if (hn != 8 && hn != 16 && hn != 32) hn = N;
++    for (i = 0; i < hn; i++) {
+         Line *line = &bus->line[i];
+         double gi = bankB ? line->dffsB : line->dffs;
+         double s = xin[i] + fb[i];
+@@ -1297,9 +1354,14 @@
+         yOut[i] = y;
+         st->reads[i] = y;
+     }
+-    fwht(st->reads);
++    for (i = hn; i < N; i++) {
++        yOut[i] = 0.0;
++        fb[i] = 0.0;
++        st->reads[i] = 0.0;
++    }
++    fwht(st->reads, hn);
+     g = st->g;
+-    for (i = 0; i < N; i++) fb[i] = g * st->reads[i];
++    for (i = 0; i < hn; i++) fb[i] = g * st->reads[i];
+ }
+ 
+ static void bus_sample(LiveStereo *st, int b, double x, double xA, double xB, int two, int t) {
+@@ -1307,7 +1369,9 @@
+     int i, cap = st->cap;
+     int runFdn = st->fdn_wet > 1.0e-4;
+     int runEarly = st->early_wet > 1.0e-4;
++    int hn = st->hn;
+     double dA, dB = 0.0, early = 0.0;
++    if (hn != 8 && hn != 16 && hn != 32) hn = N;
+     for (i = 0; i < N; i++) {
+         Line *line = &bus->line[i];
+         line->delay += SMOOTH * (line->delayT - line->delay);
+@@ -1336,51 +1400,55 @@
+     if (!two) {
+         int mix1 = runFdn && bus->anyDffs;
+         if (runFdn && !mix1) {
+-            for (i = 0; i < N; i++) {
++            for (i = 0; i < hn; i++) {
+                 st->delayed[i] = read_peaked(st, &bus->line[i], st->ring[b][i], LANE_FDN, i, 0, bus->line[i].delay);
+                 st->reads[i] = st->delayed[i];
+             }
+-            fwht(st->reads);
++            for (i = hn; i < N; i++) st->reads[i] = 0.0;
++            fwht(st->reads, hn);
+         } else if (mix1) {
+-            for (i = 0; i < N; i++) {
++            for (i = 0; i < hn; i++) {
+                 st->delayed[i] = read_peaked(st, &bus->line[i], st->ring[b][i], LANE_FDN, i, 0, bus->line[i].delay);
+             }
+         }
+         for (i = 0; i < N; i++) {
+             Line *line = &bus->line[i];
+-            double xin;
++            double xin = 0.0;
+             /* Kind 0 is the FDN inject as well. Tint it once, and keep the lane current.
+-             * Radiation splits that: the image filter feeds Early, the diffuse filter feeds the FDN. */
+-            if (st->radA) {
+-                double earlyIn = tint(line, st->srcSmp[i] * line->inj, 1);
+-                xin = tint(line, st->diffSmp * line->inj, 0);
+-                if (runEarly) {
+-                    double ev = read_lane(st->ring[b][i], LANE_EARLY, line->w, line->delay, cap);
+-                    st->eaBlk[b][i][t] = ev;
+-                    early += ev;
++             * Radiation splits that: the image filter feeds Early, the diffuse filter feeds the FDN.
++             * Lines at or past hn are outside this Hadamard and stay silent. */
++            if (i < hn) {
++                if (st->radA) {
++                    double earlyIn = tint(line, st->srcSmp[i] * line->inj, 1);
++                    xin = tint(line, st->diffSmp * line->inj, 0);
++                    if (runEarly) {
++                        double ev = read_lane(st->ring[b][i], LANE_EARLY, line->w, line->delay, cap);
++                        st->eaBlk[b][i][t] = ev;
++                        early += ev;
++                    }
++                    write_lane(st->ring[b][i], line->w, LANE_EARLY, (float)earlyIn);
++                } else {
++                    xin = tint(line, x * line->inj, 0);
++                    if (runEarly) {
++                        double ev = read_lane(st->ring[b][i], LANE_EARLY, line->w, line->delay, cap);
++                        st->eaBlk[b][i][t] = ev;
++                        early += ev;
++                    }
++                    write_lane(st->ring[b][i], line->w, LANE_EARLY, (float)xin);
+                 }
+-                write_lane(st->ring[b][i], line->w, LANE_EARLY, (float)earlyIn);
+-            } else {
+-                xin = tint(line, x * line->inj, 0);
+-                if (runEarly) {
+-                    double ev = read_lane(st->ring[b][i], LANE_EARLY, line->w, line->delay, cap);
+-                    st->eaBlk[b][i][t] = ev;
+-                    early += ev;
++                if (mix1) st->xinArr[i] = xin + LS_DC;
++                else if (runFdn) {
++                    double gi = line->dffs;
++                    double mixed = st->g * st->reads[i] + xin + LS_DC;
++                    double y = -gi * mixed + st->delayed[i];
++                    write_lane(st->ring[b][i], line->w, LANE_FDN, (float)(mixed + gi * y));
++                    st->yBlk[b][i][t] = y;
+                 }
+-                write_lane(st->ring[b][i], line->w, LANE_EARLY, (float)xin);
+-            }
+-            if (mix1) st->xinArr[i] = xin + LS_DC;
+-            else if (runFdn) {
+-                double gi = line->dffs;
+-                double mixed = st->g * st->reads[i] + xin + LS_DC;
+-                double y = -gi * mixed + st->delayed[i];
+-                write_lane(st->ring[b][i], line->w, LANE_FDN, (float)(mixed + gi * y));
+-                st->yBlk[b][i][t] = y;
+             }
+             if (!mix1) adv(&line->w, cap);
+         }
+         if (mix1) {
+-            diffuse(st, b, 0, st->xinArr, bus->fb, st->yA);
++            diffuse(st, b, 0, st->xinArr, bus->fb, st->yA, hn);
+             for (i = 0; i < N; i++) {
+                 st->yBlk[b][i][t] = st->yA[i];
+                 adv(&bus->line[i].w, cap);
+@@ -1390,7 +1458,7 @@
+         return;
+     }
+ 
+-    for (i = 0; i < N; i++) {
++    for (i = 0; i < hn; i++) {
+         Line *line = &bus->line[i];
+         /* Kinds 1 and 2 stay running while Early is down. Kinds 0 and 3 stay with the FDN. */
+         double eA = tint(line, (st->radA ? st->srcSmp[i] : xA) * line->inj, 1);
+@@ -1408,17 +1476,18 @@
+     if (runFdn) {
+         int mixA = bus->anyDffs;
+         int mixB = bus->anyDffsB;
+-        for (i = 0; i < N; i++) {
++        for (i = 0; i < hn; i++) {
+             Line *line = &bus->line[i];
+             st->delayed[i] = read_peaked(st, line, st->ring[b][i], LANE_FDN, i, 0, line->delay);
+             st->reads[i] = st->delayed[i];
+             if (st->radA) st->xinArr[i] = tint(line, 0.5 * st->diffSmp * line->inj, 0) + LS_DC;
+             else st->xinArr[i] = tint(line, 0.5 * xA * line->inj, 0) + LS_DC;
+         }
+-        if (mixA) diffuse(st, b, 0, st->xinArr, bus->fb, st->yA);
++        if (mixA) diffuse(st, b, 0, st->xinArr, bus->fb, st->yA, hn);
+         else {
+-            fwht(st->reads);
+-            for (i = 0; i < N; i++) {
++            for (i = hn; i < N; i++) st->reads[i] = 0.0;
++            fwht(st->reads, hn);
++            for (i = 0; i < hn; i++) {
+                 Line *line = &bus->line[i];
+                 double gi = line->dffs;
+                 double mixed = st->g * st->reads[i] + st->xinArr[i];
+@@ -1426,8 +1495,9 @@
+                 write_lane(st->ring[b][i], line->w, LANE_FDN, (float)(mixed + gi * y));
+                 st->yA[i] = y;
+             }
++            for (i = hn; i < N; i++) st->yA[i] = 0.0;
+         }
+-        for (i = 0; i < N; i++) {
++        for (i = 0; i < hn; i++) {
+             Line *line = &bus->line[i];
+             st->delayed[i] = read_peaked(st, line, st->ring[b][i], LANE_FDNB, i, 1, line->delayB);
+             st->reads[i] = st->delayed[i];
+@@ -1435,14 +1505,15 @@
+             else st->xinArr[i] = tint(line, 0.5 * xB * line->injB, 3) + LS_DC;
+         }
+         if (mixB) {
+-            diffuse(st, b, 1, st->xinArr, bus->fbB, st->yB);
++            diffuse(st, b, 1, st->xinArr, bus->fbB, st->yB, hn);
+             for (i = 0; i < N; i++) {
+                 st->yBlk[b][i][t] = st->yA[i];
+                 st->yBlkB[b][i][t] = st->yB[i];
+             }
+         } else {
+-            fwht(st->reads);
+-            for (i = 0; i < N; i++) {
++            for (i = hn; i < N; i++) st->reads[i] = 0.0;
++            fwht(st->reads, hn);
++            for (i = 0; i < hn; i++) {
+                 Line *line = &bus->line[i];
+                 double gi = line->dffsB;
+                 double mixed = st->g * st->reads[i] + st->xinArr[i];
+@@ -1451,6 +1522,10 @@
+                 st->yBlk[b][i][t] = st->yA[i];
+                 st->yBlkB[b][i][t] = y;
+             }
++            for (i = hn; i < N; i++) {
++                st->yBlk[b][i][t] = st->yA[i];
++                st->yBlkB[b][i][t] = 0.0;
++            }
+         }
+     }
+     for (i = 0; i < N; i++) adv(&bus->line[i].w, cap);
+@@ -1920,15 +1995,35 @@
+         if (st->radA || st->radB) {
+             double xin = split ? xA : x;
+             double yin = split ? xB : x;
++            /* On-axis packs on=0 and src_step would return x. Skip the call.
++               Image filters run only while that image's filter is live. */
+             for (i = 0; i < N; i++) {
+-                st->srcSmp[i] = st->radA ? src_step(&st->srcImg[0][i], xin) : xin;
+-                st->srcSmpB[i] = st->radB ? src_step(&st->srcImg[1][i], yin) : yin;
+-            }
+-            st->diffSmp = st->radA ? src_step(&st->srcDiff[0], xin) : xin;
+-            st->diffSmpB = st->radB ? src_step(&st->srcDiff[1], yin) : yin;
++                if (st->radA && st->srcImg[0][i].on)
++                    st->srcSmp[i] = src_step(&st->srcImg[0][i], xin);
++                else
++                    st->srcSmp[i] = xin;
++                if (st->radB && st->srcImg[1][i].on)
++                    st->srcSmpB[i] = src_step(&st->srcImg[1][i], yin);
++                else
++                    st->srcSmpB[i] = yin;
++            }
++            if (st->radA && st->srcDiff[0].on)
++                st->diffSmp = src_step(&st->srcDiff[0], xin);
++            else
++                st->diffSmp = xin;
++            if (st->radB && st->srcDiff[1].on)
++                st->diffSmpB = src_step(&st->srcDiff[1], yin);
++            else
++                st->diffSmpB = yin;
+             for (b = 0; b < 3; b++) {
+-                st->dirSmp[b] = st->radA ? src_step(&st->srcDir[0][b], xin) : xin;
+-                st->dirSmpB[b] = st->radB ? src_step(&st->srcDir[1][b], yin) : yin;
++                if (st->radA && st->srcDir[0][b].on)
++                    st->dirSmp[b] = src_step(&st->srcDir[0][b], xin);
++                else
++                    st->dirSmp[b] = xin;
++                if (st->radB && st->srcDir[1][b].on)
++                    st->dirSmpB[b] = src_step(&st->srcDir[1][b], yin);
++                else
++                    st->dirSmpB[b] = yin;
+             }
+         }
+         for (b = 0; b < 3; b++) bus_sample(st, b, x, xA, xB, split, t);
+diff -ruN -x __pycache__ -x .pytest_cache -x '*.wasm' -x '*.orig' snapshot_2026-10-02_0709/software/engine/selfcheck.py snapshot_2026-10-02_0830/software/engine/selfcheck.py
+--- snapshot_2026-10-02_0709/software/engine/selfcheck.py	2026-10-01 21:32:11.000000000 +0100
++++ snapshot_2026-10-02_0830/software/engine/selfcheck.py	2026-10-02 07:52:27.000000000 +0100
+@@ -872,11 +872,11 @@
+     live = live_fdn_params(p)
+     assert live["g"] > 0.10
+     assert abs(live["decay_s"] - 1.8) < 1e-9
+-    assert len(live["buses"]["l"]["loop_mix"]) == 32 * 32
++    assert "loop_mix" not in live["buses"]["l"]
+     g = float(live["g"])
+     dffs_l = np.asarray(live["buses"]["l"]["dffs"], dtype=np.float64)
+     H = unscaled_hadamard_matrix(32)
+-    Mb = np.asarray(live["buses"]["l"]["loop_mix"], dtype=np.float64).reshape(32, 32)
++    Mb = diffuser_output_mix(g, dffs_l)
+     G = np.diag(dffs_l)
+     rho = float(np.max(np.abs(np.linalg.eigvals((G + g * H) @ Mb))))
+     assert rho <= 1.0 + 1e-8
+diff -ruN -x __pycache__ -x .pytest_cache -x '*.wasm' -x '*.orig' snapshot_2026-10-02_0709/software/engine/source_radiation.py snapshot_2026-10-02_0830/software/engine/source_radiation.py
+--- snapshot_2026-10-02_0709/software/engine/source_radiation.py	2026-10-02 05:02:42.000000000 +0100
++++ snapshot_2026-10-02_0830/software/engine/source_radiation.py	2026-10-02 08:17:21.000000000 +0100
+@@ -379,3 +379,190 @@
+     if len(a) != SRC_PACK_LEN:
+         raise RuntimeError(f"SRC_RAD pack {len(a)} != {SRC_PACK_LEN}")
+     return a
++
++
++def yaw_pitch_toward(source, target) -> Tuple[float, float]:
++    """Yaw and pitch that point the source at a receiver. Yaw 0 faces +Z."""
++    dx = float(target[0]) - float(source[0])
++    dy = float(target[1]) - float(source[1])
++    dz = float(target[2]) - float(source[2])
++    yaw = math.degrees(math.atan2(dx, dz))
++    pitch = math.degrees(math.atan2(dy, math.hypot(dx, dz)))
++    return yaw, pitch
++
++
++def response_db(coef: Optional[Coef], freq_hz: float, fs: float) -> float:
++    """Magnitude of gain × shelf × soft one-pole. Bypass is 0 dB."""
++    if coef is None or coef.bypass:
++        return 0.0
++    w = 2.0 * math.pi * float(freq_hz) / float(fs)
++    z1 = complex(math.cos(-w), math.sin(-w))
++    z2 = z1 * z1
++    den = 1.0 + coef.a1 * z1 + coef.a2 * z2
++    if abs(den) < 1e-18:
++        return -120.0
++    h = coef.gain * (coef.b0 + coef.b1 * z1 + coef.b2 * z2) / den
++    if coef.pole_g > 0.0 and coef.pole_mix > 0.0:
++        lp = coef.pole_g / (1.0 - (1.0 - coef.pole_g) * z1)
++        if int(coef.order) >= 2:
++            lp = lp * lp
++        h *= (1.0 - coef.pole_mix) + coef.pole_mix * lp
++    mag = abs(h)
++    if mag < 1e-12:
++        return -120.0
++    return 20.0 * math.log10(mag)
++
++
++def _local_from_angles(az_deg: float, el_deg: float) -> Tuple[float, float, float]:
++    """Source frame. Azimuth 0 is forward, positive azimuth is toward source left."""
++    az = math.radians(float(az_deg))
++    el = math.radians(float(el_deg))
++    return (
++        math.cos(el) * math.cos(az),
++        math.cos(el) * math.sin(az),
++        math.sin(el),
++    )
++
++
++def _angles_from_local(d) -> Tuple[float, float]:
++    fwd, left, up = float(d[0]), float(d[1]), float(d[2])
++    az = math.degrees(math.atan2(left, fwd))
++    el = math.degrees(math.asin(max(-1.0, min(1.0, up))))
++    return az, el
++
++
++PREVIEW_FREQS = (250, 500, 1000, 2000, 4000, 8000)
++
++
++def catalog() -> list:
++    """Shipped preset index. TU Berlin ids are dropped."""
++    rows = []
++    for root in preset_roots():
++        path = root / "index.json"
++        if not path.is_file():
++            continue
++        data = json.loads(path.read_text(encoding="utf-8"))
++        for row in data.get("presets") or []:
++            pid = str(row.get("id") or "")
++            if pid.startswith("tu_") or "TU Berlin" in str(row.get("dataset") or ""):
++                continue
++            rows.append(row)
++        if rows:
++            break
++    return rows
++
++
++def preview_pattern(preset_id, size_m, fs: float = 48000.0) -> dict:
++    """Polar curves in the source frame. Yaw and pitch rotate these on the client."""
++    preset = load_preset(preset_id)
++    omni = is_omni(preset.get("id"))
++    angles = list(range(-180, 181, 5))
++    size = preset.get("size") or {}
++    a_eq = float(size.get("a_eq_m") or 0.0)
++    onset = float(size.get("beaming_onset_hz") or 0.0)
++    params = _params(preset)
++    if omni:
++        flat = {str(f): [0.0] * len(angles) for f in PREVIEW_FREQS}
++        return {
++            "omni": True,
++            "id": "omni",
++            "angles": angles,
++            "horizontal": flat,
++            "vertical": flat,
++            "a_eq_m": a_eq,
++            "onset_hz": onset,
++            "aim_az": 0.0,
++            "aim_el": 0.0,
++            "diffuse_text": "Omni. The tail is the unfiltered inject.",
++            "diffuse_db": {str(f): 0.0 for f in PREVIEW_FREQS},
++        }
++    scale = _size_scale(preset, size_m)
++    if a_eq > 0.0 and scale != 1.0:
++        onset = onset / scale if onset else (340.0 / (2.0 * math.pi * a_eq * scale))
++    horiz = {}
++    vert = {}
++    for freq in PREVIEW_FREQS:
++        horiz[str(freq)] = []
++        vert[str(freq)] = []
++        for ang in angles:
++            ch = coef_for_dir(params, _local_from_angles(ang, 0.0), fs, scale)
++            cv = coef_for_dir(params, _local_from_angles(0.0, ang), fs, scale)
++            horiz[str(freq)].append(round(response_db(ch, freq, fs), 2))
++            vert[str(freq)].append(round(response_db(cv, freq, fs), 2))
++    diff = diffuse_coef(preset, fs, scale)
++    diffuse_db = {str(f): round(response_db(diff, f, fs), 2) for f in PREVIEW_FREQS}
++    inj = preset.get("diffuse_inject") or {}
++    shelf_db = float(inj.get("shelf_gain_db") or 0.0)
++    shelf_f = float(inj.get("shelf_f0") or 0.0)
++    if inj:
++        diffuse_text = (
++            f"{shelf_db:.1f} dB shelf at {shelf_f / 1000.0:.2f} kHz: does not change with yaw"
++        )
++    else:
++        diffuse_text = "No diffuse shelf on this preset."
++    return {
++        "omni": False,
++        "id": str(preset.get("id") or preset_id),
++        "angles": angles,
++        "horizontal": horiz,
++        "vertical": vert,
++        "a_eq_m": a_eq,
++        "onset_hz": round(onset, 1) if onset else 0.0,
++        "aim_az": float(params.get("aim_az") or 0.0),
++        "aim_el": float(params.get("aim_el") or 0.0),
++        "diffuse_text": diffuse_text,
++        "diffuse_db": diffuse_db,
++        "tag": preset.get("tag") or "",
++        "label": preset.get("label") or "",
++    }
++
++
++def direct_db(preset_id, yaw_deg, pitch_deg, source, mic, freq_hz, size_m, fs: float = 48000.0) -> float:
++    """Direct-path level at one frequency, source facing yaw/pitch, towards mic."""
++    preset = load_preset(preset_id)
++    if is_omni(preset.get("id")):
++        return 0.0
++    e = _norm((
++        float(mic[0]) - float(source[0]),
++        float(mic[1]) - float(source[1]),
++        float(mic[2]) - float(source[2]),
++    ))
++    loc = local_dir(e, facing_basis(yaw_deg, pitch_deg))
++    coef = coef_for_dir(_params(preset), loc, fs, _size_scale(preset, size_m))
++    return response_db(coef, freq_hz, fs)
++
++
++def _as_xyz(p) -> Tuple[float, float, float]:
++    """Point as (x, y, z). The images API stores points as {x, y, z}."""
++    if isinstance(p, dict):
++        return (float(p.get("x") or 0.0), float(p.get("y") or 0.0), float(p.get("z") or 0.0))
++    return (float(p[0]), float(p[1]), float(p[2]))
++
++
++def annotate_taps(taps, preset_id, yaw_deg, pitch_deg, mic, size_m, fs: float = 48000.0) -> None:
++    """Add source-frame az/el and 1 kHz / 4 kHz radiation dB onto path taps."""
++    preset = load_preset(preset_id)
++    omni = is_omni(preset.get("id"))
++    params = _params(preset)
++    scale = _size_scale(preset, size_m)
++    basis = facing_basis(yaw_deg, pitch_deg)
++    mic_xyz = _as_xyz(mic)
++    for tap in taps or []:
++        n = tap.get("n") or [0, 0, 0]
++        try:
++            img = _as_xyz(tap.get("image_xyz") or mic_xyz)
++            e = emission_dir(n, img, mic_xyz)
++        except (TypeError, ValueError, KeyError, IndexError):
++            e = (0.0, 0.0, 1.0)
++        loc = local_dir(e, basis)
++        az, el = _angles_from_local(loc)
++        if omni:
++            db1 = db4 = 0.0
++        else:
++            coef = coef_for_dir(params, loc, fs, scale)
++            db1 = response_db(coef, 1000.0, fs)
++            db4 = response_db(coef, 4000.0, fs)
++        tap["src_az_deg"] = round(az, 1)
++        tap["src_el_deg"] = round(el, 1)
++        tap["src_db_1k"] = round(db1, 2)
++        tap["src_db_4k"] = round(db4, 2)
+diff -ruN -x __pycache__ -x .pytest_cache -x '*.wasm' -x '*.orig' snapshot_2026-10-02_0709/software/render_pipeline.py snapshot_2026-10-02_0830/software/render_pipeline.py
+--- snapshot_2026-10-02_0709/software/render_pipeline.py	2026-10-02 06:03:52.000000000 +0100
++++ snapshot_2026-10-02_0830/software/render_pipeline.py	2026-10-02 07:52:27.000000000 +0100
+@@ -60,7 +60,6 @@
+     propose_fdn_delays_samples,
+     fdn_delays_from_taps,
+     dffs_from_taps,
+-    diffuser_output_mix,
+     diffusion_scale_from_room,
+     dff_after_master,
+     DIFFUSION_MASTER_LIVE,
+@@ -1523,16 +1522,6 @@
+     return air_g, lp, shelf, shelf2
+ 
+ 
+-def _attach_loop_mix(bus: dict, g: float) -> None:
+-    """Ship (I + g diag(dffs) H)⁻¹ so Play's Hadamard hears the diffuser output."""
+-    dffs = bus.get("dffs")
+-    if not dffs or not any(abs(float(x)) > 1e-15 for x in dffs):
+-        return
+-    bus["loop_mix"] = np.asarray(
+-        diffuser_output_mix(float(g), dffs), dtype=np.float64
+-    ).reshape(-1).tolist()
+-
+-
+ def live_fdn_params(
+     p: dict,
+     sr: int = SAMPLE_RATE_HZ,
+@@ -1540,8 +1529,9 @@
+     """Compact running-FDN coefficients for the browser worklet. ASSUMED live path.
+ 
+     Same geometry / inject / Dffs / cut-only peaking as the offline IR.
+-    Air 1-pole + shelf run in the worklet (not baked into inject). N locked
+-    to 32 for CPU. Makeup is running Mixer level (not IR-window RMS).
++    Air 1-pole + shelf run in the worklet (not baked into inject). Play
++    honours hadamard_n 8, 16, and 32. 64 and 128 stay on the 32-line network.
++    Makeup is running Mixer level (not IR-window RMS).
+     When p["sample_rate"] is present and at least 8000, delays, the
+     decay-lock mean, air, the shelf, and peaking use that integer. Missing
+     or below 8000 stays on `sr` (44100 when the caller omits it). Measured
+@@ -1550,7 +1540,13 @@
+     room: Vec3 = (float(p["W"]), float(p["H"]), float(p["L"]))
+     c = SPEED_OF_SOUND_M_S
+     surfaces = parse_surfaces(p.get("surfaces")) if p.get("surfaces") is not None else default_surfaces()
+-    n_had = 32
++    asked = p.get("hadamard_n", 32)
++    try:
++        asked_i = int(asked)
++    except (TypeError, ValueError):
++        asked_i = 32
++    # 64/128 stay on today's 32-line Play (g/32). Packing a 64-grid into 32 slots would move the chip.
++    n_had = asked_i if asked_i in (8, 16, 32) else 32
+     g = float(max(0.0, min(1.0, float(p.get("fdn_g", 1.0))))) / float(n_had)
+     decay_lock = bool(p.get("decay_lock"))
+     decay_s = float(p.get("decay_s") or 0.0)
+@@ -1562,6 +1558,9 @@
+     air_iso_on = p.get("air_iso")
+     air_iso = True if air_iso_on is None else bool(air_iso_on)
+     parity = bool(p.get("reaktor_parity"))
++    # Reaktor snapshot is the 2011 one-pole only. ISO shelves stay off; air_lp stays.
++    if parity:
++        air_iso = False
+     diffusion_master = float(p.get("diffusion_master") if p.get("diffusion_master") is not None else DIFFUSION_MASTER_LIVE)
+     mic_response_hz = float(p.get("mic_response_hz") or 10000.0)
+     ir_length_ms = float(p.get("ir_length_ms") if p.get("ir_length_ms") is not None else 1500.0)
+@@ -1798,11 +1797,6 @@
+         if fir is not None:
+             ic_hp = [float(x) for x in fir[0]]
+             ic_hm = [float(x) for x in fir[1]]
+-    for _ch in ("l", "c", "r"):
+-        _attach_loop_mix(buses[_ch], g_loop)
+-        _bb = buses[_ch].get("b")
+-        if isinstance(_bb, dict):
+-            _attach_loop_mix(_bb, g_loop)
+     import source_radiation as _srcmod
+     plan_a = _source_plan(
+         p.get("source_radiation"), p.get("source_yaw"), p.get("source_pitch"),
+diff -ruN -x __pycache__ -x .pytest_cache -x '*.wasm' -x '*.orig' snapshot_2026-10-02_0709/software/static/css/app.css snapshot_2026-10-02_0830/software/static/css/app.css
+--- snapshot_2026-10-02_0709/software/static/css/app.css	2026-10-01 11:42:12.000000000 +0100
++++ snapshot_2026-10-02_0830/software/static/css/app.css	2026-10-02 08:11:05.000000000 +0100
+@@ -211,6 +211,14 @@
+ .canvas-wrap {
+   background: #08090c; border-radius: 10px;
+   border: 1px solid var(--border-soft); overflow: hidden;
++  position: relative;
++}
++.path-tip {
++  position: absolute; z-index: 4; pointer-events: none;
++  white-space: pre; max-width: 260px;
++  background: #12141a; color: #e8eaef;
++  border: 1px solid #3a4155; border-radius: 8px;
++  padding: 6px 8px; font: 600 12px/1.35 Segoe UI, system-ui, sans-serif;
+ }
+ .canvas-wrap canvas {
+   display: block; width: 100%; height: auto;
+@@ -1098,6 +1106,33 @@
+   border-radius: 12px;
+   padding: 10px;
+ }
++.source-grid {
++  display: grid;
++  grid-template-columns: 280px minmax(0, 1.2fr) minmax(260px, 0.9fr);
++  gap: 11px;
++  align-items: start;
++}
++@media (max-width: 1100px) {
++  .source-grid { grid-template-columns: 1fr; }
++}
++.source-grid > .panel { margin-bottom: 0; }
++.source-floor-wrap { min-height: 240px; }
++.source-elev-wrap { min-height: 140px; margin-top: 8px; }
++.source-polar-wrap { min-height: 240px; }
++.source-hear h3 {
++  margin: 10px 0 4px;
++  font-size: 0.78rem;
++  letter-spacing: 0.06em;
++  text-transform: uppercase;
++  color: var(--muted);
++}
++.source-hear p { margin: 0 0 6px; }
++.source-omni .source-polar-wrap { opacity: 0.38; }
++.source-advanced { margin-top: 8px; }
++.source-advanced summary { cursor: pointer; color: var(--muted); font-size: 0.78rem; }
++#sourceLink:disabled { opacity: 0.45; cursor: not-allowed; }
++.source-col .ctrl input[type="number"] { grid-column: 2; grid-row: 1; width: 5.2rem; }
++
+ .desk-group-head, .desk-tail .desk-name {
+   display: flex;
+   align-items: center;
+diff -ruN -x __pycache__ -x .pytest_cache -x '*.wasm' -x '*.orig' snapshot_2026-10-02_0709/software/static/index.html snapshot_2026-10-02_0830/software/static/index.html
+--- snapshot_2026-10-02_0709/software/static/index.html	2026-10-02 06:53:27.000000000 +0100
++++ snapshot_2026-10-02_0830/software/static/index.html	2026-10-02 08:10:37.000000000 +0100
+@@ -4,7 +4,7 @@
+   <meta charset="UTF-8" />
+   <meta name="viewport" content="width=device-width, initial-scale=1" />
+   <title>2011 Room Reverb</title>
+-  <link rel="stylesheet" href="/static/css/app.css?v=20" />
++  <link rel="stylesheet" href="/static/css/app.css?v=21" />
+ </head>
+ <body>
+   <div class="app">
+@@ -29,6 +29,7 @@
+       <section class="stage">
+         <div class="view-switch" role="tablist" aria-label="Room views">
+           <button type="button" class="view-tab active" data-view="edit" role="tab" aria-selected="true">Floor · Side · 3D</button>
++          <button type="button" class="view-tab" data-view="source" role="tab">Source</button>
+           <button type="button" class="view-tab" data-view="mic" role="tab">Mic</button>
+           <button type="button" class="view-tab" data-view="mix" role="tab">Mix</button>
+           <button type="button" class="view-tab" data-view="lattice" role="tab">Lattice</button>
+@@ -88,6 +89,78 @@
+         </div>
+ 
+ 
++        <div id="sourceViews" class="source-desk" hidden>
++          <div class="source-grid">
++            <div class="panel source-col">
++              <div class="panel-head">
++                <h2>Sources</h2>
++                <span class="honesty-badge honesty-assumed" id="sourceBadge" hidden>assumed</span>
++              </div>
++              <div class="place-row" role="group" aria-label="Which source">
++                <button type="button" class="chip active" id="sourceChipA">This track</button>
++                <button type="button" class="chip" id="sourceChipB" hidden>Source B</button>
++                <button type="button" class="chip" id="sourceLink" disabled title="Linked tracks are not in this build">+ Link track</button>
++              </div>
++              <label class="ctrl ctrl-select">
++                <span>Radiation</span>
++                <select id="sourcePreset" aria-label="Source radiation preset"></select>
++              </label>
++              <label class="ctrl"><span>Yaw</span><input type="range" id="sourceYaw" min="-180" max="180" step="1" value="0" /><input type="number" id="sourceYawNum" min="-180" max="180" step="1" value="0" aria-label="Yaw degrees" /></label>
++              <label class="ctrl"><span>Pitch</span><input type="range" id="sourcePitch" min="-89" max="89" step="1" value="0" /><input type="number" id="sourcePitchNum" min="-89" max="89" step="1" value="0" aria-label="Pitch degrees" /></label>
++              <label class="ctrl"><span>Size <em>m</em></span><input type="range" id="sourceSize" min="0.005" max="0.4" step="0.001" value="0.02" /><input type="number" id="sourceSizeNum" min="0.005" max="0.4" step="0.001" value="0.02" aria-label="Source size metres" /></label>
++              <p class="hint" id="sourceOnset">Size uses the preset radius until you move this.</p>
++              <div class="place-row">
++                <button type="button" class="chip" id="sourceFaceMic">Face mic</button>
++                <button type="button" class="chip" id="sourceFaceAway">Face away</button>
++                <button type="button" class="chip" id="sourceOmni">Omni</button>
++              </div>
++              <p class="hint" id="sourceOffMic">Omni. No facing.</p>
++              <details class="source-advanced">
++                <summary>Advanced</summary>
++                <p class="hint" id="sourceAim">Aim offset 0° az, 0° el (from the preset).</p>
++                <p class="hint">Level reference and tail follow are not in this Play path. The tail uses the diffuse shelf, and it does not follow yaw.</p>
++              </details>
++            </div>
++            <div class="panel">
++              <div class="panel-head">
++                <h2>Place and face</h2>
++                <span class="hint">Drag the dot to move. Drag the ring to aim. Shift snaps 15°. Double-click the ring faces the mic.</span>
++              </div>
++              <div class="canvas-wrap source-floor-wrap">
++                <canvas id="srcFloorCanvas" width="720" height="420" tabindex="0" aria-label="Source top view. Arrows aim, F faces the mic, O is omni."></canvas>
++              </div>
++              <div class="canvas-wrap source-elev-wrap">
++                <canvas id="srcElevCanvas" width="720" height="180" tabindex="0" aria-label="Source side view. The ring sets pitch."></canvas>
++              </div>
++            </div>
++            <div class="panel" id="sourcePolarPanel">
++              <div class="panel-head">
++                <h2>Radiation</h2>
++              </div>
++              <div class="place-row" role="group" aria-label="Frequency">
++                <button type="button" class="chip" data-src-freq="250">250</button>
++                <button type="button" class="chip" data-src-freq="500">500</button>
++                <button type="button" class="chip active" data-src-freq="1000">1k</button>
++                <button type="button" class="chip" data-src-freq="2000">2k</button>
++                <button type="button" class="chip" data-src-freq="4000">4k</button>
++                <button type="button" class="chip" data-src-freq="8000">8k</button>
++              </div>
++              <div class="place-row" role="group" aria-label="Polar plane">
++                <button type="button" class="chip active" data-src-plane="h">Horizontal</button>
++                <button type="button" class="chip" data-src-plane="v">Vertical</button>
++              </div>
++              <div class="canvas-wrap source-polar-wrap">
++                <canvas id="sourcePolar" width="520" height="420" aria-label="Source radiation polar"></canvas>
++              </div>
++              <div class="source-hear" aria-live="polite">
++                <h3>What the room hears</h3>
++                <p id="sourceHear">0 dB. Omni leaves the direct untouched.</p>
++                <p class="hint" id="sourceDiffuse">Omni. The tail is the unfiltered inject.</p>
++              </div>
++            </div>
++          </div>
++        </div>
++
+         <div id="micViews" class="mic-desk" hidden>
+           <div class="mic-desk-grid">
+             <div class="panel mic-map-panel">
+@@ -634,13 +707,14 @@
+   </div>
+   <script src="/static/js/vendor/three.min.js"></script>
+   <script src="/static/js/room_math.js?v=15"></script>
+-  <script src="/static/js/room_3d.js?v=16"></script>
+-  <script src="/static/js/room_editor.js?v=13"></script>
+-  <script src="/static/js/image_views.js?v=12"></script>
++  <script src="/static/js/room_3d.js?v=17"></script>
++  <script src="/static/js/room_editor.js?v=14"></script>
++  <script src="/static/js/image_views.js?v=13"></script>
+   <script src="/static/js/colour_surfaces.js"></script>
+   <script src="/static/js/polar_field.js?v=4"></script>
+   <script src="/static/js/mic_desk.js?v=8"></script>
+-  <script src="/static/js/live_fdn.js?v=39"></script>
+-  <script src="/static/js/app.js?v=26"></script>
++  <script src="/static/js/source_desk.js?v=1"></script>
++  <script src="/static/js/live_fdn.js?v=40"></script>
++  <script src="/static/js/app.js?v=27"></script>
+ </body>
+ </html>
+diff -ruN -x __pycache__ -x .pytest_cache -x '*.wasm' -x '*.orig' snapshot_2026-10-02_0709/software/static/js/app.js snapshot_2026-10-02_0830/software/static/js/app.js
+--- snapshot_2026-10-02_0709/software/static/js/app.js	2026-10-02 06:54:28.000000000 +0100
++++ snapshot_2026-10-02_0830/software/static/js/app.js	2026-10-02 08:11:05.000000000 +0100
+@@ -75,11 +75,12 @@
+     /* K3 (locked 28 Sep 2026): source x 2.6 m, height 1.2 m → 29 distinct delays per bus. */
+     sx: 2.6, sz: 4.75, mcx: 3, mcz: 1.5, my: 1.5, sy: 1.2,
+     link_heights: false,
+-    space: 0.17, diverg: 1, toe_half_deg: 55, car_omni: 1,
++    /* Literal matches an empty /api body. Boot calls applyMicPreset("ortf") so the page still opens at 17 cm, ±55°. */
++    space: 0.25, diverg: 1, toe_half_deg: null, car_omni: 1,
+     pattern_l: "cardioid", pattern_c: "cardioid", pattern_r: "cardioid",
+     family_l: "cardioid", family_c: "cardioid", family_r: "cardioid",
+     polar_l: 0.5, polar_c: 0.5, polar_r: 0.5,
+-    yaw_l_deg: -55, yaw_c_deg: 0, yaw_r_deg: 55,
++    yaw_l_deg: null, yaw_c_deg: 0, yaw_r_deg: null,
+     centre_dz: 0, align_horizontal: true, link_lr_yaw: true,
+     mic_hp_on: false, mic_hp_hz: 40, mic_response_hz: 10000, mic_proximity: 0.25,
+     capsule_mm: 17, ms_decode: false,
+@@ -111,6 +112,9 @@
+     humidity: 0.35, air_lp: 0, air_shelf: 1, air_climate: "studio_20C_50RH", diffusion_master: -0.25,
+     reaktor_parity: false, live_drag_render: false,
+     two_sources: false, mirror_b: true, source_balance: 0,
++    /* Omni is the default. The source stage is not called, and yaw 0 stays put. */
++    source_radiation: "omni", source_yaw: 0, source_pitch: 0,
++    source_radiation_b: "omni", source_yaw_b: null, source_pitch_b: 0,
+     sx_b: 3.4, sy_b: 1.2, sz_b: 4.75, /* K3: mirror of the default source (W − 2.6, 1.2) */
+     path_on: false, path_preset: "still",
+     ellipse_rate: 1, ellipse_rx: 0.42, ellipse_rz: 0.35,
+@@ -147,6 +151,7 @@
+   var imageViewTitle = document.getElementById("imageViewTitle");
+   var imageViewHint = document.getElementById("imageViewHint");
+ 
++  var sourceVis = { a: null, b: null };
+   var editor = RoomEditor.create({
+     floorCanvas: document.getElementById("floorCanvas"),
+     elevCanvas: document.getElementById("elevCanvas"),
+@@ -154,8 +159,18 @@
+     getState: function () { return state; },
+     setState: function (s) { Object.assign(state, s); },
+     onChange: function () { syncUI(); scheduleLiveParams(); },
+-    onDragEnd: function () { scheduleLiveRender(); scheduleLiveParams(); }
++    onDragEnd: function () { scheduleLiveRender(); scheduleLiveParams(); },
++    sourceMeta: function (which) { return sourceVis[which] || null; }
+   });
++  var sourceViews = document.getElementById("sourceViews");
++  var sourceDesk = window.SourceDesk ? SourceDesk.create({
++    getState: function () { return state; },
++    setState: function (s) { Object.assign(state, s); },
++    onChange: function () { syncUI(); scheduleLiveParams(); },
++    onDragEnd: function () { scheduleLiveRender(); scheduleLiveParams(); },
++    RoomMath: window.RoomMath,
++    vis: sourceVis
++  }) : null;
+ 
+   var imageView = null;
+   var imageViewInitFailed = false;
+@@ -919,9 +934,11 @@
+ 
+     var isEdit = view === "edit";
+     var isMic = view === "mic";
++    var isSource = view === "source";
+     var isImage = view === "lattice" || view === "paths";
+     var isCS = view === "colour" || view === "surfaces" || view === "polar";
+     if (editViews) editViews.hidden = !isEdit;
++    if (sourceViews) sourceViews.hidden = !isSource;
+     if (micViews) micViews.hidden = !isMic;
+     if (mixViews) mixViews.hidden = view !== "mix";
+     if (imageViewsEl) imageViewsEl.hidden = !isImage;
+@@ -945,6 +962,11 @@
+ 
+     if (isEdit) {
+       editor.redraw();
++    } else if (isSource && sourceDesk) {
++      requestAnimationFrame(function () {
++        if (currentView !== "source") return;
++        sourceDesk.redraw();
++      });
+     } else if (isMic) {
+       requestAnimationFrame(function () {
+         requestAnimationFrame(function () {
+@@ -1564,6 +1586,7 @@
+ 
+     paintSourceSplit();
+     editor.redraw();
++    if (sourceDesk && currentView === "source") sourceDesk.redraw();
+     if (currentView === "lattice" || currentView === "paths") scheduleImagesFetch();
+     paintMicModel();
+     paintSolos();
+@@ -2164,9 +2187,27 @@
+     });
+   }
+ 
++  function loadServerDefaults() {
++    fetch("/api/defaults").then(function (r) { return r.json(); }).then(function (data) {
++      var d = data && data.defaults;
++      if (!d) return;
++      var skip = {
++        space: 1, yaw_l_deg: 1, yaw_c_deg: 1, yaw_r_deg: 1,
++        toe_half_deg: 1, diverg: 1, early_wet: 1, surfaces: 1
++      };
++      Object.keys(d).forEach(function (k) {
++        if (skip[k] || d[k] == null) return;
++        if (Object.prototype.hasOwnProperty.call(state, k)) state[k] = d[k];
++      });
++      if (state.mic_setup && state.mic_setup !== "custom") applyMicPreset(state.mic_setup, false);
++      else syncUI();
++    }).catch(function () {});
++  }
++
+   // Default Mic setup = ORTF ±55°. Colour preset is SM57 and does not move yaw.
+   bindDesk();
+   applyMicPreset(state.mic_setup || "ortf", false);
++  loadServerDefaults();
+   loadMicCatalogue();
+   setView("edit");
+ })();
+diff -ruN -x __pycache__ -x .pytest_cache -x '*.wasm' -x '*.orig' snapshot_2026-10-02_0709/software/static/js/image_views.js snapshot_2026-10-02_0830/software/static/js/image_views.js
+--- snapshot_2026-10-02_0709/software/static/js/image_views.js	2026-09-22 09:24:05.000000000 +0100
++++ snapshot_2026-10-02_0830/software/static/js/image_views.js	2026-10-02 08:11:53.000000000 +0100
+@@ -69,6 +69,11 @@
+     var orbiting = false;
+     var panning = false;
+     var lastPtr = { x: 0, y: 0 };
++    var pathHits = [];
++    var tip = document.createElement("div");
++    tip.className = "path-tip";
++    tip.hidden = true;
++    if (canvas.parentElement) canvas.parentElement.appendChild(tip);
+ 
+     function clearRoot() {
+       while (root.children.length) {
+@@ -228,6 +233,8 @@
+     }
+ 
+     function buildLattice() {
++      pathHits = [];
++      hideTip();
+       if (!data) return;
+       clearRoot();
+       var room = data.room;
+@@ -261,8 +268,27 @@
+       fitCamera(true);
+     }
+ 
++    function rememberHit(tap, pts, micId) {
++      var L = (data && data.room) ? data.room.L : 0;
++      (pts || []).forEach(function (pt) {
++        var q = mapPt(pt, L);
++        if (!q || typeof q.x !== "number") return;
++        pathHits.push({ x: q.x, y: q.y, z: q.z, tap: tap, mic: micId });
++      });
++    }
++    function fmtDb(v) {
++      if (v == null || !isFinite(Number(v))) return "—";
++      var n = Number(v);
++      return (n >= 0 ? "+" : "−") + Math.abs(n).toFixed(1) + " dB";
++    }
++    function fmtDeg(v) {
++      if (v == null || !isFinite(Number(v))) return "—";
++      return Math.round(Number(v)) + "°";
++    }
++
+     function buildPaths() {
+       if (!data) return;
++      pathHits = [];
+       clearRoot();
+       var room = data.room;
+       root.add(homeBox(room));
+@@ -274,18 +300,19 @@
+       floor.position.set(room.W * 0.5, 0, room.L * 0.5);
+       root.add(floor);
+       var selected = data.selected_mics || ["C"];
+-      function addPathSet(taps, force) {
++      function addPathSet(taps, force, micId) {
+         (taps || []).forEach(function (t) {
+           if (!t.path || t.path.length < 2) return;
+           var col = force != null ? force : (t.is_direct ? SRC : (t.polarity > 0 ? POL_POS : POL_NEG));
+           var op = t.is_direct ? 0.95 : 0.35 + 0.4 / (1 + t.order);
+           if (force != null && !t.is_direct) op *= 0.75;
+           root.add(linePts(t.path, col, op));
++          rememberHit(t, t.path, micId);
+         });
+       }
+       selected.forEach(function (micId) {
+-        addPathSet(perMicTaps(data, micId));
+-        if (data.per_mic_b) addPathSet(data.per_mic_b[micId] || [], SRC_B);
++        addPathSet(perMicTaps(data, micId), null, micId);
++        if (data.per_mic_b) addPathSet(data.per_mic_b[micId] || [], SRC_B, micId);
+       });
+       addWallLabels(room);
+       addActors(data.source, data.mics, selected);
+@@ -294,11 +321,12 @@
+ 
+     function buildLegs() {
+       if (!data) return;
++      pathHits = [];
+       clearRoot();
+       var room = data.room;
+       root.add(homeBox(room));
+       var selected = data.selected_mics || ["C"];
+-      function addLegSet(taps, force) {
++      function addLegSet(taps, force, micId) {
+         (taps || []).forEach(function (t) {
+           var leg = t.last_leg || t.lastLeg || t.leg; if (!leg) return;
+           var ends = legEnds(leg); if (!ends) return;
+@@ -306,16 +334,17 @@
+           var op = t.is_direct ? 1.0 : 0.4 + 0.35 / (1 + t.order);
+           if (force != null && !t.is_direct) op *= 0.75;
+           root.add(linePts(ends, col, op));
+-          var tip = marker(col, 0.045);
++          var mark = marker(col, 0.045);
+           var tp = mapPt(ends[0], room.L);
+-          tip.position.set(tp.x, tp.y, tp.z);
+-          root.add(tip);
++          mark.position.set(tp.x, tp.y, tp.z);
++          root.add(mark);
++          rememberHit(t, ends, micId);
+         });
+       }
+       selected.forEach(function (micId) {
+         var mic = data.mics[micId];
+-        addLegSet(perMicTaps(data, micId));
+-        if (data.per_mic_b) addLegSet(data.per_mic_b[micId] || [], SRC_B);
++        addLegSet(perMicTaps(data, micId), null, micId);
++        if (data.per_mic_b) addLegSet(data.per_mic_b[micId] || [], SRC_B, micId);
+         if (mic) {
+           var hemi = new THREE.Mesh(
+             new THREE.SphereGeometry(0.55, 24, 16, 0, Math.PI * 2, 0, Math.PI * 0.5),
+@@ -364,12 +393,43 @@
+       }
+     }
+ 
++    function hideTip() { tip.hidden = true; }
++    function hoverPath(evt) {
++      if (mode === "lattice" || orbiting || panning || !pathHits.length) { hideTip(); return; }
++      updateCamera();
++      var rect = canvas.getBoundingClientRect();
++      var mx = evt.clientX - rect.left;
++      var my = evt.clientY - rect.top;
++      var best = null;
++      var bestD = 14;
++      var v = new THREE.Vector3();
++      for (var i = 0; i < pathHits.length; i++) {
++        var h = pathHits[i];
++        v.set(h.x, h.y, h.z).project(camera);
++        if (v.z < -1 || v.z > 1) continue;
++        var sx = (v.x * 0.5 + 0.5) * rect.width;
++        var sy = (-v.y * 0.5 + 0.5) * rect.height;
++        var d = Math.hypot(sx - mx, sy - my);
++        if (d < bestD) { bestD = d; best = { h: h, sx: sx, sy: sy }; }
++      }
++      if (!best) { hideTip(); return; }
++      var t = best.h.tap || {};
++      var order = t.order != null ? t.order : "—";
++      tip.hidden = false;
++      tip.textContent = (t.is_direct ? "Direct" : ("Image order " + order)) +
++        " · mic " + (best.h.mic || "") +
++        "\naz " + fmtDeg(t.src_az_deg) + "   el " + fmtDeg(t.src_el_deg) +
++        "\n1 kHz " + fmtDb(t.src_db_1k) + "   4 kHz " + fmtDb(t.src_db_4k);
++      tip.style.left = Math.round(best.sx + 12) + "px";
++      tip.style.top = Math.round(best.sy + 12) + "px";
++    }
++
+     function onPointerMove(evt) {
+       var dx = evt.clientX - lastPtr.x, dy = evt.clientY - lastPtr.y;
+       lastPtr.x = evt.clientX; lastPtr.y = evt.clientY;
+       if (orbiting) {
+         camSph.theta -= dx * 0.008; camSph.phi -= dy * 0.008;
+-        updateCamera(); needsRender = true; return;
++        updateCamera(); needsRender = true; hideTip(); return;
+       }
+       if (panning) {
+         var forward = new THREE.Vector3(); camera.getWorldDirection(forward);
+@@ -378,11 +438,13 @@
+         var scale = camSph.radius * 0.0018;
+         camTarget.addScaledVector(right, -dx * scale);
+         camTarget.addScaledVector(up, dy * scale);
+-        updateCamera(); needsRender = true;
++        updateCamera(); needsRender = true; hideTip(); return;
+       }
++      hoverPath(evt);
+     }
+ 
+     function onPointerUp() { orbiting = false; panning = false; canvas.classList.remove("dragging"); }
++    canvas.addEventListener("pointerleave", hideTip);
+     function onWheel(evt) {
+       evt.preventDefault();
+       camSph.radius *= evt.deltaY > 0 ? 1.08 : 1 / 1.08;
+diff -ruN -x __pycache__ -x .pytest_cache -x '*.wasm' -x '*.orig' snapshot_2026-10-02_0709/software/static/js/live_fdn.js snapshot_2026-10-02_0830/software/static/js/live_fdn.js
+--- snapshot_2026-10-02_0709/software/static/js/live_fdn.js	2026-10-02 05:16:11.000000000 +0100
++++ snapshot_2026-10-02_0830/software/static/js/live_fdn.js	2026-10-02 07:52:36.000000000 +0100
+@@ -16,7 +16,7 @@
+   var colourRev = "";
+   var bank = null;
+   var lastCapLine = "";
+-  var WORKLET_VER = 39;
++  var WORKLET_VER = 40;
+   var COLOUR_CAP = 192;
+   var ROUTE_LEN = 326;
+ 
+diff -ruN -x __pycache__ -x .pytest_cache -x '*.wasm' -x '*.orig' snapshot_2026-10-02_0709/software/static/js/room_3d.js snapshot_2026-10-02_0830/software/static/js/room_3d.js
+--- snapshot_2026-10-02_0709/software/static/js/room_3d.js	2026-09-24 20:06:58.000000000 +0100
++++ snapshot_2026-10-02_0830/software/static/js/room_3d.js	2026-10-02 08:09:03.000000000 +0100
+@@ -97,6 +97,8 @@
+     var coneL = null;
+     var coneC = null;
+     var coneR = null;
++    var srcCone = null;
++    var srcConeB = null;
+     var labelSprites = [];
+ 
+     var lastWHL = { W: -1, H: -1, L: -1 };
+@@ -463,6 +465,29 @@
+       micCentre.add(coneC);
+       micR.add(coneR);
+ 
++      function sourceCone(color) {
++        var geo = new THREE.ConeGeometry(0.12, 0.48, 16, 1, true);
++        geo.translate(0, -0.2, 0);
++        geo.rotateX(-Math.PI / 2);
++        var mat = new THREE.MeshStandardMaterial({
++          color: color,
++          transparent: true,
++          opacity: 0.55,
++          emissive: color,
++          emissiveIntensity: 0.2,
++          roughness: 1,
++          metalness: 0,
++          side: THREE.DoubleSide,
++          depthWrite: false,
++        });
++        var m = new THREE.Mesh(geo, mat);
++        m.visible = false;
++        actors.add(m);
++        return m;
++      }
++      srcCone = sourceCone(COLORS.src);
++      srcConeB = sourceCone(COLORS.srcB);
++
+       // Floor path line Src → Mic (XZ)
+       var linkGeo = new THREE.BufferGeometry().setFromPoints([
+         new THREE.Vector3(0, 0.01, 0),
+@@ -562,6 +587,34 @@
+       aim(coneC, geo.look_c || { x: 0, z: 1 });
+       aim(coneR, geo.look_r);
+ 
++      function aimSource(cone, origin, yawDeg, pitchDeg, show) {
++        if (!cone) return;
++        cone.visible = !!show;
++        if (!show) return;
++        var yaw = (Number(yawDeg) || 0) * Math.PI / 180;
++        var pitch = (Number(pitchDeg) || 0) * Math.PI / 180;
++        var fx = Math.sin(yaw) * Math.cos(pitch);
++        var fy = Math.sin(pitch);
++        var fz = Math.cos(yaw) * Math.cos(pitch);
++        cone.position.set(origin.x + fx * 0.22, origin.y + fy * 0.22, origin.z - fz * 0.22);
++        cone.lookAt(cone.position.x - fx, cone.position.y - fy, cone.position.z + fz);
++      }
++      function srcShow(id) {
++        return String(id || "omni").toLowerCase() !== "omni";
++      }
++      var yawB = s.source_yaw_b;
++      if (yawB == null || yawB === "" || !isFinite(Number(yawB))) yawB = s.source_yaw;
++      var pitchB = s.source_pitch_b;
++      if (pitchB == null || pitchB === "" || !isFinite(Number(pitchB))) pitchB = s.source_pitch;
++      aimSource(srcCone, srcMesh.position, s.source_yaw, s.source_pitch, srcShow(s.source_radiation));
++      if (srcConeB) {
++        var originB = showB && srcMeshB ? srcMeshB.position : srcMesh.position;
++        aimSource(
++          srcConeB, originB, yawB, pitchB,
++          showB && srcShow(s.source_radiation_b || s.source_radiation)
++        );
++      }
++
+       if (actors.userData.link) {
+         var pts = actors.userData.link.geometry.attributes.position;
+         pts.setXYZ(0, geo.source.x, 0.02, worldZ(geo.source.z, s.L));
+diff -ruN -x __pycache__ -x .pytest_cache -x '*.wasm' -x '*.orig' snapshot_2026-10-02_0709/software/static/js/room_editor.js snapshot_2026-10-02_0830/software/static/js/room_editor.js
+--- snapshot_2026-10-02_0709/software/static/js/room_editor.js	2026-10-01 11:40:50.000000000 +0100
++++ snapshot_2026-10-02_0830/software/static/js/room_editor.js	2026-10-02 08:08:52.000000000 +0100
+@@ -106,6 +106,7 @@
+     const setState = opts.setState;
+     const onChange = opts.onChange;
+     const onDragEnd = opts.onDragEnd || function () {};
++    const sourceMeta = opts.sourceMeta || function () { return null; };
+ 
+     const fctx = floorCanvas.getContext("2d");
+     const ectx = elevCanvas.getContext("2d");
+@@ -211,6 +212,222 @@
+       ctx.fill();
+     }
+ 
++    const RING_PX = 30;
++    const RING_HIT = 16;
++
++    function yawOf(st, which) {
++      if (which === "b") {
++        const y = st.source_yaw_b;
++        if (y == null || y === "" || !isFinite(Number(y))) return Number(st.source_yaw) || 0;
++        return Number(y) || 0;
++      }
++      return Number(st.source_yaw) || 0;
++    }
++    function pitchOf(st, which) {
++      if (which === "b") {
++        const p = st.source_pitch_b;
++        if (p == null || p === "" || !isFinite(Number(p))) return Number(st.source_pitch) || 0;
++        return Number(p) || 0;
++      }
++      return Number(st.source_pitch) || 0;
++    }
++    function presetId(st, which) {
++      if (which === "b") return String(st.source_radiation_b || st.source_radiation || "omni");
++      return String(st.source_radiation || "omni");
++    }
++    function isOmniSrc(st, which) {
++      return presetId(st, which).toLowerCase() === "omni";
++    }
++    function wrapDeg(d) {
++      let x = Number(d) || 0;
++      x = ((x + 540) % 360) - 180;
++      return x;
++    }
++    function setYawPitch(st, which, yaw, pitch) {
++      if (which === "b") {
++        if (yaw != null) st.source_yaw_b = wrapDeg(yaw);
++        if (pitch != null) st.source_pitch_b = Math.max(-89, Math.min(89, pitch));
++      } else {
++        if (yaw != null) st.source_yaw = wrapDeg(yaw);
++        if (pitch != null) st.source_pitch = Math.max(-89, Math.min(89, pitch));
++      }
++    }
++    function faceMicState(st, which) {
++      const geo = RoomMath.compute(st);
++      const src = which === "b" && geo.source_b ? geo.source_b : geo.source;
++      const mic = geo.mic_centre;
++      const dx = mic.x - src.x;
++      const dy = mic.y - src.y;
++      const dz = mic.z - src.z;
++      setYawPitch(
++        st, which,
++        Math.atan2(dx, dz) * 180 / Math.PI,
++        Math.atan2(dy, Math.hypot(dx, dz)) * 180 / Math.PI
++      );
++    }
++    function metaFor(which) {
++      try { return sourceMeta(which) || null; } catch (e) { return null; }
++    }
++    function sizeMetres(st, which) {
++      const raw = st.source_size_m;
++      if (raw != null && raw !== "" && isFinite(Number(raw)) && Number(raw) > 0) return Number(raw);
++      const meta = metaFor(which);
++      if (meta && Number(meta.a_eq_m) > 0) return Number(meta.a_eq_m);
++      return 0;
++    }
++    function ringFloor(dot, yawDeg) {
++      const yaw = yawDeg * Math.PI / 180;
++      return { px: dot.px + Math.sin(yaw) * RING_PX, py: dot.py - Math.cos(yaw) * RING_PX };
++    }
++    function ringElev(dot, pitchDeg) {
++      const p = pitchDeg * Math.PI / 180;
++      return { px: dot.px + Math.cos(p) * RING_PX, py: dot.py - Math.sin(p) * RING_PX };
++    }
++    function drawLobe(ctx, dot, yawDeg, curve, angles) {
++      if (!curve || !curve.length) return;
++      ctx.beginPath();
++      for (let i = 0; i < curve.length; i++) {
++        const azDeg = angles && angles.length === curve.length ? angles[i] : (-180 + i * 5);
++        const az = azDeg * Math.PI / 180;
++        const yaw = yawDeg * Math.PI / 180;
++        const db = Number(curve[i]);
++        const t = Math.max(0, Math.min(1, (db + 30) / 30));
++        const rad = 8 + t * 62;
++        const x = dot.px + Math.sin(az + yaw) * rad;
++        const y = dot.py - Math.cos(az + yaw) * rad;
++        if (i === 0) ctx.moveTo(x, y);
++        else ctx.lineTo(x, y);
++      }
++      ctx.closePath();
++      ctx.fillStyle = "rgba(255,179,71,0.16)";
++      ctx.fill();
++      ctx.strokeStyle = "rgba(255,179,71,0.45)";
++      ctx.lineWidth = 1;
++      ctx.stroke();
++    }
++    function drawSizeCircle(ctx, dot, metres, scale) {
++      if (!(metres > 0) || !(scale > 0)) return;
++      const r = Math.max(4, metres * scale);
++      ctx.beginPath();
++      ctx.arc(dot.px, dot.py, r, 0, Math.PI * 2);
++      ctx.setLineDash([3, 4]);
++      ctx.strokeStyle = "rgba(255,179,71,0.55)";
++      ctx.lineWidth = 1;
++      ctx.stroke();
++      ctx.setLineDash([]);
++    }
++    function drawHollow(ctx, x, y, color, active) {
++      ctx.beginPath();
++      ctx.arc(x, y, active ? 8 : 6.5, 0, Math.PI * 2);
++      ctx.strokeStyle = color;
++      ctx.lineWidth = active ? 2.5 : 2;
++      ctx.stroke();
++    }
++    function drawSourceUnder(ctx, geo, plane) {
++      const st = geo.state;
++      const items = [{ which: "a", src: geo.source }];
++      if (geo.source_b) items.push({ which: "b", src: geo.source_b });
++      items.forEach(function (it) {
++        if (isOmniSrc(st, it.which)) return;
++        if (plane === "floor" && it.which === "b" && stackedFloor(geo)) return;
++        if (plane === "elev" && it.which === "b" && stackedElev(geo)) return;
++        const dot = plane === "floor"
++          ? toPx(it.src.x, it.src.z, fl)
++          : ePx(it.src.z, it.src.y, el);
++        const meta = metaFor(it.which);
++        const scale = plane === "floor" ? fl.scale : el.scale;
++        drawSizeCircle(ctx, dot, sizeMetres(st, it.which), scale);
++        if (plane === "floor" && meta && meta.horizontal) {
++          drawLobe(ctx, dot, yawOf(st, it.which), meta.horizontal["2000"] || meta.horizontal[2000], meta.angles);
++        }
++      });
++    }
++    function drawSourceRings(ctx, geo, plane) {
++      const st = geo.state;
++      const items = [{ which: "a", src: geo.source, color: COLORS.src }];
++      if (geo.source_b) items.push({ which: "b", src: geo.source_b, color: COLORS.srcB });
++      items.forEach(function (it) {
++        if (isOmniSrc(st, it.which)) return;
++        if (plane === "floor" && it.which === "b" && stackedFloor(geo)) return;
++        if (plane === "elev" && it.which === "b" && stackedElev(geo)) return;
++        const dot = plane === "floor"
++          ? toPx(it.src.x, it.src.z, fl)
++          : ePx(it.src.z, it.src.y, el);
++        const ring = plane === "floor"
++          ? ringFloor(dot, yawOf(st, it.which))
++          : ringElev(dot, pitchOf(st, it.which));
++        const kind = plane === "floor"
++          ? (it.which === "b" ? "srcBYaw" : "srcYaw")
++          : (it.which === "b" ? "srcBPitch" : "srcPitch");
++        const active = !!(drag && drag.kind === kind);
++        ctx.beginPath();
++        ctx.moveTo(dot.px, dot.py);
++        ctx.lineTo(ring.px, ring.py);
++        ctx.strokeStyle = it.color;
++        ctx.lineWidth = 1.5;
++        ctx.stroke();
++        drawHollow(ctx, ring.px, ring.py, it.color, active || hover === kind);
++        if (active || hover === kind) {
++          const off = offMicDeg(st, it.which);
++          const label = (plane === "floor" ? "yaw " : "pitch ") +
++            (plane === "floor" ? Math.round(yawOf(st, it.which)) : Math.round(pitchOf(st, it.which))) +
++            "° · " + (off >= 0 ? "+" : "") + Math.round(off) + "° off mic";
++          ctx.font = "600 11px Segoe UI, system-ui, sans-serif";
++          ctx.fillStyle = "#e8eaef";
++          ctx.textAlign = "left";
++          ctx.fillText(label, ring.px + 12, ring.py - 8);
++        }
++      });
++    }
++    function offMicDeg(st, which) {
++      const geo = RoomMath.compute(st);
++      const src = which === "b" && geo.source_b ? geo.source_b : geo.source;
++      const mic = geo.mic_centre;
++      const dx = mic.x - src.x;
++      const dz = mic.z - src.z;
++      const face = Math.atan2(dx, dz) * 180 / Math.PI;
++      return ((yawOf(st, which) - face + 540) % 360) - 180;
++    }
++    function nearestSrc(px, py, geo, plane) {
++      const st = geo.state;
++      let best = null;
++      let bestD = 1e9;
++      function consider(which, src) {
++        if (!src || isOmniSrc(st, which)) return;
++        if (plane === "floor" && which === "b" && stackedFloor(geo)) return;
++        if (plane === "elev" && which === "b" && stackedElev(geo)) return;
++        const dot = plane === "floor" ? toPx(src.x, src.z, fl) : ePx(src.z, src.y, el);
++        const d = Math.hypot(px - dot.px, py - dot.py);
++        if (d < bestD) { bestD = d; best = { which: which, dot: dot, d: d }; }
++      }
++      consider("a", geo.source);
++      consider("b", geo.source_b);
++      return best;
++    }
++    function hitRing(px, py, geo, plane) {
++      const st = geo.state;
++      let found = null;
++      let best = RING_HIT;
++      function consider(which, src) {
++        if (!src || isOmniSrc(st, which)) return;
++        if (plane === "floor" && which === "b" && stackedFloor(geo)) return;
++        if (plane === "elev" && which === "b" && stackedElev(geo)) return;
++        const dot = plane === "floor" ? toPx(src.x, src.z, fl) : ePx(src.z, src.y, el);
++        const ring = plane === "floor" ? ringFloor(dot, yawOf(st, which)) : ringElev(dot, pitchOf(st, which));
++        const d = Math.hypot(px - ring.px, py - ring.py);
++        const dotD = Math.hypot(px - dot.px, py - dot.py);
++        if (d <= best && d < dotD) {
++          best = d;
++          found = plane === "floor"
++            ? (which === "b" ? "srcBYaw" : "srcYaw")
++            : (which === "b" ? "srcBPitch" : "srcPitch");
++        }
++      }
++      consider("b", geo.source_b);
++      consider("a", geo.source);
++      return found;
++    }
++
+     function drawFloor(geo) {
+       const ctx = fctx;
+       const cw = floorCanvas.width, ch = floorCanvas.height;
+@@ -278,6 +495,7 @@
+         drawArrow(ctx, Cp.px, Cp.py, geo.look_c.x, geo.look_c.z, al * 0.55, COLORS.mic, fl.scale);
+       }
+ 
++      drawSourceUnder(ctx, geo, "floor");
+       drawHandle(ctx, Lp.px, Lp.py, COLORS.L, "L", false, false);
+       drawHandle(ctx, Rp.px, Rp.py, COLORS.R, "R", false, false);
+       drawHandle(ctx, Cp.px, Cp.py, COLORS.mic, "Mic", !!(drag && drag.kind === "mic"), hover === "mic");
+@@ -287,6 +505,7 @@
+         const Bp = toPx(geo.source_b.x, geo.source_b.z, fl);
+         drawHandle(ctx, Bp.px, Bp.py, COLORS.srcB, "B", !!(drag && drag.kind === "sourceB"), hover === "sourceB");
+       }
++      drawSourceRings(ctx, geo, "floor");
+ 
+       ctx.fillStyle = "#8b92a5";
+       ctx.font = "600 11px Segoe UI, system-ui, sans-serif";
+@@ -349,6 +568,7 @@
+       ctx.stroke();
+       ctx.setLineDash([]);
+ 
++      drawSourceUnder(ctx, geo, "elev");
+       const srcActive = !!(drag && drag.kind === "srcHeight");
+       const micActive = !!(drag && (drag.kind === "micHeight" || drag.kind === "height"));
+       const srcPrimary = lastDragged === "source";
+@@ -370,6 +590,7 @@
+           !!(drag && drag.kind === "srcBHeight"), hover === "srcBHeight"
+         );
+       }
++      drawSourceRings(ctx, geo, "elev");
+       drawHandle(ctx, Cp.px, Cp.py, COLORS.mic, "Mic H", micActive || micPrimary, hover === "micHeight" || hover === "height");
+ 
+       ctx.fillStyle = "#5c6478";
+@@ -437,6 +658,8 @@
+       };
+     }
+     function hitFloor(px, py, geo) {
++      const ring = hitRing(px, py, geo, "floor");
++      if (ring) return ring;
+       const d = floorDists(px, py, geo);
+       /* B wins a real overlap. A locked pair that shares one pixel stays A,
+          so Mirror keeps following while you drag height or the centerline. */
+@@ -457,6 +680,8 @@
+       return lastDragged === "sourceB" ? "sourceB" : lastDragged;
+     }
+     function hitElev(px, py, geo) {
++      const ring = hitRing(px, py, geo, "elev");
++      if (ring) return ring;
+       const d = elevDists(px, py, geo);
+       const bHit = geo.source_b && !stackedElev(geo) && d.db <= HIT;
+       const srcHit = d.ds <= HIT;
+@@ -505,12 +730,19 @@
+       fl = floorLayout(geo);
+       const p = canvasPos(floorCanvas, evt);
+       const onHandle = !!hitFloor(p.x, p.y, geo);
+-      const kind = pickFloorKind(p.x, p.y, geo);
+-      lastDragged = kind === "mic" ? "mic" : (kind === "sourceB" ? "sourceB" : "source");
++      let kind = pickFloorKind(p.x, p.y, geo);
++      if (evt.altKey) {
++        const near = nearestSrc(p.x, p.y, geo, "floor");
++        if (near && near.d <= HIT + 28) kind = near.which === "b" ? "srcBSize" : "srcSize";
++      }
++      lastDragged = (kind === "mic") ? "mic"
++        : (kind === "sourceB" || kind === "srcBYaw" || kind === "srcBSize") ? "sourceB"
++        : "source";
+       drag = { kind: kind, canvas: "floor" };
+       floorCanvas.classList.add("dragging");
+       try { floorCanvas.setPointerCapture(evt.pointerId); } catch (e) {}
+-      if (!onHandle) {
++      const facingKind = kind === "srcYaw" || kind === "srcBYaw" || kind === "srcSize" || kind === "srcBSize";
++      if (!onHandle && !facingKind) {
+         /* Empty floor: move selected object to click, then drag */
+         const m = toM(p.x, p.y, fl);
+         const st = Object.assign({}, getState());
+@@ -537,8 +769,27 @@
+       fl = floorLayout(geo);
+       const p = canvasPos(floorCanvas, evt);
+       if (drag && drag.canvas === "floor") {
++        const st0 = getState();
++        if (drag.kind === "srcYaw" || drag.kind === "srcBYaw" || drag.kind === "srcSize" || drag.kind === "srcBSize") {
++          const which = (drag.kind === "srcBYaw" || drag.kind === "srcBSize") ? "b" : "a";
++          const src = which === "b" && geo.source_b ? geo.source_b : geo.source;
++          const dot = toPx(src.x, src.z, fl);
++          const st = Object.assign({}, st0);
++          if (drag.kind === "srcSize" || drag.kind === "srcBSize") {
++            const pxR = Math.max(4, Math.hypot(p.x - dot.px, p.y - dot.py));
++            st.source_size_m = Math.max(0.005, Math.min(0.6, pxR / Math.max(1e-6, fl.scale)));
++          } else {
++            let yaw = Math.atan2(p.x - dot.px, -(p.y - dot.py)) * 180 / Math.PI;
++            if (evt.shiftKey) yaw = Math.round(yaw / 15) * 15;
++            setYawPitch(st, which, yaw, null);
++          }
++          setState(RoomMath.clampRoom(st));
++          onChange();
++          redraw();
++          return;
++        }
+         const m = toM(p.x, p.y, fl);
+-        const st = Object.assign({}, getState());
++        const st = Object.assign({}, st0);
+         if (drag.kind === "sourceB") {
+           st.mirror_b = false;
+           st.sx_b = RoomMath.clamp(m.x, 0, st.W);
+@@ -556,6 +807,7 @@
+         return;
+       }
+       const h = hitFloor(p.x, p.y, geo);
++      floorCanvas.style.cursor = (h === "srcYaw" || h === "srcBYaw") ? "all-scroll" : "";
+       if (h !== hover) {
+         hover = h;
+         redraw();
+@@ -568,7 +820,8 @@
+       const p = canvasPos(elevCanvas, evt);
+       const onHandle = !!hitElev(p.x, p.y, geo);
+       const kind = pickElevKind(p.x, p.y, geo);
+-      lastDragged = kind === "srcBHeight" ? "sourceB" : (kind === "srcHeight" ? "source" : "mic");
++      lastDragged = (kind === "srcBHeight" || kind === "srcBPitch") ? "sourceB"
++        : (kind === "srcHeight" || kind === "srcPitch") ? "source" : "mic";
+       drag = { kind: kind, canvas: "elev" };
+       elevCanvas.classList.add("dragging");
+       try { elevCanvas.setPointerCapture(evt.pointerId); } catch (e) {}
+@@ -600,6 +853,20 @@
+       el = elevLayout(geo);
+       const p = canvasPos(elevCanvas, evt);
+       if (drag && drag.canvas === "elev") {
++        if (drag.kind === "srcPitch" || drag.kind === "srcBPitch") {
++          const which = drag.kind === "srcBPitch" ? "b" : "a";
++          const src = which === "b" && geo.source_b ? geo.source_b : geo.source;
++          const dot = ePx(src.z, src.y, el);
++          let pitch = Math.atan2(-(p.y - dot.py), p.x - dot.px) * 180 / Math.PI;
++          pitch = Math.max(-89, Math.min(89, pitch));
++          if (evt.shiftKey) pitch = Math.round(pitch / 15) * 15;
++          const st = Object.assign({}, getState());
++          setYawPitch(st, which, null, pitch);
++          setState(RoomMath.clampRoom(st));
++          onChange();
++          redraw();
++          return;
++        }
+         const m = eM(p.x, p.y, el);
+         const st = Object.assign({}, getState());
+         const kind = drag.kind === "height" ? "micHeight" : drag.kind;
+@@ -621,12 +888,76 @@
+         return;
+       }
+       const h = hitElev(p.x, p.y, geo);
++      elevCanvas.style.cursor = (h === "srcPitch" || h === "srcBPitch") ? "all-scroll" : "";
+       if (h !== hover) {
+         hover = h;
+         redraw();
+       }
+     });
+ 
++    function onFacingWheel(canvas, plane, evt) {
++      const geo = RoomMath.compute(getState());
++      if (plane === "floor") fl = floorLayout(geo);
++      else el = elevLayout(geo);
++      const p = canvasPos(canvas, evt);
++      const ring = hitRing(p.x, p.y, geo, plane);
++      if (!ring) return;
++      evt.preventDefault();
++      const which = (ring === "srcBYaw" || ring === "srcBPitch") ? "b" : "a";
++      const step = evt.deltaY > 0 ? -5 : 5;
++      const st = Object.assign({}, getState());
++      if (plane === "floor") setYawPitch(st, which, yawOf(st, which) + step, null);
++      else setYawPitch(st, which, null, pitchOf(st, which) + step);
++      setState(RoomMath.clampRoom(st));
++      onChange();
++      redraw();
++    }
++    function onFacingKey(evt) {
++      const k = evt.key;
++      if (k !== "ArrowLeft" && k !== "ArrowRight" && k !== "ArrowUp" && k !== "ArrowDown" &&
++          k !== "f" && k !== "F" && k !== "o" && k !== "O") return;
++      const which = lastDragged === "sourceB" ? "b" : "a";
++      const st = Object.assign({}, getState());
++      if (k === "o" || k === "O") {
++        if (which === "b") st.source_radiation_b = "omni";
++        else st.source_radiation = "omni";
++      } else if (k === "f" || k === "F") {
++        faceMicState(st, which);
++      } else if (k === "ArrowLeft" || k === "ArrowRight") {
++        const step = k === "ArrowLeft" ? -5 : 5;
++        setYawPitch(st, which, yawOf(st, which) + step, null);
++      } else {
++        const step = k === "ArrowDown" ? -5 : 5;
++        setYawPitch(st, which, null, pitchOf(st, which) + step);
++      }
++      setState(RoomMath.clampRoom(st));
++      onChange();
++      redraw();
++      evt.preventDefault();
++    }
++    function onFacingDbl(canvas, plane, evt) {
++      const geo = RoomMath.compute(getState());
++      if (plane === "floor") fl = floorLayout(geo);
++      else el = elevLayout(geo);
++      const p = canvasPos(canvas, evt);
++      const ring = hitRing(p.x, p.y, geo, plane);
++      if (!ring) return;
++      const which = (ring === "srcBYaw" || ring === "srcBPitch") ? "b" : "a";
++      const st = Object.assign({}, getState());
++      faceMicState(st, which);
++      setState(RoomMath.clampRoom(st));
++      onChange();
++      redraw();
++    }
++    floorCanvas.tabIndex = 0;
++    elevCanvas.tabIndex = 0;
++    floorCanvas.addEventListener("wheel", function (evt) { onFacingWheel(floorCanvas, "floor", evt); }, { passive: false });
++    elevCanvas.addEventListener("wheel", function (evt) { onFacingWheel(elevCanvas, "elev", evt); }, { passive: false });
++    floorCanvas.addEventListener("dblclick", function (evt) { onFacingDbl(floorCanvas, "floor", evt); });
++    elevCanvas.addEventListener("dblclick", function (evt) { onFacingDbl(elevCanvas, "elev", evt); });
++    floorCanvas.addEventListener("keydown", onFacingKey);
++    elevCanvas.addEventListener("keydown", onFacingKey);
++
+     floorCanvas.addEventListener("pointerup", endDrag);
+     elevCanvas.addEventListener("pointerup", endDrag);
+     floorCanvas.addEventListener("pointercancel", endDrag);
+diff -ruN -x __pycache__ -x .pytest_cache -x '*.wasm' -x '*.orig' snapshot_2026-10-02_0709/software/static/js/source_desk.js snapshot_2026-10-02_0830/software/static/js/source_desk.js
+--- snapshot_2026-10-02_0709/software/static/js/source_desk.js	1970-01-01 01:00:00.000000000 +0100
++++ snapshot_2026-10-02_0830/software/static/js/source_desk.js	2026-10-02 08:10:15.000000000 +0100
+@@ -0,0 +1,425 @@
++/* 2011 Room Reverb — Source desk. Omni is the default and draws no lobe. */
++(function (global) {
++  "use strict";
++
++  var FREQS = [250, 500, 1000, 2000, 4000, 8000];
++  var FREQ_COLOR = {
++    250: "#3b82f6",
++    500: "#67e8f9",
++    1000: "#7dd3fc",
++    2000: "#fbbf24",
++    4000: "#ffb347",
++    8000: "#f87171"
++  };
++  var GROUPS = [
++    ["voice", "Voice"],
++    ["brass", "Brass"],
++    ["strings", "Strings"],
++    ["woodwind", "Woodwinds"],
++    ["guitar_amp", "Guitar amps & cabs"],
++    ["keys", "Keys"],
++    ["reference", "Reference"]
++  ];
++
++  function create(opts) {
++    opts = opts || {};
++    var getState = opts.getState;
++    var setState = opts.setState;
++    var onChange = opts.onChange || function () {};
++    var onDragEnd = opts.onDragEnd || function () {};
++    var RoomMath = opts.RoomMath || global.RoomMath;
++    var vis = opts.vis || { a: null, b: null };
++
++    var which = "a";
++    var plane = "h";
++    var freq = 1000;
++    var catalog = [];
++    var curveKey = "";
++    var hearTimer = 0;
++    var editor = null;
++
++    var presetSel = document.getElementById("sourcePreset");
++    var yawRange = document.getElementById("sourceYaw");
++    var pitchRange = document.getElementById("sourcePitch");
++    var sizeRange = document.getElementById("sourceSize");
++    var yawNum = document.getElementById("sourceYawNum");
++    var pitchNum = document.getElementById("sourcePitchNum");
++    var sizeNum = document.getElementById("sourceSizeNum");
++    var onsetEl = document.getElementById("sourceOnset");
++    var offEl = document.getElementById("sourceOffMic");
++    var hearEl = document.getElementById("sourceHear");
++    var diffuseEl = document.getElementById("sourceDiffuse");
++    var aimEl = document.getElementById("sourceAim");
++    var badgeEl = document.getElementById("sourceBadge");
++    var polarCanvas = document.getElementById("sourcePolar");
++    var chipA = document.getElementById("sourceChipA");
++    var chipB = document.getElementById("sourceChipB");
++    var polarPanel = document.getElementById("sourcePolarPanel");
++
++    function stNow() { return getState(); }
++    function isB() { return which === "b" && stNow().two_sources; }
++
++    function presetOf(st) {
++      if (isB()) return String(st.source_radiation_b || st.source_radiation || "omni");
++      return String(st.source_radiation || "omni");
++    }
++    function yawOf(st) {
++      if (!isB()) return Number(st.source_yaw) || 0;
++      var y = st.source_yaw_b;
++      if (y == null || y === "" || !isFinite(Number(y))) return Number(st.source_yaw) || 0;
++      return Number(y) || 0;
++    }
++    function pitchOf(st) {
++      if (!isB()) return Number(st.source_pitch) || 0;
++      var p = st.source_pitch_b;
++      if (p == null || p === "" || !isFinite(Number(p))) return Number(st.source_pitch) || 0;
++      return Number(p) || 0;
++    }
++    function faceOf(st) {
++      var geo = RoomMath.compute(st);
++      var src = isB() && geo.source_b ? geo.source_b : geo.source;
++      var mic = geo.mic_centre;
++      var dx = mic.x - src.x, dy = mic.y - src.y, dz = mic.z - src.z;
++      return {
++        yaw: Math.atan2(dx, dz) * 180 / Math.PI,
++        pitch: Math.atan2(dy, Math.hypot(dx, dz)) * 180 / Math.PI
++      };
++    }
++    function wrap(d) { return ((Number(d) + 540) % 360) - 180; }
++    function writePose(st, yaw, pitch) {
++      if (isB()) {
++        if (yaw != null) st.source_yaw_b = wrap(yaw);
++        if (pitch != null) st.source_pitch_b = Math.max(-89, Math.min(89, pitch));
++      } else {
++        if (yaw != null) st.source_yaw = wrap(yaw);
++        if (pitch != null) st.source_pitch = Math.max(-89, Math.min(89, pitch));
++      }
++    }
++    function commit(st) {
++      setState(RoomMath.clampRoom(st));
++      onChange();
++    }
++    function pack() { return vis[isB() ? "b" : "a"]; }
++
++    function tagLabel(tag) {
++      var t = String(tag || "");
++      if (t.indexOf("MEASURED") >= 0) return "measured fit";
++      if (t.indexOf("EXACT") >= 0) return "exact";
++      return "assumed";
++    }
++
++    function fillPresets(rows) {
++      catalog = rows || [];
++      if (!presetSel) return;
++      var prev = presetSel.value;
++      presetSel.innerHTML = "";
++      var by = {};
++      catalog.forEach(function (row) {
++        var c = row.category || "reference";
++        if (!by[c]) by[c] = [];
++        by[c].push(row);
++      });
++      GROUPS.forEach(function (g) {
++        var list = by[g[0]];
++        if (!list || !list.length) return;
++        var og = document.createElement("optgroup");
++        og.label = g[1];
++        list.forEach(function (row) {
++          var opt = document.createElement("option");
++          opt.value = row.id;
++          opt.textContent = row.label || row.id;
++          var rmse = row.rmse_holdout_db;
++          opt.title = (row.dataset || "") + (rmse != null ? (" · hold-out " + Number(rmse).toFixed(2) + " dB") : "");
++          og.appendChild(opt);
++        });
++        presetSel.appendChild(og);
++      });
++      if (prev) presetSel.value = prev;
++    }
++
++    function applyPreset(id) {
++      var st = Object.assign({}, stNow());
++      if (isB()) st.source_radiation_b = id;
++      else st.source_radiation = id;
++      if (String(id).toLowerCase() !== "omni") {
++        var f = faceOf(st);
++        writePose(st, f.yaw, f.pitch);
++      }
++      commit(st);
++    }
++
++    function setNum(el, value) {
++      if (!el || document.activeElement === el) return;
++      el.value = String(value);
++    }
++
++    function syncWidgets() {
++      var st = stNow();
++      var id = presetOf(st);
++      if (presetSel && document.activeElement !== presetSel) presetSel.value = id;
++      var yaw = Math.round(yawOf(st));
++      var pitch = Math.round(pitchOf(st));
++      setNum(yawRange, yaw);
++      setNum(pitchRange, pitch);
++      setNum(yawNum, yaw);
++      setNum(pitchNum, pitch);
++      var meta = pack();
++      var size = st.source_size_m;
++      if (size == null || size === "" || !isFinite(Number(size))) {
++        size = meta && meta.a_eq_m ? meta.a_eq_m : 0.02;
++      }
++      setNum(sizeRange, Number(size).toFixed(3));
++      setNum(sizeNum, Number(size).toFixed(3));
++      if (chipA) chipA.classList.toggle("active", !isB());
++      if (chipB) {
++        chipB.hidden = !st.two_sources;
++        chipB.classList.toggle("active", isB());
++      }
++      if (!st.two_sources) which = "a";
++      var row = null;
++      for (var i = 0; i < catalog.length; i++) if (catalog[i].id === id) row = catalog[i];
++      if (badgeEl) {
++        var tag = row ? tagLabel(row.tag) : (id === "omni" ? "exact" : "");
++        badgeEl.textContent = tag;
++        badgeEl.className = "honesty-badge " + (tag === "measured fit" ? "honesty-measured" : "honesty-assumed");
++        badgeEl.hidden = !tag;
++      }
++      var omni = id.toLowerCase() === "omni";
++      if (polarPanel) polarPanel.classList.toggle("source-omni", omni);
++      var face = faceOf(st);
++      var off = ((yawOf(st) - face.yaw + 540) % 360) - 180;
++      if (offEl) {
++        offEl.textContent = omni
++          ? "Omni. No facing."
++          : (Math.round(yawOf(st)) + "° yaw · " + Math.round(pitchOf(st)) + "° pitch · " +
++             (off >= 0 ? "+" : "") + Math.round(off) + "° off the mic");
++      }
++      if (onsetEl) {
++        var onset = meta && meta.onset_hz ? Math.round(meta.onset_hz) : 0;
++        onsetEl.textContent = onset ? ("Beaming onset ≈ " + onset + " Hz  (c / 2πa)") : "Size uses the preset radius until you move this.";
++      }
++      if (aimEl) {
++        var az = meta && meta.aim_az != null ? Number(meta.aim_az).toFixed(1) : "0";
++        var el = meta && meta.aim_el != null ? Number(meta.aim_el).toFixed(1) : "0";
++        aimEl.textContent = "Aim offset " + az + "° az, " + el + "° el (from the preset).";
++      }
++      if (diffuseEl && meta && meta.diffuse_text) diffuseEl.textContent = meta.diffuse_text;
++    }
++
++    function drawPolar() {
++      if (!polarCanvas) return;
++      var ctx = polarCanvas.getContext("2d");
++      var w = polarCanvas.width, h = polarCanvas.height;
++      ctx.clearRect(0, 0, w, h);
++      ctx.fillStyle = "#0a0b0e";
++      ctx.fillRect(0, 0, w, h);
++      var cx = w * 0.5, cy = h * 0.52, R = Math.min(w, h) * 0.36;
++      ctx.strokeStyle = "rgba(255,255,255,0.08)";
++      ctx.fillStyle = "#8b92a5";
++      ctx.font = "11px Segoe UI, system-ui, sans-serif";
++      ctx.textAlign = "left";
++      [0, -10, -20, -30].forEach(function (db) {
++        var r = ((db + 30) / 30) * R;
++        ctx.beginPath();
++        ctx.arc(cx, cy, Math.max(1, r), 0, Math.PI * 2);
++        ctx.stroke();
++        if (db < 0) ctx.fillText(db + " dB", cx + 4, cy - r + 12);
++      });
++      var meta = pack();
++      if (!meta || meta.omni) {
++        ctx.fillStyle = "#8b92a5";
++        ctx.textAlign = "center";
++        ctx.fillText("Omni", cx, cy);
++        return;
++      }
++      var table = plane === "v" ? meta.vertical : meta.horizontal;
++      var st = stNow();
++      var spin = plane === "v" ? pitchOf(st) : yawOf(st);
++      if (!table) return;
++      FREQS.forEach(function (f) {
++        var curve = table[String(f)] || table[f];
++        if (!curve) return;
++        var angles = meta.angles || [];
++        ctx.beginPath();
++        for (var i = 0; i < curve.length; i++) {
++          var ang = ((angles.length === curve.length ? angles[i] : (-180 + i * 5)) + spin) * Math.PI / 180;
++          var db = Number(curve[i]);
++          var r = Math.max(0, Math.min(1, (db + 30) / 30)) * R;
++          var x, y;
++          if (plane === "v") {
++            x = cx + r * Math.cos(ang);
++            y = cy - r * Math.sin(ang);
++          } else {
++            x = cx + r * Math.sin(ang);
++            y = cy - r * Math.cos(ang);
++          }
++          if (i === 0) ctx.moveTo(x, y);
++          else ctx.lineTo(x, y);
++        }
++        ctx.closePath();
++        ctx.strokeStyle = FREQ_COLOR[f] || "#fff";
++        ctx.lineWidth = f === freq ? 2.6 : 1.15;
++        ctx.globalAlpha = f === freq ? 1 : 0.75;
++        ctx.stroke();
++        ctx.globalAlpha = 1;
++      });
++    }
++
++    function curvesBody() {
++      var st = Object.assign({}, stNow());
++      st.which = isB() ? "b" : "a";
++      st.freq = freq;
++      return st;
++    }
++    function takePattern(data) {
++      if (!data || data.ok === false) return;
++      var key = (isB() ? "b" : "a");
++      vis[key] = data;
++      if (hearEl && data.direct_db != null) {
++        hearEl.textContent = Number(data.direct_db).toFixed(1) + " dB at " +
++          Math.round(data.freq || freq) + " Hz on the direct to the mic.";
++      }
++      if (diffuseEl && data.diffuse_text) diffuseEl.textContent = data.diffuse_text;
++      syncWidgets();
++      drawPolar();
++      if (editor) editor.redraw();
++    }
++    function fetchCurves() {
++      var st = stNow();
++      var id = presetOf(st);
++      var size = st.source_size_m == null ? "" : String(st.source_size_m);
++      var key = (isB() ? "b:" : "a:") + id + ":" + size;
++      if (key === curveKey && pack() && pack().horizontal) {
++        scheduleHear();
++        drawPolar();
++        return;
++      }
++      curveKey = key;
++      fetch("/api/source_preview", {
++        method: "POST",
++        headers: { "Content-Type": "application/json" },
++        body: JSON.stringify(curvesBody())
++      }).then(function (r) { return r.json(); }).then(takePattern).catch(function () {});
++    }
++    function scheduleHear() {
++      clearTimeout(hearTimer);
++      hearTimer = setTimeout(function () {
++        fetch("/api/source_preview", {
++          method: "POST",
++          headers: { "Content-Type": "application/json" },
++          body: JSON.stringify(curvesBody())
++        }).then(function (r) { return r.json(); }).then(function (data) {
++          if (!data || data.ok === false) return;
++          var cur = pack();
++          if (cur && data.direct_db != null) {
++            cur.direct_db = data.direct_db;
++            cur.diffuse_text = data.diffuse_text || cur.diffuse_text;
++            cur.off_mic_deg = data.off_mic_deg;
++          } else {
++            vis[isB() ? "b" : "a"] = data;
++          }
++          if (hearEl && data.direct_db != null) {
++            hearEl.textContent = Number(data.direct_db).toFixed(1) + " dB at " +
++              Math.round(data.freq || freq) + " Hz on the direct to the mic.";
++          }
++          if (diffuseEl && data.diffuse_text) diffuseEl.textContent = data.diffuse_text;
++        }).catch(function () {});
++      }, 30);
++    }
++
++    function bindRange(range, num, apply) {
++      function from(el) {
++        var v = Number(el.value);
++        if (!isFinite(v)) return;
++        apply(v);
++      }
++      if (range) range.addEventListener("input", function () { from(range); });
++      if (num) num.addEventListener("change", function () { from(num); });
++    }
++    bindRange(yawRange, yawNum, function (v) {
++      var st = Object.assign({}, stNow());
++      writePose(st, v, null);
++      commit(st);
++    });
++    bindRange(pitchRange, pitchNum, function (v) {
++      var st = Object.assign({}, stNow());
++      writePose(st, null, v);
++      commit(st);
++    });
++    bindRange(sizeRange, sizeNum, function (v) {
++      var st = Object.assign({}, stNow());
++      st.source_size_m = Math.max(0.005, Math.min(0.6, v));
++      curveKey = "";
++      commit(st);
++    });
++    if (presetSel) presetSel.addEventListener("change", function () { applyPreset(presetSel.value); });
++
++    function chip(id, fn) {
++      var el = document.getElementById(id);
++      if (el) el.addEventListener("click", fn);
++    }
++    chip("sourceFaceMic", function () {
++      var st = Object.assign({}, stNow());
++      var f = faceOf(st);
++      writePose(st, f.yaw, f.pitch);
++      commit(st);
++    });
++    chip("sourceFaceAway", function () {
++      var st = Object.assign({}, stNow());
++      var f = faceOf(st);
++      writePose(st, f.yaw + 180, -f.pitch);
++      commit(st);
++    });
++    chip("sourceOmni", function () { applyPreset("omni"); });
++    if (chipA) chipA.addEventListener("click", function () { which = "a"; curveKey = ""; redraw(); });
++    if (chipB) chipB.addEventListener("click", function () { which = "b"; curveKey = ""; redraw(); });
++
++    document.querySelectorAll("[data-src-freq]").forEach(function (btn) {
++      btn.addEventListener("click", function () {
++        freq = Number(btn.getAttribute("data-src-freq")) || 1000;
++        document.querySelectorAll("[data-src-freq]").forEach(function (b) {
++          b.classList.toggle("active", b === btn);
++        });
++        scheduleHear();
++        drawPolar();
++      });
++    });
++    document.querySelectorAll("[data-src-plane]").forEach(function (btn) {
++      btn.addEventListener("click", function () {
++        plane = btn.getAttribute("data-src-plane") === "v" ? "v" : "h";
++        document.querySelectorAll("[data-src-plane]").forEach(function (b) {
++          b.classList.toggle("active", b === btn);
++        });
++        drawPolar();
++      });
++    });
++
++    if (global.RoomEditor && document.getElementById("srcFloorCanvas")) {
++      editor = global.RoomEditor.create({
++        floorCanvas: document.getElementById("srcFloorCanvas"),
++        elevCanvas: document.getElementById("srcElevCanvas"),
++        getState: getState,
++        setState: setState,
++        onChange: onChange,
++        onDragEnd: onDragEnd,
++        sourceMeta: function (w) { return vis[w] || null; }
++      });
++    }
++
++    fetch("/api/source_presets").then(function (r) { return r.json(); }).then(function (data) {
++      fillPresets((data && data.presets) || []);
++      syncWidgets();
++    }).catch(function () {});
++
++    function redraw() {
++      syncWidgets();
++      drawPolar();
++      fetchCurves();
++      if (editor) editor.redraw();
++    }
++
++    return { redraw: redraw, editor: editor };
++  }
++
++  global.SourceDesk = { create: create };
++})(window);
+diff -ruN -x __pycache__ -x .pytest_cache -x '*.wasm' -x '*.orig' snapshot_2026-10-02_0709/software/tests/test_live_stereo.py snapshot_2026-10-02_0830/software/tests/test_live_stereo.py
+--- snapshot_2026-10-02_0709/software/tests/test_live_stereo.py	2026-10-02 05:11:40.000000000 +0100
++++ snapshot_2026-10-02_0830/software/tests/test_live_stereo.py	2026-10-02 07:52:39.000000000 +0100
+@@ -598,9 +598,9 @@
+     work = (ROOT / "static" / "js" / "fdn_worklet.js").read_text(encoding="utf-8")
+     page = (ROOT / "static" / "index.html").read_text(encoding="utf-8")
+     assert "createConvolver" not in live
+-    assert "WORKLET_VER = 39" in live
++    assert "WORKLET_VER = 40" in live
+     assert "LANES = 4" in text
+-    assert "live_fdn.js?v=39" in page
++    assert "live_fdn.js?v=40" in page
+     assert "MAX_SOS" in text
+     assert "design_sos" in text
+     assert "LS_DC" in text
+diff -ruN -x __pycache__ -x .pytest_cache -x '*.wasm' -x '*.orig' snapshot_2026-10-02_0709/software/tests/test_mic_colour_relative.py snapshot_2026-10-02_0830/software/tests/test_mic_colour_relative.py
+--- snapshot_2026-10-02_0709/software/tests/test_mic_colour_relative.py	2026-10-02 05:11:40.000000000 +0100
++++ snapshot_2026-10-02_0830/software/tests/test_mic_colour_relative.py	2026-10-02 07:52:39.000000000 +0100
+@@ -938,8 +938,8 @@
+     assert "apply_mic=True" not in pipe
+     assert "mic_one_pole_coeff" not in pipe
+     stereo = (SOFTWARE / "engine" / "live_stereo.c").read_text(encoding="utf-8")
+-    assert "WORKLET_VER = 39" in live_js
+-    assert "live_fdn.js?v=39" in page
++    assert "WORKLET_VER = 40" in live_js
++    assert "live_fdn.js?v=40" in page
+     assert "MAX_IRS = 192" in stereo
+     assert "var MAX_IRS = 192" in work
+     assert "Mic colour is OFF:" in live_js

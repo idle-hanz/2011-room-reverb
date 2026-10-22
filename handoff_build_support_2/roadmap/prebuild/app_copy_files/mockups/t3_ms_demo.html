@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><title>T3 prebuild · MS presets</title>
+<link rel="stylesheet" href="/static/css/app.css">
+<style>
+body{padding:18px}
+.row{display:flex;gap:14px;flex-wrap:wrap}
+.card{background:var(--panel);border:1px solid var(--border);border-radius:var(--radius);padding:12px;width:300px}
+.card h3{margin:0 0 2px;font-size:.88rem}.card p{margin:2px 0;font-size:.74rem;color:var(--muted)}
+.card .mics{font:.68rem var(--mono);color:var(--faint)}
+.card.def{border-color:var(--accent)}
+.k{font:600 .74rem var(--mono);color:var(--text)}
+.legend{font-size:.72rem;color:var(--muted);margin:8px 0}
+.legend b.l{color:var(--left)} .legend b.r{color:var(--right)} .legend b.m{color:var(--faint)}
+.chip{font:600 .72rem var(--font);border:1px solid var(--border);background:#10131a;color:var(--muted);border-radius:999px;padding:4px 12px;cursor:pointer}
+.chip[aria-pressed=true]{border-color:var(--accent);color:var(--text);background:var(--accent-dim)}
+</style></head><body>
+<h2 style="margin:0 0 4px">T3 prebuild · MS presets a / b / c (D‑UI29) and decode maths</h2>
+<p style="color:var(--muted);margin:0 0 8px;font-size:.8rem">Decoded L and R pickup in the horizontal plane (front = up, left = left). Numbers from <code>RRMS.virtualPair</code> (Schoeps MS formulas).</p>
+<div>Mid level (Q2): <button class="chip" id="g15" aria-pressed="true">+3.5 dB (today)</button> <button class="chip" id="g10" aria-pressed="false">0 dB (unity decode)</button>
+&nbsp; Back-to-back gain mismatch (preset c): <input type="range" id="mm" min="0" max="3" step="0.1" value="1" style="vertical-align:middle;accent-color:var(--accent)"> <span class="k" id="mmv"></span></div>
+<div class="legend"><b class="l">━ Left output</b> &nbsp; <b class="r">━ Right output</b> &nbsp; <b class="m">┅ Mid, Side</b> · rings every 6 dB</div>
+<div class="row" id="cards"></div>
+<script src="/static/prebuild/ms_presets.js"></script>
+<script>
+var G=1.5;
+function nice(m,id){function n(x){return x.replace("NeumannU87Ai","U87 Ai ");} return id==="ms_c"?"L "+n(m.l)+" · C "+n(m.c)+" · R "+n(m.r):"S "+n(m.l)+" · M "+n(m.c);}
+function css(v){return getComputedStyle(document.documentElement).getPropertyValue(v).trim();}
+function draw(cv, a, k, leak){
+  var c=cv.getContext("2d"), W=cv.width, H=cv.height, cx=W/2, cy=H/2, R=W*0.42; c.clearRect(0,0,W,H);
+  c.strokeStyle=css("--border"); c.lineWidth=1;
+  for(var i=0;i<4;i++){c.beginPath(); c.arc(cx,cy,R*(1-i/4),0,7); c.stroke();}
+  c.beginPath(); c.moveTo(cx-R,cy); c.lineTo(cx+R,cy); c.moveTo(cx,cy-R); c.lineTo(cx,cy+R); c.stroke();
+  c.fillStyle=css("--faint"); c.font="10px sans-serif"; c.fillText("front",cx-12,cy-R-4); c.fillText("L",cx-R-10,cy+4); c.fillText("R",cx+R+3,cy+4);
+  var peak=0, b; for(b=0;b<360;b+=1){var d=RRMS.decode(a,k,b); peak=Math.max(peak,Math.abs(d.L),Math.abs(d.R));}
+  function curve(f,col,dash){c.strokeStyle=col; c.setLineDash(dash||[]); c.lineWidth=dash?1:2; c.beginPath();
+    for(var b=0;b<=360;b+=2){var v=Math.abs(f(b))/peak; var db=20*Math.log10(Math.max(v,1e-6)); var r=R*Math.max(0,1+db/24);
+      var th=b*Math.PI/180, x=cx-r*Math.sin(th), y=cy-r*Math.cos(th); if(b===0)c.moveTo(x,y); else c.lineTo(x,y);} c.stroke(); c.setLineDash([]);}
+  curve(function(b){return RRMS.pat(a,b)*G/ (G||1);}, css("--faint"), [3,3]);
+  curve(function(b){return Math.cos((b-90)*Math.PI/180)*k*(1+leak);}, css("--faint"), [1,3]);
+  curve(function(b){var d=RRMS.decode(a,k,b); return d.L + leak*(d.L-RRMS.pat(a,b));}, css("--left"));
+  curve(function(b){var d=RRMS.decode(a,k,b); return d.R - leak*(d.L-RRMS.pat(a,b));}, css("--right"));
+}
+function paint(){
+  var host=document.getElementById("cards"); host.innerHTML="";
+  var mm=Number(document.getElementById("mm").value); document.getElementById("mmv").textContent=mm.toFixed(1)+" dB → omni leak "+(mm>0?RRMS.b2bLeakDb(mm).toFixed(1)+" dB":"none");
+  ["ms_a","ms_b","ms_c"].forEach(function(id){
+    var p=RRMS.build(id,G), meta=RRMS.PRESETS[id], a=p.mic.polar_c, k=RRMS.kFromDesk(0,G), v=RRMS.virtualPair(a,k);
+    var d=document.createElement("div"); d.className="card"+(meta.isDefault?" def":"");
+    d.innerHTML="<h3>"+meta.label+(meta.isDefault?" · default":"")+"</h3><div class=mics>"+nice(p.mics,id)+"</div>"+
+      "<canvas width=276 height=230></canvas>"+
+      "<p>Equivalent pair: <span class=k>±"+v.thetaDeg.toFixed(0)+"°</span>, <span class=k>"+v.name+"</span> (gradient "+v.gradient.toFixed(2)+")</p>"+
+      "<p>Desk: L route s"+(id==="ms_c"?", R route s Ø (S = L − R)":"")+", C route both × "+G.toFixed(1)+"</p>";
+    host.appendChild(d);
+    var leak=id==="ms_c"?(mm>0?Math.pow(10,RRMS.b2bLeakDb(mm)/20):0):0;
+    draw(d.querySelector("canvas"),a,k,leak);
+  });
+}
+document.getElementById("g15").onclick=function(){G=1.5;this.setAttribute("aria-pressed","true");document.getElementById("g10").setAttribute("aria-pressed","false");paint();};
+document.getElementById("g10").onclick=function(){G=1.0;this.setAttribute("aria-pressed","true");document.getElementById("g15").setAttribute("aria-pressed","false");paint();};
+document.getElementById("mm").oninput=paint; paint();
+</script></body></html>

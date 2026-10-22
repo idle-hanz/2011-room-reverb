@@ -1,0 +1,8 @@
+default fit tail max|d| 0.018 line max 0.22 median 0.126
+default k3 tail max|d| 0.136 line max 1.582 median 0.791
+default k2 tail max|d| 0.136 line max 1.571 median 0.785
+default shared4 tail max|d| 0.269 line max 2.233 median 0.957
+hs6_all fit tail max|d| 0.05 line max 0.155 median 0.076
+hs6_all k3 tail max|d| 0.188 line max 1.872 median 0.434
+hs6_all k2 tail max|d| 0.186 line max 1.863 median 0.546
+hs6_all shared4 tail max|d| 1.521 line max 16.13 median 4.348

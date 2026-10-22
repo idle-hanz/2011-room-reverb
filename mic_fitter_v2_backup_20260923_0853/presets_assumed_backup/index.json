@@ -1,0 +1,60 @@
+{
+  "schema": "mic_fitter.preset_index.v1",
+  "presets": [
+    {
+      "mic_id": "proxy_dynamic_cardioid",
+      "display_name": "ASSUMED Dynamic Cardioid (SM57-ish)",
+      "honesty": "ASSUMED",
+      "family": "dynamic_cardioid",
+      "file": "proxy_dynamic_cardioid.json",
+      "holdout_rmse_db": 0.8654015709008408,
+      "train_rmse_db": 0.6531231339624931
+    },
+    {
+      "mic_id": "proxy_sdc_cardioid",
+      "display_name": "ASSUMED SDC Cardioid (KM184-ish)",
+      "honesty": "ASSUMED",
+      "family": "sdc_cardioid",
+      "file": "proxy_sdc_cardioid.json",
+      "holdout_rmse_db": 0.5171644224243336,
+      "train_rmse_db": 0.4850963890526354
+    },
+    {
+      "mic_id": "proxy_ldc_cardioid",
+      "display_name": "ASSUMED LDC Cardioid (U87-card-ish)",
+      "honesty": "ASSUMED",
+      "family": "ldc_cardioid",
+      "file": "proxy_ldc_cardioid.json",
+      "holdout_rmse_db": 0.46699955233541,
+      "train_rmse_db": 0.4220459880617506
+    },
+    {
+      "mic_id": "proxy_fig8_ribbon",
+      "display_name": "ASSUMED Fig-8 Ribbon (Royer-ish)",
+      "honesty": "ASSUMED",
+      "family": "fig8_ribbon",
+      "file": "proxy_fig8_ribbon.json",
+      "holdout_rmse_db": 1.854852329828378,
+      "train_rmse_db": 3.5214460765347853
+    },
+    {
+      "mic_id": "proxy_supercardioid_dynamic",
+      "display_name": "ASSUMED Supercardioid Dynamic (Beta58-ish)",
+      "honesty": "ASSUMED",
+      "family": "supercardioid",
+      "file": "proxy_supercardioid_dynamic.json",
+      "holdout_rmse_db": 1.5745381165332801,
+      "train_rmse_db": 1.1089443242777537
+    },
+    {
+      "mic_id": "proxy_omni_sdc",
+      "display_name": "ASSUMED Omni SDC (measurement-ish)",
+      "honesty": "ASSUMED",
+      "family": "omni",
+      "file": "proxy_omni_sdc.json",
+      "holdout_rmse_db": 0.1753676495423121,
+      "train_rmse_db": 0.16431344928229635
+    }
+  ],
+  "note": "Structure LP is separate from these off-axis colour presets."
+}

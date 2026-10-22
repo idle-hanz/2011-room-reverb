@@ -1,0 +1,49 @@
+{
+  "schema": "mic_fitter.preset.v1",
+  "mic_id": "proxy_fig8_ribbon",
+  "display_name": "ASSUMED Fig-8 Ribbon (Royer-ish)",
+  "honesty": "ASSUMED",
+  "family": "fig8_ribbon",
+  "source": "synthetic_proxy_curves_mimicking_published_off_axis_shapes",
+  "model": "high_shelf_plus_soft_one_pole",
+  "angle_law": "0.5*(1-cos(theta))^p",
+  "params": {
+    "f0": 1783.193255792595,
+    "depth_max_db": -23.9999999999996,
+    "res_hz": 1500.0000000013783,
+    "lp_mix": 0.9999999999643195,
+    "fc_floor": 2391.9792679644024,
+    "p": 0.6000000000000002
+  },
+  "metrics": {
+    "train_rmse_db": 3.5214460765347853,
+    "holdout_rmse_db": 1.854852329828378,
+    "train_mse_db": 12.400582469942233,
+    "holdout_mse_db": 3.4404771654697623,
+    "n_train_angles": 8,
+    "n_holdout_angles": 2,
+    "train_angles_deg": [
+      0.0,
+      15.0,
+      30.0,
+      60.0,
+      90.0,
+      120.0,
+      150.0,
+      180.0
+    ],
+    "holdout_angles_deg": [
+      45.0,
+      135.0
+    ],
+    "freq_range_hz": [
+      200.0,
+      16000.0
+    ]
+  },
+  "notes": "Structure LP / room engine path is SEPARATE \u2014 these presets are off-axis magnitude colour only. Fits are ASSUMED when honesty=ASSUMED.",
+  "fit": {
+    "success": true,
+    "message": "DE success=False nit=40 fun=12.447712; LS success=True cost=3174.829845"
+  }
+}

@@ -1,0 +1,5 @@
+stab_big_2src None m0 {'finite': True, 'peak': 1.0, 'lvl_1s_db': [-51.3, -78.2, -83.7], 'lvl_last_s_db': -0.0, 'max_rise_db_per_s_after_2s': 7.06, 't30_1k_L': np.float64(7.941)}
+stab_big_2src None cand {'finite': True, 'peak': 1.0, 'lvl_1s_db': [-52.1, -77.5, -82.9], 'lvl_last_s_db': -0.0, 'max_rise_db_per_s_after_2s': 7.06, 't30_1k_L': np.float64(9.808)}
+stab_big_2src None fx {'finite': True, 'peak': 1.0, 'lvl_1s_db': [-52.0, -78.1, -83.4], 'lvl_last_s_db': -0.0, 'max_rise_db_per_s_after_2s': 7.06, 't30_1k_L': np.float64(9.821)}
+stab_big_2src 0.5 m0 {'finite': True, 'peak': 1.0, 'lvl_1s_db': [-51.2, -77.9, -84.0], 'lvl_last_s_db': -0.0, 'max_rise_db_per_s_after_2s': 7.06, 't30_1k_L': np.float64(8.064)}
+stab_big_2src 0.5 cand {'finite': True, 'peak': 1.0, 'lvl_1s_db': [-52.1, -77.3, -83.3], 'lvl_last_s_db': -0.0, 'max_rise_db_per_s_after_2s': 7.07, 't30_1k_L': np.float64(9.359)}

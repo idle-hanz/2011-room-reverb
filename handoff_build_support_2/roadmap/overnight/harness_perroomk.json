@@ -1,0 +1,352 @@
+{
+ "meta": {
+  "sw": "C:\\Users\\IdleHanz\\Desktop\\2011 Room Reverb\\software",
+  "when": "2026-10-20 00:40:32",
+  "node": "C:\\Users\\IdleHanz\\AppData\\Local\\Microsoft\\WinGet\\Packages\\OpenJS.NodeJS_Microsoft.Winget.Source_8wekyb3d8bbwe\\node-v26.7.0-win-x64\\node.exe",
+  "python": "C:\\Users\\IdleHanz\\Desktop\\2011 Room Reverb\\software\\.venv\\Scripts\\python.exe",
+  "sha1": {
+   "engine/live_stereo.c": "bbdf57994e09",
+   "static/wasm/live_stereo.wasm": "843a6eb8c91a",
+   "static/js/fdn_worklet.js": "b39ccd9178c7",
+   "render_pipeline.py": "5fb71ad02be3",
+   "engine/fdn.py": "0cc01f6a10b6"
+  }
+ },
+ "results": [
+  {
+   "test": "t01_pack_matches_worklet",
+   "status": "PASS",
+   "secs": 7.5,
+   "detail": {
+    "blob_len": 4713,
+    "max_diff": 0.0
+   },
+   "doc": "Harness sanity: the Python packer (lib/pack.py) and the real fdn_worklet.js packRoom agree."
+  },
+  {
+   "test": "t02_wasm_matches_source",
+   "status": "SKIP",
+   "secs": 0.0,
+   "detail": "no gcc/clang",
+   "doc": "static/wasm/live_stereo.wasm is built from engine/live_stereo.c (native build IR == wasm IR, bit-exact)."
+  },
+  {
+   "test": "t03_golden_play_features_off",
+   "status": "PASS",
+   "secs": 3.4,
+   "detail": {
+    "std_unlocked_byp": {
+     "null_db": -3008.2,
+     "max_abs_diff": 0.0,
+     "tol_db": -100.0
+    },
+    "std_unlocked_col": {
+     "null_db": -3005.6,
+     "max_abs_diff": 0.0,
+     "tol_db": -100.0
+    },
+    "std_lock18_byp": {
+     "null_db": -3004.6,
+     "max_abs_diff": 0.0,
+     "tol_db": -100.0
+    },
+    "std_lock18_col": {
+     "null_db": -3001.7,
+     "max_abs_diff": 0.0,
+     "tol_db": -100.0
+    }
+   },
+   "doc": "Play IR with new features off equals the golden baseline (null <= -100 dB)."
+  },
+  {
+   "test": "t04_golden_render_features_off",
+   "status": "PASS",
+   "secs": 10.3,
+   "detail": {
+    "null_db": -3007.0,
+    "max_abs_diff": 0.0,
+    "tol_db": -100.0
+   },
+   "doc": "Render IR (BYPASS colour, 0.5 s) equals the golden baseline (null <= -100 dB)."
+  },
+  {
+   "test": "t05_omni_source_identity",
+   "status": "PASS",
+   "secs": 2.0,
+   "detail": {
+    "key": "source_radiation",
+    "play": {
+     "null_db": -3008.2,
+     "max_abs_diff": 0.0,
+     "tol_db": -100.0
+    }
+   },
+   "doc": "Source radiation OMNI must reproduce today's golden (Play + Render)."
+  },
+  {
+   "test": "t06_scattering_zero_identity",
+   "status": "PENDING",
+   "secs": 0.0,
+   "detail": "scattering (Track C) not in this tree",
+   "doc": "Per-reflection scattering amount 0 must reproduce today's golden (Play)."
+  },
+  {
+   "test": "t07_tail_yaw_invariance",
+   "status": "PASS",
+   "secs": 5.4,
+   "detail": {
+    "key": "source_yaw",
+    "tail_db": [
+     -64.17797060021482,
+     -64.17797060021482,
+     -64.17797060021482
+    ],
+    "spread_db": 0.0
+   },
+   "doc": "Tail energy (80 ms-1 s) invariant (<=0.5 dB) under source yaw 0/90/180 (source radiation)."
+  },
+  {
+   "test": "t08_fdn_stability",
+   "status": "PASS",
+   "secs": 34.9,
+   "detail": {
+    "dffs0": {
+     "peak": 0.5733122825622559,
+     "silence_5s_db": -43.0,
+     "silence_last5s_db": -119.3
+    },
+    "dffs+0.98": {
+     "peak": 0.999993622303009,
+     "silence_5s_db": -39.6,
+     "silence_last5s_db": -126.0
+    },
+    "dffs-0.98": {
+     "peak": 1.0,
+     "silence_5s_db": -28.8,
+     "silence_last5s_db": -109.1
+    },
+    "dffs_as_is": {
+     "peak": 0.6504093408584595,
+     "silence_5s_db": -40.5,
+     "silence_last5s_db": -116.7
+    }
+   },
+   "doc": "No NaN/Inf/growth across the full Dffs range and max decay (8 s) / max loop gain; 15 s noise then 15 s silence."
+  },
+  {
+   "test": "t09_silence_cpu",
+   "status": "PASS",
+   "secs": 7.1,
+   "detail": {
+    "byp": {
+     "play_mean_ms": 0.585,
+     "play_median_ms": 0.583,
+     "play_p90_ms": 0.598,
+     "silence_late_mean_ms": 0.605,
+     "silence_late_median_ms": 0.581,
+     "play_spikes": 0
+    },
+    "col": {
+     "play_mean_ms": 0.707,
+     "play_median_ms": 0.706,
+     "play_p90_ms": 0.72,
+     "silence_late_mean_ms": 0.729,
+     "silence_late_median_ms": 0.7,
+     "play_spikes": 0
+    }
+   },
+   "doc": "WASM cost after input stops stays near the playing cost (no denormal blow-up): late-silence median <= 1.3x play median and <= 50% budget (colour off)."
+  },
+  {
+   "test": "t10_t60_play",
+   "status": "PASS",
+   "secs": 8.7,
+   "detail": {
+    "std_lock18": {
+     "dial": 1.8,
+     "t30": {
+      "500": 1.84,
+      "1000": 1.8,
+      "2000": 1.82,
+      "4000": 1.8,
+      "8000": 1.81
+     }
+    },
+    "small_lock08": {
+     "dial": 0.8,
+     "t30": {
+      "500": 0.83,
+      "1000": 0.81,
+      "2000": 0.8,
+      "4000": 0.83,
+      "8000": 0.8
+     }
+    },
+    "hall_lock40": {
+     "dial": 4.0,
+     "t30": {
+      "500": 4.09,
+      "1000": 3.99,
+      "2000": 3.98,
+      "4000": 4.0,
+      "8000": 4.0
+     }
+    }
+   },
+   "doc": "Play FDN T30 per octave (500 Hz-8 kHz) within +-15 % of the dialled decay (decay lock)."
+  },
+  {
+   "test": "t11_hf_residue_play",
+   "status": "PASS",
+   "secs": 1.0,
+   "detail": {
+    "9000": 0.8,
+    "11000": 0.79
+   },
+   "doc": "No slow HF residue: 9-11 kHz late decay (0.6-0.8 x dial after onset) T60 <= 1.25 x dial."
+  },
+  {
+   "test": "t12_t60_render",
+   "status": "PASS",
+   "secs": 68.7,
+   "detail": {
+    "500": 1.84,
+    "1000": 1.8,
+    "2000": 1.82,
+    "4000": 1.8,
+    "8000": 1.81
+   },
+   "doc": "[slow] Render FDN T30 per octave within +-15 % of the dialled decay (std room, 1.8 s)."
+  },
+  {
+   "test": "t13_parity_play_render",
+   "status": "XFAIL",
+   "secs": 227.4,
+   "detail": "tail/direct parity OK; early field differs (known gap: no per-hit surface cascade in Play) {'L': {'energy_db': np.float64(1.66), 'max_dt_ms': 5.44, 'med_dlevel_db': 3.12}, 'R': {'energy_db': np.float64(1.96), 'max_dt_ms': 2.56, 'med_dlevel_db': 3.8}}",
+   "doc": "[slow] Play vs Render, same scene, colour off & on: tail T30 +-10 %/band, tail octave balance +-1.5 dB,\ntail level +-1 dB, stereo tail corr +-0.1, direct level +-0.5 dB. Early field: XFAIL until Play gets the per-hit cascade."
+  },
+  {
+   "test": "t14_level_sanity",
+   "status": "PASS",
+   "secs": 18.0,
+   "detail": {
+    "play_peak": 0.618,
+    "play_rms_db": -16.6,
+    "pinned_fdn_peak": 0.289,
+    "pinned_fdn_rms_db": -24.59,
+    "pinned_fdn_delta_db": -0.04,
+    "pinned_mix_peak": 0.584,
+    "pinned_mix_rms_db": -16.63,
+    "pinned_mix_delta_db": -0.26,
+    "physics": {
+     "label": "PHYSDEFAULT 2026-10-19 physics row",
+     "play_peak": 0.618,
+     "fdn_peak": 0.25,
+     "fdn_rms_db": -26.71,
+     "mix_peak": 0.544,
+     "mix_rms_db": -16.96,
+     "mix_delta_db": -0.59,
+     "fdn_vs_pin_db": 0.0
+    }
+   },
+   "doc": "Nominal scene, colour on, uniform noise +-0.3 (-15.2 dBFS RMS, hot): Play peak < 0.95 (limiter idle), finite.\nHeadroom decision 6, dial path: T14_PIN sets phys_ceiling false. The FDN bus (FDN only, source/air\npinned to the old defaults, diffusion at the locked -0.25) must sit within +-0.5 dB of -24.55 dB.\nWhole-mix delta is reported (direct/early moved with F3's Play/Render parity fix, not trimmed).\nPHYSDEFAULT 2026-10-19 physics row: the same pin with the key absent. FDN-only RMS within +-0.5 dB\nof -26.71 dB. Whole-mix delta is reported. Play peak stays at or under 0.95."
+  },
+  {
+   "test": "t15_perf_active",
+   "status": "PASS",
+   "secs": 6.3,
+   "detail": {
+    "1src_col": {
+     "play_mean_ms": 0.701,
+     "play_median_ms": 0.698,
+     "play_p90_ms": 0.713,
+     "play_spikes": 0,
+     "limit_ms": 1.6
+    },
+    "2src_col": {
+     "play_mean_ms": 1.3,
+     "play_median_ms": 1.285,
+     "play_p90_ms": 1.308,
+     "play_spikes": 0,
+     "limit_ms": 2.267
+    }
+   },
+   "doc": "Active cost on this machine: 1 source + colour median <= 60 % budget, 2 sources + colour median <= 85 % (x --perf-scale)."
+  },
+  {
+   "test": "t16_diffusion_layers_separate",
+   "status": "PASS",
+   "secs": 0.0,
+   "detail": {
+    "keys_found": [
+     "jitter_d"
+    ],
+    "note": "extend: vary one key, assert the other layer is unchanged"
+   },
+   "doc": "Lock: Surfaces \u0394d jitter and Structure Dffs are separate controls (one key must not drive both)."
+  },
+  {
+   "test": "t17_play_hadamard_n",
+   "status": "PASS",
+   "secs": 1.3,
+   "detail": {
+    "n": 16
+   },
+   "doc": "Play follows hadamard_n (8..128) like Render."
+  },
+  {
+   "test": "t18_tail_null_play_render",
+   "status": "PASS",
+   "secs": 53.5,
+   "detail": {
+    "null_db": [
+     -79.2,
+     -79.6
+    ]
+   },
+   "doc": "[slow] FDN-only Play tail nulls Render (z^-1 in both, integer delays): residual <= -30 dB over 0-2 s. -60 dB is the expected null."
+  },
+  {
+   "test": "t19_two_source_radiation_cpu",
+   "status": "PASS",
+   "secs": 41.1,
+   "detail": {
+    "play_mean_ms": 1.619,
+    "play_median_ms": 1.616,
+    "play_p90_ms": 1.628,
+    "silence_late_mean_ms": 1.645,
+    "silence_late_median_ms": 1.626,
+    "play_spikes": 0,
+    "limit_ms": 2.4,
+    "shared_on": {
+     "play_mean_ms": 1.739,
+     "play_median_ms": 1.736,
+     "play_p90_ms": 1.748,
+     "silence_late_mean_ms": 1.758,
+     "silence_late_median_ms": 1.744,
+     "play_spikes": 0,
+     "limit_ms": 2.133
+    },
+    "surfaces": {
+     "play_mean_ms": 1.594,
+     "play_median_ms": 1.592,
+     "play_p90_ms": 1.601,
+     "silence_late_mean_ms": 1.638,
+     "silence_late_median_ms": 1.614,
+     "play_spikes": 0,
+     "limit_ms": 2.4
+    },
+    "surfaces_shared_on": {
+     "play_mean_ms": 1.748,
+     "play_median_ms": 1.747,
+     "play_p90_ms": 1.76,
+     "silence_late_mean_ms": 1.755,
+     "silence_late_median_ms": 1.743,
+     "play_spikes": 0,
+     "limit_ms": 2.133
+    }
+   },
+   "doc": "Two directional sources, colour on. D-S5c-2 ceilings. BUDGET_MS is unchanged.\n\nShared off: one bench, ceiling 0.90 * BUDGET_MS (2.40 ms). The 12-round\npaired A/B against the pre-S5 wasm is the acceptance measurement; this\ncheck is that ceiling on one bench. Shared on: one bench, ceiling\n0.80 * BUDGET_MS (2.133 ms). Silence-late stays within 1.3x the play\nmedian and within that run's ceiling. talking_head plus trumpet_byu,\nboth SRC_RAD filters live."
+  }
+ ]
+}

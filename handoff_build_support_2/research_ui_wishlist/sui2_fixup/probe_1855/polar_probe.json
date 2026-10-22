@@ -1,0 +1,527 @@
+{
+ "ortf_sm57_MEASURED_SHELF": {
+  "presets": {
+   "L": "ShureSM57",
+   "C": "ShureSM57",
+   "R": "ShureSM57"
+  },
+  "grids": {
+   "L": {
+    "bands": 8,
+    "ring_spread_max": 0.2291,
+    "front_spread": 0.0,
+    "back_min": 0.0,
+    "back_max": 0.0
+   },
+   "C": {
+    "bands": 8,
+    "ring_spread_max": 0.2291,
+    "front_spread": 0.0,
+    "back_min": 0.0,
+    "back_max": 0.0
+   },
+   "R": {
+    "bands": 8,
+    "ring_spread_max": 0.2291,
+    "front_spread": 0.0,
+    "back_min": 0.0,
+    "back_max": 0.0
+   }
+  },
+  "grid_hash": {
+   "L": "0x714d5250",
+   "C": "0x714d5250",
+   "R": "0x714d5250"
+  }
+ },
+ "ortf_sm57_BYPASS": {
+  "presets": {
+   "L": "ShureSM57",
+   "C": "ShureSM57",
+   "R": "ShureSM57"
+  },
+  "grids": {
+   "L": {
+    "bands": 8,
+    "ring_spread_max": 0.0,
+    "front_spread": 0.0,
+    "back_min": 0.0,
+    "back_max": 0.0
+   },
+   "C": {
+    "bands": 8,
+    "ring_spread_max": 0.0,
+    "front_spread": 0.0,
+    "back_min": 0.0,
+    "back_max": 0.0
+   },
+   "R": {
+    "bands": 8,
+    "ring_spread_max": 0.0,
+    "front_spread": 0.0,
+    "back_min": 0.0,
+    "back_max": 0.0
+   }
+  },
+  "grid_hash": {
+   "L": "0x9bbb8e1c",
+   "C": "0x9bbb8e1c",
+   "R": "0x9bbb8e1c"
+  }
+ },
+ "ortf_sm57_ASSUMED_TOYS": {
+  "presets": {
+   "L": "ShureSM57",
+   "C": "ShureSM57",
+   "R": "ShureSM57"
+  },
+  "grids": {
+   "L": {
+    "bands": 8,
+    "ring_spread_max": 1.0,
+    "front_spread": 0.0,
+    "back_min": 0.0,
+    "back_max": 1.0
+   },
+   "C": {
+    "bands": 8,
+    "ring_spread_max": 1.0,
+    "front_spread": 0.0,
+    "back_min": 0.0,
+    "back_max": 1.0
+   },
+   "R": {
+    "bands": 8,
+    "ring_spread_max": 1.0,
+    "front_spread": 0.0,
+    "back_min": 0.0,
+    "back_max": 1.0
+   }
+  },
+  "grid_hash": {
+   "L": "0xe17e752c",
+   "C": "0xe17e752c",
+   "R": "0xe17e752c"
+  }
+ },
+ "ortf_AKGC414Bidirect_MEASURED": {
+  "presets": {
+   "L": "AKGC414Bidirect",
+   "C": "AKGC414Bidirect",
+   "R": "AKGC414Bidirect"
+  },
+  "grids": {
+   "L": {
+    "bands": 8,
+    "ring_spread_max": 0.1377,
+    "front_spread": 0.0,
+    "back_min": 0.3005,
+    "back_max": 0.4383
+   },
+   "C": {
+    "bands": 8,
+    "ring_spread_max": 0.1377,
+    "front_spread": 0.0,
+    "back_min": 0.3005,
+    "back_max": 0.4383
+   },
+   "R": {
+    "bands": 8,
+    "ring_spread_max": 0.1377,
+    "front_spread": 0.0,
+    "back_min": 0.3005,
+    "back_max": 0.4383
+   }
+  },
+  "grid_hash": {
+   "L": "0x27785354",
+   "C": "0x27785354",
+   "R": "0x27785354"
+  }
+ },
+ "ortf_AKGC414Cardioid_MEASURED": {
+  "presets": {
+   "L": "AKGC414Cardioid",
+   "C": "AKGC414Cardioid",
+   "R": "AKGC414Cardioid"
+  },
+  "grids": {
+   "L": {
+    "bands": 8,
+    "ring_spread_max": 0.2933,
+    "front_spread": 0.0,
+    "back_min": 0.0,
+    "back_max": 0.0
+   },
+   "C": {
+    "bands": 8,
+    "ring_spread_max": 0.2933,
+    "front_spread": 0.0,
+    "back_min": 0.0,
+    "back_max": 0.0
+   },
+   "R": {
+    "bands": 8,
+    "ring_spread_max": 0.2933,
+    "front_spread": 0.0,
+    "back_min": 0.0,
+    "back_max": 0.0
+   }
+  },
+  "grid_hash": {
+   "L": "0x14ade6f2",
+   "C": "0x14ade6f2",
+   "R": "0x14ade6f2"
+  }
+ },
+ "ortf_AKGC414Hyper_MEASURED": {
+  "presets": {
+   "L": "AKGC414Hyper",
+   "C": "AKGC414Hyper",
+   "R": "AKGC414Hyper"
+  },
+  "grids": {
+   "L": {
+    "bands": 8,
+    "ring_spread_max": 0.2583,
+    "front_spread": 0.0,
+    "back_min": 0.0549,
+    "back_max": 0.1773
+   },
+   "C": {
+    "bands": 8,
+    "ring_spread_max": 0.2583,
+    "front_spread": 0.0,
+    "back_min": 0.0549,
+    "back_max": 0.1773
+   },
+   "R": {
+    "bands": 8,
+    "ring_spread_max": 0.2583,
+    "front_spread": 0.0,
+    "back_min": 0.0549,
+    "back_max": 0.1773
+   }
+  },
+  "grid_hash": {
+   "L": "0x3f6b200c",
+   "C": "0x3f6b200c",
+   "R": "0x3f6b200c"
+  }
+ },
+ "ortf_AKGC414Omni_MEASURED": {
+  "presets": {
+   "L": "AKGC414Omni",
+   "C": "AKGC414Omni",
+   "R": "AKGC414Omni"
+  },
+  "grids": {
+   "L": {
+    "bands": 8,
+    "ring_spread_max": 0.7317,
+    "front_spread": 0.0,
+    "back_min": 0.2355,
+    "back_max": 0.9672
+   },
+   "C": {
+    "bands": 8,
+    "ring_spread_max": 0.7317,
+    "front_spread": 0.0,
+    "back_min": 0.2355,
+    "back_max": 0.9672
+   },
+   "R": {
+    "bands": 8,
+    "ring_spread_max": 0.7317,
+    "front_spread": 0.0,
+    "back_min": 0.2355,
+    "back_max": 0.9672
+   }
+  },
+  "grid_hash": {
+   "L": "0x1984e390",
+   "C": "0x1984e390",
+   "R": "0x1984e390"
+  }
+ },
+ "ortf_Coles4038_MEASURED": {
+  "presets": {
+   "L": "Coles4038",
+   "C": "Coles4038",
+   "R": "Coles4038"
+  },
+  "grids": {
+   "L": {
+    "bands": 8,
+    "ring_spread_max": 0.113,
+    "front_spread": 0.0,
+    "back_min": 0.4546,
+    "back_max": 0.5676
+   },
+   "C": {
+    "bands": 8,
+    "ring_spread_max": 0.113,
+    "front_spread": 0.0,
+    "back_min": 0.4546,
+    "back_max": 0.5676
+   },
+   "R": {
+    "bands": 8,
+    "ring_spread_max": 0.113,
+    "front_spread": 0.0,
+    "back_min": 0.4546,
+    "back_max": 0.5676
+   }
+  },
+  "grid_hash": {
+   "L": "0x732b04e2",
+   "C": "0x732b04e2",
+   "R": "0x732b04e2"
+  }
+ },
+ "ortf_DPA4006_MEASURED": {
+  "presets": {
+   "L": "DPA4006",
+   "C": "DPA4006",
+   "R": "DPA4006"
+  },
+  "grids": {
+   "L": {
+    "bands": 8,
+    "ring_spread_max": 0.8048,
+    "front_spread": 0.0,
+    "back_min": 0.1955,
+    "back_max": 1.0004
+   },
+   "C": {
+    "bands": 8,
+    "ring_spread_max": 0.8048,
+    "front_spread": 0.0,
+    "back_min": 0.1955,
+    "back_max": 1.0004
+   },
+   "R": {
+    "bands": 8,
+    "ring_spread_max": 0.8048,
+    "front_spread": 0.0,
+    "back_min": 0.1955,
+    "back_max": 1.0004
+   }
+  },
+  "grid_hash": {
+   "L": "0x393d6d02",
+   "C": "0x393d6d02",
+   "R": "0x393d6d02"
+  }
+ },
+ "ortf_ElectroVoiceRE20_MEASURED": {
+  "presets": {
+   "L": "ElectroVoiceRE20",
+   "C": "ElectroVoiceRE20",
+   "R": "ElectroVoiceRE20"
+  },
+  "grids": {
+   "L": {
+    "bands": 8,
+    "ring_spread_max": 0.182,
+    "front_spread": 0.0,
+    "back_min": 0.0,
+    "back_max": 0.0
+   },
+   "C": {
+    "bands": 8,
+    "ring_spread_max": 0.182,
+    "front_spread": 0.0,
+    "back_min": 0.0,
+    "back_max": 0.0
+   },
+   "R": {
+    "bands": 8,
+    "ring_spread_max": 0.182,
+    "front_spread": 0.0,
+    "back_min": 0.0,
+    "back_max": 0.0
+   }
+  },
+  "grid_hash": {
+   "L": "0x1a04bb40",
+   "C": "0x1a04bb40",
+   "R": "0x1a04bb40"
+  }
+ },
+ "ortf_NeumannU87AiBidirect_MEASURED": {
+  "presets": {
+   "L": "NeumannU87AiBidirect",
+   "C": "NeumannU87AiBidirect",
+   "R": "NeumannU87AiBidirect"
+  },
+  "grids": {
+   "L": {
+    "bands": 8,
+    "ring_spread_max": 0.2356,
+    "front_spread": 0.0,
+    "back_min": 0.3359,
+    "back_max": 0.5715
+   },
+   "C": {
+    "bands": 8,
+    "ring_spread_max": 0.2356,
+    "front_spread": 0.0,
+    "back_min": 0.3359,
+    "back_max": 0.5715
+   },
+   "R": {
+    "bands": 8,
+    "ring_spread_max": 0.2356,
+    "front_spread": 0.0,
+    "back_min": 0.3359,
+    "back_max": 0.5715
+   }
+  },
+  "grid_hash": {
+   "L": "0x25eb75af",
+   "C": "0x25eb75af",
+   "R": "0x25eb75af"
+  }
+ },
+ "ortf_NeumannU87AiCardioid_MEASURED": {
+  "presets": {
+   "L": "NeumannU87AiCardioid",
+   "C": "NeumannU87AiCardioid",
+   "R": "NeumannU87AiCardioid"
+  },
+  "grids": {
+   "L": {
+    "bands": 8,
+    "ring_spread_max": 0.3276,
+    "front_spread": 0.0,
+    "back_min": 0.0,
+    "back_max": 0.0
+   },
+   "C": {
+    "bands": 8,
+    "ring_spread_max": 0.3276,
+    "front_spread": 0.0,
+    "back_min": 0.0,
+    "back_max": 0.0
+   },
+   "R": {
+    "bands": 8,
+    "ring_spread_max": 0.3276,
+    "front_spread": 0.0,
+    "back_min": 0.0,
+    "back_max": 0.0
+   }
+  },
+  "grid_hash": {
+   "L": "0x37a56c43",
+   "C": "0x37a56c43",
+   "R": "0x37a56c43"
+  }
+ },
+ "ortf_NeumannU87AiOmni_MEASURED": {
+  "presets": {
+   "L": "NeumannU87AiOmni",
+   "C": "NeumannU87AiOmni",
+   "R": "NeumannU87AiOmni"
+  },
+  "grids": {
+   "L": {
+    "bands": 8,
+    "ring_spread_max": 0.9386,
+    "front_spread": 0.0,
+    "back_min": 0.1699,
+    "back_max": 1.1086
+   },
+   "C": {
+    "bands": 8,
+    "ring_spread_max": 0.9386,
+    "front_spread": 0.0,
+    "back_min": 0.1699,
+    "back_max": 1.1086
+   },
+   "R": {
+    "bands": 8,
+    "ring_spread_max": 0.9386,
+    "front_spread": 0.0,
+    "back_min": 0.1699,
+    "back_max": 1.1086
+   }
+  },
+  "grid_hash": {
+   "L": "0x5aba9ea1",
+   "C": "0x5aba9ea1",
+   "R": "0x5aba9ea1"
+  }
+ },
+ "ortf_RodeNT2ABidirect_MEASURED": {
+  "presets": {
+   "L": "RodeNT2ABidirect",
+   "C": "RodeNT2ABidirect",
+   "R": "RodeNT2ABidirect"
+  },
+  "grids": {
+   "L": {
+    "bands": 8,
+    "ring_spread_max": 0.1859,
+    "front_spread": 0.0,
+    "back_min": 0.4562,
+    "back_max": 0.6421
+   },
+   "C": {
+    "bands": 8,
+    "ring_spread_max": 0.1859,
+    "front_spread": 0.0,
+    "back_min": 0.4562,
+    "back_max": 0.6421
+   },
+   "R": {
+    "bands": 8,
+    "ring_spread_max": 0.1859,
+    "front_spread": 0.0,
+    "back_min": 0.4562,
+    "back_max": 0.6421
+   }
+  },
+  "grid_hash": {
+   "L": "0x40d4a5ea",
+   "C": "0x40d4a5ea",
+   "R": "0x40d4a5ea"
+  }
+ },
+ "ortf_RodeNT2ACardioid_MEASURED": {
+  "presets": {
+   "L": "RodeNT2ACardioid",
+   "C": "RodeNT2ACardioid",
+   "R": "RodeNT2ACardioid"
+  },
+  "grids": {
+   "L": {
+    "bands": 8,
+    "ring_spread_max": 0.2874,
+    "front_spread": 0.0,
+    "back_min": 0.0,
+    "back_max": 0.0
+   },
+   "C": {
+    "bands": 8,
+    "ring_spread_max": 0.2874,
+    "front_spread": 0.0,
+    "back_min": 0.0,
+    "back_max": 0.0
+   },
+   "R": {
+    "bands": 8,
+    "ring_spread_max": 0.2874,
+    "front_spread": 0.0,
+    "back_min": 0.0,
+    "back_max": 0.0
+   }
+  },
+  "grid_hash": {
+   "L": "0x36f30286",
+   "C": "0x36f30286",
+   "R": "0x36f30286"
+  }
+ }
+}

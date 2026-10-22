@@ -1,0 +1,149 @@
+﻿# BLOOM RETRY RUN - 2026-10-20 (colour before makeup)
+
+**Inherits:** `BLOOM_RUN_2026-10-19.md` in full, including the ROUND 3 RESULTS FOLDED IN block (line 215 on) and the ROUND 1 REVIEW ACCEPTED (overnight, self-applied) block. **This file overrides those where it names a section.** Where it says nothing, they stand. Data: `roadmap\bloom\UAD_ROUND3_2026-10-19.md`, `roadmap\bloom\uad\round3\`. Why this run exists: `roadmap\overnight\MORNING_REPORT_2026-10-20.md` and `CHAIN_LOG.md` (04:10 STOP).
+
+**Idle decision (2026-10-20):** the colour stage runs **before** Bloom makeup, at the round 3 prototype's level, like the prototype. Makeup is applied after colour and after the oversampling decimation.
+
+## Why the overnight run stopped
+The shipped chain was `wet gain (Amount minus GR, clamped) -> shaper -> EQ`. The round 3 prototype (`round3\scripts\comp_proto.py` `run`, `alias_proto.py` `run_c`) never had a makeup gain. The shaper saw only the attenuated signal, so the overnight shaper ran 12 to 21 dB hotter. Its folded images rose 20 to 40 dB (cubic terms), and 47/80 compressor tone rows failed R3-E. Fed the attenuated signal only, the shipped shaper matched the prototype (Room Crush 9 kHz 0 dBFS -97.7 vs -97.7).
+
+## What the prototype does (VERIFIED from the scripts, binding)
+From `comp_proto.py` (`SIDE`, `run`, `colour`, `depth`) and `alias_proto.py` (`run_c`, which reads `side` from `colour_choice.json` first, then `SIDE`):
+
+| Preset | Side | Shaper input v | Depth GR | After the shaper |
+|---|---|---|---|---|
+| Natural | output | `g*x`, g = 10^(-GR/20), **full detector GR, no cap, no makeup** | GR | nothing (no makeup), EQ fitted separately |
+| Room Crush | output | `g*x` (same) | GR | same |
+| Nuke | output | `g*x` (same) | GR | same |
+| Glue (key on) | output (`colour_choice.json` `side: out`; `SIDE` says none, the JSON wins) | `g*x` (same) | GR | same |
+| Swell | **input** | `x`, the raw input, before any gain | `zeros` (d0 = 1, so constant depth) | then `g*` the coloured signal |
+
+- Inside `colour()`: oversample `v` (resample_poly up), depth repeated per sub-sample, `shape()` gives the distortion part only, decimate, then the one-pole memory LP at `fc` on the distortion part, then the 5 Hz DC blocker on it, then `y = v + d`. ADAA1 runs at 1x on fam 0 only.
+- Input level: the UAD job input `x * 10^(gain_db/20)` from `jobs_r3.json`, same tone rows as the UAD. The alias numbers in `alias_proto*.csv` are taken at that output, which is the shaper level (no EQ, no makeup). The UAD numbers in `alias_uad_tones.csv` include the UAD's own output level (for example LA-2A 9 kHz 0 dBFS fundamental -11.9 dBFS UAD vs -19.7 dBFS prototype).
+- **Which prototype file is the reference.** `alias_proto.csv` is the first pass. `alias_proto_v2.csv` holds the final memory models: Room Crush btanh_mem 1x worst M1 -92.2, Swell poly_mem 2x -94.9, Glue poly_mem 1x -89.9 / ADAA -90.4. Natural and Nuke stay in `alias_proto.csv` (Natural 2x worst 13 kHz -92.0, Nuke ADAA 9 kHz -90.6). The overnight report's Swell UNKNOWN is this: -83.6 is the first-pass Swell without the 4.78 kHz memory LP, -94.9 is the shipped poly_mem model. The overnight attenuation-only Swell (-84.1) matching -83.6 means the leftover Swell path probably lost its memory LP or its input side. Step 0 checks this (item R-4).
+
+## RT-1. The new order (replaces the overnight "gain, then shaper, then EQ")
+Per sample on the tail, Bloom on, with GR >= 0 from the existing detector and `W = wet_gain_db(amount_db, GR, max_duck_db)` (the Bloom law, unchanged, in `bloom_dsp.py`):
+
+- **Output-side presets (Natural, Room Crush, Nuke, Glue with `glue_colour` on):**
+  1. `v = x * 10^(-GR/20)` with the **full, uncapped** detector GR (the prototype's g).
+  2. `c = colour(v, GR)` with the preset's scheme (2x FIR47 / ADAA1 / 1x), memory LP and DC blocker, decimated back to 1x.
+  3. `m = c * 10^((W + GR)/20)` (the makeup, applied after decimation). The linear level is then exactly the Bloom law: `x * 10^(W/20)`.
+  4. EQ (`eq_fit.json`, as R3-B). If BLOOM_RUN put EQ elsewhere, report at Step 0.
+- **Swell (input side):** `c = colour(x, 0)` (constant depth), then `m = c * 10^(W/20)`, then EQ. No attenuation before the shaper.
+- **Colour off, or Glue key off:** `m = x * 10^(W/20)`, then EQ, as before. No OS, ADAA, memory or DC state runs.
+- Pres (610-A, Neve) are not touched by this change: `linear H1 -> [emph] -> nclip -> [de-emph] -> H2` at the Drive calibration (R3-C).
+- Delay compensation (R3-B) still applies when colour is on. The makeup gain `W + GR` is computed from the same-sample GR, and it is delayed by the same OS latency as `c`, so gain and signal stay aligned. Report the alignment (within 1 sample).
+- The factor `10^((W+GR)/20)` can be large (Room Crush, GR 36 dB, cap 15: +21 dB). Report the maximum per preset. No clamp is added. Float precision of `v` at -36 dB is fine in f32; report the null of the colour-off path built this way against the old `x*10^(W/20)` (must be max-abs <= 1e-6 relative, or bit-exact if Build keeps the old multiply on the colour-off branch, which is preferred).
+
+## RT-2. Level proof (new gate, must pass before the alias gate)
+For every compressor tone row (5 presets x 16) Build logs, from the shipped Python path and from the shipped wasm (a debug tap is allowed only in a scratch build, never in the pinned wasm):
+- RMS and peak of the shaper input `v` (output-side) or `x` (Swell) over the last 0.5 s, against the prototype's `g*x` / `x` from `comp_proto.run` on the same input. Gate: within **0.05 dB**. Our GR must also match `dyn3.gr_of` within 0.05 dB on Nuke, Room Crush and Swell (round 3 fits), and Natural and Glue use today's dynamics, so their GR differs from `dyn3`: for those two, compare the shaper input against `x*10^(-GR_ours/20)` and report the GR gap to `dyn3` separately (not a stop).
+- Pre-makeup M1 against the reference file above: within **1.5 dB**, or both below -90 dBFS.
+Fail = STOP (restore, report), not self-accepted.
+
+## RT-3. Alias gate (replaces how R3-E is read, rule unchanged)
+- Rule unchanged: on all 16 tone rows per preset and per pre, M1 and M2<16k each at least 10 dB under the UAD row or below -90 dBFS. Measure the **shipped wasm**.
+- **Reference point (default, Idle can overrule before paste):** the comparison is made where the prototype measured it, before makeup. In wasm: take the shipped output, divide by the steady makeup `10^((W+GR)/20)` read from the same render (or the fundamental ratio, which must agree within 0.1 dB), then apply M1/M2. Makeup is a slow linear gain after decimation and cannot fold anything; this is the same figure the prototype gate passed on.
+- Also report, not gated: (a) raw output-referred M1/M2 in dBFS, (b) dBc (alias minus fundamental) for ours vs the UAD, per row. If (b) is worse than the UAD's dBc minus 10 dB on any row, list it for Idle.
+- The pres (Neve, 610-A) rows were never run overnight (`bloom_gates.py` died with `KeyError: 'neve'`; the pre ids are `neve1073` / `u610a` in the live dict and `neve` / `u610a` in `alias_uad_tones.csv`). Fix the key map and run them. Neve at 8x nclip_flux: round 3 says 16/16 (`prefit_neve_nclip_emph_nclip_flux_nclip_emph_flux.json`).
+- Any row failing = STOP, restore, report. No raising of OS without a stop.
+
+## RT-4. Neve and CPU
+- **Neve ships the simpler nclip_flux model at 8x by default** (R3-D fallback, already decided). Do not try 16x again (2.934 ms median, over 2.40).
+- CPU gate unchanged: fully-on decay-8 cube, worst case (one compressor at 2x plus the Neve at 8x), **median <= 2.40 ms** in wasm, 4 warmup, 12 rounds. p90 and silence-late median must also be <= 2.40. The ceiling is not raised.
+- **Spikes must be explained.** Overnight: 38 spikes both runs on the Neve 8x path (spike = block > 3x median), 0 on off / follower / colour. Build reports the total block count, where the spikes fall (warmup, first blocks after a param change, periodic, GC), the worst block time, and whether any block exceeds 2.40 ms. Likely suspects to test: denormals in the nclip `pow` or the flux LP at silence, FIR state reset, a JS-side allocation. If the spikes are in the DSP and fixable with a flush-to-zero or a silence bypass that keeps Play vs Render and the off path exact, fix it and remeasure. If unexplained, or any single block > 2.40 ms recurs, report it as an Idle item (not a STOP unless the median gate fails).
+- Report the follower, the Bloom colour and the pre colour separately (R3-D).
+
+## RT-5. Reuse the overnight leftovers (verify, then use)
+Present in the live tree (survived the restore, not in the preBLOOM zip): `software\engine\bloom_dsp.py` (sha1 ab1f3c4b...), `software\engine\bloom_live.inc` (ebb0e2c0...), `software\tests\test_bloom_off.py` (4e35e9ae..., 2 passed after restore). Scratch: `roadmap\overnight\_scratch\pack_bloom.py`, `wasm_run_bloom.js`, `bloom_gates.py`, `bloom_alias_level.py`, `bloom_alias_diag.py`, `restore_prebloom.py`.
+- Step 0 diffs each against BLOOM_RUN + R3 + this file and lists what is valid, what must change (the order in `_Colour` / C `bloom_*`, the Swell side and memory LP, the `neve` key, the 03:53 `_Colour.eq` -> `eq_z` rename, the 03:08 pre H2 level trim that was reverted with the C file), and what is missing.
+- `live_stereo.c` (bbdf5799...) does **not** include `bloom_live.inc` today. The C work, the wasm and the worklet are re-done from the PERROOMK tree with the `.inc`.
+- The 03:08 pre level trim (H2 numerators divided by the 1 kHz cascade gain: Neve 234.915, 610-A 166.998, +44.4 dB not +58.0) must be redone; the C file lost it.
+- Other overnight notes to carry: predelay ring 4800 samples caps usable delay at 4799 (99.98 ms) not 400 ms (report, Idle item); page Drive slider was 0..24, the knob is -12..+12 around the calibrated point (fix to the prompt); `live_bytes` grew 134707680 -> 138406176 (report).
+
+## RT-6. Baseline = PERROOMK pin (read live at Step 0, these are what I read 2026-10-20 about 07:30 BST)
+- wasm `843a6eb8c91a9278ba927f643481f3260766a08c` (279668). `live_stereo.c` `bbdf57994e0996e2c9b77eb8a634550bb71ef3cf` (136434). `render_pipeline.py` `5fb71ad0...`. `app_server.py` `ade1b175...` (PERROOMK changed it). `surf_loop.py` `7e6e0ef0...` (PERROOMK). `fdn_worklet.js` `b39ccd91...`. `live_fdn.js` `a936a5f1...`. Harness `lib\wasm_run.js` `c505825f...`. `WORKLET_VER` 59 (`live_fdn.js:20`). `app.js?v=62` (`index.html:969`). GOLDEN_META `a362cf5e...`, five goldens as the PERROOMK manifest.
+- Empty live MD5 `b6c55d429fa63d6d0d3cd1fcc7d23e88`, centre `b3e6bcd9dfa13ad737d2b15d561f7d30`. CPU off 1.747 ms (cube, key absent), hall dial 8 two-source 1.364 ms. Comb max 0.21261059152758685 (< 0.23).
+- Versions: BLOOM still bumps WORKLET_VER 59 -> 60 and `app.js?v=62 -> 63` (R3-0).
+- **Temp DLL:** see RT-7. Pin after Step 1 Phase 0 is `dcde61df...` again (or `970e63bb...` if Idle prefers; same code).
+
+## RT-7. Temp DLL (investigated 2026-10-20, read-only on the product)
+- The restore built `%TEMP%\live_stereo_perroomk_restore.dll` and copied it to `live_stereo.dll` (both `970e63bb08e5092875b49796ce01ab7ce24dbb01`, 285184). The DLL embeds its own file name (export module name and the PDB name `live_stereo_perroomk_restore.pdb`), and the name changes `.rdata`, `.buildid` and the RIP-relative offsets in `.text`.
+- Proof (scratch dir `%TEMP%\dllprobe\`, recipe `software\.venv\Scripts\python.exe -m ziglang cc -shared -O3 -o <out> software/engine/live_stereo.c`, zig 0.16.0): building as `live_stereo_perroomk_restore.dll` gives `.text` / `.rdata` / `.pdata` byte-identical to the Temp DLL (only `.buildid` differs, it holds the path). Building as `live_stereo.dll` twice at one path gives the same sha1 both times (`fbd41bb1...`): **zig is deterministic for the same output path**. -O2, -g and -march=native give the same `.text` as -O3; -Os, -ffp-contract=off and explicit gnu/msvc targets differ, so the recipe is plain `-shared -O3`.
+- **Verdict: benign.** Same C (`bbdf5799`, which PERROOMK did not change), same flags, different output file name. No code difference.
+- **Step 1 Phase 0 (before any edit):** copy the current Temp DLL and `live_stereo.pdb` to `%TEMP%\live_stereo_970e_keep.*`, then rebuild with the recipe straight to `$env:LOCALAPPDATA\Temp\live_stereo.dll`. Expect `dcde61df...` (the pin). If it matches, the pin is unchanged. If not, pin the new hash, report it, and run the DLL-based quick tests (`test_bloom_off`, `test_quick_pins`) to prove behaviour. Not a STOP either way.
+- Every later DLL build in this run and in any restore goes straight to `live_stereo.dll` (never build under another name and copy).
+
+## RT-8. Kept rules
+- Off path bit-exact: Bloom off (Amount 0, any colour keys) = empty MD5 `b6c55d42...`, t03 / t04 max-abs 0, five goldens max-abs 0, d18/d4 prefix max-abs 0, PERROOMK comb unchanged. STOP 1 as before.
+- Restore-on-stop: backup `software\` + harness `golden\` to `software_backup_2026-10-20_preBLOOMRETRY.zip` with a manifest before the first edit (exclude `.venv`, `__pycache__`; include `renders\out_20261013_115900.wav`). On any STOP: restore from that zip, verify every manifest hash, rebuild the DLL straight to `live_stereo.dll` and check RT-7's hash, list survivors (files not in the zip), selfcheck 45/45, then report.
+- **pytest:** pytest 9 owns `--sw` (stepwise). The acceptance suite's `--sw` is the software tree. Always run acceptance with `-p no:stepwise`.
+- **Render-stamp rotation:** the software pytest stamp keeper writes `software\renders\out_<stamp>.wav` and deletes the oldest. After every pytest run, check `out_20261013_115900.wav` (sha1 `7365f08b96981de3b7d0085de7117382471564e9`, 86032844 bytes). If missing, restore it from the backup zip and remove the new stamp(s) that run added. The overnight survivor `out_20261020_034205.wav` (961964 bytes) is a pytest stamp: leave it, list it in the report.
+- Known flakes, not stops if they pass alone: `test_a4`, `test_a12_visible_controls_post_or_are_ui_only` (suite load), harness t19 wall-clock ratio (ceiling 2.40 must hold).
+- Play vs Render -60 dB, GR within 0.01 dB, covers OS, ADAA, pres and the new makeup position.
+- B2 listens and the B3 reference column (R3-E) as before, rendered only if every gate passed.
+
+## Step 0 (plan mode, high effort, read-only, no edits)
+Report every numbered item, tagged VERIFIED / CHANGED / UNKNOWN / STOP:
+- R-1. Live pins vs RT-6 (hash every file listed). PERROOMK landed and nothing is mid-run.
+- R-2. Prototype order (the table above) against `comp_proto.py`, `alias_proto.py` and `colour_choice.json`. Any disagreement is a STOP.
+- R-3. Where BLOOM_RUN + R3 + the overnight block put EQ, makeup and the Swell side, and every line this file changes.
+- R-4. Leftover file audit (RT-5), including whether the leftover Swell path has the 4.78 kHz memory LP and is input side.
+- R-5. The level-proof and alias tools Build will use, the `neve` key map, and which prototype csv each row is checked against.
+- R-6. RT-7 DLL: re-check the hashes read-only (Temp DLL 970e63bb, the `dllprobe` builds), confirm PERROOMK did not change `live_stereo.c` (CHAIN_LOG 23:20-23:25 says no C change; bbdf5799 equals the F9 pin). Note the Phase 0 rebuild.
+- R-7. Neve 8x spike plan (RT-4).
+- R-8. Any number in this file that differs from its source by more than rounding.
+Then stop.
+
+## Step 1 (after Step 0 is accepted)
+Phase 0 DLL (RT-7) -> backup (RT-8) -> Part 0 off path -> dynamics (R3-A) -> colour in the RT-1 order (Python, then C via `bloom_live.inc`, wasm, worklet) -> RT-2 level proof -> RT-3 alias gate (comps and pres) -> RT-4 CPU and spikes -> clicks, Play vs Render, null rule -> suites (selfcheck, node, software pytest, harness, acceptance with `-p no:stepwise`, render-stamp check after each pytest) -> versions 60 / 63 -> B2 listens -> docs. Stop rules as BLOOM_RUN + R3 + RT-2 / RT-3 / RT-8.
+
+## Open for Idle (not blocking Step 0)
+1. RT-3 reference point: alias gate taken before makeup (default, matches round 3) or on the raw output. The raw output with makeup is up to about 21 dB louder on Room Crush, so raw rows would fail where the round 3 prototype passed.
+2. The sound change: with colour before makeup, Natural / Nuke / Room Crush / Glue saturate at the attenuated level (as round 3 fitted), not at the Bloom output level. Quieter, cleaner colour than the overnight build.
+3. Predelay cap 99.98 ms vs 400 ms in the prompt.
+4. R3 open items 1-5 still stand.
+
+## Next
+Run Step 0 in a fresh Build chat.
+
+
+## IDLE DECISION 2026-10-20: ALIAS GATE
+**This block overrides the alias-gate definition everywhere it appears: BLOOM_RUN_2026-10-19.md (the R3-E alias gate and the pre oversampling gate), the ROUND 3 RESULTS FOLDED IN block, the ROUND 1 REVIEW ACCEPTED block, and RT-3 and RT-2 in this file. Where those say "at least 10 dB under the UAD or below -90 dBFS" on a before-makeup or raw-dBFS figure, read this block instead. Open for Idle item 1 is closed by this block.**
+
+- **Where:** measure the **shipped wasm final output**, after makeup and after EQ. Do not divide out the makeup (RT-3's default reference point is withdrawn).
+- **Level-match:** for each tone row, scale the BLOOM output so its fundamental equals the UAD's fundamental on the same row (one scalar per row, from the fundamental bin). Report the matching gain per row.
+- **Unit:** each alias image (M1 Blackman-Harris folded-harmonic peaks, and M2 LS harmonic removal with +-60 Hz skirts, peak below 16 kHz) in **dBc**: alias level minus the fundamental level, after the match.
+- **Pass, per preset and per pre:** the worst alias image is **at least 10 dB below the UAD's matching image in dBc**, OR below the dBc equivalent of the -90 dBFS floor, that is `-90 dBFS - (matched fundamental level in dBFS)`.
+- **Scope:** all 16 tone rows (7 / 9 / 13 / 17 kHz x 4 levels) for each of the 5 compressor presets and for the pres (610-A, Neve 1073), by **both** M1 and M2. Pres use the `neve` / `u610a` key map from RT-3.
+- **Not aliasing:** gain-path in-band IM sidebands that match the UAD (Room Crush pumping sidebands, Nuke sidebands) are excluded from the gate; report them separately against the SMPTE table as before.
+- **Reported, not gated:** the pre-makeup figures (RT-3's old reference point, and RT-2's pre-makeup M1 vs the prototype csv) and the raw output-referred dBFS M1/M2 per row. RT-2's 0.05 dB shaper-input level proof stays a gate; only its "pre-makeup M1 within 1.5 dB" line becomes report-only.
+- **Fail:** any preset or pre failing this gate = STOP, restore, report (RT-3 and RT-8 stop rules unchanged). No raising of OS without a stop.
+- **Step 0:** R-5 now also covers the level-match and dBc tool, and shows one worked row (Room Crush 9 kHz 0 dBFS) with matching gain, fundamental, worst image dBc, UAD image dBc and the floor equivalent. Item numbers R-1..R-8 are unchanged.
+
+**Predelay cap correction:** the real cap is **99.98 ms** (ring 4800 samples, usable 4799 at 48 kHz). Wherever this file or the inherited prompts say 400 ms (RT-5 line, Open for Idle item 3), read 99.98 ms; BLOOM_RUN's 0-100 ms range clamps at 4799 samples. Report it, not a STOP. Open for Idle item 3 is closed as a fact.
+
+## IDLE DECISION 2026-10-20 (2): ALIAS GATE REVISED
+**This block overrides only the PASS RULE of the "IDLE DECISION 2026-10-20: ALIAS GATE" block above. Everything else in that block stands.**
+
+- **Measurement unchanged:** shipped wasm final output after makeup and EQ; level-matched to the UAD at the fundamental (one scalar per row, reported); dBc; M1 and M2; all 16 tone rows (7/9/13/17 kHz x 4 levels) for the 5 compressor presets and both pres (610-A, Neve 1073); in-band IM sidebands that match the UAD are excluded and reported separately.
+- **New pass rule:** per row, our worst alias image in dBc must be **no worse than the UAD's worst alias image in dBc on the same row, with 0.5 dB tolerance** (pass if ours <= UAD + 0.5 dB). The tolerance is because UAD values are stored to 0.1 dB; the Room Crush 9 kHz reference is -61.73 (ours) vs -62.0 dBc (UAD).
+- **Withdrawn:** the 10 dB margin and the -90 dBFS floor (and its dBc equivalent).
+- **Oversampling stays as shipped:** Room Crush 1x, Glue ADAA1, Nuke ADAA1, Natural 2x, Swell 2x, 610-A 8x, Neve nclip_flux 8x. Do not raise OS.
+- **M2 dBc:** use the below-16 kHz residue peak minus the fundamental. Add that dBc column to the table.
+- **Worst-vs-worst:** the comparison is our worst image vs the UAD's worst image per row, because same-bin UAD data is not in the csv.
+- **UAD M2 sideband-like peaks:** if the UAD M2 peak sits at a non-harmonic, sideband-like frequency (e.g. Room Crush 3 kHz), report it; if it is excluded as a sideband, use the next UAD image as the reference.
+- **Fail:** any miss = STOP, restore from backup, report (unchanged).
+- **Reported only, not gated:** raw dBFS and pre-makeup figures.
+
+## ROUND 1 REVIEW ACCEPTED (BLOOM_RETRY Step 0, 2026-10-20)
+**All Step 0 findings R-1 to R-8 are accepted and binding for Step 1. Where they differ from earlier sections, this block and the block above win.**
+
+- **R-3 order.** Output side: `v = x*10^(-GR/20)`, then colour (oversample, shaper, decimate, then memory LP and DC block AFTER decimation), then makeup `10^((W+GR)/20)`, then the single eq_fit EQ. Swell: `colour(x)`, then `10^(W/20)`, then EQ, with no EQ_pre. Colour-off keeps `x*10^(W/20)` then EQ. Apply one colour-latency delay to the post-makeup tail product; direct and early stay undelayed. No new makeup clamp.
+- **R-4 fixes.** Move the memory LP and DC block after decimation in both `bloom_dsp.py` and `bloom_live.inc`. Reorder `_Colour`/`apply_fdn_buses` and C `bloom_apply`. Re-include `bloom_live.inc` without a double H2 divide (pack_pre already divides). Rebuild `bloom_gates.py` to the dBc gate above. Keep the `neve` -> `neve1073` mapping via `pre_type()`. Add the Drive knob, -12..+12 dB around the calibrated point. Predelay clamps at 4799 samples (99.98 ms).
+- **R-5.** The RT-2 0.05 dB shaper-input level proof stays a gate. `tone_alias` from round3 `alias.py` is the meter.
+- **R-6 Phase 0.** Copy the current DLL and pdb to `%TEMP%\live_stereo_970e_keep.*`, then rebuild with `python -m ziglang cc -shared -O3` straight to `%LOCALAPPDATA%\Temp\live_stereo.dll`, expecting `dcde61df`; re-pin only if it differs.
+- **R-7.** CPU gate as stated (decay-8 cube, shared off, one compressor at 2x plus Neve 8x, 4 warmup + 12 rounds; median, p90, silence-late median each <= 2.40 ms), with every block logged and the spike analysis. The 16x Neve stays recorded only.
+- **R-8.** Numbers verified.
+- **Phase 0 also:** make the preBLOOMRETRY backup zip before any edit; it is the restore source for any STOP.

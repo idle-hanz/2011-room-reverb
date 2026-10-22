@@ -1,0 +1,8 @@
+carpet_floor fit tail max|d| 0.021 line max 0.201 median 0.15
+carpet_floor k3 tail max|d| 0.241 line max 4.153 median 1.657
+carpet_floor k2 tail max|d| 0.416 line max 4.108 median 2.972
+carpet_floor shared4 tail max|d| 0.962 line max 5.532 median 2.432
+user_extreme fit tail max|d| 0.043 line max 1.274 median 0.129
+user_extreme k3 tail max|d| 0.63 line max 10.643 median 3.102
+user_extreme k2 tail max|d| 1.7 line max 10.64 median 6.169
+user_extreme shared4 tail max|d| 1.131 line max 12.431 median 11.375

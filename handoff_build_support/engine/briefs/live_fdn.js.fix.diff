@@ -1,0 +1,19 @@
+--- a/static/js/live_fdn.js	2026-09-26 15:20:00.000000000 +0100
++++ b/static/js/live_fdn.js	2026-09-27 11:42:21.143642457 +0100
+@@ -15,7 +15,7 @@
+   var monoFile = false;
+   var colourRev = "";
+   var bank = null;
+-  var WORKLET_VER = 28;
++  var WORKLET_VER = 29;
+   var ROUTE_LEN = 230;
+ 
+   function status(msg) {
+@@ -247,6 +247,7 @@
+       makeup: params.makeup,
+       direct_index: params.direct_index,
+       max_delay_ms: params.max_delay_ms,
++      line_t60: params.line_t60 || 0,
+       peaking: params.peaking,
+       two_sources: !!params.two_sources && !monoFile,
+       gain_a: params.gain_a,

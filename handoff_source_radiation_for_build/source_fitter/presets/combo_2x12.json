@@ -1,0 +1,186 @@
+{
+  "schema": "source_fitter.preset.v1",
+  "id": "combo_2x12",
+  "label": "Guitar combo 2x12 (Fender Twin Reverb)",
+  "category": "guitar_amp",
+  "tag": "MEASURED-FIT",
+  "model": "radiation_shelf_plus_soft_one_pole",
+  "level_reference": "on_axis (0 dB when facing the receiver; omni = exact null)",
+  "frame": {
+    "x": "facing (radiation reference axis of the dataset)",
+    "y": "source left",
+    "z": "up",
+    "facing_definition": "theta=0 column (VERIFIED dataset note for BYU instruments/speech)"
+  },
+  "params": {
+    "lp_order": 2.0,
+    "lo_db": -12.53154,
+    "hi_db": -35.3187,
+    "f0": 2887.81438,
+    "shelf_s": 0.98549,
+    "p": 0.73679,
+    "q": 0.75023,
+    "b_ud": -0.02608,
+    "b_lr": 0.00077,
+    "aim_az": 1.04239,
+    "aim_el": 1.92146,
+    "lp_hz": 164.01779,
+    "lp_mix": 0.86983,
+    "p_lo": 3.99997,
+    "dip": 1.0
+  },
+  "size": {
+    "a_eq_m": 0.0187,
+    "beaming_onset_hz": 2887.8,
+    "rule": "a_eq = c/(2*pi*f0), c=340 m/s as engine (piston ka=1); UI size slider sets size_scale = a_user/a_eq -> f0, lp_hz divided by size_scale"
+  },
+  "di_db": {
+    "125": 7.48,
+    "250": 9.04,
+    "500": 11.4,
+    "1000": 14.04,
+    "2000": 17.14,
+    "4000": 20.7,
+    "8000": 23.24,
+    "16000": 24.75
+  },
+  "diffuse_inject": {
+    "gain_db": -8.214174207916072,
+    "shelf_f0": 1393.5777486389484,
+    "shelf_gain_db": -14.896629811039567,
+    "shelf_s": 0.7,
+    "fit_rmse_db": 1.2019536669585746,
+    "target_db": {
+      "50": -6.750987953956664,
+      "104": -7.241613122277945,
+      "218": -8.648082801604593,
+      "455": -11.061385261314697,
+      "951": -13.837673447685795,
+      "1986": -17.10485814249307,
+      "4148": -20.859814589773194,
+      "8662": -23.471965043919496
+    }
+  },
+  "fit": {
+    "rmse_train_db": 5.659762495392388,
+    "rmse_holdout_db": 5.734241684805751,
+    "rmse_per_band_db": {
+      "99.2126": 7.991561839988382,
+      "125": 5.729001237403132,
+      "157.49": 3.604538934418609,
+      "198.425": 2.6363133703421227,
+      "250": 3.791901310152177,
+      "314.98": 4.49811189680916,
+      "396.85": 5.756304626427151,
+      "500": 6.52387392998453,
+      "629.961": 7.569218334591219,
+      "793.701": 8.43430473101007,
+      "1000": 7.746891897891044,
+      "1259.92": 7.566206574615536,
+      "1587.4": 5.615714755209629,
+      "2000": 4.123861117196203,
+      "2519.84": 5.062786526868983,
+      "3174.8": 4.449263772765993,
+      "4000": 4.542591484372104,
+      "5039.68": 4.678546887332672,
+      "6349.6": 4.789632467388826,
+      "8000": 3.462653924101519
+    },
+    "n_dirs": 684,
+    "n_train": 547,
+    "n_holdout": 137,
+    "fit_bands_hz": [
+      99.2126,
+      8000.0
+    ],
+    "n_bands": 20,
+    "free_params": [
+      "lo_db",
+      "hi_db",
+      "f0",
+      "shelf_s",
+      "p",
+      "q",
+      "b_ud",
+      "b_lr",
+      "aim_az",
+      "aim_el",
+      "lp_hz",
+      "lp_mix",
+      "p_lo",
+      "dip"
+    ],
+    "fixed_params": {
+      "lp_order": 2.0
+    },
+    "di_data_db": {
+      "99.2126": 4.399117459857365,
+      "125": 3.7549796348880387,
+      "157.49": 3.2846822631503247,
+      "198.425": 3.069148526098142,
+      "250": 3.3943052733901578,
+      "314.98": 6.286105321859561,
+      "396.85": 8.701597455997112,
+      "500": 11.171003207104706,
+      "629.961": 12.728469214080075,
+      "793.701": 12.823155083778126,
+      "1000": 14.362690766569472,
+      "1259.92": 13.997420465398791,
+      "1587.4": 18.783333556561495,
+      "2000": 19.711481284435266,
+      "2519.84": 20.732220111717012,
+      "3174.8": 20.912751089070163,
+      "4000": 20.538296229667463,
+      "5039.68": 22.454392800670462,
+      "6349.6": 20.260215386373766,
+      "8000": 21.402317437428238
+    },
+    "di_model_db": {
+      "99.2126": 7.184923118826514,
+      "125": 7.478923648822687,
+      "157.49": 7.880978320118808,
+      "198.425": 8.401691858006155,
+      "250": 9.036791351368379,
+      "314.98": 9.767118687910738,
+      "396.85": 10.565208440559186,
+      "500": 11.404058167170257,
+      "629.961": 12.264165776597082,
+      "793.701": 13.138492860438046,
+      "1000": 14.035540466052868,
+      "1259.92": 14.979748462896442,
+      "1587.4": 16.005896398212315,
+      "2000": 17.14070514832992,
+      "2519.84": 18.366732554245207,
+      "3174.8": 19.59017254690932,
+      "4000": 20.69931168140061,
+      "5039.68": 21.663401142558087,
+      "6349.6": 22.506303951648636,
+      "8000": 23.243280954258108
+    }
+  },
+  "dsp": {
+    "stages": [
+      "broadband_gain(k_lo*lo_db)",
+      "rbj_high_shelf(f0, k*hi_db, shelf_s)",
+      "soft_beaming_lp(lp_hz/k_hi, lp_mix, lp_order 1|2 cascaded one-poles)"
+    ],
+    "fs_ref_hz": 48000,
+    "k": "k_hi = A*u^p*(1-q*u^8); k_lo = A*((1-dip)*u^p_lo*(1-q*u^8) + dip*4u(1-u)); both 0 on axis",
+    "slot": "FIRST stage of each image's serial cascade (before surfaces/air/mic)"
+  },
+  "provenance": {
+    "dataset": "BYU ScholarsArchive Spatial Audio Library \u2014 Guitar Amplifier Directivity",
+    "url": "https://scholarsarchive.byu.edu/directivity/19/",
+    "citation": "R. C. Edelman, B. E. Anderson, S. D. Bellows, T. W. Leishman, 'Guitar Amplifier Directivity', BYU ScholarsArchive (2026)",
+    "license": "free & open access; cite as requested (no explicit licence text found)",
+    "grid": "5 deg dual-equiangular 72x37 (SH-resampled, 1/3 octave)",
+    "measurement": "MEASURED (anechoic, rotating semicircular array)",
+    "speaker_complement": "2x12 open-back (ASSUMED)",
+    "front_axis": "theta=0 column (VERIFIED dataset note for BYU instruments/speech)"
+  },
+  "tags": {
+    "params": "VERIFIED fit output (this code) of MEASURED data",
+    "model_form": "ASSUMED (engineering model, mirrors mic_fitter v3)",
+    "size_rule": "VERIFIED physics (piston ka=1) applied as ASSUMED mapping"
+  }
+}

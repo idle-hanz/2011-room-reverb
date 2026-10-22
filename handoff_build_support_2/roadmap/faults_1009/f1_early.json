@@ -1,0 +1,202 @@
+{
+  "coeffs": [
+    {
+      "label": "early pair 0.5m",
+      "dist_c_m": 0.5,
+      "mic_gain_c": 0.0,
+      "mic_gain_l": 1.0,
+      "play_makeup": 0.16436111517232543,
+      "play_makeup_db": -15.68,
+      "direct_makeup_computed_not_applied": 0.25215003181523193,
+      "g_decay": 0.13405997769037617,
+      "g_loop": 0.17677669529663687,
+      "fdn_wet_after_trim": 0.0,
+      "loop_trim_db": -4.51,
+      "direct_wet": 0.0,
+      "early_wet": 1.0,
+      "inject_peak": {
+        "l": 2.776124971948999,
+        "c": 4.0,
+        "r": 2.776124971948999
+      },
+      "inject_peak_db": {
+        "l": 8.87,
+        "c": 12.04,
+        "r": 8.87
+      },
+      "fold_peak": 2.776124971948999,
+      "fold_peak_db": 8.87,
+      "direct_line_fold": 2.776124971948999,
+      "direct_line_fold_db": 8.87,
+      "direct_out_db": 3.68,
+      "fdn_first_db": -300.0,
+      "geo_1_r2": 4.0,
+      "geo_db": 12.04,
+      "source": {
+        "x": 12.0,
+        "y": 1.5,
+        "z": 16.0
+      },
+      "mic_used": {
+        "x": 12.0,
+        "y": 1.5,
+        "z": 15.5
+      }
+    },
+    {
+      "label": "early pair 2.0m",
+      "dist_c_m": 2.0,
+      "mic_gain_c": 0.0,
+      "mic_gain_l": 1.0,
+      "play_makeup": 2.4014745919970895,
+      "play_makeup_db": 7.61,
+      "direct_makeup_computed_not_applied": 3.647013245721667,
+      "g_decay": 0.13304228061924617,
+      "g_loop": 0.17677669529663687,
+      "fdn_wet_after_trim": 0.0,
+      "loop_trim_db": -4.51,
+      "direct_wet": 0.0,
+      "early_wet": 1.0,
+      "inject_peak": {
+        "l": 0.19193788254571714,
+        "c": 0.25,
+        "r": 0.19193788254571714
+      },
+      "inject_peak_db": {
+        "l": -14.34,
+        "c": -12.04,
+        "r": -14.34
+      },
+      "fold_peak": 0.19193788254571714,
+      "fold_peak_db": -14.34,
+      "direct_line_fold": 0.19193788254571714,
+      "direct_line_fold_db": -14.34,
+      "direct_out_db": -19.53,
+      "fdn_first_db": -300.0,
+      "geo_1_r2": 0.25,
+      "geo_db": -12.04,
+      "source": {
+        "x": 12.0,
+        "y": 1.5,
+        "z": 16.0
+      },
+      "mic_used": {
+        "x": 12.0,
+        "y": 1.5,
+        "z": 14.0
+      }
+    },
+    {
+      "label": "early pair 8.0m",
+      "dist_c_m": 8.0,
+      "mic_gain_c": 0.0,
+      "mic_gain_l": 1.0,
+      "play_makeup": 39.472337276880104,
+      "play_makeup_db": 31.93,
+      "direct_makeup_computed_not_applied": 8.0,
+      "g_decay": 0.1280710742913448,
+      "g_loop": 0.17677669529663687,
+      "fdn_wet_after_trim": 0.0,
+      "loop_trim_db": -4.51,
+      "direct_wet": 0.0,
+      "early_wet": 1.0,
+      "inject_peak": {
+        "l": 0.01222394084534877,
+        "c": 0.015625,
+        "r": 0.01222394084534877
+      },
+      "inject_peak_db": {
+        "l": -38.26,
+        "c": -36.12,
+        "r": -38.26
+      },
+      "fold_peak": 0.01222394084534877,
+      "fold_peak_db": -38.26,
+      "direct_line_fold": 0.01222394084534877,
+      "direct_line_fold_db": -38.26,
+      "direct_out_db": -43.45,
+      "fdn_first_db": -300.0,
+      "geo_1_r2": 0.015625,
+      "geo_db": -36.12,
+      "source": {
+        "x": 12.0,
+        "y": 1.5,
+        "z": 16.0
+      },
+      "mic_used": {
+        "x": 12.0,
+        "y": 1.5,
+        "z": 8.0
+      }
+    },
+    {
+      "label": "shot C 0.30m up",
+      "dist_c_m": 0.3,
+      "mic_gain_c": 1.0,
+      "mic_gain_l": 1.0,
+      "play_makeup": 0.10001288185384262,
+      "play_makeup_db": -20.0,
+      "direct_makeup_computed_not_applied": 0.245237193752801,
+      "g_decay": 0.16140806378838235,
+      "g_loop": 0.17677669529663687,
+      "fdn_wet_after_trim": 0.5949767567589802,
+      "loop_trim_db": -4.51,
+      "direct_wet": 0.0,
+      "early_wet": 0.0,
+      "inject_peak": {
+        "l": 0.07660164684408384,
+        "c": 5.5555555555555545,
+        "r": 0.06633809142827933
+      },
+      "inject_peak_db": {
+        "l": -22.32,
+        "c": 14.89,
+        "r": -23.56
+      },
+      "fold_peak": 2.854379424621861,
+      "fold_peak_db": 9.11,
+      "direct_line_fold": 2.854379424621861,
+      "direct_line_fold_db": 9.11,
+      "direct_out_db": 3.92,
+      "fdn_first_db": -15.4,
+      "geo_1_r2": 11.111111111111109,
+      "geo_db": 20.92,
+      "source": {
+        "x": 2.6,
+        "y": 1.2,
+        "z": 4.75
+      },
+      "mic_used": {
+        "x": 2.6,
+        "y": 1.5,
+        "z": 4.75
+      }
+    }
+  ],
+  "renders": [
+    {
+      "label": "early pair 0.5",
+      "seconds": 60.24,
+      "peak": 0.16959205467374078,
+      "peak_before": 0.16959205467374078,
+      "limiter_db": 0.0,
+      "limiter_samples": 0,
+      "rms_db": -39.41,
+      "tail_rms_db": -41.46,
+      "onset_rms_db": -27.73,
+      "fdn_ms": 2790.0
+    },
+    {
+      "label": "early pair 8.0",
+      "seconds": 60.24,
+      "peak": 0.2270739143217769,
+      "peak_before": 0.2270739143217769,
+      "limiter_db": 0.0,
+      "limiter_samples": 0,
+      "rms_db": -36.76,
+      "tail_rms_db": -37.96,
+      "onset_rms_db": -26.85,
+      "fdn_ms": 2790.0
+    }
+  ]
+}

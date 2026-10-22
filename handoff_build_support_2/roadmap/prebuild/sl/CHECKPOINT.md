@@ -1,0 +1,11 @@
+# SL prebuild checkpoint log
+- 20:47 started; task 2 skipped (done by other job)
+- 21:00 CP1: engine modules surf_target/surf_panels/surf_autotreat/surf_loop written; SL1/SL5/SL6 unit tests; fdn/render_pipeline/app_server patched in /workspace/sl_work/B
+- 21:09 CP2: Flat bit-exact 7/7 scenes (pristine vs patched); Play C patch (batched SoA) wasm +0.031 ms/block, native null+identity exact
+- 21:45 CP3: slow tests: SL2 4/4 (room-average test now encodes the prototype's -10/-32 % at 125/250; prebuild -12/-33 %), SL4 4 pass + 1 xfail FINDING (mild double slope, untreated plaster room), SL5/SL6 render 2/2 (treated 16/23 with keep<30 Hz; 15/23 with all cuts dropped). Fast 36/36. Flat bit-exact 9/9 scenes -> proof/flat_bitexact.json. Patches written (dry-run clean on pristine). UI proof: shots/ + sl_ui_results.json (no page/HTTP errors, 1600 + 1280 px). Fixes from viewing shots: Auto-treat field defaults to the dial; shape-only fit when the room is already shorter than the target (no 0 % porous rows); lock note; EBU field kept.
+- 21:50 CP4: README fixed (stage gating, test location); UI SL_STAGE gating added; proof rerun (background)
+- 21:58 CP5: SL1-SL6 prompts rewritten to point at prebuild/sl (originals kept in /workspace/sl_work/prompt_bak, box only); SL7a gets a prebuild pointer
+- 22:00 CP6: NEXT_SESSION_PLAN.md, START_HERE.md, new short README.md at handoff root; _archive/ (old README, plan 10-01, T06 + SL7 stubs); PROMPTS_INDEX + prebuild README updated
+- 22:03 CP7: link check 246 paths/38 docs (fixed DECISIONS mockup path; rest are PC-only items, sibling handoff_build_support refs that exist on the PC, archived stub names, or SL7a outputs); manifests 7: 6 OK, eq_plan/sync_md5.txt stale (06:41, 3 files edited 07:13/10:58) -> refreshed
+- 22:10 CP8: PC _archive moves done (README, plan 10-01, T06, SL7 stubs); UI axis-label fix, proof rerun OK incl. stage-1 gating; starting sync
+- 22:12 CP9: synced to PC (handoff_sync_1004d.zip, 162 files, expanded in place + MD5SUMS_SYNC_2026-10-04.txt); PC check 304/304 MD5 OK; stubs only in _archive. Nothing deleted; software\ untouched; app not started/stopped.

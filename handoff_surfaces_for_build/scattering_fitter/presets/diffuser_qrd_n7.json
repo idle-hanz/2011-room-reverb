@@ -1,0 +1,47 @@
+{
+  "schema": "scattering_fitter.material_scatter.v1",
+  "id": "diffuser_qrd_n7",
+  "honesty": "VERIFIED_MEASURED(2 pts)+ASSUMED(shape)",
+  "scatter_hz": [
+    125.0,
+    250.0,
+    500.0,
+    1000.0,
+    2000.0,
+    4000.0,
+    8000.0
+  ],
+  "scatter": [
+    0.1826,
+    0.3228,
+    0.5304,
+    0.7264,
+    0.8467,
+    0.9022,
+    0.9245
+  ],
+  "scatter_data_octave": null,
+  "model": "logistic_log2f",
+  "params": {
+    "k": 1.00984,
+    "s_lo": 0.0691,
+    "s_hi": 0.9378,
+    "fc": 459.09495
+  },
+  "rmse_s": 0.0,
+  "n_points": 2,
+  "fit_range_hz": [
+    400,
+    2500
+  ],
+  "source": "Khrystoslavenko O., Grubliauskas R.: Experimental Studies of the Sound Scattering Coefficient of the Diffuser in the Reverberation Chamber, Environmental and Climate Technologies 27(1) 2023 464-475, doi:10.2478/rtuect-2023-0034 \u2014 QRD N7 values quoted in text (figure not digitised)",
+  "source_key": "qrd_n7",
+  "odeon_anchor": null,
+  "note": "Only 2 stated points (0.46@400 Hz, 0.87@2500 Hz). Slope and floor borrowed from Kamisi\u0144ski fit (ASSUMED).",
+  "usage": "Per hit: E_spec *= (1 - s_b); E_scatter = 1 - prod(1 - s_b). Specular tap amplitude sqrt(prod(1-s)); scattered share -> short Lambert-envelope velvet cluster, feed-forward on the early tap only. Muted face contributes neither absorption nor scattering.",
+  "locks": {
+    "measured_by_us": false,
+    "honesty_note": "never promote to MEASURED; cite source",
+    "live_software": "do not import into live software/ until Idle says go"
+  }
+}

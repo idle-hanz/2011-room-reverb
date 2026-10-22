@@ -1,0 +1,72 @@
+{
+  "schema": "surfaces_fitter.material.v1",
+  "id": "plaster_smooth",
+  "display_name": "Plaster (smooth)",
+  "honesty": "ASSUMED_TEXTBOOK",
+  "roles": [
+    "wall",
+    "ceiling"
+  ],
+  "banned_on": [
+    "floor"
+  ],
+  "absorb_hz": [
+    125.0,
+    250.0,
+    500.0,
+    1000.0,
+    2000.0,
+    4000.0,
+    8000.0
+  ],
+  "absorb": [
+    0.02,
+    0.02,
+    0.03,
+    0.04,
+    0.05,
+    0.05,
+    0.05
+  ],
+  "alpha_octave": [
+    0.02,
+    0.02,
+    0.03,
+    0.04,
+    0.05,
+    0.05,
+    0.05
+  ],
+  "model": "dual_high_shelf",
+  "candidate": "A",
+  "params": {
+    "r0_db": -0.08631690424417518,
+    "f0": 714.0560259220359,
+    "depth_db": -0.13826348891990398,
+    "shelf_slope": 5.599635884583102,
+    "f0_hi": 13870.040538140334,
+    "depth_hi_db": -6.441181098471628e-13,
+    "shelf_slope_hi": 11.842721413448551
+  },
+  "rmse_r_db": 0.0030478413805857993,
+  "absorb_l1": 0.0009342979023178362,
+  "candidate_rmse_r_db": {
+    "A": 0.0030478413805857993,
+    "B": 0.00205244911852898
+  },
+  "freq_range_hz": [
+    20.0,
+    16000.0
+  ],
+  "source_note": "Sengpiel / typical smooth plaster on solid backing",
+  "usage": "One bounce: apply R(f); multi-bounce: cascade product along hit list. Do not put curtain/carpet roles on illegal faces.",
+  "fit": {
+    "success": true,
+    "message": "DE success=False; LS success=True cost=0.0008918"
+  },
+  "locks": {
+    "live_software": "do not import into live software/ engine in this pack",
+    "honesty": "ASSUMED_TEXTBOOK \u2014 not Structure VERIFIED",
+    "depth": "absolute per bounce (not per metre)"
+  }
+}

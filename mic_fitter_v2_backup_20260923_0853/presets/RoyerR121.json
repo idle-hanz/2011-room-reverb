@@ -1,0 +1,52 @@
+{
+  "schema": "mic_fitter.preset.v2",
+  "mic_id": "RoyerR121",
+  "display_name": "Royer R-121 \u2014 fig-8 ribbon",
+  "honesty": "MEASURED",
+  "family": "fig8_ribbon",
+  "source": "Franco et al. Zenodo 10.5281/zenodo.4633508 (Raw_IRs, 5m, 24-bit, selected angles)",
+  "model": "dual_shelf_plus_soft_one_pole",
+  "angle_law": "0.5*(1-cos(theta))^p",
+  "params": {
+    "f0": 200.00000000000003,
+    "depth_max_db": -14.239383954227112,
+    "shelf_slope": 1.5000000000000002,
+    "f_lo": 399.97995603197336,
+    "depth_lo_db": -2.8793875557983624,
+    "res_hz": 1500.000000001187,
+    "lp_mix": 0.3264708838442886,
+    "fc_floor": 5642.736649099946,
+    "p": 0.6000000000000001
+  },
+  "metrics": {
+    "train_rmse_db": 9.500430779809196,
+    "holdout_rmse_db": 3.7775703465627535,
+    "train_mse_db": 90.25818500194598,
+    "holdout_mse_db": 14.270037723230242,
+    "n_train_angles": 8,
+    "n_holdout_angles": 2,
+    "train_angles_deg": [
+      0.0,
+      15.0,
+      30.0,
+      60.0,
+      90.0,
+      120.0,
+      150.0,
+      180.0
+    ],
+    "holdout_angles_deg": [
+      45.0,
+      135.0
+    ],
+    "freq_range_hz": [
+      20.0,
+      16000.0
+    ]
+  },
+  "notes": "Structure LP / room engine path is SEPARATE \u2014 these presets are off-axis magnitude colour only. Fits are ASSUMED when honesty=ASSUMED. v2: dual shelf (high + mild low) + soft one-pole; shelves preferred over LP.",
+  "fit": {
+    "success": true,
+    "message": "DE success=False nit=70 fun=91.407309; LS success=True cost=23392.412355"
+  }
+}

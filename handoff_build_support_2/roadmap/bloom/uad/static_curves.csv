@@ -1,0 +1,671 @@
+curve,plugin,params,in_dbfs,gr_db,local_ratio_from_prev
+fairchild670_t5,uaudio_fairchild_670,"{""l_input"": 0.0, ""r_input"": 0.0, ""l_thresh"": 5.0, ""r_thresh"": 5.0, ""l_timecnst"": 5.0, ""r_timecnst"": 5.0}",-40.0,0.000,
+fairchild670_t5,uaudio_fairchild_670,"{""l_input"": 0.0, ""r_input"": 0.0, ""l_thresh"": 5.0, ""r_thresh"": 5.0, ""l_timecnst"": 5.0, ""r_timecnst"": 5.0}",-38.0,0.000,1.000
+fairchild670_t5,uaudio_fairchild_670,"{""l_input"": 0.0, ""r_input"": 0.0, ""l_thresh"": 5.0, ""r_thresh"": 5.0, ""l_timecnst"": 5.0, ""r_timecnst"": 5.0}",-36.0,0.000,1.000
+fairchild670_t5,uaudio_fairchild_670,"{""l_input"": 0.0, ""r_input"": 0.0, ""l_thresh"": 5.0, ""r_thresh"": 5.0, ""l_timecnst"": 5.0, ""r_timecnst"": 5.0}",-34.0,0.000,1.000
+fairchild670_t5,uaudio_fairchild_670,"{""l_input"": 0.0, ""r_input"": 0.0, ""l_thresh"": 5.0, ""r_thresh"": 5.0, ""l_timecnst"": 5.0, ""r_timecnst"": 5.0}",-32.0,0.000,1.000
+fairchild670_t5,uaudio_fairchild_670,"{""l_input"": 0.0, ""r_input"": 0.0, ""l_thresh"": 5.0, ""r_thresh"": 5.0, ""l_timecnst"": 5.0, ""r_timecnst"": 5.0}",-30.0,0.000,1.000
+fairchild670_t5,uaudio_fairchild_670,"{""l_input"": 0.0, ""r_input"": 0.0, ""l_thresh"": 5.0, ""r_thresh"": 5.0, ""l_timecnst"": 5.0, ""r_timecnst"": 5.0}",-28.0,0.001,1.000
+fairchild670_t5,uaudio_fairchild_670,"{""l_input"": 0.0, ""r_input"": 0.0, ""l_thresh"": 5.0, ""r_thresh"": 5.0, ""l_timecnst"": 5.0, ""r_timecnst"": 5.0}",-26.0,-0.071,1.037
+fairchild670_t5,uaudio_fairchild_670,"{""l_input"": 0.0, ""r_input"": 0.0, ""l_thresh"": 5.0, ""r_thresh"": 5.0, ""l_timecnst"": 5.0, ""r_timecnst"": 5.0}",-24.0,-0.517,1.287
+fairchild670_t5,uaudio_fairchild_670,"{""l_input"": 0.0, ""r_input"": 0.0, ""l_thresh"": 5.0, ""r_thresh"": 5.0, ""l_timecnst"": 5.0, ""r_timecnst"": 5.0}",-22.0,-1.306,1.651
+fairchild670_t5,uaudio_fairchild_670,"{""l_input"": 0.0, ""r_input"": 0.0, ""l_thresh"": 5.0, ""r_thresh"": 5.0, ""l_timecnst"": 5.0, ""r_timecnst"": 5.0}",-20.0,-2.340,2.071
+fairchild670_t5,uaudio_fairchild_670,"{""l_input"": 0.0, ""r_input"": 0.0, ""l_thresh"": 5.0, ""r_thresh"": 5.0, ""l_timecnst"": 5.0, ""r_timecnst"": 5.0}",-18.0,-3.549,2.530
+fairchild670_t5,uaudio_fairchild_670,"{""l_input"": 0.0, ""r_input"": 0.0, ""l_thresh"": 5.0, ""r_thresh"": 5.0, ""l_timecnst"": 5.0, ""r_timecnst"": 5.0}",-16.0,-4.886,3.014
+fairchild670_t5,uaudio_fairchild_670,"{""l_input"": 0.0, ""r_input"": 0.0, ""l_thresh"": 5.0, ""r_thresh"": 5.0, ""l_timecnst"": 5.0, ""r_timecnst"": 5.0}",-14.0,-6.320,3.536
+fairchild670_t5,uaudio_fairchild_670,"{""l_input"": 0.0, ""r_input"": 0.0, ""l_thresh"": 5.0, ""r_thresh"": 5.0, ""l_timecnst"": 5.0, ""r_timecnst"": 5.0}",-12.0,-7.828,4.066
+fairchild670_t5,uaudio_fairchild_670,"{""l_input"": 0.0, ""r_input"": 0.0, ""l_thresh"": 5.0, ""r_thresh"": 5.0, ""l_timecnst"": 5.0, ""r_timecnst"": 5.0}",-10.0,-9.398,4.651
+fairchild670_t5,uaudio_fairchild_670,"{""l_input"": 0.0, ""r_input"": 0.0, ""l_thresh"": 5.0, ""r_thresh"": 5.0, ""l_timecnst"": 5.0, ""r_timecnst"": 5.0}",-8.0,-11.021,5.294
+fairchild670_t5,uaudio_fairchild_670,"{""l_input"": 0.0, ""r_input"": 0.0, ""l_thresh"": 5.0, ""r_thresh"": 5.0, ""l_timecnst"": 5.0, ""r_timecnst"": 5.0}",-6.0,-12.680,5.881
+fairchild670_t5,uaudio_fairchild_670,"{""l_input"": 0.0, ""r_input"": 0.0, ""l_thresh"": 5.0, ""r_thresh"": 5.0, ""l_timecnst"": 5.0, ""r_timecnst"": 5.0}",-4.0,-14.378,6.619
+fairchild670_t5,uaudio_fairchild_670,"{""l_input"": 0.0, ""r_input"": 0.0, ""l_thresh"": 5.0, ""r_thresh"": 5.0, ""l_timecnst"": 5.0, ""r_timecnst"": 5.0}",-2.0,-16.108,7.403
+fairchild670_t5,uaudio_fairchild_670,"{""l_input"": 0.0, ""r_input"": 0.0, ""l_thresh"": 5.0, ""r_thresh"": 5.0, ""l_timecnst"": 5.0, ""r_timecnst"": 5.0}",0.0,-17.884,8.907
+fairchild670_t5,uaudio_fairchild_670,"{""l_input"": 0.0, ""r_input"": 0.0, ""l_thresh"": 5.0, ""r_thresh"": 5.0, ""l_timecnst"": 5.0, ""r_timecnst"": 5.0}",2.0,-19.730,13.062
+fairchild670_t5,uaudio_fairchild_670,"{""l_input"": 0.0, ""r_input"": 0.0, ""l_thresh"": 5.0, ""r_thresh"": 5.0, ""l_timecnst"": 5.0, ""r_timecnst"": 5.0}",4.0,-21.716,138.012
+fairchild670_t5,uaudio_fairchild_670,"{""l_input"": 0.0, ""r_input"": 0.0, ""l_thresh"": 5.0, ""r_thresh"": 5.0, ""l_timecnst"": 5.0, ""r_timecnst"": 5.0}",6.0,-23.732,2000000.000
+fairchild670_t5,uaudio_fairchild_670,"{""l_input"": 0.0, ""r_input"": 0.0, ""l_thresh"": 5.0, ""r_thresh"": 5.0, ""l_timecnst"": 5.0, ""r_timecnst"": 5.0}",8.0,-25.685,42.408
+fairchild670_t5,uaudio_fairchild_670,"{""l_input"": 0.0, ""r_input"": 0.0, ""l_thresh"": 5.0, ""r_thresh"": 5.0, ""l_timecnst"": 5.0, ""r_timecnst"": 5.0}",10.0,-27.514,11.723
+fairchild670_t1,uaudio_fairchild_670,"{""l_input"": 0.0, ""r_input"": 0.0, ""l_thresh"": 5.0, ""r_thresh"": 5.0, ""l_timecnst"": 1.0, ""r_timecnst"": 1.0}",-40.0,0.000,
+fairchild670_t1,uaudio_fairchild_670,"{""l_input"": 0.0, ""r_input"": 0.0, ""l_thresh"": 5.0, ""r_thresh"": 5.0, ""l_timecnst"": 1.0, ""r_timecnst"": 1.0}",-38.0,0.000,1.000
+fairchild670_t1,uaudio_fairchild_670,"{""l_input"": 0.0, ""r_input"": 0.0, ""l_thresh"": 5.0, ""r_thresh"": 5.0, ""l_timecnst"": 1.0, ""r_timecnst"": 1.0}",-36.0,0.000,1.000
+fairchild670_t1,uaudio_fairchild_670,"{""l_input"": 0.0, ""r_input"": 0.0, ""l_thresh"": 5.0, ""r_thresh"": 5.0, ""l_timecnst"": 1.0, ""r_timecnst"": 1.0}",-34.0,0.000,1.000
+fairchild670_t1,uaudio_fairchild_670,"{""l_input"": 0.0, ""r_input"": 0.0, ""l_thresh"": 5.0, ""r_thresh"": 5.0, ""l_timecnst"": 1.0, ""r_timecnst"": 1.0}",-32.0,0.000,1.000
+fairchild670_t1,uaudio_fairchild_670,"{""l_input"": 0.0, ""r_input"": 0.0, ""l_thresh"": 5.0, ""r_thresh"": 5.0, ""l_timecnst"": 1.0, ""r_timecnst"": 1.0}",-30.0,0.000,1.000
+fairchild670_t1,uaudio_fairchild_670,"{""l_input"": 0.0, ""r_input"": 0.0, ""l_thresh"": 5.0, ""r_thresh"": 5.0, ""l_timecnst"": 1.0, ""r_timecnst"": 1.0}",-28.0,0.001,1.000
+fairchild670_t1,uaudio_fairchild_670,"{""l_input"": 0.0, ""r_input"": 0.0, ""l_thresh"": 5.0, ""r_thresh"": 5.0, ""l_timecnst"": 1.0, ""r_timecnst"": 1.0}",-26.0,-0.056,1.029
+fairchild670_t1,uaudio_fairchild_670,"{""l_input"": 0.0, ""r_input"": 0.0, ""l_thresh"": 5.0, ""r_thresh"": 5.0, ""l_timecnst"": 1.0, ""r_timecnst"": 1.0}",-24.0,-0.444,1.241
+fairchild670_t1,uaudio_fairchild_670,"{""l_input"": 0.0, ""r_input"": 0.0, ""l_thresh"": 5.0, ""r_thresh"": 5.0, ""l_timecnst"": 1.0, ""r_timecnst"": 1.0}",-22.0,-1.163,1.561
+fairchild670_t1,uaudio_fairchild_670,"{""l_input"": 0.0, ""r_input"": 0.0, ""l_thresh"": 5.0, ""r_thresh"": 5.0, ""l_timecnst"": 1.0, ""r_timecnst"": 1.0}",-20.0,-2.133,1.942
+fairchild670_t1,uaudio_fairchild_670,"{""l_input"": 0.0, ""r_input"": 0.0, ""l_thresh"": 5.0, ""r_thresh"": 5.0, ""l_timecnst"": 1.0, ""r_timecnst"": 1.0}",-18.0,-3.288,2.367
+fairchild670_t1,uaudio_fairchild_670,"{""l_input"": 0.0, ""r_input"": 0.0, ""l_thresh"": 5.0, ""r_thresh"": 5.0, ""l_timecnst"": 1.0, ""r_timecnst"": 1.0}",-16.0,-4.580,2.825
+fairchild670_t1,uaudio_fairchild_670,"{""l_input"": 0.0, ""r_input"": 0.0, ""l_thresh"": 5.0, ""r_thresh"": 5.0, ""l_timecnst"": 1.0, ""r_timecnst"": 1.0}",-14.0,-5.976,3.307
+fairchild670_t1,uaudio_fairchild_670,"{""l_input"": 0.0, ""r_input"": 0.0, ""l_thresh"": 5.0, ""r_thresh"": 5.0, ""l_timecnst"": 1.0, ""r_timecnst"": 1.0}",-12.0,-7.452,3.821
+fairchild670_t1,uaudio_fairchild_670,"{""l_input"": 0.0, ""r_input"": 0.0, ""l_thresh"": 5.0, ""r_thresh"": 5.0, ""l_timecnst"": 1.0, ""r_timecnst"": 1.0}",-10.0,-8.995,4.370
+fairchild670_t1,uaudio_fairchild_670,"{""l_input"": 0.0, ""r_input"": 0.0, ""l_thresh"": 5.0, ""r_thresh"": 5.0, ""l_timecnst"": 1.0, ""r_timecnst"": 1.0}",-8.0,-10.589,4.930
+fairchild670_t1,uaudio_fairchild_670,"{""l_input"": 0.0, ""r_input"": 0.0, ""l_thresh"": 5.0, ""r_thresh"": 5.0, ""l_timecnst"": 1.0, ""r_timecnst"": 1.0}",-6.0,-12.218,5.391
+fairchild670_t1,uaudio_fairchild_670,"{""l_input"": 0.0, ""r_input"": 0.0, ""l_thresh"": 5.0, ""r_thresh"": 5.0, ""l_timecnst"": 1.0, ""r_timecnst"": 1.0}",-4.0,-13.877,5.864
+fairchild670_t1,uaudio_fairchild_670,"{""l_input"": 0.0, ""r_input"": 0.0, ""l_thresh"": 5.0, ""r_thresh"": 5.0, ""l_timecnst"": 1.0, ""r_timecnst"": 1.0}",-2.0,-15.566,6.437
+fairchild670_t1,uaudio_fairchild_670,"{""l_input"": 0.0, ""r_input"": 0.0, ""l_thresh"": 5.0, ""r_thresh"": 5.0, ""l_timecnst"": 1.0, ""r_timecnst"": 1.0}",0.0,-17.293,7.312
+fairchild670_t1,uaudio_fairchild_670,"{""l_input"": 0.0, ""r_input"": 0.0, ""l_thresh"": 5.0, ""r_thresh"": 5.0, ""l_timecnst"": 1.0, ""r_timecnst"": 1.0}",2.0,-19.075,9.201
+fairchild670_t1,uaudio_fairchild_670,"{""l_input"": 0.0, ""r_input"": 0.0, ""l_thresh"": 5.0, ""r_thresh"": 5.0, ""l_timecnst"": 1.0, ""r_timecnst"": 1.0}",4.0,-20.962,17.617
+fairchild670_t1,uaudio_fairchild_670,"{""l_input"": 0.0, ""r_input"": 0.0, ""l_thresh"": 5.0, ""r_thresh"": 5.0, ""l_timecnst"": 1.0, ""r_timecnst"": 1.0}",6.0,-22.888,26.940
+fairchild670_t1,uaudio_fairchild_670,"{""l_input"": 0.0, ""r_input"": 0.0, ""l_thresh"": 5.0, ""r_thresh"": 5.0, ""l_timecnst"": 1.0, ""r_timecnst"": 1.0}",8.0,-24.739,13.422
+fairchild670_t1,uaudio_fairchild_670,"{""l_input"": 0.0, ""r_input"": 0.0, ""l_thresh"": 5.0, ""r_thresh"": 5.0, ""l_timecnst"": 1.0, ""r_timecnst"": 1.0}",10.0,-26.470,7.454
+sslg_2to1,uaudio_ssl_g_bus_compressor,"{""thresh"": 0.0, ""make_up"": 0.0, ""ratio"": ""2:1"", ""attack"": 10.0, ""release"": ""0.1 s""}",-40.0,0.000,
+sslg_2to1,uaudio_ssl_g_bus_compressor,"{""thresh"": 0.0, ""make_up"": 0.0, ""ratio"": ""2:1"", ""attack"": 10.0, ""release"": ""0.1 s""}",-38.0,-0.081,1.042
+sslg_2to1,uaudio_ssl_g_bus_compressor,"{""thresh"": 0.0, ""make_up"": 0.0, ""ratio"": ""2:1"", ""attack"": 10.0, ""release"": ""0.1 s""}",-36.0,-0.270,1.104
+sslg_2to1,uaudio_ssl_g_bus_compressor,"{""thresh"": 0.0, ""make_up"": 0.0, ""ratio"": ""2:1"", ""attack"": 10.0, ""release"": ""0.1 s""}",-34.0,-0.568,1.175
+sslg_2to1,uaudio_ssl_g_bus_compressor,"{""thresh"": 0.0, ""make_up"": 0.0, ""ratio"": ""2:1"", ""attack"": 10.0, ""release"": ""0.1 s""}",-32.0,-0.959,1.243
+sslg_2to1,uaudio_ssl_g_bus_compressor,"{""thresh"": 0.0, ""make_up"": 0.0, ""ratio"": ""2:1"", ""attack"": 10.0, ""release"": ""0.1 s""}",-30.0,-1.435,1.313
+sslg_2to1,uaudio_ssl_g_bus_compressor,"{""thresh"": 0.0, ""make_up"": 0.0, ""ratio"": ""2:1"", ""attack"": 10.0, ""release"": ""0.1 s""}",-28.0,-1.999,1.393
+sslg_2to1,uaudio_ssl_g_bus_compressor,"{""thresh"": 0.0, ""make_up"": 0.0, ""ratio"": ""2:1"", ""attack"": 10.0, ""release"": ""0.1 s""}",-26.0,-2.647,1.479
+sslg_2to1,uaudio_ssl_g_bus_compressor,"{""thresh"": 0.0, ""make_up"": 0.0, ""ratio"": ""2:1"", ""attack"": 10.0, ""release"": ""0.1 s""}",-24.0,-3.367,1.562
+sslg_2to1,uaudio_ssl_g_bus_compressor,"{""thresh"": 0.0, ""make_up"": 0.0, ""ratio"": ""2:1"", ""attack"": 10.0, ""release"": ""0.1 s""}",-22.0,-4.157,1.653
+sslg_2to1,uaudio_ssl_g_bus_compressor,"{""thresh"": 0.0, ""make_up"": 0.0, ""ratio"": ""2:1"", ""attack"": 10.0, ""release"": ""0.1 s""}",-20.0,-5.025,1.768
+sslg_2to1,uaudio_ssl_g_bus_compressor,"{""thresh"": 0.0, ""make_up"": 0.0, ""ratio"": ""2:1"", ""attack"": 10.0, ""release"": ""0.1 s""}",-18.0,-5.921,1.812
+sslg_2to1,uaudio_ssl_g_bus_compressor,"{""thresh"": 0.0, ""make_up"": 0.0, ""ratio"": ""2:1"", ""attack"": 10.0, ""release"": ""0.1 s""}",-16.0,-6.762,1.726
+sslg_2to1,uaudio_ssl_g_bus_compressor,"{""thresh"": 0.0, ""make_up"": 0.0, ""ratio"": ""2:1"", ""attack"": 10.0, ""release"": ""0.1 s""}",-14.0,-7.533,1.627
+sslg_2to1,uaudio_ssl_g_bus_compressor,"{""thresh"": 0.0, ""make_up"": 0.0, ""ratio"": ""2:1"", ""attack"": 10.0, ""release"": ""0.1 s""}",-12.0,-8.271,1.586
+sslg_2to1,uaudio_ssl_g_bus_compressor,"{""thresh"": 0.0, ""make_up"": 0.0, ""ratio"": ""2:1"", ""attack"": 10.0, ""release"": ""0.1 s""}",-10.0,-8.998,1.570
+sslg_2to1,uaudio_ssl_g_bus_compressor,"{""thresh"": 0.0, ""make_up"": 0.0, ""ratio"": ""2:1"", ""attack"": 10.0, ""release"": ""0.1 s""}",-8.0,-9.735,1.584
+sslg_2to1,uaudio_ssl_g_bus_compressor,"{""thresh"": 0.0, ""make_up"": 0.0, ""ratio"": ""2:1"", ""attack"": 10.0, ""release"": ""0.1 s""}",-6.0,-10.506,1.627
+sslg_2to1,uaudio_ssl_g_bus_compressor,"{""thresh"": 0.0, ""make_up"": 0.0, ""ratio"": ""2:1"", ""attack"": 10.0, ""release"": ""0.1 s""}",-4.0,-11.306,1.667
+sslg_2to1,uaudio_ssl_g_bus_compressor,"{""thresh"": 0.0, ""make_up"": 0.0, ""ratio"": ""2:1"", ""attack"": 10.0, ""release"": ""0.1 s""}",-2.0,-12.141,1.716
+sslg_2to1,uaudio_ssl_g_bus_compressor,"{""thresh"": 0.0, ""make_up"": 0.0, ""ratio"": ""2:1"", ""attack"": 10.0, ""release"": ""0.1 s""}",0.0,-13.025,1.791
+sslg_2to1,uaudio_ssl_g_bus_compressor,"{""thresh"": 0.0, ""make_up"": 0.0, ""ratio"": ""2:1"", ""attack"": 10.0, ""release"": ""0.1 s""}",2.0,-13.968,1.893
+sslg_2to1,uaudio_ssl_g_bus_compressor,"{""thresh"": 0.0, ""make_up"": 0.0, ""ratio"": ""2:1"", ""attack"": 10.0, ""release"": ""0.1 s""}",4.0,-14.962,1.987
+sslg_2to1,uaudio_ssl_g_bus_compressor,"{""thresh"": 0.0, ""make_up"": 0.0, ""ratio"": ""2:1"", ""attack"": 10.0, ""release"": ""0.1 s""}",6.0,-16.006,2.093
+sslg_2to1,uaudio_ssl_g_bus_compressor,"{""thresh"": 0.0, ""make_up"": 0.0, ""ratio"": ""2:1"", ""attack"": 10.0, ""release"": ""0.1 s""}",8.0,-17.102,2.211
+sslg_2to1,uaudio_ssl_g_bus_compressor,"{""thresh"": 0.0, ""make_up"": 0.0, ""ratio"": ""2:1"", ""attack"": 10.0, ""release"": ""0.1 s""}",10.0,-18.246,2.337
+sslg_4to1,uaudio_ssl_g_bus_compressor,"{""thresh"": 0.0, ""make_up"": 0.0, ""ratio"": ""4:1"", ""attack"": 10.0, ""release"": ""0.1 s""}",-40.0,0.000,
+sslg_4to1,uaudio_ssl_g_bus_compressor,"{""thresh"": 0.0, ""make_up"": 0.0, ""ratio"": ""4:1"", ""attack"": 10.0, ""release"": ""0.1 s""}",-38.0,-0.000,1.000
+sslg_4to1,uaudio_ssl_g_bus_compressor,"{""thresh"": 0.0, ""make_up"": 0.0, ""ratio"": ""4:1"", ""attack"": 10.0, ""release"": ""0.1 s""}",-36.0,-0.000,1.000
+sslg_4to1,uaudio_ssl_g_bus_compressor,"{""thresh"": 0.0, ""make_up"": 0.0, ""ratio"": ""4:1"", ""attack"": 10.0, ""release"": ""0.1 s""}",-34.0,-0.000,1.000
+sslg_4to1,uaudio_ssl_g_bus_compressor,"{""thresh"": 0.0, ""make_up"": 0.0, ""ratio"": ""4:1"", ""attack"": 10.0, ""release"": ""0.1 s""}",-32.0,-0.000,1.000
+sslg_4to1,uaudio_ssl_g_bus_compressor,"{""thresh"": 0.0, ""make_up"": 0.0, ""ratio"": ""4:1"", ""attack"": 10.0, ""release"": ""0.1 s""}",-30.0,-0.002,1.001
+sslg_4to1,uaudio_ssl_g_bus_compressor,"{""thresh"": 0.0, ""make_up"": 0.0, ""ratio"": ""4:1"", ""attack"": 10.0, ""release"": ""0.1 s""}",-28.0,-0.282,1.163
+sslg_4to1,uaudio_ssl_g_bus_compressor,"{""thresh"": 0.0, ""make_up"": 0.0, ""ratio"": ""4:1"", ""attack"": 10.0, ""release"": ""0.1 s""}",-26.0,-1.048,1.620
+sslg_4to1,uaudio_ssl_g_bus_compressor,"{""thresh"": 0.0, ""make_up"": 0.0, ""ratio"": ""4:1"", ""attack"": 10.0, ""release"": ""0.1 s""}",-24.0,-1.984,1.880
+sslg_4to1,uaudio_ssl_g_bus_compressor,"{""thresh"": 0.0, ""make_up"": 0.0, ""ratio"": ""4:1"", ""attack"": 10.0, ""release"": ""0.1 s""}",-22.0,-3.018,2.071
+sslg_4to1,uaudio_ssl_g_bus_compressor,"{""thresh"": 0.0, ""make_up"": 0.0, ""ratio"": ""4:1"", ""attack"": 10.0, ""release"": ""0.1 s""}",-20.0,-4.126,2.240
+sslg_4to1,uaudio_ssl_g_bus_compressor,"{""thresh"": 0.0, ""make_up"": 0.0, ""ratio"": ""4:1"", ""attack"": 10.0, ""release"": ""0.1 s""}",-18.0,-5.293,2.402
+sslg_4to1,uaudio_ssl_g_bus_compressor,"{""thresh"": 0.0, ""make_up"": 0.0, ""ratio"": ""4:1"", ""attack"": 10.0, ""release"": ""0.1 s""}",-16.0,-6.512,2.563
+sslg_4to1,uaudio_ssl_g_bus_compressor,"{""thresh"": 0.0, ""make_up"": 0.0, ""ratio"": ""4:1"", ""attack"": 10.0, ""release"": ""0.1 s""}",-14.0,-7.775,2.711
+sslg_4to1,uaudio_ssl_g_bus_compressor,"{""thresh"": 0.0, ""make_up"": 0.0, ""ratio"": ""4:1"", ""attack"": 10.0, ""release"": ""0.1 s""}",-12.0,-9.076,2.862
+sslg_4to1,uaudio_ssl_g_bus_compressor,"{""thresh"": 0.0, ""make_up"": 0.0, ""ratio"": ""4:1"", ""attack"": 10.0, ""release"": ""0.1 s""}",-10.0,-10.412,3.012
+sslg_4to1,uaudio_ssl_g_bus_compressor,"{""thresh"": 0.0, ""make_up"": 0.0, ""ratio"": ""4:1"", ""attack"": 10.0, ""release"": ""0.1 s""}",-8.0,-11.780,3.164
+sslg_4to1,uaudio_ssl_g_bus_compressor,"{""thresh"": 0.0, ""make_up"": 0.0, ""ratio"": ""4:1"", ""attack"": 10.0, ""release"": ""0.1 s""}",-6.0,-13.178,3.323
+sslg_4to1,uaudio_ssl_g_bus_compressor,"{""thresh"": 0.0, ""make_up"": 0.0, ""ratio"": ""4:1"", ""attack"": 10.0, ""release"": ""0.1 s""}",-4.0,-14.604,3.482
+sslg_4to1,uaudio_ssl_g_bus_compressor,"{""thresh"": 0.0, ""make_up"": 0.0, ""ratio"": ""4:1"", ""attack"": 10.0, ""release"": ""0.1 s""}",-2.0,-16.055,3.643
+sslg_4to1,uaudio_ssl_g_bus_compressor,"{""thresh"": 0.0, ""make_up"": 0.0, ""ratio"": ""4:1"", ""attack"": 10.0, ""release"": ""0.1 s""}",0.0,-17.528,3.800
+sslg_4to1,uaudio_ssl_g_bus_compressor,"{""thresh"": 0.0, ""make_up"": 0.0, ""ratio"": ""4:1"", ""attack"": 10.0, ""release"": ""0.1 s""}",2.0,-19.023,3.959
+sslg_4to1,uaudio_ssl_g_bus_compressor,"{""thresh"": 0.0, ""make_up"": 0.0, ""ratio"": ""4:1"", ""attack"": 10.0, ""release"": ""0.1 s""}",4.0,-20.538,4.119
+sslg_4to1,uaudio_ssl_g_bus_compressor,"{""thresh"": 0.0, ""make_up"": 0.0, ""ratio"": ""4:1"", ""attack"": 10.0, ""release"": ""0.1 s""}",6.0,-22.070,4.274
+sslg_4to1,uaudio_ssl_g_bus_compressor,"{""thresh"": 0.0, ""make_up"": 0.0, ""ratio"": ""4:1"", ""attack"": 10.0, ""release"": ""0.1 s""}",8.0,-23.618,4.430
+sslg_4to1,uaudio_ssl_g_bus_compressor,"{""thresh"": 0.0, ""make_up"": 0.0, ""ratio"": ""4:1"", ""attack"": 10.0, ""release"": ""0.1 s""}",10.0,-25.182,4.590
+sslg_10to1,uaudio_ssl_g_bus_compressor,"{""thresh"": 0.0, ""make_up"": 0.0, ""ratio"": ""10:1"", ""attack"": 10.0, ""release"": ""0.1 s""}",-40.0,0.000,
+sslg_10to1,uaudio_ssl_g_bus_compressor,"{""thresh"": 0.0, ""make_up"": 0.0, ""ratio"": ""10:1"", ""attack"": 10.0, ""release"": ""0.1 s""}",-38.0,-0.000,1.000
+sslg_10to1,uaudio_ssl_g_bus_compressor,"{""thresh"": 0.0, ""make_up"": 0.0, ""ratio"": ""10:1"", ""attack"": 10.0, ""release"": ""0.1 s""}",-36.0,-0.000,1.000
+sslg_10to1,uaudio_ssl_g_bus_compressor,"{""thresh"": 0.0, ""make_up"": 0.0, ""ratio"": ""10:1"", ""attack"": 10.0, ""release"": ""0.1 s""}",-34.0,-0.000,1.000
+sslg_10to1,uaudio_ssl_g_bus_compressor,"{""thresh"": 0.0, ""make_up"": 0.0, ""ratio"": ""10:1"", ""attack"": 10.0, ""release"": ""0.1 s""}",-32.0,0.000,1.000
+sslg_10to1,uaudio_ssl_g_bus_compressor,"{""thresh"": 0.0, ""make_up"": 0.0, ""ratio"": ""10:1"", ""attack"": 10.0, ""release"": ""0.1 s""}",-30.0,-0.000,1.000
+sslg_10to1,uaudio_ssl_g_bus_compressor,"{""thresh"": 0.0, ""make_up"": 0.0, ""ratio"": ""10:1"", ""attack"": 10.0, ""release"": ""0.1 s""}",-28.0,-0.000,1.000
+sslg_10to1,uaudio_ssl_g_bus_compressor,"{""thresh"": 0.0, ""make_up"": 0.0, ""ratio"": ""10:1"", ""attack"": 10.0, ""release"": ""0.1 s""}",-26.0,-0.000,1.000
+sslg_10to1,uaudio_ssl_g_bus_compressor,"{""thresh"": 0.0, ""make_up"": 0.0, ""ratio"": ""10:1"", ""attack"": 10.0, ""release"": ""0.1 s""}",-24.0,-0.408,1.256
+sslg_10to1,uaudio_ssl_g_bus_compressor,"{""thresh"": 0.0, ""make_up"": 0.0, ""ratio"": ""10:1"", ""attack"": 10.0, ""release"": ""0.1 s""}",-22.0,-1.822,3.414
+sslg_10to1,uaudio_ssl_g_bus_compressor,"{""thresh"": 0.0, ""make_up"": 0.0, ""ratio"": ""10:1"", ""attack"": 10.0, ""release"": ""0.1 s""}",-20.0,-3.339,4.137
+sslg_10to1,uaudio_ssl_g_bus_compressor,"{""thresh"": 0.0, ""make_up"": 0.0, ""ratio"": ""10:1"", ""attack"": 10.0, ""release"": ""0.1 s""}",-18.0,-4.890,4.457
+sslg_10to1,uaudio_ssl_g_bus_compressor,"{""thresh"": 0.0, ""make_up"": 0.0, ""ratio"": ""10:1"", ""attack"": 10.0, ""release"": ""0.1 s""}",-16.0,-6.481,4.893
+sslg_10to1,uaudio_ssl_g_bus_compressor,"{""thresh"": 0.0, ""make_up"": 0.0, ""ratio"": ""10:1"", ""attack"": 10.0, ""release"": ""0.1 s""}",-14.0,-8.094,5.164
+sslg_10to1,uaudio_ssl_g_bus_compressor,"{""thresh"": 0.0, ""make_up"": 0.0, ""ratio"": ""10:1"", ""attack"": 10.0, ""release"": ""0.1 s""}",-12.0,-9.721,5.362
+sslg_10to1,uaudio_ssl_g_bus_compressor,"{""thresh"": 0.0, ""make_up"": 0.0, ""ratio"": ""10:1"", ""attack"": 10.0, ""release"": ""0.1 s""}",-10.0,-11.362,5.566
+sslg_10to1,uaudio_ssl_g_bus_compressor,"{""thresh"": 0.0, ""make_up"": 0.0, ""ratio"": ""10:1"", ""attack"": 10.0, ""release"": ""0.1 s""}",-8.0,-13.020,5.860
+sslg_10to1,uaudio_ssl_g_bus_compressor,"{""thresh"": 0.0, ""make_up"": 0.0, ""ratio"": ""10:1"", ""attack"": 10.0, ""release"": ""0.1 s""}",-6.0,-14.694,6.133
+sslg_10to1,uaudio_ssl_g_bus_compressor,"{""thresh"": 0.0, ""make_up"": 0.0, ""ratio"": ""10:1"", ""attack"": 10.0, ""release"": ""0.1 s""}",-4.0,-16.379,6.333
+sslg_10to1,uaudio_ssl_g_bus_compressor,"{""thresh"": 0.0, ""make_up"": 0.0, ""ratio"": ""10:1"", ""attack"": 10.0, ""release"": ""0.1 s""}",-2.0,-18.071,6.507
+sslg_10to1,uaudio_ssl_g_bus_compressor,"{""thresh"": 0.0, ""make_up"": 0.0, ""ratio"": ""10:1"", ""attack"": 10.0, ""release"": ""0.1 s""}",0.0,-19.771,6.674
+sslg_10to1,uaudio_ssl_g_bus_compressor,"{""thresh"": 0.0, ""make_up"": 0.0, ""ratio"": ""10:1"", ""attack"": 10.0, ""release"": ""0.1 s""}",2.0,-21.479,6.831
+sslg_10to1,uaudio_ssl_g_bus_compressor,"{""thresh"": 0.0, ""make_up"": 0.0, ""ratio"": ""10:1"", ""attack"": 10.0, ""release"": ""0.1 s""}",4.0,-23.193,6.993
+sslg_10to1,uaudio_ssl_g_bus_compressor,"{""thresh"": 0.0, ""make_up"": 0.0, ""ratio"": ""10:1"", ""attack"": 10.0, ""release"": ""0.1 s""}",6.0,-24.913,7.153
+sslg_10to1,uaudio_ssl_g_bus_compressor,"{""thresh"": 0.0, ""make_up"": 0.0, ""ratio"": ""10:1"", ""attack"": 10.0, ""release"": ""0.1 s""}",8.0,-26.641,7.344
+sslg_10to1,uaudio_ssl_g_bus_compressor,"{""thresh"": 0.0, ""make_up"": 0.0, ""ratio"": ""10:1"", ""attack"": 10.0, ""release"": ""0.1 s""}",10.0,-28.376,7.551
+la2a_silver_comp,uaudio_teletronix_la-2a_silver,"{""peak_reduct"": ""50"", ""gain"": ""30"", ""comp_limit"": ""Comp""}",-40.0,0.000,
+la2a_silver_comp,uaudio_teletronix_la-2a_silver,"{""peak_reduct"": ""50"", ""gain"": ""30"", ""comp_limit"": ""Comp""}",-38.0,0.000,1.000
+la2a_silver_comp,uaudio_teletronix_la-2a_silver,"{""peak_reduct"": ""50"", ""gain"": ""30"", ""comp_limit"": ""Comp""}",-36.0,0.000,1.000
+la2a_silver_comp,uaudio_teletronix_la-2a_silver,"{""peak_reduct"": ""50"", ""gain"": ""30"", ""comp_limit"": ""Comp""}",-34.0,0.000,1.000
+la2a_silver_comp,uaudio_teletronix_la-2a_silver,"{""peak_reduct"": ""50"", ""gain"": ""30"", ""comp_limit"": ""Comp""}",-32.0,0.000,1.000
+la2a_silver_comp,uaudio_teletronix_la-2a_silver,"{""peak_reduct"": ""50"", ""gain"": ""30"", ""comp_limit"": ""Comp""}",-30.0,-0.001,1.001
+la2a_silver_comp,uaudio_teletronix_la-2a_silver,"{""peak_reduct"": ""50"", ""gain"": ""30"", ""comp_limit"": ""Comp""}",-28.0,-0.065,1.033
+la2a_silver_comp,uaudio_teletronix_la-2a_silver,"{""peak_reduct"": ""50"", ""gain"": ""30"", ""comp_limit"": ""Comp""}",-26.0,-0.450,1.238
+la2a_silver_comp,uaudio_teletronix_la-2a_silver,"{""peak_reduct"": ""50"", ""gain"": ""30"", ""comp_limit"": ""Comp""}",-24.0,-1.334,1.793
+la2a_silver_comp,uaudio_teletronix_la-2a_silver,"{""peak_reduct"": ""50"", ""gain"": ""30"", ""comp_limit"": ""Comp""}",-22.0,-2.568,2.612
+la2a_silver_comp,uaudio_teletronix_la-2a_silver,"{""peak_reduct"": ""50"", ""gain"": ""30"", ""comp_limit"": ""Comp""}",-20.0,-3.980,3.401
+la2a_silver_comp,uaudio_teletronix_la-2a_silver,"{""peak_reduct"": ""50"", ""gain"": ""30"", ""comp_limit"": ""Comp""}",-18.0,-5.482,4.018
+la2a_silver_comp,uaudio_teletronix_la-2a_silver,"{""peak_reduct"": ""50"", ""gain"": ""30"", ""comp_limit"": ""Comp""}",-16.0,-7.033,4.451
+la2a_silver_comp,uaudio_teletronix_la-2a_silver,"{""peak_reduct"": ""50"", ""gain"": ""30"", ""comp_limit"": ""Comp""}",-14.0,-8.618,4.821
+la2a_silver_comp,uaudio_teletronix_la-2a_silver,"{""peak_reduct"": ""50"", ""gain"": ""30"", ""comp_limit"": ""Comp""}",-12.0,-10.227,5.108
+la2a_silver_comp,uaudio_teletronix_la-2a_silver,"{""peak_reduct"": ""50"", ""gain"": ""30"", ""comp_limit"": ""Comp""}",-10.0,-11.849,5.297
+la2a_silver_comp,uaudio_teletronix_la-2a_silver,"{""peak_reduct"": ""50"", ""gain"": ""30"", ""comp_limit"": ""Comp""}",-8.0,-13.474,5.334
+la2a_silver_comp,uaudio_teletronix_la-2a_silver,"{""peak_reduct"": ""50"", ""gain"": ""30"", ""comp_limit"": ""Comp""}",-6.0,-15.096,5.283
+la2a_silver_comp,uaudio_teletronix_la-2a_silver,"{""peak_reduct"": ""50"", ""gain"": ""30"", ""comp_limit"": ""Comp""}",-4.0,-16.712,5.212
+la2a_silver_comp,uaudio_teletronix_la-2a_silver,"{""peak_reduct"": ""50"", ""gain"": ""30"", ""comp_limit"": ""Comp""}",-2.0,-18.316,5.051
+la2a_silver_comp,uaudio_teletronix_la-2a_silver,"{""peak_reduct"": ""50"", ""gain"": ""30"", ""comp_limit"": ""Comp""}",0.0,-19.899,4.794
+la2a_silver_comp,uaudio_teletronix_la-2a_silver,"{""peak_reduct"": ""50"", ""gain"": ""30"", ""comp_limit"": ""Comp""}",2.0,-21.458,4.540
+la2a_silver_comp,uaudio_teletronix_la-2a_silver,"{""peak_reduct"": ""50"", ""gain"": ""30"", ""comp_limit"": ""Comp""}",4.0,-22.993,4.294
+la2a_silver_comp,uaudio_teletronix_la-2a_silver,"{""peak_reduct"": ""50"", ""gain"": ""30"", ""comp_limit"": ""Comp""}",6.0,-24.499,4.052
+la2a_silver_comp,uaudio_teletronix_la-2a_silver,"{""peak_reduct"": ""50"", ""gain"": ""30"", ""comp_limit"": ""Comp""}",8.0,-25.980,3.854
+la2a_silver_comp,uaudio_teletronix_la-2a_silver,"{""peak_reduct"": ""50"", ""gain"": ""30"", ""comp_limit"": ""Comp""}",10.0,-27.434,3.664
+la2a_silver_limit,uaudio_teletronix_la-2a_silver,"{""peak_reduct"": ""50"", ""gain"": ""30"", ""comp_limit"": ""Limit""}",-40.0,0.000,
+la2a_silver_limit,uaudio_teletronix_la-2a_silver,"{""peak_reduct"": ""50"", ""gain"": ""30"", ""comp_limit"": ""Limit""}",-38.0,0.000,1.000
+la2a_silver_limit,uaudio_teletronix_la-2a_silver,"{""peak_reduct"": ""50"", ""gain"": ""30"", ""comp_limit"": ""Limit""}",-36.0,0.000,1.000
+la2a_silver_limit,uaudio_teletronix_la-2a_silver,"{""peak_reduct"": ""50"", ""gain"": ""30"", ""comp_limit"": ""Limit""}",-34.0,0.000,1.000
+la2a_silver_limit,uaudio_teletronix_la-2a_silver,"{""peak_reduct"": ""50"", ""gain"": ""30"", ""comp_limit"": ""Limit""}",-32.0,0.000,1.000
+la2a_silver_limit,uaudio_teletronix_la-2a_silver,"{""peak_reduct"": ""50"", ""gain"": ""30"", ""comp_limit"": ""Limit""}",-30.0,-0.003,1.002
+la2a_silver_limit,uaudio_teletronix_la-2a_silver,"{""peak_reduct"": ""50"", ""gain"": ""30"", ""comp_limit"": ""Limit""}",-28.0,-0.100,1.051
+la2a_silver_limit,uaudio_teletronix_la-2a_silver,"{""peak_reduct"": ""50"", ""gain"": ""30"", ""comp_limit"": ""Limit""}",-26.0,-0.583,1.319
+la2a_silver_limit,uaudio_teletronix_la-2a_silver,"{""peak_reduct"": ""50"", ""gain"": ""30"", ""comp_limit"": ""Limit""}",-24.0,-1.566,1.966
+la2a_silver_limit,uaudio_teletronix_la-2a_silver,"{""peak_reduct"": ""50"", ""gain"": ""30"", ""comp_limit"": ""Limit""}",-22.0,-2.862,2.841
+la2a_silver_limit,uaudio_teletronix_la-2a_silver,"{""peak_reduct"": ""50"", ""gain"": ""30"", ""comp_limit"": ""Limit""}",-20.0,-4.329,3.753
+la2a_silver_limit,uaudio_teletronix_la-2a_silver,"{""peak_reduct"": ""50"", ""gain"": ""30"", ""comp_limit"": ""Limit""}",-18.0,-5.902,4.677
+la2a_silver_limit,uaudio_teletronix_la-2a_silver,"{""peak_reduct"": ""50"", ""gain"": ""30"", ""comp_limit"": ""Limit""}",-16.0,-7.549,5.666
+la2a_silver_limit,uaudio_teletronix_la-2a_silver,"{""peak_reduct"": ""50"", ""gain"": ""30"", ""comp_limit"": ""Limit""}",-14.0,-9.259,6.912
+la2a_silver_limit,uaudio_teletronix_la-2a_silver,"{""peak_reduct"": ""50"", ""gain"": ""30"", ""comp_limit"": ""Limit""}",-12.0,-11.026,8.553
+la2a_silver_limit,uaudio_teletronix_la-2a_silver,"{""peak_reduct"": ""50"", ""gain"": ""30"", ""comp_limit"": ""Limit""}",-10.0,-12.838,10.652
+la2a_silver_limit,uaudio_teletronix_la-2a_silver,"{""peak_reduct"": ""50"", ""gain"": ""30"", ""comp_limit"": ""Limit""}",-8.0,-14.690,13.569
+la2a_silver_limit,uaudio_teletronix_la-2a_silver,"{""peak_reduct"": ""50"", ""gain"": ""30"", ""comp_limit"": ""Limit""}",-6.0,-16.589,19.663
+la2a_silver_limit,uaudio_teletronix_la-2a_silver,"{""peak_reduct"": ""50"", ""gain"": ""30"", ""comp_limit"": ""Limit""}",-4.0,-18.532,35.460
+la2a_silver_limit,uaudio_teletronix_la-2a_silver,"{""peak_reduct"": ""50"", ""gain"": ""30"", ""comp_limit"": ""Limit""}",-2.0,-20.514,109.473
+la2a_silver_limit,uaudio_teletronix_la-2a_silver,"{""peak_reduct"": ""50"", ""gain"": ""30"", ""comp_limit"": ""Limit""}",0.0,-22.539,2000000.000
+la2a_silver_limit,uaudio_teletronix_la-2a_silver,"{""peak_reduct"": ""50"", ""gain"": ""30"", ""comp_limit"": ""Limit""}",2.0,-24.608,2000000.000
+la2a_silver_limit,uaudio_teletronix_la-2a_silver,"{""peak_reduct"": ""50"", ""gain"": ""30"", ""comp_limit"": ""Limit""}",4.0,-26.731,2000000.000
+la2a_silver_limit,uaudio_teletronix_la-2a_silver,"{""peak_reduct"": ""50"", ""gain"": ""30"", ""comp_limit"": ""Limit""}",6.0,-28.908,2000000.000
+la2a_silver_limit,uaudio_teletronix_la-2a_silver,"{""peak_reduct"": ""50"", ""gain"": ""30"", ""comp_limit"": ""Limit""}",8.0,-31.135,2000000.000
+la2a_silver_limit,uaudio_teletronix_la-2a_silver,"{""peak_reduct"": ""50"", ""gain"": ""30"", ""comp_limit"": ""Limit""}",10.0,-33.402,2000000.000
+la2a_gray_comp,uaudio_teletronix_la-2a_gray,"{""peak_reduct"": ""50"", ""gain"": ""30"", ""comp_limit"": ""Comp""}",-40.0,0.000,
+la2a_gray_comp,uaudio_teletronix_la-2a_gray,"{""peak_reduct"": ""50"", ""gain"": ""30"", ""comp_limit"": ""Comp""}",-38.0,-0.000,1.000
+la2a_gray_comp,uaudio_teletronix_la-2a_gray,"{""peak_reduct"": ""50"", ""gain"": ""30"", ""comp_limit"": ""Comp""}",-36.0,0.000,1.000
+la2a_gray_comp,uaudio_teletronix_la-2a_gray,"{""peak_reduct"": ""50"", ""gain"": ""30"", ""comp_limit"": ""Comp""}",-34.0,-0.000,1.000
+la2a_gray_comp,uaudio_teletronix_la-2a_gray,"{""peak_reduct"": ""50"", ""gain"": ""30"", ""comp_limit"": ""Comp""}",-32.0,-0.024,1.012
+la2a_gray_comp,uaudio_teletronix_la-2a_gray,"{""peak_reduct"": ""50"", ""gain"": ""30"", ""comp_limit"": ""Comp""}",-30.0,-0.281,1.148
+la2a_gray_comp,uaudio_teletronix_la-2a_gray,"{""peak_reduct"": ""50"", ""gain"": ""30"", ""comp_limit"": ""Comp""}",-28.0,-1.045,1.617
+la2a_gray_comp,uaudio_teletronix_la-2a_gray,"{""peak_reduct"": ""50"", ""gain"": ""30"", ""comp_limit"": ""Comp""}",-26.0,-2.206,2.386
+la2a_gray_comp,uaudio_teletronix_la-2a_gray,"{""peak_reduct"": ""50"", ""gain"": ""30"", ""comp_limit"": ""Comp""}",-24.0,-3.571,3.148
+la2a_gray_comp,uaudio_teletronix_la-2a_gray,"{""peak_reduct"": ""50"", ""gain"": ""30"", ""comp_limit"": ""Comp""}",-22.0,-5.044,3.796
+la2a_gray_comp,uaudio_teletronix_la-2a_gray,"{""peak_reduct"": ""50"", ""gain"": ""30"", ""comp_limit"": ""Comp""}",-20.0,-6.579,4.303
+la2a_gray_comp,uaudio_teletronix_la-2a_gray,"{""peak_reduct"": ""50"", ""gain"": ""30"", ""comp_limit"": ""Comp""}",-18.0,-8.157,4.733
+la2a_gray_comp,uaudio_teletronix_la-2a_gray,"{""peak_reduct"": ""50"", ""gain"": ""30"", ""comp_limit"": ""Comp""}",-16.0,-9.762,5.062
+la2a_gray_comp,uaudio_teletronix_la-2a_gray,"{""peak_reduct"": ""50"", ""gain"": ""30"", ""comp_limit"": ""Comp""}",-14.0,-11.387,5.334
+la2a_gray_comp,uaudio_teletronix_la-2a_gray,"{""peak_reduct"": ""50"", ""gain"": ""30"", ""comp_limit"": ""Comp""}",-12.0,-13.023,5.499
+la2a_gray_comp,uaudio_teletronix_la-2a_gray,"{""peak_reduct"": ""50"", ""gain"": ""30"", ""comp_limit"": ""Comp""}",-10.0,-14.650,5.367
+la2a_gray_comp,uaudio_teletronix_la-2a_gray,"{""peak_reduct"": ""50"", ""gain"": ""30"", ""comp_limit"": ""Comp""}",-8.0,-16.261,5.141
+la2a_gray_comp,uaudio_teletronix_la-2a_gray,"{""peak_reduct"": ""50"", ""gain"": ""30"", ""comp_limit"": ""Comp""}",-6.0,-17.850,4.865
+la2a_gray_comp,uaudio_teletronix_la-2a_gray,"{""peak_reduct"": ""50"", ""gain"": ""30"", ""comp_limit"": ""Comp""}",-4.0,-19.414,4.586
+la2a_gray_comp,uaudio_teletronix_la-2a_gray,"{""peak_reduct"": ""50"", ""gain"": ""30"", ""comp_limit"": ""Comp""}",-2.0,-20.952,4.331
+la2a_gray_comp,uaudio_teletronix_la-2a_gray,"{""peak_reduct"": ""50"", ""gain"": ""30"", ""comp_limit"": ""Comp""}",0.0,-22.460,4.060
+la2a_gray_comp,uaudio_teletronix_la-2a_gray,"{""peak_reduct"": ""50"", ""gain"": ""30"", ""comp_limit"": ""Comp""}",2.0,-23.935,3.811
+la2a_gray_comp,uaudio_teletronix_la-2a_gray,"{""peak_reduct"": ""50"", ""gain"": ""30"", ""comp_limit"": ""Comp""}",4.0,-25.376,3.579
+la2a_gray_comp,uaudio_teletronix_la-2a_gray,"{""peak_reduct"": ""50"", ""gain"": ""30"", ""comp_limit"": ""Comp""}",6.0,-26.788,3.398
+la2a_gray_comp,uaudio_teletronix_la-2a_gray,"{""peak_reduct"": ""50"", ""gain"": ""30"", ""comp_limit"": ""Comp""}",8.0,-28.168,3.231
+la2a_gray_comp,uaudio_teletronix_la-2a_gray,"{""peak_reduct"": ""50"", ""gain"": ""30"", ""comp_limit"": ""Comp""}",10.0,-29.520,3.082
+la2_comp,uaudio_teletronix_la-2,"{""peak_reduct"": ""50"", ""gain"": ""30""}",-40.0,0.000,
+la2_comp,uaudio_teletronix_la-2,"{""peak_reduct"": ""50"", ""gain"": ""30""}",-38.0,-0.000,1.000
+la2_comp,uaudio_teletronix_la-2,"{""peak_reduct"": ""50"", ""gain"": ""30""}",-36.0,0.000,1.000
+la2_comp,uaudio_teletronix_la-2,"{""peak_reduct"": ""50"", ""gain"": ""30""}",-34.0,0.000,1.000
+la2_comp,uaudio_teletronix_la-2,"{""peak_reduct"": ""50"", ""gain"": ""30""}",-32.0,0.000,1.000
+la2_comp,uaudio_teletronix_la-2,"{""peak_reduct"": ""50"", ""gain"": ""30""}",-30.0,0.000,1.000
+la2_comp,uaudio_teletronix_la-2,"{""peak_reduct"": ""50"", ""gain"": ""30""}",-28.0,-0.000,1.000
+la2_comp,uaudio_teletronix_la-2,"{""peak_reduct"": ""50"", ""gain"": ""30""}",-26.0,-0.000,1.000
+la2_comp,uaudio_teletronix_la-2,"{""peak_reduct"": ""50"", ""gain"": ""30""}",-24.0,-0.000,1.000
+la2_comp,uaudio_teletronix_la-2,"{""peak_reduct"": ""50"", ""gain"": ""30""}",-22.0,-0.000,1.000
+la2_comp,uaudio_teletronix_la-2,"{""peak_reduct"": ""50"", ""gain"": ""30""}",-20.0,-0.031,1.015
+la2_comp,uaudio_teletronix_la-2,"{""peak_reduct"": ""50"", ""gain"": ""30""}",-18.0,-0.580,1.379
+la2_comp,uaudio_teletronix_la-2,"{""peak_reduct"": ""50"", ""gain"": ""30""}",-16.0,-1.937,3.110
+la2_comp,uaudio_teletronix_la-2,"{""peak_reduct"": ""50"", ""gain"": ""30""}",-14.0,-3.597,5.890
+la2_comp,uaudio_teletronix_la-2,"{""peak_reduct"": ""50"", ""gain"": ""30""}",-12.0,-5.368,8.721
+la2_comp,uaudio_teletronix_la-2,"{""peak_reduct"": ""50"", ""gain"": ""30""}",-10.0,-7.226,14.068
+la2_comp,uaudio_teletronix_la-2,"{""peak_reduct"": ""50"", ""gain"": ""30""}",-8.0,-9.163,31.640
+la2_comp,uaudio_teletronix_la-2,"{""peak_reduct"": ""50"", ""gain"": ""30""}",-6.0,-11.174,2000000.000
+la2_comp,uaudio_teletronix_la-2,"{""peak_reduct"": ""50"", ""gain"": ""30""}",-4.0,-13.272,2000000.000
+la2_comp,uaudio_teletronix_la-2,"{""peak_reduct"": ""50"", ""gain"": ""30""}",-2.0,-15.475,2000000.000
+la2_comp,uaudio_teletronix_la-2,"{""peak_reduct"": ""50"", ""gain"": ""30""}",0.0,-17.804,2000000.000
+la2_comp,uaudio_teletronix_la-2,"{""peak_reduct"": ""50"", ""gain"": ""30""}",2.0,-20.273,2000000.000
+la2_comp,uaudio_teletronix_la-2,"{""peak_reduct"": ""50"", ""gain"": ""30""}",4.0,-22.930,2000000.000
+la2_comp,uaudio_teletronix_la-2,"{""peak_reduct"": ""50"", ""gain"": ""30""}",6.0,-25.826,2000000.000
+la2_comp,uaudio_teletronix_la-2,"{""peak_reduct"": ""50"", ""gain"": ""30""}",8.0,-29.024,2000000.000
+la2_comp,uaudio_teletronix_la-2,"{""peak_reduct"": ""50"", ""gain"": ""30""}",10.0,-32.550,2000000.000
+la3a_comp,uaudio_la3a,"{""peak_reduction"": 5.0, ""gain"": 5.0}",-40.0,0.000,
+la3a_comp,uaudio_la3a,"{""peak_reduction"": 5.0, ""gain"": 5.0}",-38.0,-0.000,1.000
+la3a_comp,uaudio_la3a,"{""peak_reduction"": 5.0, ""gain"": 5.0}",-36.0,-0.000,1.000
+la3a_comp,uaudio_la3a,"{""peak_reduction"": 5.0, ""gain"": 5.0}",-34.0,-0.000,1.000
+la3a_comp,uaudio_la3a,"{""peak_reduction"": 5.0, ""gain"": 5.0}",-32.0,-0.000,1.000
+la3a_comp,uaudio_la3a,"{""peak_reduction"": 5.0, ""gain"": 5.0}",-30.0,-0.000,1.000
+la3a_comp,uaudio_la3a,"{""peak_reduction"": 5.0, ""gain"": 5.0}",-28.0,-0.000,1.000
+la3a_comp,uaudio_la3a,"{""peak_reduction"": 5.0, ""gain"": 5.0}",-26.0,-0.013,1.006
+la3a_comp,uaudio_la3a,"{""peak_reduction"": 5.0, ""gain"": 5.0}",-24.0,-0.205,1.106
+la3a_comp,uaudio_la3a,"{""peak_reduction"": 5.0, ""gain"": 5.0}",-22.0,-0.772,1.396
+la3a_comp,uaudio_la3a,"{""peak_reduction"": 5.0, ""gain"": 5.0}",-20.0,-1.704,1.872
+la3a_comp,uaudio_la3a,"{""peak_reduction"": 5.0, ""gain"": 5.0}",-18.0,-2.881,2.431
+la3a_comp,uaudio_la3a,"{""peak_reduction"": 5.0, ""gain"": 5.0}",-16.0,-4.213,2.993
+la3a_comp,uaudio_la3a,"{""peak_reduction"": 5.0, ""gain"": 5.0}",-14.0,-5.645,3.521
+la3a_comp,uaudio_la3a,"{""peak_reduction"": 5.0, ""gain"": 5.0}",-12.0,-7.142,3.981
+la3a_comp,uaudio_la3a,"{""peak_reduction"": 5.0, ""gain"": 5.0}",-10.0,-8.682,4.343
+la3a_comp,uaudio_la3a,"{""peak_reduction"": 5.0, ""gain"": 5.0}",-8.0,-10.246,4.592
+la3a_comp,uaudio_la3a,"{""peak_reduction"": 5.0, ""gain"": 5.0}",-6.0,-11.824,4.737
+la3a_comp,uaudio_la3a,"{""peak_reduction"": 5.0, ""gain"": 5.0}",-4.0,-13.409,4.815
+la3a_comp,uaudio_la3a,"{""peak_reduction"": 5.0, ""gain"": 5.0}",-2.0,-14.998,4.865
+la3a_comp,uaudio_la3a,"{""peak_reduction"": 5.0, ""gain"": 5.0}",0.0,-16.589,4.890
+la3a_comp,uaudio_la3a,"{""peak_reduction"": 5.0, ""gain"": 5.0}",2.0,-18.176,4.849
+la3a_comp,uaudio_la3a,"{""peak_reduction"": 5.0, ""gain"": 5.0}",4.0,-19.757,4.776
+la3a_comp,uaudio_la3a,"{""peak_reduction"": 5.0, ""gain"": 5.0}",6.0,-21.331,4.692
+la3a_comp,uaudio_la3a,"{""peak_reduction"": 5.0, ""gain"": 5.0}",8.0,-22.896,4.600
+la3a_comp,uaudio_la3a,"{""peak_reduction"": 5.0, ""gain"": 5.0}",10.0,-24.452,4.502
+1176ln_4to1_in-40,uaudio_ua_1176ln_rev_e,"{""input"": -40.0, ""output"": -20.0, ""ratio"": ""4:1"", ""attack"": ""4.00"", ""release"": 7.0}",-60.0,0.000,
+1176ln_4to1_in-40,uaudio_ua_1176ln_rev_e,"{""input"": -40.0, ""output"": -20.0, ""ratio"": ""4:1"", ""attack"": ""4.00"", ""release"": 7.0}",-58.0,-0.000,1.000
+1176ln_4to1_in-40,uaudio_ua_1176ln_rev_e,"{""input"": -40.0, ""output"": -20.0, ""ratio"": ""4:1"", ""attack"": ""4.00"", ""release"": 7.0}",-56.0,0.000,1.000
+1176ln_4to1_in-40,uaudio_ua_1176ln_rev_e,"{""input"": -40.0, ""output"": -20.0, ""ratio"": ""4:1"", ""attack"": ""4.00"", ""release"": 7.0}",-54.0,0.000,1.000
+1176ln_4to1_in-40,uaudio_ua_1176ln_rev_e,"{""input"": -40.0, ""output"": -20.0, ""ratio"": ""4:1"", ""attack"": ""4.00"", ""release"": 7.0}",-52.0,-0.000,1.000
+1176ln_4to1_in-40,uaudio_ua_1176ln_rev_e,"{""input"": -40.0, ""output"": -20.0, ""ratio"": ""4:1"", ""attack"": ""4.00"", ""release"": 7.0}",-50.0,-0.000,1.000
+1176ln_4to1_in-40,uaudio_ua_1176ln_rev_e,"{""input"": -40.0, ""output"": -20.0, ""ratio"": ""4:1"", ""attack"": ""4.00"", ""release"": 7.0}",-48.0,-0.000,1.000
+1176ln_4to1_in-40,uaudio_ua_1176ln_rev_e,"{""input"": -40.0, ""output"": -20.0, ""ratio"": ""4:1"", ""attack"": ""4.00"", ""release"": 7.0}",-46.0,-0.000,1.000
+1176ln_4to1_in-40,uaudio_ua_1176ln_rev_e,"{""input"": -40.0, ""output"": -20.0, ""ratio"": ""4:1"", ""attack"": ""4.00"", ""release"": 7.0}",-44.0,-0.000,1.000
+1176ln_4to1_in-40,uaudio_ua_1176ln_rev_e,"{""input"": -40.0, ""output"": -20.0, ""ratio"": ""4:1"", ""attack"": ""4.00"", ""release"": 7.0}",-42.0,-0.000,1.000
+1176ln_4to1_in-40,uaudio_ua_1176ln_rev_e,"{""input"": -40.0, ""output"": -20.0, ""ratio"": ""4:1"", ""attack"": ""4.00"", ""release"": 7.0}",-40.0,-0.000,1.000
+1176ln_4to1_in-40,uaudio_ua_1176ln_rev_e,"{""input"": -40.0, ""output"": -20.0, ""ratio"": ""4:1"", ""attack"": ""4.00"", ""release"": 7.0}",-38.0,-0.000,1.000
+1176ln_4to1_in-40,uaudio_ua_1176ln_rev_e,"{""input"": -40.0, ""output"": -20.0, ""ratio"": ""4:1"", ""attack"": ""4.00"", ""release"": 7.0}",-36.0,-0.000,1.000
+1176ln_4to1_in-40,uaudio_ua_1176ln_rev_e,"{""input"": -40.0, ""output"": -20.0, ""ratio"": ""4:1"", ""attack"": ""4.00"", ""release"": 7.0}",-34.0,-0.000,1.000
+1176ln_4to1_in-40,uaudio_ua_1176ln_rev_e,"{""input"": -40.0, ""output"": -20.0, ""ratio"": ""4:1"", ""attack"": ""4.00"", ""release"": 7.0}",-32.0,-0.000,1.000
+1176ln_4to1_in-40,uaudio_ua_1176ln_rev_e,"{""input"": -40.0, ""output"": -20.0, ""ratio"": ""4:1"", ""attack"": ""4.00"", ""release"": 7.0}",-30.0,-0.000,1.000
+1176ln_4to1_in-40,uaudio_ua_1176ln_rev_e,"{""input"": -40.0, ""output"": -20.0, ""ratio"": ""4:1"", ""attack"": ""4.00"", ""release"": 7.0}",-28.0,-0.000,1.000
+1176ln_4to1_in-40,uaudio_ua_1176ln_rev_e,"{""input"": -40.0, ""output"": -20.0, ""ratio"": ""4:1"", ""attack"": ""4.00"", ""release"": 7.0}",-26.0,-0.000,1.000
+1176ln_4to1_in-40,uaudio_ua_1176ln_rev_e,"{""input"": -40.0, ""output"": -20.0, ""ratio"": ""4:1"", ""attack"": ""4.00"", ""release"": 7.0}",-24.0,-0.001,1.000
+1176ln_4to1_in-40,uaudio_ua_1176ln_rev_e,"{""input"": -40.0, ""output"": -20.0, ""ratio"": ""4:1"", ""attack"": ""4.00"", ""release"": 7.0}",-22.0,-0.001,1.000
+1176ln_4to1_in-40,uaudio_ua_1176ln_rev_e,"{""input"": -40.0, ""output"": -20.0, ""ratio"": ""4:1"", ""attack"": ""4.00"", ""release"": 7.0}",-20.0,-0.002,1.000
+1176ln_4to1_in-40,uaudio_ua_1176ln_rev_e,"{""input"": -40.0, ""output"": -20.0, ""ratio"": ""4:1"", ""attack"": ""4.00"", ""release"": 7.0}",-18.0,-0.009,1.004
+1176ln_4to1_in-40,uaudio_ua_1176ln_rev_e,"{""input"": -40.0, ""output"": -20.0, ""ratio"": ""4:1"", ""attack"": ""4.00"", ""release"": 7.0}",-16.0,-0.585,1.404
+1176ln_4to1_in-40,uaudio_ua_1176ln_rev_e,"{""input"": -40.0, ""output"": -20.0, ""ratio"": ""4:1"", ""attack"": ""4.00"", ""release"": 7.0}",-14.0,-1.699,2.258
+1176ln_4to1_in-40,uaudio_ua_1176ln_rev_e,"{""input"": -40.0, ""output"": -20.0, ""ratio"": ""4:1"", ""attack"": ""4.00"", ""release"": 7.0}",-12.0,-3.043,3.049
+1176ln_4to1_in-40,uaudio_ua_1176ln_rev_e,"{""input"": -40.0, ""output"": -20.0, ""ratio"": ""4:1"", ""attack"": ""4.00"", ""release"": 7.0}",-10.0,-4.501,3.688
+1176ln_4to1_in-40,uaudio_ua_1176ln_rev_e,"{""input"": -40.0, ""output"": -20.0, ""ratio"": ""4:1"", ""attack"": ""4.00"", ""release"": 7.0}",-8.0,-6.023,4.189
+1176ln_4to1_in-40,uaudio_ua_1176ln_rev_e,"{""input"": -40.0, ""output"": -20.0, ""ratio"": ""4:1"", ""attack"": ""4.00"", ""release"": 7.0}",-6.0,-7.598,4.708
+1176ln_4to1_in-40,uaudio_ua_1176ln_rev_e,"{""input"": -40.0, ""output"": -20.0, ""ratio"": ""4:1"", ""attack"": ""4.00"", ""release"": 7.0}",-4.0,-9.203,5.062
+1176ln_4to1_in-40,uaudio_ua_1176ln_rev_e,"{""input"": -40.0, ""output"": -20.0, ""ratio"": ""4:1"", ""attack"": ""4.00"", ""release"": 7.0}",-2.0,-10.844,5.569
+1176ln_4to1_in-40,uaudio_ua_1176ln_rev_e,"{""input"": -40.0, ""output"": -20.0, ""ratio"": ""4:1"", ""attack"": ""4.00"", ""release"": 7.0}",0.0,-12.490,5.642
+1176ln_4to1_in-40,uaudio_ua_1176ln_rev_e,"{""input"": -40.0, ""output"": -20.0, ""ratio"": ""4:1"", ""attack"": ""4.00"", ""release"": 7.0}",2.0,-14.137,5.666
+1176ln_4to1_in-40,uaudio_ua_1176ln_rev_e,"{""input"": -40.0, ""output"": -20.0, ""ratio"": ""4:1"", ""attack"": ""4.00"", ""release"": 7.0}",4.0,-15.787,5.719
+1176ln_4to1_in-40,uaudio_ua_1176ln_rev_e,"{""input"": -40.0, ""output"": -20.0, ""ratio"": ""4:1"", ""attack"": ""4.00"", ""release"": 7.0}",6.0,-17.426,5.544
+1176ln_4to1_in-40,uaudio_ua_1176ln_rev_e,"{""input"": -40.0, ""output"": -20.0, ""ratio"": ""4:1"", ""attack"": ""4.00"", ""release"": 7.0}",8.0,-19.083,5.836
+1176ln_4to1_in-40,uaudio_ua_1176ln_rev_e,"{""input"": -40.0, ""output"": -20.0, ""ratio"": ""4:1"", ""attack"": ""4.00"", ""release"": 7.0}",10.0,-20.725,5.575
+1176revA_4to1_in-40,uaudio_ua_1176_rev_a,"{""input"": -40.0, ""output"": -20.0, ""ratio"": ""4:1"", ""attack"": ""4.00"", ""release"": 7.0}",-60.0,0.000,
+1176revA_4to1_in-40,uaudio_ua_1176_rev_a,"{""input"": -40.0, ""output"": -20.0, ""ratio"": ""4:1"", ""attack"": ""4.00"", ""release"": 7.0}",-58.0,0.000,1.000
+1176revA_4to1_in-40,uaudio_ua_1176_rev_a,"{""input"": -40.0, ""output"": -20.0, ""ratio"": ""4:1"", ""attack"": ""4.00"", ""release"": 7.0}",-56.0,-0.000,1.000
+1176revA_4to1_in-40,uaudio_ua_1176_rev_a,"{""input"": -40.0, ""output"": -20.0, ""ratio"": ""4:1"", ""attack"": ""4.00"", ""release"": 7.0}",-54.0,-0.000,1.000
+1176revA_4to1_in-40,uaudio_ua_1176_rev_a,"{""input"": -40.0, ""output"": -20.0, ""ratio"": ""4:1"", ""attack"": ""4.00"", ""release"": 7.0}",-52.0,-0.000,1.000
+1176revA_4to1_in-40,uaudio_ua_1176_rev_a,"{""input"": -40.0, ""output"": -20.0, ""ratio"": ""4:1"", ""attack"": ""4.00"", ""release"": 7.0}",-50.0,-0.000,1.000
+1176revA_4to1_in-40,uaudio_ua_1176_rev_a,"{""input"": -40.0, ""output"": -20.0, ""ratio"": ""4:1"", ""attack"": ""4.00"", ""release"": 7.0}",-48.0,-0.000,1.000
+1176revA_4to1_in-40,uaudio_ua_1176_rev_a,"{""input"": -40.0, ""output"": -20.0, ""ratio"": ""4:1"", ""attack"": ""4.00"", ""release"": 7.0}",-46.0,-0.000,1.000
+1176revA_4to1_in-40,uaudio_ua_1176_rev_a,"{""input"": -40.0, ""output"": -20.0, ""ratio"": ""4:1"", ""attack"": ""4.00"", ""release"": 7.0}",-44.0,-0.000,1.000
+1176revA_4to1_in-40,uaudio_ua_1176_rev_a,"{""input"": -40.0, ""output"": -20.0, ""ratio"": ""4:1"", ""attack"": ""4.00"", ""release"": 7.0}",-42.0,-0.000,1.000
+1176revA_4to1_in-40,uaudio_ua_1176_rev_a,"{""input"": -40.0, ""output"": -20.0, ""ratio"": ""4:1"", ""attack"": ""4.00"", ""release"": 7.0}",-40.0,-0.000,1.000
+1176revA_4to1_in-40,uaudio_ua_1176_rev_a,"{""input"": -40.0, ""output"": -20.0, ""ratio"": ""4:1"", ""attack"": ""4.00"", ""release"": 7.0}",-38.0,-0.000,1.000
+1176revA_4to1_in-40,uaudio_ua_1176_rev_a,"{""input"": -40.0, ""output"": -20.0, ""ratio"": ""4:1"", ""attack"": ""4.00"", ""release"": 7.0}",-36.0,-0.000,1.000
+1176revA_4to1_in-40,uaudio_ua_1176_rev_a,"{""input"": -40.0, ""output"": -20.0, ""ratio"": ""4:1"", ""attack"": ""4.00"", ""release"": 7.0}",-34.0,-0.000,1.000
+1176revA_4to1_in-40,uaudio_ua_1176_rev_a,"{""input"": -40.0, ""output"": -20.0, ""ratio"": ""4:1"", ""attack"": ""4.00"", ""release"": 7.0}",-32.0,-0.000,1.000
+1176revA_4to1_in-40,uaudio_ua_1176_rev_a,"{""input"": -40.0, ""output"": -20.0, ""ratio"": ""4:1"", ""attack"": ""4.00"", ""release"": 7.0}",-30.0,-0.000,1.000
+1176revA_4to1_in-40,uaudio_ua_1176_rev_a,"{""input"": -40.0, ""output"": -20.0, ""ratio"": ""4:1"", ""attack"": ""4.00"", ""release"": 7.0}",-28.0,-0.000,1.000
+1176revA_4to1_in-40,uaudio_ua_1176_rev_a,"{""input"": -40.0, ""output"": -20.0, ""ratio"": ""4:1"", ""attack"": ""4.00"", ""release"": 7.0}",-26.0,-0.001,1.000
+1176revA_4to1_in-40,uaudio_ua_1176_rev_a,"{""input"": -40.0, ""output"": -20.0, ""ratio"": ""4:1"", ""attack"": ""4.00"", ""release"": 7.0}",-24.0,-0.001,1.000
+1176revA_4to1_in-40,uaudio_ua_1176_rev_a,"{""input"": -40.0, ""output"": -20.0, ""ratio"": ""4:1"", ""attack"": ""4.00"", ""release"": 7.0}",-22.0,-0.396,1.246
+1176revA_4to1_in-40,uaudio_ua_1176_rev_a,"{""input"": -40.0, ""output"": -20.0, ""ratio"": ""4:1"", ""attack"": ""4.00"", ""release"": 7.0}",-20.0,-1.436,2.085
+1176revA_4to1_in-40,uaudio_ua_1176_rev_a,"{""input"": -40.0, ""output"": -20.0, ""ratio"": ""4:1"", ""attack"": ""4.00"", ""release"": 7.0}",-18.0,-2.685,2.661
+1176revA_4to1_in-40,uaudio_ua_1176_rev_a,"{""input"": -40.0, ""output"": -20.0, ""ratio"": ""4:1"", ""attack"": ""4.00"", ""release"": 7.0}",-16.0,-4.055,3.177
+1176revA_4to1_in-40,uaudio_ua_1176_rev_a,"{""input"": -40.0, ""output"": -20.0, ""ratio"": ""4:1"", ""attack"": ""4.00"", ""release"": 7.0}",-14.0,-5.498,3.590
+1176revA_4to1_in-40,uaudio_ua_1176_rev_a,"{""input"": -40.0, ""output"": -20.0, ""ratio"": ""4:1"", ""attack"": ""4.00"", ""release"": 7.0}",-12.0,-7.004,4.044
+1176revA_4to1_in-40,uaudio_ua_1176_rev_a,"{""input"": -40.0, ""output"": -20.0, ""ratio"": ""4:1"", ""attack"": ""4.00"", ""release"": 7.0}",-10.0,-8.553,4.437
+1176revA_4to1_in-40,uaudio_ua_1176_rev_a,"{""input"": -40.0, ""output"": -20.0, ""ratio"": ""4:1"", ""attack"": ""4.00"", ""release"": 7.0}",-8.0,-10.133,4.758
+1176revA_4to1_in-40,uaudio_ua_1176_rev_a,"{""input"": -40.0, ""output"": -20.0, ""ratio"": ""4:1"", ""attack"": ""4.00"", ""release"": 7.0}",-6.0,-11.742,5.125
+1176revA_4to1_in-40,uaudio_ua_1176_rev_a,"{""input"": -40.0, ""output"": -20.0, ""ratio"": ""4:1"", ""attack"": ""4.00"", ""release"": 7.0}",-4.0,-13.388,5.643
+1176revA_4to1_in-40,uaudio_ua_1176_rev_a,"{""input"": -40.0, ""output"": -20.0, ""ratio"": ""4:1"", ""attack"": ""4.00"", ""release"": 7.0}",-2.0,-15.034,5.644
+1176revA_4to1_in-40,uaudio_ua_1176_rev_a,"{""input"": -40.0, ""output"": -20.0, ""ratio"": ""4:1"", ""attack"": ""4.00"", ""release"": 7.0}",0.0,-16.679,5.639
+1176revA_4to1_in-40,uaudio_ua_1176_rev_a,"{""input"": -40.0, ""output"": -20.0, ""ratio"": ""4:1"", ""attack"": ""4.00"", ""release"": 7.0}",2.0,-18.335,5.823
+1176revA_4to1_in-40,uaudio_ua_1176_rev_a,"{""input"": -40.0, ""output"": -20.0, ""ratio"": ""4:1"", ""attack"": ""4.00"", ""release"": 7.0}",4.0,-19.975,5.549
+1176revA_4to1_in-40,uaudio_ua_1176_rev_a,"{""input"": -40.0, ""output"": -20.0, ""ratio"": ""4:1"", ""attack"": ""4.00"", ""release"": 7.0}",6.0,-21.639,5.944
+1176revA_4to1_in-40,uaudio_ua_1176_rev_a,"{""input"": -40.0, ""output"": -20.0, ""ratio"": ""4:1"", ""attack"": ""4.00"", ""release"": 7.0}",8.0,-23.283,5.620
+1176revA_4to1_in-40,uaudio_ua_1176_rev_a,"{""input"": -40.0, ""output"": -20.0, ""ratio"": ""4:1"", ""attack"": ""4.00"", ""release"": 7.0}",10.0,-24.941,5.855
+1176ln_20to1_in-20,uaudio_ua_1176ln_rev_e,"{""input"": -20.0, ""output"": -20.0, ""ratio"": ""20:1"", ""attack"": ""4.00"", ""release"": 7.0}",-40.0,0.000,
+1176ln_20to1_in-20,uaudio_ua_1176ln_rev_e,"{""input"": -20.0, ""output"": -20.0, ""ratio"": ""20:1"", ""attack"": ""4.00"", ""release"": 7.0}",-38.0,-0.002,1.001
+1176ln_20to1_in-20,uaudio_ua_1176ln_rev_e,"{""input"": -20.0, ""output"": -20.0, ""ratio"": ""20:1"", ""attack"": ""4.00"", ""release"": 7.0}",-36.0,-0.004,1.001
+1176ln_20to1_in-20,uaudio_ua_1176ln_rev_e,"{""input"": -20.0, ""output"": -20.0, ""ratio"": ""20:1"", ""attack"": ""4.00"", ""release"": 7.0}",-34.0,-0.115,1.059
+1176ln_20to1_in-20,uaudio_ua_1176ln_rev_e,"{""input"": -20.0, ""output"": -20.0, ""ratio"": ""20:1"", ""attack"": ""4.00"", ""release"": 7.0}",-32.0,-1.762,5.660
+1176ln_20to1_in-20,uaudio_ua_1176ln_rev_e,"{""input"": -20.0, ""output"": -20.0, ""ratio"": ""20:1"", ""attack"": ""4.00"", ""release"": 7.0}",-30.0,-3.599,12.315
+1176ln_20to1_in-20,uaudio_ua_1176ln_rev_e,"{""input"": -20.0, ""output"": -20.0, ""ratio"": ""20:1"", ""attack"": ""4.00"", ""release"": 7.0}",-28.0,-5.474,15.965
+1176ln_20to1_in-20,uaudio_ua_1176ln_rev_e,"{""input"": -20.0, ""output"": -20.0, ""ratio"": ""20:1"", ""attack"": ""4.00"", ""release"": 7.0}",-26.0,-7.366,18.433
+1176ln_20to1_in-20,uaudio_ua_1176ln_rev_e,"{""input"": -20.0, ""output"": -20.0, ""ratio"": ""20:1"", ""attack"": ""4.00"", ""release"": 7.0}",-24.0,-9.274,21.736
+1176ln_20to1_in-20,uaudio_ua_1176ln_rev_e,"{""input"": -20.0, ""output"": -20.0, ""ratio"": ""20:1"", ""attack"": ""4.00"", ""release"": 7.0}",-22.0,-11.198,26.337
+1176ln_20to1_in-20,uaudio_ua_1176ln_rev_e,"{""input"": -20.0, ""output"": -20.0, ""ratio"": ""20:1"", ""attack"": ""4.00"", ""release"": 7.0}",-20.0,-13.113,23.689
+1176ln_20to1_in-20,uaudio_ua_1176ln_rev_e,"{""input"": -20.0, ""output"": -20.0, ""ratio"": ""20:1"", ""attack"": ""4.00"", ""release"": 7.0}",-18.0,-15.037,26.219
+1176ln_20to1_in-20,uaudio_ua_1176ln_rev_e,"{""input"": -20.0, ""output"": -20.0, ""ratio"": ""20:1"", ""attack"": ""4.00"", ""release"": 7.0}",-16.0,-16.949,22.673
+1176ln_20to1_in-20,uaudio_ua_1176ln_rev_e,"{""input"": -20.0, ""output"": -20.0, ""ratio"": ""20:1"", ""attack"": ""4.00"", ""release"": 7.0}",-14.0,-18.874,26.800
+1176ln_20to1_in-20,uaudio_ua_1176ln_rev_e,"{""input"": -20.0, ""output"": -20.0, ""ratio"": ""20:1"", ""attack"": ""4.00"", ""release"": 7.0}",-12.0,-20.783,21.868
+1176ln_20to1_in-20,uaudio_ua_1176ln_rev_e,"{""input"": -20.0, ""output"": -20.0, ""ratio"": ""20:1"", ""attack"": ""4.00"", ""release"": 7.0}",-10.0,-22.712,28.408
+1176ln_20to1_in-20,uaudio_ua_1176ln_rev_e,"{""input"": -20.0, ""output"": -20.0, ""ratio"": ""20:1"", ""attack"": ""4.00"", ""release"": 7.0}",-8.0,-24.624,22.606
+1176ln_20to1_in-20,uaudio_ua_1176ln_rev_e,"{""input"": -20.0, ""output"": -20.0, ""ratio"": ""20:1"", ""attack"": ""4.00"", ""release"": 7.0}",-6.0,-26.562,32.453
+1176ln_20to1_in-20,uaudio_ua_1176ln_rev_e,"{""input"": -20.0, ""output"": -20.0, ""ratio"": ""20:1"", ""attack"": ""4.00"", ""release"": 7.0}",-4.0,-28.477,23.533
+1176ln_20to1_in-20,uaudio_ua_1176ln_rev_e,"{""input"": -20.0, ""output"": -20.0, ""ratio"": ""20:1"", ""attack"": ""4.00"", ""release"": 7.0}",-2.0,-30.413,31.121
+1176ln_20to1_in-20,uaudio_ua_1176ln_rev_e,"{""input"": -20.0, ""output"": -20.0, ""ratio"": ""20:1"", ""attack"": ""4.00"", ""release"": 7.0}",0.0,-32.326,23.069
+1176ln_20to1_in-20,uaudio_ua_1176ln_rev_e,"{""input"": -20.0, ""output"": -20.0, ""ratio"": ""20:1"", ""attack"": ""4.00"", ""release"": 7.0}",2.0,-34.260,30.180
+1176ln_20to1_in-20,uaudio_ua_1176ln_rev_e,"{""input"": -20.0, ""output"": -20.0, ""ratio"": ""20:1"", ""attack"": ""4.00"", ""release"": 7.0}",4.0,-36.169,21.907
+1176ln_20to1_in-20,uaudio_ua_1176ln_rev_e,"{""input"": -20.0, ""output"": -20.0, ""ratio"": ""20:1"", ""attack"": ""4.00"", ""release"": 7.0}",6.0,-38.105,31.286
+1176ln_20to1_in-20,uaudio_ua_1176ln_rev_e,"{""input"": -20.0, ""output"": -20.0, ""ratio"": ""20:1"", ""attack"": ""4.00"", ""release"": 7.0}",8.0,-40.021,23.744
+1176ln_20to1_in-20,uaudio_ua_1176ln_rev_e,"{""input"": -20.0, ""output"": -20.0, ""ratio"": ""20:1"", ""attack"": ""4.00"", ""release"": 7.0}",10.0,-40.318,1.175
+1176_ALL_in-20,uaudio_ua_1176,"{""input"": -20.0, ""output"": -20.0, ""ratio"": ""ALL"", ""attack"": 4.0, ""release"": 7.0}",-40.0,0.000,
+1176_ALL_in-20,uaudio_ua_1176,"{""input"": -20.0, ""output"": -20.0, ""ratio"": ""ALL"", ""attack"": 4.0, ""release"": 7.0}",-38.0,-0.038,1.020
+1176_ALL_in-20,uaudio_ua_1176,"{""input"": -20.0, ""output"": -20.0, ""ratio"": ""ALL"", ""attack"": 4.0, ""release"": 7.0}",-36.0,-1.554,4.126
+1176_ALL_in-20,uaudio_ua_1176,"{""input"": -20.0, ""output"": -20.0, ""ratio"": ""ALL"", ""attack"": 4.0, ""release"": 7.0}",-34.0,-3.517,55.301
+1176_ALL_in-20,uaudio_ua_1176,"{""input"": -20.0, ""output"": -20.0, ""ratio"": ""ALL"", ""attack"": 4.0, ""release"": 7.0}",-32.0,-5.465,38.340
+1176_ALL_in-20,uaudio_ua_1176,"{""input"": -20.0, ""output"": -20.0, ""ratio"": ""ALL"", ""attack"": 4.0, ""release"": 7.0}",-30.0,-7.371,21.132
+1176_ALL_in-20,uaudio_ua_1176,"{""input"": -20.0, ""output"": -20.0, ""ratio"": ""ALL"", ""attack"": 4.0, ""release"": 7.0}",-28.0,-9.243,15.636
+1176_ALL_in-20,uaudio_ua_1176,"{""input"": -20.0, ""output"": -20.0, ""ratio"": ""ALL"", ""attack"": 4.0, ""release"": 7.0}",-26.0,-11.095,13.512
+1176_ALL_in-20,uaudio_ua_1176,"{""input"": -20.0, ""output"": -20.0, ""ratio"": ""ALL"", ""attack"": 4.0, ""release"": 7.0}",-24.0,-12.943,13.203
+1176_ALL_in-20,uaudio_ua_1176,"{""input"": -20.0, ""output"": -20.0, ""ratio"": ""ALL"", ""attack"": 4.0, ""release"": 7.0}",-22.0,-14.809,14.944
+1176_ALL_in-20,uaudio_ua_1176,"{""input"": -20.0, ""output"": -20.0, ""ratio"": ""ALL"", ""attack"": 4.0, ""release"": 7.0}",-20.0,-16.754,35.953
+1176_ALL_in-20,uaudio_ua_1176,"{""input"": -20.0, ""output"": -20.0, ""ratio"": ""ALL"", ""attack"": 4.0, ""release"": 7.0}",-18.0,-18.683,28.134
+1176_ALL_in-20,uaudio_ua_1176,"{""input"": -20.0, ""output"": -20.0, ""ratio"": ""ALL"", ""attack"": 4.0, ""release"": 7.0}",-16.0,-20.607,26.616
+1176_ALL_in-20,uaudio_ua_1176,"{""input"": -20.0, ""output"": -20.0, ""ratio"": ""ALL"", ""attack"": 4.0, ""release"": 7.0}",-14.0,-22.539,29.340
+1176_ALL_in-20,uaudio_ua_1176,"{""input"": -20.0, ""output"": -20.0, ""ratio"": ""ALL"", ""attack"": 4.0, ""release"": 7.0}",-12.0,-24.452,22.873
+1176_ALL_in-20,uaudio_ua_1176,"{""input"": -20.0, ""output"": -20.0, ""ratio"": ""ALL"", ""attack"": 4.0, ""release"": 7.0}",-10.0,-26.394,34.821
+1176_ALL_in-20,uaudio_ua_1176,"{""input"": -20.0, ""output"": -20.0, ""ratio"": ""ALL"", ""attack"": 4.0, ""release"": 7.0}",-8.0,-28.296,20.224
+1176_ALL_in-20,uaudio_ua_1176,"{""input"": -20.0, ""output"": -20.0, ""ratio"": ""ALL"", ""attack"": 4.0, ""release"": 7.0}",-6.0,-30.251,45.249
+1176_ALL_in-20,uaudio_ua_1176,"{""input"": -20.0, ""output"": -20.0, ""ratio"": ""ALL"", ""attack"": 4.0, ""release"": 7.0}",-4.0,-32.148,19.331
+1176_ALL_in-20,uaudio_ua_1176,"{""input"": -20.0, ""output"": -20.0, ""ratio"": ""ALL"", ""attack"": 4.0, ""release"": 7.0}",-2.0,-34.100,41.532
+1176_ALL_in-20,uaudio_ua_1176,"{""input"": -20.0, ""output"": -20.0, ""ratio"": ""ALL"", ""attack"": 4.0, ""release"": 7.0}",0.0,-35.996,19.199
+1176_ALL_in-20,uaudio_ua_1176,"{""input"": -20.0, ""output"": -20.0, ""ratio"": ""ALL"", ""attack"": 4.0, ""release"": 7.0}",2.0,-37.946,40.182
+1176_ALL_in-20,uaudio_ua_1176,"{""input"": -20.0, ""output"": -20.0, ""ratio"": ""ALL"", ""attack"": 4.0, ""release"": 7.0}",4.0,-39.854,21.830
+1176_ALL_in-20,uaudio_ua_1176,"{""input"": -20.0, ""output"": -20.0, ""ratio"": ""ALL"", ""attack"": 4.0, ""release"": 7.0}",6.0,-41.796,34.153
+1176_ALL_in-20,uaudio_ua_1176,"{""input"": -20.0, ""output"": -20.0, ""ratio"": ""ALL"", ""attack"": 4.0, ""release"": 7.0}",8.0,-42.833,2.079
+1176_ALL_in-20,uaudio_ua_1176,"{""input"": -20.0, ""output"": -20.0, ""ratio"": ""ALL"", ""attack"": 4.0, ""release"": 7.0}",10.0,-42.891,1.030
+dbx160_4to1,uaudio_dbx_160,"{""thresh"": -30.0, ""compress"": "" 4.0:1"", ""gain"": 0.0}",-40.0,0.000,
+dbx160_4to1,uaudio_dbx_160,"{""thresh"": -30.0, ""compress"": "" 4.0:1"", ""gain"": 0.0}",-38.0,-0.000,1.000
+dbx160_4to1,uaudio_dbx_160,"{""thresh"": -30.0, ""compress"": "" 4.0:1"", ""gain"": 0.0}",-36.0,0.000,1.000
+dbx160_4to1,uaudio_dbx_160,"{""thresh"": -30.0, ""compress"": "" 4.0:1"", ""gain"": 0.0}",-34.0,0.000,1.000
+dbx160_4to1,uaudio_dbx_160,"{""thresh"": -30.0, ""compress"": "" 4.0:1"", ""gain"": 0.0}",-32.0,-0.000,1.000
+dbx160_4to1,uaudio_dbx_160,"{""thresh"": -30.0, ""compress"": "" 4.0:1"", ""gain"": 0.0}",-30.0,-0.000,1.000
+dbx160_4to1,uaudio_dbx_160,"{""thresh"": -30.0, ""compress"": "" 4.0:1"", ""gain"": 0.0}",-28.0,-1.198,2.493
+dbx160_4to1,uaudio_dbx_160,"{""thresh"": -30.0, ""compress"": "" 4.0:1"", ""gain"": 0.0}",-26.0,-2.781,4.794
+dbx160_4to1,uaudio_dbx_160,"{""thresh"": -30.0, ""compress"": "" 4.0:1"", ""gain"": 0.0}",-24.0,-4.356,4.707
+dbx160_4to1,uaudio_dbx_160,"{""thresh"": -30.0, ""compress"": "" 4.0:1"", ""gain"": 0.0}",-22.0,-5.920,4.586
+dbx160_4to1,uaudio_dbx_160,"{""thresh"": -30.0, ""compress"": "" 4.0:1"", ""gain"": 0.0}",-20.0,-7.473,4.479
+dbx160_4to1,uaudio_dbx_160,"{""thresh"": -30.0, ""compress"": "" 4.0:1"", ""gain"": 0.0}",-18.0,-9.016,4.378
+dbx160_4to1,uaudio_dbx_160,"{""thresh"": -30.0, ""compress"": "" 4.0:1"", ""gain"": 0.0}",-16.0,-10.549,4.276
+dbx160_4to1,uaudio_dbx_160,"{""thresh"": -30.0, ""compress"": "" 4.0:1"", ""gain"": 0.0}",-14.0,-12.072,4.198
+dbx160_4to1,uaudio_dbx_160,"{""thresh"": -30.0, ""compress"": "" 4.0:1"", ""gain"": 0.0}",-12.0,-13.589,4.136
+dbx160_4to1,uaudio_dbx_160,"{""thresh"": -30.0, ""compress"": "" 4.0:1"", ""gain"": 0.0}",-10.0,-15.100,4.097
+dbx160_4to1,uaudio_dbx_160,"{""thresh"": -30.0, ""compress"": "" 4.0:1"", ""gain"": 0.0}",-8.0,-16.610,4.077
+dbx160_4to1,uaudio_dbx_160,"{""thresh"": -30.0, ""compress"": "" 4.0:1"", ""gain"": 0.0}",-6.0,-18.123,4.108
+dbx160_4to1,uaudio_dbx_160,"{""thresh"": -30.0, ""compress"": "" 4.0:1"", ""gain"": 0.0}",-4.0,-19.643,4.163
+dbx160_4to1,uaudio_dbx_160,"{""thresh"": -30.0, ""compress"": "" 4.0:1"", ""gain"": 0.0}",-2.0,-21.175,4.278
+dbx160_4to1,uaudio_dbx_160,"{""thresh"": -30.0, ""compress"": "" 4.0:1"", ""gain"": 0.0}",0.0,-22.727,4.460
+dbx160_4to1,uaudio_dbx_160,"{""thresh"": -30.0, ""compress"": "" 4.0:1"", ""gain"": 0.0}",2.0,-24.303,4.720
+dbx160_4to1,uaudio_dbx_160,"{""thresh"": -30.0, ""compress"": "" 4.0:1"", ""gain"": 0.0}",4.0,-25.914,5.144
+dbx160_4to1,uaudio_dbx_160,"{""thresh"": -30.0, ""compress"": "" 4.0:1"", ""gain"": 0.0}",6.0,-27.568,5.787
+dbx160_4to1,uaudio_dbx_160,"{""thresh"": -30.0, ""compress"": "" 4.0:1"", ""gain"": 0.0}",8.0,-29.276,6.833
+dbx160_4to1,uaudio_dbx_160,"{""thresh"": -30.0, ""compress"": "" 4.0:1"", ""gain"": 0.0}",10.0,-31.047,8.736
+manleyVM_comp,uaudio_manley_variable_mu,"{""dual_input"": 5.0, ""l_thresh"": 5.0, ""r_thresh"": 5.0, ""l_recovery"": ""Fast"", ""r_recovery"": ""Fast"", ""l_comp_lim"": ""Comp"", ""r_comp_lim"": ""Comp""}",-40.0,0.000,
+manleyVM_comp,uaudio_manley_variable_mu,"{""dual_input"": 5.0, ""l_thresh"": 5.0, ""r_thresh"": 5.0, ""l_recovery"": ""Fast"", ""r_recovery"": ""Fast"", ""l_comp_lim"": ""Comp"", ""r_comp_lim"": ""Comp""}",-38.0,-0.000,1.000
+manleyVM_comp,uaudio_manley_variable_mu,"{""dual_input"": 5.0, ""l_thresh"": 5.0, ""r_thresh"": 5.0, ""l_recovery"": ""Fast"", ""r_recovery"": ""Fast"", ""l_comp_lim"": ""Comp"", ""r_comp_lim"": ""Comp""}",-36.0,-0.000,1.000
+manleyVM_comp,uaudio_manley_variable_mu,"{""dual_input"": 5.0, ""l_thresh"": 5.0, ""r_thresh"": 5.0, ""l_recovery"": ""Fast"", ""r_recovery"": ""Fast"", ""l_comp_lim"": ""Comp"", ""r_comp_lim"": ""Comp""}",-34.0,-0.000,1.000
+manleyVM_comp,uaudio_manley_variable_mu,"{""dual_input"": 5.0, ""l_thresh"": 5.0, ""r_thresh"": 5.0, ""l_recovery"": ""Fast"", ""r_recovery"": ""Fast"", ""l_comp_lim"": ""Comp"", ""r_comp_lim"": ""Comp""}",-32.0,-0.000,1.000
+manleyVM_comp,uaudio_manley_variable_mu,"{""dual_input"": 5.0, ""l_thresh"": 5.0, ""r_thresh"": 5.0, ""l_recovery"": ""Fast"", ""r_recovery"": ""Fast"", ""l_comp_lim"": ""Comp"", ""r_comp_lim"": ""Comp""}",-30.0,-0.000,1.000
+manleyVM_comp,uaudio_manley_variable_mu,"{""dual_input"": 5.0, ""l_thresh"": 5.0, ""r_thresh"": 5.0, ""l_recovery"": ""Fast"", ""r_recovery"": ""Fast"", ""l_comp_lim"": ""Comp"", ""r_comp_lim"": ""Comp""}",-28.0,0.000,1.000
+manleyVM_comp,uaudio_manley_variable_mu,"{""dual_input"": 5.0, ""l_thresh"": 5.0, ""r_thresh"": 5.0, ""l_recovery"": ""Fast"", ""r_recovery"": ""Fast"", ""l_comp_lim"": ""Comp"", ""r_comp_lim"": ""Comp""}",-26.0,0.000,1.000
+manleyVM_comp,uaudio_manley_variable_mu,"{""dual_input"": 5.0, ""l_thresh"": 5.0, ""r_thresh"": 5.0, ""l_recovery"": ""Fast"", ""r_recovery"": ""Fast"", ""l_comp_lim"": ""Comp"", ""r_comp_lim"": ""Comp""}",-24.0,0.000,1.000
+manleyVM_comp,uaudio_manley_variable_mu,"{""dual_input"": 5.0, ""l_thresh"": 5.0, ""r_thresh"": 5.0, ""l_recovery"": ""Fast"", ""r_recovery"": ""Fast"", ""l_comp_lim"": ""Comp"", ""r_comp_lim"": ""Comp""}",-22.0,0.000,1.000
+manleyVM_comp,uaudio_manley_variable_mu,"{""dual_input"": 5.0, ""l_thresh"": 5.0, ""r_thresh"": 5.0, ""l_recovery"": ""Fast"", ""r_recovery"": ""Fast"", ""l_comp_lim"": ""Comp"", ""r_comp_lim"": ""Comp""}",-20.0,0.000,1.000
+manleyVM_comp,uaudio_manley_variable_mu,"{""dual_input"": 5.0, ""l_thresh"": 5.0, ""r_thresh"": 5.0, ""l_recovery"": ""Fast"", ""r_recovery"": ""Fast"", ""l_comp_lim"": ""Comp"", ""r_comp_lim"": ""Comp""}",-18.0,0.000,1.000
+manleyVM_comp,uaudio_manley_variable_mu,"{""dual_input"": 5.0, ""l_thresh"": 5.0, ""r_thresh"": 5.0, ""l_recovery"": ""Fast"", ""r_recovery"": ""Fast"", ""l_comp_lim"": ""Comp"", ""r_comp_lim"": ""Comp""}",-16.0,-0.178,1.098
+manleyVM_comp,uaudio_manley_variable_mu,"{""dual_input"": 5.0, ""l_thresh"": 5.0, ""r_thresh"": 5.0, ""l_recovery"": ""Fast"", ""r_recovery"": ""Fast"", ""l_comp_lim"": ""Comp"", ""r_comp_lim"": ""Comp""}",-14.0,-0.541,1.222
+manleyVM_comp,uaudio_manley_variable_mu,"{""dual_input"": 5.0, ""l_thresh"": 5.0, ""r_thresh"": 5.0, ""l_recovery"": ""Fast"", ""r_recovery"": ""Fast"", ""l_comp_lim"": ""Comp"", ""r_comp_lim"": ""Comp""}",-12.0,-0.984,1.285
+manleyVM_comp,uaudio_manley_variable_mu,"{""dual_input"": 5.0, ""l_thresh"": 5.0, ""r_thresh"": 5.0, ""l_recovery"": ""Fast"", ""r_recovery"": ""Fast"", ""l_comp_lim"": ""Comp"", ""r_comp_lim"": ""Comp""}",-10.0,-1.500,1.348
+manleyVM_comp,uaudio_manley_variable_mu,"{""dual_input"": 5.0, ""l_thresh"": 5.0, ""r_thresh"": 5.0, ""l_recovery"": ""Fast"", ""r_recovery"": ""Fast"", ""l_comp_lim"": ""Comp"", ""r_comp_lim"": ""Comp""}",-8.0,-2.083,1.412
+manleyVM_comp,uaudio_manley_variable_mu,"{""dual_input"": 5.0, ""l_thresh"": 5.0, ""r_thresh"": 5.0, ""l_recovery"": ""Fast"", ""r_recovery"": ""Fast"", ""l_comp_lim"": ""Comp"", ""r_comp_lim"": ""Comp""}",-6.0,-2.726,1.474
+manleyVM_comp,uaudio_manley_variable_mu,"{""dual_input"": 5.0, ""l_thresh"": 5.0, ""r_thresh"": 5.0, ""l_recovery"": ""Fast"", ""r_recovery"": ""Fast"", ""l_comp_lim"": ""Comp"", ""r_comp_lim"": ""Comp""}",-4.0,-3.418,1.529
+manleyVM_comp,uaudio_manley_variable_mu,"{""dual_input"": 5.0, ""l_thresh"": 5.0, ""r_thresh"": 5.0, ""l_recovery"": ""Fast"", ""r_recovery"": ""Fast"", ""l_comp_lim"": ""Comp"", ""r_comp_lim"": ""Comp""}",-2.0,-4.142,1.568
+manleyVM_comp,uaudio_manley_variable_mu,"{""dual_input"": 5.0, ""l_thresh"": 5.0, ""r_thresh"": 5.0, ""l_recovery"": ""Fast"", ""r_recovery"": ""Fast"", ""l_comp_lim"": ""Comp"", ""r_comp_lim"": ""Comp""}",0.0,-4.879,1.583
+manleyVM_comp,uaudio_manley_variable_mu,"{""dual_input"": 5.0, ""l_thresh"": 5.0, ""r_thresh"": 5.0, ""l_recovery"": ""Fast"", ""r_recovery"": ""Fast"", ""l_comp_lim"": ""Comp"", ""r_comp_lim"": ""Comp""}",2.0,-5.601,1.566
+manleyVM_comp,uaudio_manley_variable_mu,"{""dual_input"": 5.0, ""l_thresh"": 5.0, ""r_thresh"": 5.0, ""l_recovery"": ""Fast"", ""r_recovery"": ""Fast"", ""l_comp_lim"": ""Comp"", ""r_comp_lim"": ""Comp""}",4.0,-6.284,1.518
+manleyVM_comp,uaudio_manley_variable_mu,"{""dual_input"": 5.0, ""l_thresh"": 5.0, ""r_thresh"": 5.0, ""l_recovery"": ""Fast"", ""r_recovery"": ""Fast"", ""l_comp_lim"": ""Comp"", ""r_comp_lim"": ""Comp""}",6.0,-6.895,1.440
+manleyVM_comp,uaudio_manley_variable_mu,"{""dual_input"": 5.0, ""l_thresh"": 5.0, ""r_thresh"": 5.0, ""l_recovery"": ""Fast"", ""r_recovery"": ""Fast"", ""l_comp_lim"": ""Comp"", ""r_comp_lim"": ""Comp""}",8.0,-7.484,1.417
+manleyVM_comp,uaudio_manley_variable_mu,"{""dual_input"": 5.0, ""l_thresh"": 5.0, ""r_thresh"": 5.0, ""l_recovery"": ""Fast"", ""r_recovery"": ""Fast"", ""l_comp_lim"": ""Comp"", ""r_comp_lim"": ""Comp""}",10.0,-8.107,1.453
+manleyVM_limit,uaudio_manley_variable_mu,"{""dual_input"": 5.0, ""l_thresh"": 5.0, ""r_thresh"": 5.0, ""l_recovery"": ""Fast"", ""r_recovery"": ""Fast"", ""l_comp_lim"": ""Limit"", ""r_comp_lim"": ""Limit""}",-40.0,0.000,
+manleyVM_limit,uaudio_manley_variable_mu,"{""dual_input"": 5.0, ""l_thresh"": 5.0, ""r_thresh"": 5.0, ""l_recovery"": ""Fast"", ""r_recovery"": ""Fast"", ""l_comp_lim"": ""Limit"", ""r_comp_lim"": ""Limit""}",-38.0,-0.000,1.000
+manleyVM_limit,uaudio_manley_variable_mu,"{""dual_input"": 5.0, ""l_thresh"": 5.0, ""r_thresh"": 5.0, ""l_recovery"": ""Fast"", ""r_recovery"": ""Fast"", ""l_comp_lim"": ""Limit"", ""r_comp_lim"": ""Limit""}",-36.0,-0.000,1.000
+manleyVM_limit,uaudio_manley_variable_mu,"{""dual_input"": 5.0, ""l_thresh"": 5.0, ""r_thresh"": 5.0, ""l_recovery"": ""Fast"", ""r_recovery"": ""Fast"", ""l_comp_lim"": ""Limit"", ""r_comp_lim"": ""Limit""}",-34.0,-0.000,1.000
+manleyVM_limit,uaudio_manley_variable_mu,"{""dual_input"": 5.0, ""l_thresh"": 5.0, ""r_thresh"": 5.0, ""l_recovery"": ""Fast"", ""r_recovery"": ""Fast"", ""l_comp_lim"": ""Limit"", ""r_comp_lim"": ""Limit""}",-32.0,0.000,1.000
+manleyVM_limit,uaudio_manley_variable_mu,"{""dual_input"": 5.0, ""l_thresh"": 5.0, ""r_thresh"": 5.0, ""l_recovery"": ""Fast"", ""r_recovery"": ""Fast"", ""l_comp_lim"": ""Limit"", ""r_comp_lim"": ""Limit""}",-30.0,-0.000,1.000
+manleyVM_limit,uaudio_manley_variable_mu,"{""dual_input"": 5.0, ""l_thresh"": 5.0, ""r_thresh"": 5.0, ""l_recovery"": ""Fast"", ""r_recovery"": ""Fast"", ""l_comp_lim"": ""Limit"", ""r_comp_lim"": ""Limit""}",-28.0,0.000,1.000
+manleyVM_limit,uaudio_manley_variable_mu,"{""dual_input"": 5.0, ""l_thresh"": 5.0, ""r_thresh"": 5.0, ""l_recovery"": ""Fast"", ""r_recovery"": ""Fast"", ""l_comp_lim"": ""Limit"", ""r_comp_lim"": ""Limit""}",-26.0,0.000,1.000
+manleyVM_limit,uaudio_manley_variable_mu,"{""dual_input"": 5.0, ""l_thresh"": 5.0, ""r_thresh"": 5.0, ""l_recovery"": ""Fast"", ""r_recovery"": ""Fast"", ""l_comp_lim"": ""Limit"", ""r_comp_lim"": ""Limit""}",-24.0,0.000,1.000
+manleyVM_limit,uaudio_manley_variable_mu,"{""dual_input"": 5.0, ""l_thresh"": 5.0, ""r_thresh"": 5.0, ""l_recovery"": ""Fast"", ""r_recovery"": ""Fast"", ""l_comp_lim"": ""Limit"", ""r_comp_lim"": ""Limit""}",-22.0,0.000,1.000
+manleyVM_limit,uaudio_manley_variable_mu,"{""dual_input"": 5.0, ""l_thresh"": 5.0, ""r_thresh"": 5.0, ""l_recovery"": ""Fast"", ""r_recovery"": ""Fast"", ""l_comp_lim"": ""Limit"", ""r_comp_lim"": ""Limit""}",-20.0,0.000,1.000
+manleyVM_limit,uaudio_manley_variable_mu,"{""dual_input"": 5.0, ""l_thresh"": 5.0, ""r_thresh"": 5.0, ""l_recovery"": ""Fast"", ""r_recovery"": ""Fast"", ""l_comp_lim"": ""Limit"", ""r_comp_lim"": ""Limit""}",-18.0,0.000,1.000
+manleyVM_limit,uaudio_manley_variable_mu,"{""dual_input"": 5.0, ""l_thresh"": 5.0, ""r_thresh"": 5.0, ""l_recovery"": ""Fast"", ""r_recovery"": ""Fast"", ""l_comp_lim"": ""Limit"", ""r_comp_lim"": ""Limit""}",-16.0,-0.431,1.274
+manleyVM_limit,uaudio_manley_variable_mu,"{""dual_input"": 5.0, ""l_thresh"": 5.0, ""r_thresh"": 5.0, ""l_recovery"": ""Fast"", ""r_recovery"": ""Fast"", ""l_comp_lim"": ""Limit"", ""r_comp_lim"": ""Limit""}",-14.0,-1.439,2.018
+manleyVM_limit,uaudio_manley_variable_mu,"{""dual_input"": 5.0, ""l_thresh"": 5.0, ""r_thresh"": 5.0, ""l_recovery"": ""Fast"", ""r_recovery"": ""Fast"", ""l_comp_lim"": ""Limit"", ""r_comp_lim"": ""Limit""}",-12.0,-2.537,2.218
+manleyVM_limit,uaudio_manley_variable_mu,"{""dual_input"": 5.0, ""l_thresh"": 5.0, ""r_thresh"": 5.0, ""l_recovery"": ""Fast"", ""r_recovery"": ""Fast"", ""l_comp_lim"": ""Limit"", ""r_comp_lim"": ""Limit""}",-10.0,-3.671,2.309
+manleyVM_limit,uaudio_manley_variable_mu,"{""dual_input"": 5.0, ""l_thresh"": 5.0, ""r_thresh"": 5.0, ""l_recovery"": ""Fast"", ""r_recovery"": ""Fast"", ""l_comp_lim"": ""Limit"", ""r_comp_lim"": ""Limit""}",-8.0,-4.795,2.282
+manleyVM_limit,uaudio_manley_variable_mu,"{""dual_input"": 5.0, ""l_thresh"": 5.0, ""r_thresh"": 5.0, ""l_recovery"": ""Fast"", ""r_recovery"": ""Fast"", ""l_comp_lim"": ""Limit"", ""r_comp_lim"": ""Limit""}",-6.0,-5.854,2.125
+manleyVM_limit,uaudio_manley_variable_mu,"{""dual_input"": 5.0, ""l_thresh"": 5.0, ""r_thresh"": 5.0, ""l_recovery"": ""Fast"", ""r_recovery"": ""Fast"", ""l_comp_lim"": ""Limit"", ""r_comp_lim"": ""Limit""}",-4.0,-6.780,1.863
+manleyVM_limit,uaudio_manley_variable_mu,"{""dual_input"": 5.0, ""l_thresh"": 5.0, ""r_thresh"": 5.0, ""l_recovery"": ""Fast"", ""r_recovery"": ""Fast"", ""l_comp_lim"": ""Limit"", ""r_comp_lim"": ""Limit""}",-2.0,-7.585,1.673
+manleyVM_limit,uaudio_manley_variable_mu,"{""dual_input"": 5.0, ""l_thresh"": 5.0, ""r_thresh"": 5.0, ""l_recovery"": ""Fast"", ""r_recovery"": ""Fast"", ""l_comp_lim"": ""Limit"", ""r_comp_lim"": ""Limit""}",0.0,-8.423,1.722
+manleyVM_limit,uaudio_manley_variable_mu,"{""dual_input"": 5.0, ""l_thresh"": 5.0, ""r_thresh"": 5.0, ""l_recovery"": ""Fast"", ""r_recovery"": ""Fast"", ""l_comp_lim"": ""Limit"", ""r_comp_lim"": ""Limit""}",2.0,-9.307,1.791
+manleyVM_limit,uaudio_manley_variable_mu,"{""dual_input"": 5.0, ""l_thresh"": 5.0, ""r_thresh"": 5.0, ""l_recovery"": ""Fast"", ""r_recovery"": ""Fast"", ""l_comp_lim"": ""Limit"", ""r_comp_lim"": ""Limit""}",4.0,-10.276,1.941
+manleyVM_limit,uaudio_manley_variable_mu,"{""dual_input"": 5.0, ""l_thresh"": 5.0, ""r_thresh"": 5.0, ""l_recovery"": ""Fast"", ""r_recovery"": ""Fast"", ""l_comp_lim"": ""Limit"", ""r_comp_lim"": ""Limit""}",6.0,-11.321,2.093
+manleyVM_limit,uaudio_manley_variable_mu,"{""dual_input"": 5.0, ""l_thresh"": 5.0, ""r_thresh"": 5.0, ""l_recovery"": ""Fast"", ""r_recovery"": ""Fast"", ""l_comp_lim"": ""Limit"", ""r_comp_lim"": ""Limit""}",8.0,-12.429,2.244
+manleyVM_limit,uaudio_manley_variable_mu,"{""dual_input"": 5.0, ""l_thresh"": 5.0, ""r_thresh"": 5.0, ""l_recovery"": ""Fast"", ""r_recovery"": ""Fast"", ""l_comp_lim"": ""Limit"", ""r_comp_lim"": ""Limit""}",10.0,-13.595,2.396
+manleyVM_limit_hot,uaudio_manley_variable_mu,"{""dual_input"": 10.0, ""l_thresh"": 10.0, ""r_thresh"": 10.0, ""l_recovery"": ""Fast"", ""r_recovery"": ""Fast"", ""l_comp_lim"": ""Limit"", ""r_comp_lim"": ""Limit""}",-40.0,0.000,
+manleyVM_limit_hot,uaudio_manley_variable_mu,"{""dual_input"": 10.0, ""l_thresh"": 10.0, ""r_thresh"": 10.0, ""l_recovery"": ""Fast"", ""r_recovery"": ""Fast"", ""l_comp_lim"": ""Limit"", ""r_comp_lim"": ""Limit""}",-38.0,0.000,1.000
+manleyVM_limit_hot,uaudio_manley_variable_mu,"{""dual_input"": 10.0, ""l_thresh"": 10.0, ""r_thresh"": 10.0, ""l_recovery"": ""Fast"", ""r_recovery"": ""Fast"", ""l_comp_lim"": ""Limit"", ""r_comp_lim"": ""Limit""}",-36.0,0.000,1.000
+manleyVM_limit_hot,uaudio_manley_variable_mu,"{""dual_input"": 10.0, ""l_thresh"": 10.0, ""r_thresh"": 10.0, ""l_recovery"": ""Fast"", ""r_recovery"": ""Fast"", ""l_comp_lim"": ""Limit"", ""r_comp_lim"": ""Limit""}",-34.0,0.000,1.000
+manleyVM_limit_hot,uaudio_manley_variable_mu,"{""dual_input"": 10.0, ""l_thresh"": 10.0, ""r_thresh"": 10.0, ""l_recovery"": ""Fast"", ""r_recovery"": ""Fast"", ""l_comp_lim"": ""Limit"", ""r_comp_lim"": ""Limit""}",-32.0,0.000,1.000
+manleyVM_limit_hot,uaudio_manley_variable_mu,"{""dual_input"": 10.0, ""l_thresh"": 10.0, ""r_thresh"": 10.0, ""l_recovery"": ""Fast"", ""r_recovery"": ""Fast"", ""l_comp_lim"": ""Limit"", ""r_comp_lim"": ""Limit""}",-30.0,0.000,1.000
+manleyVM_limit_hot,uaudio_manley_variable_mu,"{""dual_input"": 10.0, ""l_thresh"": 10.0, ""r_thresh"": 10.0, ""l_recovery"": ""Fast"", ""r_recovery"": ""Fast"", ""l_comp_lim"": ""Limit"", ""r_comp_lim"": ""Limit""}",-28.0,0.001,1.000
+manleyVM_limit_hot,uaudio_manley_variable_mu,"{""dual_input"": 10.0, ""l_thresh"": 10.0, ""r_thresh"": 10.0, ""l_recovery"": ""Fast"", ""r_recovery"": ""Fast"", ""l_comp_lim"": ""Limit"", ""r_comp_lim"": ""Limit""}",-26.0,0.001,1.000
+manleyVM_limit_hot,uaudio_manley_variable_mu,"{""dual_input"": 10.0, ""l_thresh"": 10.0, ""r_thresh"": 10.0, ""l_recovery"": ""Fast"", ""r_recovery"": ""Fast"", ""l_comp_lim"": ""Limit"", ""r_comp_lim"": ""Limit""}",-24.0,0.001,1.000
+manleyVM_limit_hot,uaudio_manley_variable_mu,"{""dual_input"": 10.0, ""l_thresh"": 10.0, ""r_thresh"": 10.0, ""l_recovery"": ""Fast"", ""r_recovery"": ""Fast"", ""l_comp_lim"": ""Limit"", ""r_comp_lim"": ""Limit""}",-22.0,0.002,1.000
+manleyVM_limit_hot,uaudio_manley_variable_mu,"{""dual_input"": 10.0, ""l_thresh"": 10.0, ""r_thresh"": 10.0, ""l_recovery"": ""Fast"", ""r_recovery"": ""Fast"", ""l_comp_lim"": ""Limit"", ""r_comp_lim"": ""Limit""}",-20.0,0.004,0.999
+manleyVM_limit_hot,uaudio_manley_variable_mu,"{""dual_input"": 10.0, ""l_thresh"": 10.0, ""r_thresh"": 10.0, ""l_recovery"": ""Fast"", ""r_recovery"": ""Fast"", ""l_comp_lim"": ""Limit"", ""r_comp_lim"": ""Limit""}",-18.0,0.006,0.999
+manleyVM_limit_hot,uaudio_manley_variable_mu,"{""dual_input"": 10.0, ""l_thresh"": 10.0, ""r_thresh"": 10.0, ""l_recovery"": ""Fast"", ""r_recovery"": ""Fast"", ""l_comp_lim"": ""Limit"", ""r_comp_lim"": ""Limit""}",-16.0,0.009,0.998
+manleyVM_limit_hot,uaudio_manley_variable_mu,"{""dual_input"": 10.0, ""l_thresh"": 10.0, ""r_thresh"": 10.0, ""l_recovery"": ""Fast"", ""r_recovery"": ""Fast"", ""l_comp_lim"": ""Limit"", ""r_comp_lim"": ""Limit""}",-14.0,-0.452,1.300
+manleyVM_limit_hot,uaudio_manley_variable_mu,"{""dual_input"": 10.0, ""l_thresh"": 10.0, ""r_thresh"": 10.0, ""l_recovery"": ""Fast"", ""r_recovery"": ""Fast"", ""l_comp_lim"": ""Limit"", ""r_comp_lim"": ""Limit""}",-12.0,-2.169,7.065
+manleyVM_limit_hot,uaudio_manley_variable_mu,"{""dual_input"": 10.0, ""l_thresh"": 10.0, ""r_thresh"": 10.0, ""l_recovery"": ""Fast"", ""r_recovery"": ""Fast"", ""l_comp_lim"": ""Limit"", ""r_comp_lim"": ""Limit""}",-10.0,-3.915,7.860
+manleyVM_limit_hot,uaudio_manley_variable_mu,"{""dual_input"": 10.0, ""l_thresh"": 10.0, ""r_thresh"": 10.0, ""l_recovery"": ""Fast"", ""r_recovery"": ""Fast"", ""l_comp_lim"": ""Limit"", ""r_comp_lim"": ""Limit""}",-8.0,-5.617,6.703
+manleyVM_limit_hot,uaudio_manley_variable_mu,"{""dual_input"": 10.0, ""l_thresh"": 10.0, ""r_thresh"": 10.0, ""l_recovery"": ""Fast"", ""r_recovery"": ""Fast"", ""l_comp_lim"": ""Limit"", ""r_comp_lim"": ""Limit""}",-6.0,-7.166,4.441
+manleyVM_limit_hot,uaudio_manley_variable_mu,"{""dual_input"": 10.0, ""l_thresh"": 10.0, ""r_thresh"": 10.0, ""l_recovery"": ""Fast"", ""r_recovery"": ""Fast"", ""l_comp_lim"": ""Limit"", ""r_comp_lim"": ""Limit""}",-4.0,-8.625,3.692
+manleyVM_limit_hot,uaudio_manley_variable_mu,"{""dual_input"": 10.0, ""l_thresh"": 10.0, ""r_thresh"": 10.0, ""l_recovery"": ""Fast"", ""r_recovery"": ""Fast"", ""l_comp_lim"": ""Limit"", ""r_comp_lim"": ""Limit""}",-2.0,-10.108,3.873
+manleyVM_limit_hot,uaudio_manley_variable_mu,"{""dual_input"": 10.0, ""l_thresh"": 10.0, ""r_thresh"": 10.0, ""l_recovery"": ""Fast"", ""r_recovery"": ""Fast"", ""l_comp_lim"": ""Limit"", ""r_comp_lim"": ""Limit""}",0.0,-11.642,4.287
+manleyVM_limit_hot,uaudio_manley_variable_mu,"{""dual_input"": 10.0, ""l_thresh"": 10.0, ""r_thresh"": 10.0, ""l_recovery"": ""Fast"", ""r_recovery"": ""Fast"", ""l_comp_lim"": ""Limit"", ""r_comp_lim"": ""Limit""}",2.0,-13.208,4.616
+manleyVM_limit_hot,uaudio_manley_variable_mu,"{""dual_input"": 10.0, ""l_thresh"": 10.0, ""r_thresh"": 10.0, ""l_recovery"": ""Fast"", ""r_recovery"": ""Fast"", ""l_comp_lim"": ""Limit"", ""r_comp_lim"": ""Limit""}",4.0,-14.799,4.882
+manleyVM_limit_hot,uaudio_manley_variable_mu,"{""dual_input"": 10.0, ""l_thresh"": 10.0, ""r_thresh"": 10.0, ""l_recovery"": ""Fast"", ""r_recovery"": ""Fast"", ""l_comp_lim"": ""Limit"", ""r_comp_lim"": ""Limit""}",6.0,-16.409,5.128
+manleyVM_limit_hot,uaudio_manley_variable_mu,"{""dual_input"": 10.0, ""l_thresh"": 10.0, ""r_thresh"": 10.0, ""l_recovery"": ""Fast"", ""r_recovery"": ""Fast"", ""l_comp_lim"": ""Limit"", ""r_comp_lim"": ""Limit""}",8.0,-18.034,5.341
+manleyVM_limit_hot,uaudio_manley_variable_mu,"{""dual_input"": 10.0, ""l_thresh"": 10.0, ""r_thresh"": 10.0, ""l_recovery"": ""Fast"", ""r_recovery"": ""Fast"", ""l_comp_lim"": ""Limit"", ""r_comp_lim"": ""Limit""}",10.0,-19.675,5.561
+distressor_2to1,uaudio_distressor,"{""input"": 5.0, ""ratio"": ""2:1"", ""attack"": 5.0, ""release"": 0.0, ""output"": 5.0}",-40.0,0.000,
+distressor_2to1,uaudio_distressor,"{""input"": 5.0, ""ratio"": ""2:1"", ""attack"": 5.0, ""release"": 0.0, ""output"": 5.0}",-38.0,-0.001,1.000
+distressor_2to1,uaudio_distressor,"{""input"": 5.0, ""ratio"": ""2:1"", ""attack"": 5.0, ""release"": 0.0, ""output"": 5.0}",-36.0,-0.002,1.000
+distressor_2to1,uaudio_distressor,"{""input"": 5.0, ""ratio"": ""2:1"", ""attack"": 5.0, ""release"": 0.0, ""output"": 5.0}",-34.0,-0.003,1.001
+distressor_2to1,uaudio_distressor,"{""input"": 5.0, ""ratio"": ""2:1"", ""attack"": 5.0, ""release"": 0.0, ""output"": 5.0}",-32.0,-0.006,1.001
+distressor_2to1,uaudio_distressor,"{""input"": 5.0, ""ratio"": ""2:1"", ""attack"": 5.0, ""release"": 0.0, ""output"": 5.0}",-30.0,-0.010,1.002
+distressor_2to1,uaudio_distressor,"{""input"": 5.0, ""ratio"": ""2:1"", ""attack"": 5.0, ""release"": 0.0, ""output"": 5.0}",-28.0,-0.019,1.004
+distressor_2to1,uaudio_distressor,"{""input"": 5.0, ""ratio"": ""2:1"", ""attack"": 5.0, ""release"": 0.0, ""output"": 5.0}",-26.0,-0.039,1.010
+distressor_2to1,uaudio_distressor,"{""input"": 5.0, ""ratio"": ""2:1"", ""attack"": 5.0, ""release"": 0.0, ""output"": 5.0}",-24.0,-0.084,1.023
+distressor_2to1,uaudio_distressor,"{""input"": 5.0, ""ratio"": ""2:1"", ""attack"": 5.0, ""release"": 0.0, ""output"": 5.0}",-22.0,-0.192,1.057
+distressor_2to1,uaudio_distressor,"{""input"": 5.0, ""ratio"": ""2:1"", ""attack"": 5.0, ""release"": 0.0, ""output"": 5.0}",-20.0,-0.423,1.130
+distressor_2to1,uaudio_distressor,"{""input"": 5.0, ""ratio"": ""2:1"", ""attack"": 5.0, ""release"": 0.0, ""output"": 5.0}",-18.0,-0.844,1.266
+distressor_2to1,uaudio_distressor,"{""input"": 5.0, ""ratio"": ""2:1"", ""attack"": 5.0, ""release"": 0.0, ""output"": 5.0}",-16.0,-1.503,1.492
+distressor_2to1,uaudio_distressor,"{""input"": 5.0, ""ratio"": ""2:1"", ""attack"": 5.0, ""release"": 0.0, ""output"": 5.0}",-14.0,-2.413,1.835
+distressor_2to1,uaudio_distressor,"{""input"": 5.0, ""ratio"": ""2:1"", ""attack"": 5.0, ""release"": 0.0, ""output"": 5.0}",-12.0,-3.529,2.263
+distressor_2to1,uaudio_distressor,"{""input"": 5.0, ""ratio"": ""2:1"", ""attack"": 5.0, ""release"": 0.0, ""output"": 5.0}",-10.0,-4.726,2.489
+distressor_2to1,uaudio_distressor,"{""input"": 5.0, ""ratio"": ""2:1"", ""attack"": 5.0, ""release"": 0.0, ""output"": 5.0}",-8.0,-6.003,2.766
+distressor_2to1,uaudio_distressor,"{""input"": 5.0, ""ratio"": ""2:1"", ""attack"": 5.0, ""release"": 0.0, ""output"": 5.0}",-6.0,-7.355,3.086
+distressor_2to1,uaudio_distressor,"{""input"": 5.0, ""ratio"": ""2:1"", ""attack"": 5.0, ""release"": 0.0, ""output"": 5.0}",-4.0,-8.797,3.589
+distressor_2to1,uaudio_distressor,"{""input"": 5.0, ""ratio"": ""2:1"", ""attack"": 5.0, ""release"": 0.0, ""output"": 5.0}",-2.0,-10.289,3.932
+distressor_2to1,uaudio_distressor,"{""input"": 5.0, ""ratio"": ""2:1"", ""attack"": 5.0, ""release"": 0.0, ""output"": 5.0}",0.0,-11.801,4.100
+distressor_2to1,uaudio_distressor,"{""input"": 5.0, ""ratio"": ""2:1"", ""attack"": 5.0, ""release"": 0.0, ""output"": 5.0}",2.0,-13.314,4.111
+distressor_2to1,uaudio_distressor,"{""input"": 5.0, ""ratio"": ""2:1"", ""attack"": 5.0, ""release"": 0.0, ""output"": 5.0}",4.0,-14.859,4.393
+distressor_2to1,uaudio_distressor,"{""input"": 5.0, ""ratio"": ""2:1"", ""attack"": 5.0, ""release"": 0.0, ""output"": 5.0}",6.0,-16.443,4.808
+distressor_2to1,uaudio_distressor,"{""input"": 5.0, ""ratio"": ""2:1"", ""attack"": 5.0, ""release"": 0.0, ""output"": 5.0}",8.0,-18.058,5.189
+distressor_2to1,uaudio_distressor,"{""input"": 5.0, ""ratio"": ""2:1"", ""attack"": 5.0, ""release"": 0.0, ""output"": 5.0}",10.0,-19.664,5.078
+distressor_3to1,uaudio_distressor,"{""input"": 5.0, ""ratio"": ""3:1"", ""attack"": 5.0, ""release"": 0.0, ""output"": 5.0}",-40.0,0.000,
+distressor_3to1,uaudio_distressor,"{""input"": 5.0, ""ratio"": ""3:1"", ""attack"": 5.0, ""release"": 0.0, ""output"": 5.0}",-38.0,-0.000,1.000
+distressor_3to1,uaudio_distressor,"{""input"": 5.0, ""ratio"": ""3:1"", ""attack"": 5.0, ""release"": 0.0, ""output"": 5.0}",-36.0,-0.000,1.000
+distressor_3to1,uaudio_distressor,"{""input"": 5.0, ""ratio"": ""3:1"", ""attack"": 5.0, ""release"": 0.0, ""output"": 5.0}",-34.0,-0.000,1.000
+distressor_3to1,uaudio_distressor,"{""input"": 5.0, ""ratio"": ""3:1"", ""attack"": 5.0, ""release"": 0.0, ""output"": 5.0}",-32.0,-0.000,1.000
+distressor_3to1,uaudio_distressor,"{""input"": 5.0, ""ratio"": ""3:1"", ""attack"": 5.0, ""release"": 0.0, ""output"": 5.0}",-30.0,-0.000,1.000
+distressor_3to1,uaudio_distressor,"{""input"": 5.0, ""ratio"": ""3:1"", ""attack"": 5.0, ""release"": 0.0, ""output"": 5.0}",-28.0,-0.001,1.000
+distressor_3to1,uaudio_distressor,"{""input"": 5.0, ""ratio"": ""3:1"", ""attack"": 5.0, ""release"": 0.0, ""output"": 5.0}",-26.0,-0.002,1.001
+distressor_3to1,uaudio_distressor,"{""input"": 5.0, ""ratio"": ""3:1"", ""attack"": 5.0, ""release"": 0.0, ""output"": 5.0}",-24.0,-0.006,1.002
+distressor_3to1,uaudio_distressor,"{""input"": 5.0, ""ratio"": ""3:1"", ""attack"": 5.0, ""release"": 0.0, ""output"": 5.0}",-22.0,-0.030,1.012
+distressor_3to1,uaudio_distressor,"{""input"": 5.0, ""ratio"": ""3:1"", ""attack"": 5.0, ""release"": 0.0, ""output"": 5.0}",-20.0,-0.154,1.066
+distressor_3to1,uaudio_distressor,"{""input"": 5.0, ""ratio"": ""3:1"", ""attack"": 5.0, ""release"": 0.0, ""output"": 5.0}",-18.0,-0.549,1.246
+distressor_3to1,uaudio_distressor,"{""input"": 5.0, ""ratio"": ""3:1"", ""attack"": 5.0, ""release"": 0.0, ""output"": 5.0}",-16.0,-1.303,1.605
+distressor_3to1,uaudio_distressor,"{""input"": 5.0, ""ratio"": ""3:1"", ""attack"": 5.0, ""release"": 0.0, ""output"": 5.0}",-14.0,-2.379,2.166
+distressor_3to1,uaudio_distressor,"{""input"": 5.0, ""ratio"": ""3:1"", ""attack"": 5.0, ""release"": 0.0, ""output"": 5.0}",-12.0,-3.666,2.803
+distressor_3to1,uaudio_distressor,"{""input"": 5.0, ""ratio"": ""3:1"", ""attack"": 5.0, ""release"": 0.0, ""output"": 5.0}",-10.0,-5.026,3.124
+distressor_3to1,uaudio_distressor,"{""input"": 5.0, ""ratio"": ""3:1"", ""attack"": 5.0, ""release"": 0.0, ""output"": 5.0}",-8.0,-6.458,3.520
+distressor_3to1,uaudio_distressor,"{""input"": 5.0, ""ratio"": ""3:1"", ""attack"": 5.0, ""release"": 0.0, ""output"": 5.0}",-6.0,-7.957,3.997
+distressor_3to1,uaudio_distressor,"{""input"": 5.0, ""ratio"": ""3:1"", ""attack"": 5.0, ""release"": 0.0, ""output"": 5.0}",-4.0,-9.515,4.523
+distressor_3to1,uaudio_distressor,"{""input"": 5.0, ""ratio"": ""3:1"", ""attack"": 5.0, ""release"": 0.0, ""output"": 5.0}",-2.0,-11.120,5.058
+distressor_3to1,uaudio_distressor,"{""input"": 5.0, ""ratio"": ""3:1"", ""attack"": 5.0, ""release"": 0.0, ""output"": 5.0}",0.0,-12.695,4.717
+distressor_3to1,uaudio_distressor,"{""input"": 5.0, ""ratio"": ""3:1"", ""attack"": 5.0, ""release"": 0.0, ""output"": 5.0}",2.0,-14.316,5.273
+distressor_3to1,uaudio_distressor,"{""input"": 5.0, ""ratio"": ""3:1"", ""attack"": 5.0, ""release"": 0.0, ""output"": 5.0}",4.0,-15.960,5.610
+distressor_3to1,uaudio_distressor,"{""input"": 5.0, ""ratio"": ""3:1"", ""attack"": 5.0, ""release"": 0.0, ""output"": 5.0}",6.0,-17.635,6.159
+distressor_3to1,uaudio_distressor,"{""input"": 5.0, ""ratio"": ""3:1"", ""attack"": 5.0, ""release"": 0.0, ""output"": 5.0}",8.0,-19.305,6.063
+distressor_3to1,uaudio_distressor,"{""input"": 5.0, ""ratio"": ""3:1"", ""attack"": 5.0, ""release"": 0.0, ""output"": 5.0}",10.0,-20.938,5.455
+distressor_4to1,uaudio_distressor,"{""input"": 5.0, ""ratio"": ""4:1"", ""attack"": 5.0, ""release"": 0.0, ""output"": 5.0}",-40.0,0.000,
+distressor_4to1,uaudio_distressor,"{""input"": 5.0, ""ratio"": ""4:1"", ""attack"": 5.0, ""release"": 0.0, ""output"": 5.0}",-38.0,-0.000,1.000
+distressor_4to1,uaudio_distressor,"{""input"": 5.0, ""ratio"": ""4:1"", ""attack"": 5.0, ""release"": 0.0, ""output"": 5.0}",-36.0,-0.000,1.000
+distressor_4to1,uaudio_distressor,"{""input"": 5.0, ""ratio"": ""4:1"", ""attack"": 5.0, ""release"": 0.0, ""output"": 5.0}",-34.0,-0.000,1.000
+distressor_4to1,uaudio_distressor,"{""input"": 5.0, ""ratio"": ""4:1"", ""attack"": 5.0, ""release"": 0.0, ""output"": 5.0}",-32.0,-0.000,1.000
+distressor_4to1,uaudio_distressor,"{""input"": 5.0, ""ratio"": ""4:1"", ""attack"": 5.0, ""release"": 0.0, ""output"": 5.0}",-30.0,-0.000,1.000
+distressor_4to1,uaudio_distressor,"{""input"": 5.0, ""ratio"": ""4:1"", ""attack"": 5.0, ""release"": 0.0, ""output"": 5.0}",-28.0,-0.000,1.000
+distressor_4to1,uaudio_distressor,"{""input"": 5.0, ""ratio"": ""4:1"", ""attack"": 5.0, ""release"": 0.0, ""output"": 5.0}",-26.0,-0.001,1.000
+distressor_4to1,uaudio_distressor,"{""input"": 5.0, ""ratio"": ""4:1"", ""attack"": 5.0, ""release"": 0.0, ""output"": 5.0}",-24.0,-0.006,1.002
+distressor_4to1,uaudio_distressor,"{""input"": 5.0, ""ratio"": ""4:1"", ""attack"": 5.0, ""release"": 0.0, ""output"": 5.0}",-22.0,-0.056,1.026
+distressor_4to1,uaudio_distressor,"{""input"": 5.0, ""ratio"": ""4:1"", ""attack"": 5.0, ""release"": 0.0, ""output"": 5.0}",-20.0,-0.367,1.184
+distressor_4to1,uaudio_distressor,"{""input"": 5.0, ""ratio"": ""4:1"", ""attack"": 5.0, ""release"": 0.0, ""output"": 5.0}",-18.0,-1.122,1.605
+distressor_4to1,uaudio_distressor,"{""input"": 5.0, ""ratio"": ""4:1"", ""attack"": 5.0, ""release"": 0.0, ""output"": 5.0}",-16.0,-2.248,2.289
+distressor_4to1,uaudio_distressor,"{""input"": 5.0, ""ratio"": ""4:1"", ""attack"": 5.0, ""release"": 0.0, ""output"": 5.0}",-14.0,-3.599,3.081
+distressor_4to1,uaudio_distressor,"{""input"": 5.0, ""ratio"": ""4:1"", ""attack"": 5.0, ""release"": 0.0, ""output"": 5.0}",-12.0,-5.028,3.505
+distressor_4to1,uaudio_distressor,"{""input"": 5.0, ""ratio"": ""4:1"", ""attack"": 5.0, ""release"": 0.0, ""output"": 5.0}",-10.0,-6.524,3.969
+distressor_4to1,uaudio_distressor,"{""input"": 5.0, ""ratio"": ""4:1"", ""attack"": 5.0, ""release"": 0.0, ""output"": 5.0}",-8.0,-8.077,4.478
+distressor_4to1,uaudio_distressor,"{""input"": 5.0, ""ratio"": ""4:1"", ""attack"": 5.0, ""release"": 0.0, ""output"": 5.0}",-6.0,-9.677,4.990
+distressor_4to1,uaudio_distressor,"{""input"": 5.0, ""ratio"": ""4:1"", ""attack"": 5.0, ""release"": 0.0, ""output"": 5.0}",-4.0,-11.318,5.580
+distressor_4to1,uaudio_distressor,"{""input"": 5.0, ""ratio"": ""4:1"", ""attack"": 5.0, ""release"": 0.0, ""output"": 5.0}",-2.0,-12.952,5.467
+distressor_4to1,uaudio_distressor,"{""input"": 5.0, ""ratio"": ""4:1"", ""attack"": 5.0, ""release"": 0.0, ""output"": 5.0}",0.0,-14.620,6.012
+distressor_4to1,uaudio_distressor,"{""input"": 5.0, ""ratio"": ""4:1"", ""attack"": 5.0, ""release"": 0.0, ""output"": 5.0}",2.0,-16.310,6.468
+distressor_4to1,uaudio_distressor,"{""input"": 5.0, ""ratio"": ""4:1"", ""attack"": 5.0, ""release"": 0.0, ""output"": 5.0}",4.0,-18.016,6.799
+distressor_4to1,uaudio_distressor,"{""input"": 5.0, ""ratio"": ""4:1"", ""attack"": 5.0, ""release"": 0.0, ""output"": 5.0}",6.0,-19.713,6.598
+distressor_4to1,uaudio_distressor,"{""input"": 5.0, ""ratio"": ""4:1"", ""attack"": 5.0, ""release"": 0.0, ""output"": 5.0}",8.0,-21.356,5.594
+distressor_4to1,uaudio_distressor,"{""input"": 5.0, ""ratio"": ""4:1"", ""attack"": 5.0, ""release"": 0.0, ""output"": 5.0}",10.0,-22.854,3.988
+distressor_6to1,uaudio_distressor,"{""input"": 5.0, ""ratio"": ""6:1"", ""attack"": 5.0, ""release"": 0.0, ""output"": 5.0}",-40.0,0.000,
+distressor_6to1,uaudio_distressor,"{""input"": 5.0, ""ratio"": ""6:1"", ""attack"": 5.0, ""release"": 0.0, ""output"": 5.0}",-38.0,-0.000,1.000
+distressor_6to1,uaudio_distressor,"{""input"": 5.0, ""ratio"": ""6:1"", ""attack"": 5.0, ""release"": 0.0, ""output"": 5.0}",-36.0,-0.000,1.000
+distressor_6to1,uaudio_distressor,"{""input"": 5.0, ""ratio"": ""6:1"", ""attack"": 5.0, ""release"": 0.0, ""output"": 5.0}",-34.0,-0.000,1.000
+distressor_6to1,uaudio_distressor,"{""input"": 5.0, ""ratio"": ""6:1"", ""attack"": 5.0, ""release"": 0.0, ""output"": 5.0}",-32.0,-0.000,1.000
+distressor_6to1,uaudio_distressor,"{""input"": 5.0, ""ratio"": ""6:1"", ""attack"": 5.0, ""release"": 0.0, ""output"": 5.0}",-30.0,-0.000,1.000
+distressor_6to1,uaudio_distressor,"{""input"": 5.0, ""ratio"": ""6:1"", ""attack"": 5.0, ""release"": 0.0, ""output"": 5.0}",-28.0,-0.000,1.000
+distressor_6to1,uaudio_distressor,"{""input"": 5.0, ""ratio"": ""6:1"", ""attack"": 5.0, ""release"": 0.0, ""output"": 5.0}",-26.0,-0.000,1.000
+distressor_6to1,uaudio_distressor,"{""input"": 5.0, ""ratio"": ""6:1"", ""attack"": 5.0, ""release"": 0.0, ""output"": 5.0}",-24.0,-0.001,1.000
+distressor_6to1,uaudio_distressor,"{""input"": 5.0, ""ratio"": ""6:1"", ""attack"": 5.0, ""release"": 0.0, ""output"": 5.0}",-22.0,-0.001,1.000
+distressor_6to1,uaudio_distressor,"{""input"": 5.0, ""ratio"": ""6:1"", ""attack"": 5.0, ""release"": 0.0, ""output"": 5.0}",-20.0,-0.033,1.016
+distressor_6to1,uaudio_distressor,"{""input"": 5.0, ""ratio"": ""6:1"", ""attack"": 5.0, ""release"": 0.0, ""output"": 5.0}",-18.0,-0.564,1.362
+distressor_6to1,uaudio_distressor,"{""input"": 5.0, ""ratio"": ""6:1"", ""attack"": 5.0, ""release"": 0.0, ""output"": 5.0}",-16.0,-1.725,2.383
+distressor_6to1,uaudio_distressor,"{""input"": 5.0, ""ratio"": ""6:1"", ""attack"": 5.0, ""release"": 0.0, ""output"": 5.0}",-14.0,-3.194,3.768
+distressor_6to1,uaudio_distressor,"{""input"": 5.0, ""ratio"": ""6:1"", ""attack"": 5.0, ""release"": 0.0, ""output"": 5.0}",-12.0,-4.759,4.593
+distressor_6to1,uaudio_distressor,"{""input"": 5.0, ""ratio"": ""6:1"", ""attack"": 5.0, ""release"": 0.0, ""output"": 5.0}",-10.0,-6.373,5.185
+distressor_6to1,uaudio_distressor,"{""input"": 5.0, ""ratio"": ""6:1"", ""attack"": 5.0, ""release"": 0.0, ""output"": 5.0}",-8.0,-8.036,5.930
+distressor_6to1,uaudio_distressor,"{""input"": 5.0, ""ratio"": ""6:1"", ""attack"": 5.0, ""release"": 0.0, ""output"": 5.0}",-6.0,-9.737,6.692
+distressor_6to1,uaudio_distressor,"{""input"": 5.0, ""ratio"": ""6:1"", ""attack"": 5.0, ""release"": 0.0, ""output"": 5.0}",-4.0,-11.468,7.431
+distressor_6to1,uaudio_distressor,"{""input"": 5.0, ""ratio"": ""6:1"", ""attack"": 5.0, ""release"": 0.0, ""output"": 5.0}",-2.0,-13.192,7.250
+distressor_6to1,uaudio_distressor,"{""input"": 5.0, ""ratio"": ""6:1"", ""attack"": 5.0, ""release"": 0.0, ""output"": 5.0}",0.0,-14.936,7.833
+distressor_6to1,uaudio_distressor,"{""input"": 5.0, ""ratio"": ""6:1"", ""attack"": 5.0, ""release"": 0.0, ""output"": 5.0}",2.0,-16.703,8.569
+distressor_6to1,uaudio_distressor,"{""input"": 5.0, ""ratio"": ""6:1"", ""attack"": 5.0, ""release"": 0.0, ""output"": 5.0}",4.0,-18.477,8.830
+distressor_6to1,uaudio_distressor,"{""input"": 5.0, ""ratio"": ""6:1"", ""attack"": 5.0, ""release"": 0.0, ""output"": 5.0}",6.0,-20.234,8.243
+distressor_6to1,uaudio_distressor,"{""input"": 5.0, ""ratio"": ""6:1"", ""attack"": 5.0, ""release"": 0.0, ""output"": 5.0}",8.0,-21.908,6.134
+distressor_6to1,uaudio_distressor,"{""input"": 5.0, ""ratio"": ""6:1"", ""attack"": 5.0, ""release"": 0.0, ""output"": 5.0}",10.0,-23.495,4.839
+distressor_to10to1,uaudio_distressor,"{""input"": 5.0, ""ratio"": ""10:1"", ""attack"": 5.0, ""release"": 0.0, ""output"": 5.0}",-40.0,0.000,
+distressor_to10to1,uaudio_distressor,"{""input"": 5.0, ""ratio"": ""10:1"", ""attack"": 5.0, ""release"": 0.0, ""output"": 5.0}",-38.0,-0.000,1.000
+distressor_to10to1,uaudio_distressor,"{""input"": 5.0, ""ratio"": ""10:1"", ""attack"": 5.0, ""release"": 0.0, ""output"": 5.0}",-36.0,-0.000,1.000
+distressor_to10to1,uaudio_distressor,"{""input"": 5.0, ""ratio"": ""10:1"", ""attack"": 5.0, ""release"": 0.0, ""output"": 5.0}",-34.0,-0.000,1.000
+distressor_to10to1,uaudio_distressor,"{""input"": 5.0, ""ratio"": ""10:1"", ""attack"": 5.0, ""release"": 0.0, ""output"": 5.0}",-32.0,-0.000,1.000
+distressor_to10to1,uaudio_distressor,"{""input"": 5.0, ""ratio"": ""10:1"", ""attack"": 5.0, ""release"": 0.0, ""output"": 5.0}",-30.0,-0.000,1.000
+distressor_to10to1,uaudio_distressor,"{""input"": 5.0, ""ratio"": ""10:1"", ""attack"": 5.0, ""release"": 0.0, ""output"": 5.0}",-28.0,-0.000,1.000
+distressor_to10to1,uaudio_distressor,"{""input"": 5.0, ""ratio"": ""10:1"", ""attack"": 5.0, ""release"": 0.0, ""output"": 5.0}",-26.0,-0.000,1.000
+distressor_to10to1,uaudio_distressor,"{""input"": 5.0, ""ratio"": ""10:1"", ""attack"": 5.0, ""release"": 0.0, ""output"": 5.0}",-24.0,-0.001,1.000
+distressor_to10to1,uaudio_distressor,"{""input"": 5.0, ""ratio"": ""10:1"", ""attack"": 5.0, ""release"": 0.0, ""output"": 5.0}",-22.0,-0.102,1.053
+distressor_to10to1,uaudio_distressor,"{""input"": 5.0, ""ratio"": ""10:1"", ""attack"": 5.0, ""release"": 0.0, ""output"": 5.0}",-20.0,-1.293,2.473
+distressor_to10to1,uaudio_distressor,"{""input"": 5.0, ""ratio"": ""10:1"", ""attack"": 5.0, ""release"": 0.0, ""output"": 5.0}",-18.0,-2.941,5.677
+distressor_to10to1,uaudio_distressor,"{""input"": 5.0, ""ratio"": ""10:1"", ""attack"": 5.0, ""release"": 0.0, ""output"": 5.0}",-16.0,-4.683,7.746
+distressor_to10to1,uaudio_distressor,"{""input"": 5.0, ""ratio"": ""10:1"", ""attack"": 5.0, ""release"": 0.0, ""output"": 5.0}",-14.0,-6.455,8.790
+distressor_to10to1,uaudio_distressor,"{""input"": 5.0, ""ratio"": ""10:1"", ""attack"": 5.0, ""release"": 0.0, ""output"": 5.0}",-12.0,-8.258,10.109
+distressor_to10to1,uaudio_distressor,"{""input"": 5.0, ""ratio"": ""10:1"", ""attack"": 5.0, ""release"": 0.0, ""output"": 5.0}",-10.0,-10.083,11.444
+distressor_to10to1,uaudio_distressor,"{""input"": 5.0, ""ratio"": ""10:1"", ""attack"": 5.0, ""release"": 0.0, ""output"": 5.0}",-8.0,-11.918,12.149
+distressor_to10to1,uaudio_distressor,"{""input"": 5.0, ""ratio"": ""10:1"", ""attack"": 5.0, ""release"": 0.0, ""output"": 5.0}",-6.0,-13.760,12.678
+distressor_to10to1,uaudio_distressor,"{""input"": 5.0, ""ratio"": ""10:1"", ""attack"": 5.0, ""release"": 0.0, ""output"": 5.0}",-4.0,-15.614,13.652
+distressor_to10to1,uaudio_distressor,"{""input"": 5.0, ""ratio"": ""10:1"", ""attack"": 5.0, ""release"": 0.0, ""output"": 5.0}",-2.0,-17.476,14.510
+distressor_to10to1,uaudio_distressor,"{""input"": 5.0, ""ratio"": ""10:1"", ""attack"": 5.0, ""release"": 0.0, ""output"": 5.0}",0.0,-19.331,13.791
+distressor_to10to1,uaudio_distressor,"{""input"": 5.0, ""ratio"": ""10:1"", ""attack"": 5.0, ""release"": 0.0, ""output"": 5.0}",2.0,-21.162,11.843
+distressor_to10to1,uaudio_distressor,"{""input"": 5.0, ""ratio"": ""10:1"", ""attack"": 5.0, ""release"": 0.0, ""output"": 5.0}",4.0,-22.899,7.590
+distressor_to10to1,uaudio_distressor,"{""input"": 5.0, ""ratio"": ""10:1"", ""attack"": 5.0, ""release"": 0.0, ""output"": 5.0}",6.0,-24.618,7.128
+distressor_to10to1,uaudio_distressor,"{""input"": 5.0, ""ratio"": ""10:1"", ""attack"": 5.0, ""release"": 0.0, ""output"": 5.0}",8.0,-26.294,6.180
+distressor_to10to1,uaudio_distressor,"{""input"": 5.0, ""ratio"": ""10:1"", ""attack"": 5.0, ""release"": 0.0, ""output"": 5.0}",10.0,-27.880,4.820
+distressor_20to1,uaudio_distressor,"{""input"": 5.0, ""ratio"": ""20:1"", ""attack"": 5.0, ""release"": 0.0, ""output"": 5.0}",-40.0,0.000,
+distressor_20to1,uaudio_distressor,"{""input"": 5.0, ""ratio"": ""20:1"", ""attack"": 5.0, ""release"": 0.0, ""output"": 5.0}",-38.0,-0.000,1.000
+distressor_20to1,uaudio_distressor,"{""input"": 5.0, ""ratio"": ""20:1"", ""attack"": 5.0, ""release"": 0.0, ""output"": 5.0}",-36.0,-0.000,1.000
+distressor_20to1,uaudio_distressor,"{""input"": 5.0, ""ratio"": ""20:1"", ""attack"": 5.0, ""release"": 0.0, ""output"": 5.0}",-34.0,-0.000,1.000
+distressor_20to1,uaudio_distressor,"{""input"": 5.0, ""ratio"": ""20:1"", ""attack"": 5.0, ""release"": 0.0, ""output"": 5.0}",-32.0,-0.000,1.000
+distressor_20to1,uaudio_distressor,"{""input"": 5.0, ""ratio"": ""20:1"", ""attack"": 5.0, ""release"": 0.0, ""output"": 5.0}",-30.0,-0.000,1.000
+distressor_20to1,uaudio_distressor,"{""input"": 5.0, ""ratio"": ""20:1"", ""attack"": 5.0, ""release"": 0.0, ""output"": 5.0}",-28.0,-0.000,1.000
+distressor_20to1,uaudio_distressor,"{""input"": 5.0, ""ratio"": ""20:1"", ""attack"": 5.0, ""release"": 0.0, ""output"": 5.0}",-26.0,-0.000,1.000
+distressor_20to1,uaudio_distressor,"{""input"": 5.0, ""ratio"": ""20:1"", ""attack"": 5.0, ""release"": 0.0, ""output"": 5.0}",-24.0,-0.001,1.000
+distressor_20to1,uaudio_distressor,"{""input"": 5.0, ""ratio"": ""20:1"", ""attack"": 5.0, ""release"": 0.0, ""output"": 5.0}",-22.0,-0.001,1.000
+distressor_20to1,uaudio_distressor,"{""input"": 5.0, ""ratio"": ""20:1"", ""attack"": 5.0, ""release"": 0.0, ""output"": 5.0}",-20.0,-0.002,1.000
+distressor_20to1,uaudio_distressor,"{""input"": 5.0, ""ratio"": ""20:1"", ""attack"": 5.0, ""release"": 0.0, ""output"": 5.0}",-18.0,-0.003,1.001
+distressor_20to1,uaudio_distressor,"{""input"": 5.0, ""ratio"": ""20:1"", ""attack"": 5.0, ""release"": 0.0, ""output"": 5.0}",-16.0,-0.432,1.273
+distressor_20to1,uaudio_distressor,"{""input"": 5.0, ""ratio"": ""20:1"", ""attack"": 5.0, ""release"": 0.0, ""output"": 5.0}",-14.0,-2.152,7.147
+distressor_20to1,uaudio_distressor,"{""input"": 5.0, ""ratio"": ""20:1"", ""attack"": 5.0, ""release"": 0.0, ""output"": 5.0}",-12.0,-4.013,14.388
+distressor_20to1,uaudio_distressor,"{""input"": 5.0, ""ratio"": ""20:1"", ""attack"": 5.0, ""release"": 0.0, ""output"": 5.0}",-10.0,-5.884,15.552
+distressor_20to1,uaudio_distressor,"{""input"": 5.0, ""ratio"": ""20:1"", ""attack"": 5.0, ""release"": 0.0, ""output"": 5.0}",-8.0,-7.777,18.564
+distressor_20to1,uaudio_distressor,"{""input"": 5.0, ""ratio"": ""20:1"", ""attack"": 5.0, ""release"": 0.0, ""output"": 5.0}",-6.0,-9.693,23.788
+distressor_20to1,uaudio_distressor,"{""input"": 5.0, ""ratio"": ""20:1"", ""attack"": 5.0, ""release"": 0.0, ""output"": 5.0}",-4.0,-11.612,24.835
+distressor_20to1,uaudio_distressor,"{""input"": 5.0, ""ratio"": ""20:1"", ""attack"": 5.0, ""release"": 0.0, ""output"": 5.0}",-2.0,-13.511,19.902
+distressor_20to1,uaudio_distressor,"{""input"": 5.0, ""ratio"": ""20:1"", ""attack"": 5.0, ""release"": 0.0, ""output"": 5.0}",0.0,-15.422,22.370
+distressor_20to1,uaudio_distressor,"{""input"": 5.0, ""ratio"": ""20:1"", ""attack"": 5.0, ""release"": 0.0, ""output"": 5.0}",2.0,-17.349,27.265
+distressor_20to1,uaudio_distressor,"{""input"": 5.0, ""ratio"": ""20:1"", ""attack"": 5.0, ""release"": 0.0, ""output"": 5.0}",4.0,-19.275,27.278
+distressor_20to1,uaudio_distressor,"{""input"": 5.0, ""ratio"": ""20:1"", ""attack"": 5.0, ""release"": 0.0, ""output"": 5.0}",6.0,-21.189,23.086
+distressor_20to1,uaudio_distressor,"{""input"": 5.0, ""ratio"": ""20:1"", ""attack"": 5.0, ""release"": 0.0, ""output"": 5.0}",8.0,-23.049,14.289
+distressor_20to1,uaudio_distressor,"{""input"": 5.0, ""ratio"": ""20:1"", ""attack"": 5.0, ""release"": 0.0, ""output"": 5.0}",10.0,-24.897,13.209
+distressor_nuke,uaudio_distressor,"{""input"": 5.0, ""ratio"": ""NUKE"", ""attack"": 5.0, ""release"": 0.0, ""output"": 5.0}",-40.0,0.000,
+distressor_nuke,uaudio_distressor,"{""input"": 5.0, ""ratio"": ""NUKE"", ""attack"": 5.0, ""release"": 0.0, ""output"": 5.0}",-38.0,-0.000,1.000
+distressor_nuke,uaudio_distressor,"{""input"": 5.0, ""ratio"": ""NUKE"", ""attack"": 5.0, ""release"": 0.0, ""output"": 5.0}",-36.0,-0.000,1.000
+distressor_nuke,uaudio_distressor,"{""input"": 5.0, ""ratio"": ""NUKE"", ""attack"": 5.0, ""release"": 0.0, ""output"": 5.0}",-34.0,-0.000,1.000
+distressor_nuke,uaudio_distressor,"{""input"": 5.0, ""ratio"": ""NUKE"", ""attack"": 5.0, ""release"": 0.0, ""output"": 5.0}",-32.0,-0.000,1.000
+distressor_nuke,uaudio_distressor,"{""input"": 5.0, ""ratio"": ""NUKE"", ""attack"": 5.0, ""release"": 0.0, ""output"": 5.0}",-30.0,-0.000,1.000
+distressor_nuke,uaudio_distressor,"{""input"": 5.0, ""ratio"": ""NUKE"", ""attack"": 5.0, ""release"": 0.0, ""output"": 5.0}",-28.0,-0.000,1.000
+distressor_nuke,uaudio_distressor,"{""input"": 5.0, ""ratio"": ""NUKE"", ""attack"": 5.0, ""release"": 0.0, ""output"": 5.0}",-26.0,-0.000,1.000
+distressor_nuke,uaudio_distressor,"{""input"": 5.0, ""ratio"": ""NUKE"", ""attack"": 5.0, ""release"": 0.0, ""output"": 5.0}",-24.0,-0.001,1.000
+distressor_nuke,uaudio_distressor,"{""input"": 5.0, ""ratio"": ""NUKE"", ""attack"": 5.0, ""release"": 0.0, ""output"": 5.0}",-22.0,-0.001,1.000
+distressor_nuke,uaudio_distressor,"{""input"": 5.0, ""ratio"": ""NUKE"", ""attack"": 5.0, ""release"": 0.0, ""output"": 5.0}",-20.0,-0.184,1.100
+distressor_nuke,uaudio_distressor,"{""input"": 5.0, ""ratio"": ""NUKE"", ""attack"": 5.0, ""release"": 0.0, ""output"": 5.0}",-18.0,-1.912,7.353
+distressor_nuke,uaudio_distressor,"{""input"": 5.0, ""ratio"": ""NUKE"", ""attack"": 5.0, ""release"": 0.0, ""output"": 5.0}",-16.0,-3.798,17.518
+distressor_nuke,uaudio_distressor,"{""input"": 5.0, ""ratio"": ""NUKE"", ""attack"": 5.0, ""release"": 0.0, ""output"": 5.0}",-14.0,-5.700,20.391
+distressor_nuke,uaudio_distressor,"{""input"": 5.0, ""ratio"": ""NUKE"", ""attack"": 5.0, ""release"": 0.0, ""output"": 5.0}",-12.0,-7.615,23.754
+distressor_nuke,uaudio_distressor,"{""input"": 5.0, ""ratio"": ""NUKE"", ""attack"": 5.0, ""release"": 0.0, ""output"": 5.0}",-10.0,-9.546,28.856
+distressor_nuke,uaudio_distressor,"{""input"": 5.0, ""ratio"": ""NUKE"", ""attack"": 5.0, ""release"": 0.0, ""output"": 5.0}",-8.0,-11.484,32.039
+distressor_nuke,uaudio_distressor,"{""input"": 5.0, ""ratio"": ""NUKE"", ""attack"": 5.0, ""release"": 0.0, ""output"": 5.0}",-6.0,-13.413,28.369
+distressor_nuke,uaudio_distressor,"{""input"": 5.0, ""ratio"": ""NUKE"", ""attack"": 5.0, ""release"": 0.0, ""output"": 5.0}",-4.0,-15.351,32.023
+distressor_nuke,uaudio_distressor,"{""input"": 5.0, ""ratio"": ""NUKE"", ""attack"": 5.0, ""release"": 0.0, ""output"": 5.0}",-2.0,-17.295,36.153
+distressor_nuke,uaudio_distressor,"{""input"": 5.0, ""ratio"": ""NUKE"", ""attack"": 5.0, ""release"": 0.0, ""output"": 5.0}",0.0,-19.239,35.594
+distressor_nuke,uaudio_distressor,"{""input"": 5.0, ""ratio"": ""NUKE"", ""attack"": 5.0, ""release"": 0.0, ""output"": 5.0}",2.0,-21.173,30.384
+distressor_nuke,uaudio_distressor,"{""input"": 5.0, ""ratio"": ""NUKE"", ""attack"": 5.0, ""release"": 0.0, ""output"": 5.0}",4.0,-23.066,18.647
+distressor_nuke,uaudio_distressor,"{""input"": 5.0, ""ratio"": ""NUKE"", ""attack"": 5.0, ""release"": 0.0, ""output"": 5.0}",6.0,-24.948,16.924
+distressor_nuke,uaudio_distressor,"{""input"": 5.0, ""ratio"": ""NUKE"", ""attack"": 5.0, ""release"": 0.0, ""output"": 5.0}",8.0,-26.798,13.378
+distressor_nuke,uaudio_distressor,"{""input"": 5.0, ""ratio"": ""NUKE"", ""attack"": 5.0, ""release"": 0.0, ""output"": 5.0}",10.0,-28.565,8.564

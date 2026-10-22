@@ -1,0 +1,3004 @@
+{
+ "1600|ortf|MEASURED_SHELF": {
+  "colour_mode": {
+   "vis": true,
+   "dis": false,
+   "val": "MEASURED_SHELF",
+   "txt": null
+  },
+  "mic_preset_side": {
+   "vis": true,
+   "dis": false,
+   "val": "ShureSM57",
+   "txt": null
+  },
+  "mic_hpf_sides": {
+   "vis": true,
+   "dis": true,
+   "val": "on",
+   "txt": null
+  },
+  "family_side": {
+   "vis": true,
+   "dis": true,
+   "val": "cardioid",
+   "txt": null
+  },
+  "polar_side": {
+   "vis": true,
+   "dis": true,
+   "val": "0.5",
+   "txt": null
+  },
+  "side_split": {
+   "vis": true,
+   "dis": false,
+   "val": "on",
+   "txt": null
+  },
+  "mic_preset_l": {
+   "vis": false,
+   "dis": false,
+   "val": "ShureSM57",
+   "txt": null
+  },
+  "family_l": {
+   "vis": false,
+   "dis": true,
+   "val": "cardioid",
+   "txt": null
+  },
+  "polar_l": {
+   "vis": false,
+   "dis": true,
+   "val": "0.5",
+   "txt": null
+  },
+  "mic_preset_r": {
+   "vis": false,
+   "dis": false,
+   "val": "ShureSM57",
+   "txt": null
+  },
+  "family_r": {
+   "vis": false,
+   "dis": true,
+   "val": "cardioid",
+   "txt": null
+  },
+  "polar_r": {
+   "vis": false,
+   "dis": true,
+   "val": "0.5",
+   "txt": null
+  },
+  "mic_preset_centre": {
+   "vis": true,
+   "dis": false,
+   "val": "ShureSM57",
+   "txt": null
+  },
+  "family_c": {
+   "vis": true,
+   "dis": true,
+   "val": "cardioid",
+   "txt": null
+  },
+  "polar_c": {
+   "vis": true,
+   "dis": true,
+   "val": "0.5",
+   "txt": null
+  },
+  "patternLockSide": {
+   "vis": true,
+   "dis": false,
+   "val": null,
+   "txt": "Shure SM57 is a fixed cardioid. Set Colour to User defined to shape the pattern."
+  },
+  "patternLockCentre": {
+   "vis": true,
+   "dis": false,
+   "val": null,
+   "txt": "Fixed by the measured preset."
+  },
+  "micEach": {
+   "vis": false,
+   "dis": false,
+   "val": null,
+   "txt": null
+  },
+  "sideSplitHint": {
+   "vis": true,
+   "dis": false,
+   "val": null,
+   "txt": ""
+  },
+  "options": [
+   "Measured",
+   "Bypass",
+   "User defined"
+  ],
+  "layout": {
+   "viewport": [
+    1600,
+    1000
+   ],
+   "main": [
+    18,
+    67,
+    1564,
+    1567
+   ],
+   "micViews": [
+    18,
+    116,
+    1094,
+    1518
+   ],
+   "top": [
+    18,
+    116,
+    553,
+    409
+   ],
+   "combined": [
+    582,
+    116,
+    553,
+    409
+   ],
+   "sourcePlane": [
+    18,
+    536,
+    1117,
+    1099
+   ],
+   "stage": [
+    32,
+    581,
+    847,
+    1016
+   ],
+   "hero": [
+    32,
+    619,
+    847,
+    522
+   ],
+   "tools": [
+    893,
+    581,
+    228,
+    1016
+   ],
+   "each": [
+    0,
+    0,
+    0,
+    0
+   ],
+   "sidebar": [
+    1124,
+    67,
+    458,
+    584
+   ],
+   "sidebarPanels": [
+    [
+     "panelListen",
+     67,
+     519
+    ],
+    [
+     "panelAdvanced",
+     597,
+     43
+    ]
+   ]
+  },
+  "state": null
+ },
+ "1600|ortf|ASSUMED_TOYS": {
+  "colour_mode": {
+   "vis": true,
+   "dis": false,
+   "val": "ASSUMED_TOYS",
+   "txt": null
+  },
+  "mic_preset_side": {
+   "vis": true,
+   "dis": false,
+   "val": "ShureSM57",
+   "txt": null
+  },
+  "mic_hpf_sides": {
+   "vis": true,
+   "dis": true,
+   "val": "on",
+   "txt": null
+  },
+  "family_side": {
+   "vis": true,
+   "dis": false,
+   "val": "cardioid",
+   "txt": null
+  },
+  "polar_side": {
+   "vis": true,
+   "dis": false,
+   "val": "0.5",
+   "txt": null
+  },
+  "side_split": {
+   "vis": true,
+   "dis": false,
+   "val": "on",
+   "txt": null
+  },
+  "mic_preset_l": {
+   "vis": false,
+   "dis": false,
+   "val": "ShureSM57",
+   "txt": null
+  },
+  "family_l": {
+   "vis": false,
+   "dis": false,
+   "val": "cardioid",
+   "txt": null
+  },
+  "polar_l": {
+   "vis": false,
+   "dis": false,
+   "val": "0.5",
+   "txt": null
+  },
+  "mic_preset_r": {
+   "vis": false,
+   "dis": false,
+   "val": "ShureSM57",
+   "txt": null
+  },
+  "family_r": {
+   "vis": false,
+   "dis": false,
+   "val": "cardioid",
+   "txt": null
+  },
+  "polar_r": {
+   "vis": false,
+   "dis": false,
+   "val": "0.5",
+   "txt": null
+  },
+  "mic_preset_centre": {
+   "vis": true,
+   "dis": false,
+   "val": "ShureSM57",
+   "txt": null
+  },
+  "family_c": {
+   "vis": true,
+   "dis": false,
+   "val": "cardioid",
+   "txt": null
+  },
+  "polar_c": {
+   "vis": true,
+   "dis": false,
+   "val": "0.5",
+   "txt": null
+  },
+  "patternLockSide": {
+   "vis": false,
+   "dis": false,
+   "val": null,
+   "txt": "Shure SM57 is a fixed cardioid. Set Colour to User defined to shape the pattern."
+  },
+  "patternLockCentre": {
+   "vis": false,
+   "dis": false,
+   "val": null,
+   "txt": "Fixed by the measured preset."
+  },
+  "micEach": {
+   "vis": true,
+   "dis": false,
+   "val": null,
+   "txt": null
+  },
+  "sideSplitHint": {
+   "vis": true,
+   "dis": false,
+   "val": null,
+   "txt": ""
+  },
+  "options": [
+   "Measured",
+   "Bypass",
+   "User defined"
+  ],
+  "layout": {
+   "viewport": [
+    1600,
+    1000
+   ],
+   "main": [
+    18,
+    67,
+    1564,
+    1917
+   ],
+   "micViews": [
+    18,
+    116,
+    1094,
+    1868
+   ],
+   "top": [
+    18,
+    116,
+    553,
+    409
+   ],
+   "combined": [
+    582,
+    116,
+    553,
+    409
+   ],
+   "sourcePlane": [
+    18,
+    536,
+    1117,
+    1448
+   ],
+   "stage": [
+    32,
+    581,
+    847,
+    944
+   ],
+   "hero": [
+    32,
+    619,
+    847,
+    522
+   ],
+   "tools": [
+    893,
+    581,
+    228,
+    944
+   ],
+   "each": [
+    32,
+    1533,
+    1089,
+    413
+   ],
+   "sidebar": [
+    1124,
+    67,
+    458,
+    584
+   ],
+   "sidebarPanels": [
+    [
+     "panelListen",
+     67,
+     519
+    ],
+    [
+     "panelAdvanced",
+     597,
+     43
+    ]
+   ]
+  },
+  "state": null
+ },
+ "1600|ortf|BYPASS": {
+  "colour_mode": {
+   "vis": true,
+   "dis": false,
+   "val": "BYPASS",
+   "txt": null
+  },
+  "mic_preset_side": {
+   "vis": true,
+   "dis": false,
+   "val": "ShureSM57",
+   "txt": null
+  },
+  "mic_hpf_sides": {
+   "vis": true,
+   "dis": true,
+   "val": "on",
+   "txt": null
+  },
+  "family_side": {
+   "vis": true,
+   "dis": false,
+   "val": "cardioid",
+   "txt": null
+  },
+  "polar_side": {
+   "vis": true,
+   "dis": false,
+   "val": "0.5",
+   "txt": null
+  },
+  "side_split": {
+   "vis": true,
+   "dis": false,
+   "val": "on",
+   "txt": null
+  },
+  "mic_preset_l": {
+   "vis": false,
+   "dis": false,
+   "val": "ShureSM57",
+   "txt": null
+  },
+  "family_l": {
+   "vis": false,
+   "dis": false,
+   "val": "cardioid",
+   "txt": null
+  },
+  "polar_l": {
+   "vis": false,
+   "dis": false,
+   "val": "0.5",
+   "txt": null
+  },
+  "mic_preset_r": {
+   "vis": false,
+   "dis": false,
+   "val": "ShureSM57",
+   "txt": null
+  },
+  "family_r": {
+   "vis": false,
+   "dis": false,
+   "val": "cardioid",
+   "txt": null
+  },
+  "polar_r": {
+   "vis": false,
+   "dis": false,
+   "val": "0.5",
+   "txt": null
+  },
+  "mic_preset_centre": {
+   "vis": true,
+   "dis": false,
+   "val": "ShureSM57",
+   "txt": null
+  },
+  "family_c": {
+   "vis": true,
+   "dis": false,
+   "val": "cardioid",
+   "txt": null
+  },
+  "polar_c": {
+   "vis": true,
+   "dis": false,
+   "val": "0.5",
+   "txt": null
+  },
+  "patternLockSide": {
+   "vis": false,
+   "dis": false,
+   "val": null,
+   "txt": "Shure SM57 is a fixed cardioid. Set Colour to User defined to shape the pattern."
+  },
+  "patternLockCentre": {
+   "vis": false,
+   "dis": false,
+   "val": null,
+   "txt": "Fixed by the measured preset."
+  },
+  "micEach": {
+   "vis": true,
+   "dis": false,
+   "val": null,
+   "txt": null
+  },
+  "sideSplitHint": {
+   "vis": true,
+   "dis": false,
+   "val": null,
+   "txt": ""
+  },
+  "options": [
+   "Measured",
+   "Bypass",
+   "User defined"
+  ],
+  "layout": {
+   "viewport": [
+    1600,
+    1000
+   ],
+   "main": [
+    18,
+    67,
+    1564,
+    1917
+   ],
+   "micViews": [
+    18,
+    116,
+    1094,
+    1868
+   ],
+   "top": [
+    18,
+    116,
+    553,
+    409
+   ],
+   "combined": [
+    582,
+    116,
+    553,
+    409
+   ],
+   "sourcePlane": [
+    18,
+    536,
+    1117,
+    1448
+   ],
+   "stage": [
+    32,
+    581,
+    847,
+    944
+   ],
+   "hero": [
+    32,
+    619,
+    847,
+    522
+   ],
+   "tools": [
+    893,
+    581,
+    228,
+    944
+   ],
+   "each": [
+    32,
+    1533,
+    1089,
+    413
+   ],
+   "sidebar": [
+    1124,
+    67,
+    458,
+    584
+   ],
+   "sidebarPanels": [
+    [
+     "panelListen",
+     67,
+     519
+    ],
+    [
+     "panelAdvanced",
+     597,
+     43
+    ]
+   ]
+  },
+  "state": null
+ },
+ "1600|ms_classic|MEASURED_SHELF": {
+  "colour_mode": {
+   "vis": true,
+   "dis": false,
+   "val": "MEASURED_SHELF",
+   "txt": null
+  },
+  "mic_preset_side": {
+   "vis": true,
+   "dis": false,
+   "val": "ShureSM57",
+   "txt": null
+  },
+  "mic_hpf_sides": {
+   "vis": true,
+   "dis": true,
+   "val": "on",
+   "txt": null
+  },
+  "family_side": {
+   "vis": true,
+   "dis": true,
+   "val": "bi",
+   "txt": null
+  },
+  "polar_side": {
+   "vis": true,
+   "dis": true,
+   "val": "0.5",
+   "txt": null
+  },
+  "side_split": {
+   "vis": true,
+   "dis": true,
+   "val": "on",
+   "txt": null
+  },
+  "mic_preset_l": {
+   "vis": false,
+   "dis": false,
+   "val": "ShureSM57",
+   "txt": null
+  },
+  "family_l": {
+   "vis": false,
+   "dis": true,
+   "val": "bi",
+   "txt": null
+  },
+  "polar_l": {
+   "vis": false,
+   "dis": true,
+   "val": "0.5",
+   "txt": null
+  },
+  "mic_preset_r": {
+   "vis": false,
+   "dis": false,
+   "val": "ShureSM57",
+   "txt": null
+  },
+  "family_r": {
+   "vis": false,
+   "dis": true,
+   "val": "bi",
+   "txt": null
+  },
+  "polar_r": {
+   "vis": false,
+   "dis": true,
+   "val": "0.5",
+   "txt": null
+  },
+  "mic_preset_centre": {
+   "vis": true,
+   "dis": false,
+   "val": "ShureSM57",
+   "txt": null
+  },
+  "family_c": {
+   "vis": true,
+   "dis": true,
+   "val": "cardioid",
+   "txt": null
+  },
+  "polar_c": {
+   "vis": true,
+   "dis": true,
+   "val": "0.5",
+   "txt": null
+  },
+  "patternLockSide": {
+   "vis": true,
+   "dis": false,
+   "val": null,
+   "txt": "Shure SM57 is a fixed fig\u20118. Set Colour to User defined to shape the pattern."
+  },
+  "patternLockCentre": {
+   "vis": true,
+   "dis": false,
+   "val": null,
+   "txt": "Fixed by the measured preset."
+  },
+  "micEach": {
+   "vis": false,
+   "dis": false,
+   "val": null,
+   "txt": null
+  },
+  "sideSplitHint": {
+   "vis": true,
+   "dis": false,
+   "val": null,
+   "txt": "M/S uses one figure-8"
+  },
+  "options": [
+   "Measured",
+   "Bypass",
+   "User defined"
+  ],
+  "layout": {
+   "viewport": [
+    1600,
+    1000
+   ],
+   "main": [
+    18,
+    67,
+    1564,
+    1595
+   ],
+   "micViews": [
+    18,
+    116,
+    1094,
+    1546
+   ],
+   "top": [
+    18,
+    116,
+    553,
+    409
+   ],
+   "combined": [
+    582,
+    116,
+    553,
+    409
+   ],
+   "sourcePlane": [
+    18,
+    536,
+    1117,
+    1126
+   ],
+   "stage": [
+    32,
+    581,
+    847,
+    1043
+   ],
+   "hero": [
+    32,
+    619,
+    847,
+    522
+   ],
+   "tools": [
+    893,
+    581,
+    228,
+    1043
+   ],
+   "each": [
+    0,
+    0,
+    0,
+    0
+   ],
+   "sidebar": [
+    1124,
+    67,
+    458,
+    584
+   ],
+   "sidebarPanels": [
+    [
+     "panelListen",
+     67,
+     519
+    ],
+    [
+     "panelAdvanced",
+     597,
+     43
+    ]
+   ]
+  },
+  "state": null
+ },
+ "1600|ms_classic|ASSUMED_TOYS": {
+  "colour_mode": {
+   "vis": true,
+   "dis": false,
+   "val": "ASSUMED_TOYS",
+   "txt": null
+  },
+  "mic_preset_side": {
+   "vis": true,
+   "dis": false,
+   "val": "ShureSM57",
+   "txt": null
+  },
+  "mic_hpf_sides": {
+   "vis": true,
+   "dis": true,
+   "val": "on",
+   "txt": null
+  },
+  "family_side": {
+   "vis": true,
+   "dis": false,
+   "val": "bi",
+   "txt": null
+  },
+  "polar_side": {
+   "vis": true,
+   "dis": true,
+   "val": "0.5",
+   "txt": null
+  },
+  "side_split": {
+   "vis": true,
+   "dis": true,
+   "val": "on",
+   "txt": null
+  },
+  "mic_preset_l": {
+   "vis": false,
+   "dis": false,
+   "val": "ShureSM57",
+   "txt": null
+  },
+  "family_l": {
+   "vis": false,
+   "dis": false,
+   "val": "bi",
+   "txt": null
+  },
+  "polar_l": {
+   "vis": false,
+   "dis": true,
+   "val": "0.5",
+   "txt": null
+  },
+  "mic_preset_r": {
+   "vis": false,
+   "dis": false,
+   "val": "ShureSM57",
+   "txt": null
+  },
+  "family_r": {
+   "vis": false,
+   "dis": false,
+   "val": "bi",
+   "txt": null
+  },
+  "polar_r": {
+   "vis": false,
+   "dis": true,
+   "val": "0.5",
+   "txt": null
+  },
+  "mic_preset_centre": {
+   "vis": true,
+   "dis": false,
+   "val": "ShureSM57",
+   "txt": null
+  },
+  "family_c": {
+   "vis": true,
+   "dis": false,
+   "val": "cardioid",
+   "txt": null
+  },
+  "polar_c": {
+   "vis": true,
+   "dis": false,
+   "val": "0.5",
+   "txt": null
+  },
+  "patternLockSide": {
+   "vis": false,
+   "dis": false,
+   "val": null,
+   "txt": "Shure SM57 is a fixed fig\u20118. Set Colour to User defined to shape the pattern."
+  },
+  "patternLockCentre": {
+   "vis": false,
+   "dis": false,
+   "val": null,
+   "txt": "Fixed by the measured preset."
+  },
+  "micEach": {
+   "vis": true,
+   "dis": false,
+   "val": null,
+   "txt": null
+  },
+  "sideSplitHint": {
+   "vis": true,
+   "dis": false,
+   "val": null,
+   "txt": "M/S uses one figure-8"
+  },
+  "options": [
+   "Measured",
+   "Bypass",
+   "User defined"
+  ],
+  "layout": {
+   "viewport": [
+    1600,
+    1000
+   ],
+   "main": [
+    18,
+    67,
+    1564,
+    1944
+   ],
+   "micViews": [
+    18,
+    116,
+    1094,
+    1895
+   ],
+   "top": [
+    18,
+    116,
+    553,
+    409
+   ],
+   "combined": [
+    582,
+    116,
+    553,
+    409
+   ],
+   "sourcePlane": [
+    18,
+    536,
+    1117,
+    1475
+   ],
+   "stage": [
+    32,
+    581,
+    847,
+    971
+   ],
+   "hero": [
+    32,
+    619,
+    847,
+    522
+   ],
+   "tools": [
+    893,
+    581,
+    228,
+    971
+   ],
+   "each": [
+    32,
+    1560,
+    1089,
+    413
+   ],
+   "sidebar": [
+    1124,
+    67,
+    458,
+    584
+   ],
+   "sidebarPanels": [
+    [
+     "panelListen",
+     67,
+     519
+    ],
+    [
+     "panelAdvanced",
+     597,
+     43
+    ]
+   ]
+  },
+  "state": null
+ },
+ "1600|ms_classic|BYPASS": {
+  "colour_mode": {
+   "vis": true,
+   "dis": false,
+   "val": "BYPASS",
+   "txt": null
+  },
+  "mic_preset_side": {
+   "vis": true,
+   "dis": false,
+   "val": "ShureSM57",
+   "txt": null
+  },
+  "mic_hpf_sides": {
+   "vis": true,
+   "dis": true,
+   "val": "on",
+   "txt": null
+  },
+  "family_side": {
+   "vis": true,
+   "dis": false,
+   "val": "bi",
+   "txt": null
+  },
+  "polar_side": {
+   "vis": true,
+   "dis": true,
+   "val": "0.5",
+   "txt": null
+  },
+  "side_split": {
+   "vis": true,
+   "dis": true,
+   "val": "on",
+   "txt": null
+  },
+  "mic_preset_l": {
+   "vis": false,
+   "dis": false,
+   "val": "ShureSM57",
+   "txt": null
+  },
+  "family_l": {
+   "vis": false,
+   "dis": false,
+   "val": "bi",
+   "txt": null
+  },
+  "polar_l": {
+   "vis": false,
+   "dis": true,
+   "val": "0.5",
+   "txt": null
+  },
+  "mic_preset_r": {
+   "vis": false,
+   "dis": false,
+   "val": "ShureSM57",
+   "txt": null
+  },
+  "family_r": {
+   "vis": false,
+   "dis": false,
+   "val": "bi",
+   "txt": null
+  },
+  "polar_r": {
+   "vis": false,
+   "dis": true,
+   "val": "0.5",
+   "txt": null
+  },
+  "mic_preset_centre": {
+   "vis": true,
+   "dis": false,
+   "val": "ShureSM57",
+   "txt": null
+  },
+  "family_c": {
+   "vis": true,
+   "dis": false,
+   "val": "cardioid",
+   "txt": null
+  },
+  "polar_c": {
+   "vis": true,
+   "dis": false,
+   "val": "0.5",
+   "txt": null
+  },
+  "patternLockSide": {
+   "vis": false,
+   "dis": false,
+   "val": null,
+   "txt": "Shure SM57 is a fixed fig\u20118. Set Colour to User defined to shape the pattern."
+  },
+  "patternLockCentre": {
+   "vis": false,
+   "dis": false,
+   "val": null,
+   "txt": "Fixed by the measured preset."
+  },
+  "micEach": {
+   "vis": true,
+   "dis": false,
+   "val": null,
+   "txt": null
+  },
+  "sideSplitHint": {
+   "vis": true,
+   "dis": false,
+   "val": null,
+   "txt": "M/S uses one figure-8"
+  },
+  "options": [
+   "Measured",
+   "Bypass",
+   "User defined"
+  ],
+  "layout": {
+   "viewport": [
+    1600,
+    1000
+   ],
+   "main": [
+    18,
+    67,
+    1564,
+    1944
+   ],
+   "micViews": [
+    18,
+    116,
+    1094,
+    1895
+   ],
+   "top": [
+    18,
+    116,
+    553,
+    409
+   ],
+   "combined": [
+    582,
+    116,
+    553,
+    409
+   ],
+   "sourcePlane": [
+    18,
+    536,
+    1117,
+    1475
+   ],
+   "stage": [
+    32,
+    581,
+    847,
+    971
+   ],
+   "hero": [
+    32,
+    619,
+    847,
+    522
+   ],
+   "tools": [
+    893,
+    581,
+    228,
+    971
+   ],
+   "each": [
+    32,
+    1560,
+    1089,
+    413
+   ],
+   "sidebar": [
+    1124,
+    67,
+    458,
+    584
+   ],
+   "sidebarPanels": [
+    [
+     "panelListen",
+     67,
+     519
+    ],
+    [
+     "panelAdvanced",
+     597,
+     43
+    ]
+   ]
+  },
+  "state": null
+ },
+ "1600|ab_omni|MEASURED_SHELF": {
+  "colour_mode": {
+   "vis": true,
+   "dis": false,
+   "val": "MEASURED_SHELF",
+   "txt": null
+  },
+  "mic_preset_side": {
+   "vis": true,
+   "dis": false,
+   "val": "ShureSM57",
+   "txt": null
+  },
+  "mic_hpf_sides": {
+   "vis": true,
+   "dis": true,
+   "val": "on",
+   "txt": null
+  },
+  "family_side": {
+   "vis": true,
+   "dis": true,
+   "val": "cardioid",
+   "txt": null
+  },
+  "polar_side": {
+   "vis": true,
+   "dis": true,
+   "val": "0",
+   "txt": null
+  },
+  "side_split": {
+   "vis": true,
+   "dis": false,
+   "val": "on",
+   "txt": null
+  },
+  "mic_preset_l": {
+   "vis": false,
+   "dis": false,
+   "val": "ShureSM57",
+   "txt": null
+  },
+  "family_l": {
+   "vis": false,
+   "dis": true,
+   "val": "cardioid",
+   "txt": null
+  },
+  "polar_l": {
+   "vis": false,
+   "dis": true,
+   "val": "0",
+   "txt": null
+  },
+  "mic_preset_r": {
+   "vis": false,
+   "dis": false,
+   "val": "ShureSM57",
+   "txt": null
+  },
+  "family_r": {
+   "vis": false,
+   "dis": true,
+   "val": "cardioid",
+   "txt": null
+  },
+  "polar_r": {
+   "vis": false,
+   "dis": true,
+   "val": "0",
+   "txt": null
+  },
+  "mic_preset_centre": {
+   "vis": true,
+   "dis": false,
+   "val": "ShureSM57",
+   "txt": null
+  },
+  "family_c": {
+   "vis": true,
+   "dis": true,
+   "val": "cardioid",
+   "txt": null
+  },
+  "polar_c": {
+   "vis": true,
+   "dis": true,
+   "val": "0",
+   "txt": null
+  },
+  "patternLockSide": {
+   "vis": true,
+   "dis": false,
+   "val": null,
+   "txt": "Shure SM57 is a fixed omni. Set Colour to User defined to shape the pattern."
+  },
+  "patternLockCentre": {
+   "vis": true,
+   "dis": false,
+   "val": null,
+   "txt": "Fixed by the measured preset."
+  },
+  "micEach": {
+   "vis": false,
+   "dis": false,
+   "val": null,
+   "txt": null
+  },
+  "sideSplitHint": {
+   "vis": true,
+   "dis": false,
+   "val": null,
+   "txt": ""
+  },
+  "options": [
+   "Measured",
+   "Bypass",
+   "User defined"
+  ],
+  "layout": {
+   "viewport": [
+    1600,
+    1000
+   ],
+   "main": [
+    18,
+    67,
+    1564,
+    1567
+   ],
+   "micViews": [
+    18,
+    116,
+    1094,
+    1518
+   ],
+   "top": [
+    18,
+    116,
+    553,
+    409
+   ],
+   "combined": [
+    582,
+    116,
+    553,
+    409
+   ],
+   "sourcePlane": [
+    18,
+    536,
+    1117,
+    1099
+   ],
+   "stage": [
+    32,
+    581,
+    847,
+    1016
+   ],
+   "hero": [
+    32,
+    619,
+    847,
+    522
+   ],
+   "tools": [
+    893,
+    581,
+    228,
+    1016
+   ],
+   "each": [
+    0,
+    0,
+    0,
+    0
+   ],
+   "sidebar": [
+    1124,
+    67,
+    458,
+    584
+   ],
+   "sidebarPanels": [
+    [
+     "panelListen",
+     67,
+     519
+    ],
+    [
+     "panelAdvanced",
+     597,
+     43
+    ]
+   ]
+  },
+  "state": null
+ },
+ "1600|ab_omni|ASSUMED_TOYS": {
+  "colour_mode": {
+   "vis": true,
+   "dis": false,
+   "val": "ASSUMED_TOYS",
+   "txt": null
+  },
+  "mic_preset_side": {
+   "vis": true,
+   "dis": false,
+   "val": "ShureSM57",
+   "txt": null
+  },
+  "mic_hpf_sides": {
+   "vis": true,
+   "dis": true,
+   "val": "on",
+   "txt": null
+  },
+  "family_side": {
+   "vis": true,
+   "dis": false,
+   "val": "cardioid",
+   "txt": null
+  },
+  "polar_side": {
+   "vis": true,
+   "dis": false,
+   "val": "0",
+   "txt": null
+  },
+  "side_split": {
+   "vis": true,
+   "dis": false,
+   "val": "on",
+   "txt": null
+  },
+  "mic_preset_l": {
+   "vis": false,
+   "dis": false,
+   "val": "ShureSM57",
+   "txt": null
+  },
+  "family_l": {
+   "vis": false,
+   "dis": false,
+   "val": "cardioid",
+   "txt": null
+  },
+  "polar_l": {
+   "vis": false,
+   "dis": false,
+   "val": "0",
+   "txt": null
+  },
+  "mic_preset_r": {
+   "vis": false,
+   "dis": false,
+   "val": "ShureSM57",
+   "txt": null
+  },
+  "family_r": {
+   "vis": false,
+   "dis": false,
+   "val": "cardioid",
+   "txt": null
+  },
+  "polar_r": {
+   "vis": false,
+   "dis": false,
+   "val": "0",
+   "txt": null
+  },
+  "mic_preset_centre": {
+   "vis": true,
+   "dis": false,
+   "val": "ShureSM57",
+   "txt": null
+  },
+  "family_c": {
+   "vis": true,
+   "dis": false,
+   "val": "cardioid",
+   "txt": null
+  },
+  "polar_c": {
+   "vis": true,
+   "dis": false,
+   "val": "0",
+   "txt": null
+  },
+  "patternLockSide": {
+   "vis": false,
+   "dis": false,
+   "val": null,
+   "txt": "Shure SM57 is a fixed omni. Set Colour to User defined to shape the pattern."
+  },
+  "patternLockCentre": {
+   "vis": false,
+   "dis": false,
+   "val": null,
+   "txt": "Fixed by the measured preset."
+  },
+  "micEach": {
+   "vis": true,
+   "dis": false,
+   "val": null,
+   "txt": null
+  },
+  "sideSplitHint": {
+   "vis": true,
+   "dis": false,
+   "val": null,
+   "txt": ""
+  },
+  "options": [
+   "Measured",
+   "Bypass",
+   "User defined"
+  ],
+  "layout": {
+   "viewport": [
+    1600,
+    1000
+   ],
+   "main": [
+    18,
+    67,
+    1564,
+    1917
+   ],
+   "micViews": [
+    18,
+    116,
+    1094,
+    1868
+   ],
+   "top": [
+    18,
+    116,
+    553,
+    409
+   ],
+   "combined": [
+    582,
+    116,
+    553,
+    409
+   ],
+   "sourcePlane": [
+    18,
+    536,
+    1117,
+    1448
+   ],
+   "stage": [
+    32,
+    581,
+    847,
+    944
+   ],
+   "hero": [
+    32,
+    619,
+    847,
+    522
+   ],
+   "tools": [
+    893,
+    581,
+    228,
+    944
+   ],
+   "each": [
+    32,
+    1533,
+    1089,
+    413
+   ],
+   "sidebar": [
+    1124,
+    67,
+    458,
+    584
+   ],
+   "sidebarPanels": [
+    [
+     "panelListen",
+     67,
+     519
+    ],
+    [
+     "panelAdvanced",
+     597,
+     43
+    ]
+   ]
+  },
+  "state": null
+ },
+ "1600|ab_omni|BYPASS": {
+  "colour_mode": {
+   "vis": true,
+   "dis": false,
+   "val": "BYPASS",
+   "txt": null
+  },
+  "mic_preset_side": {
+   "vis": true,
+   "dis": false,
+   "val": "ShureSM57",
+   "txt": null
+  },
+  "mic_hpf_sides": {
+   "vis": true,
+   "dis": true,
+   "val": "on",
+   "txt": null
+  },
+  "family_side": {
+   "vis": true,
+   "dis": false,
+   "val": "cardioid",
+   "txt": null
+  },
+  "polar_side": {
+   "vis": true,
+   "dis": false,
+   "val": "0",
+   "txt": null
+  },
+  "side_split": {
+   "vis": true,
+   "dis": false,
+   "val": "on",
+   "txt": null
+  },
+  "mic_preset_l": {
+   "vis": false,
+   "dis": false,
+   "val": "ShureSM57",
+   "txt": null
+  },
+  "family_l": {
+   "vis": false,
+   "dis": false,
+   "val": "cardioid",
+   "txt": null
+  },
+  "polar_l": {
+   "vis": false,
+   "dis": false,
+   "val": "0",
+   "txt": null
+  },
+  "mic_preset_r": {
+   "vis": false,
+   "dis": false,
+   "val": "ShureSM57",
+   "txt": null
+  },
+  "family_r": {
+   "vis": false,
+   "dis": false,
+   "val": "cardioid",
+   "txt": null
+  },
+  "polar_r": {
+   "vis": false,
+   "dis": false,
+   "val": "0",
+   "txt": null
+  },
+  "mic_preset_centre": {
+   "vis": true,
+   "dis": false,
+   "val": "ShureSM57",
+   "txt": null
+  },
+  "family_c": {
+   "vis": true,
+   "dis": false,
+   "val": "cardioid",
+   "txt": null
+  },
+  "polar_c": {
+   "vis": true,
+   "dis": false,
+   "val": "0",
+   "txt": null
+  },
+  "patternLockSide": {
+   "vis": false,
+   "dis": false,
+   "val": null,
+   "txt": "Shure SM57 is a fixed omni. Set Colour to User defined to shape the pattern."
+  },
+  "patternLockCentre": {
+   "vis": false,
+   "dis": false,
+   "val": null,
+   "txt": "Fixed by the measured preset."
+  },
+  "micEach": {
+   "vis": true,
+   "dis": false,
+   "val": null,
+   "txt": null
+  },
+  "sideSplitHint": {
+   "vis": true,
+   "dis": false,
+   "val": null,
+   "txt": ""
+  },
+  "options": [
+   "Measured",
+   "Bypass",
+   "User defined"
+  ],
+  "layout": {
+   "viewport": [
+    1600,
+    1000
+   ],
+   "main": [
+    18,
+    67,
+    1564,
+    1917
+   ],
+   "micViews": [
+    18,
+    116,
+    1094,
+    1868
+   ],
+   "top": [
+    18,
+    116,
+    553,
+    409
+   ],
+   "combined": [
+    582,
+    116,
+    553,
+    409
+   ],
+   "sourcePlane": [
+    18,
+    536,
+    1117,
+    1448
+   ],
+   "stage": [
+    32,
+    581,
+    847,
+    944
+   ],
+   "hero": [
+    32,
+    619,
+    847,
+    522
+   ],
+   "tools": [
+    893,
+    581,
+    228,
+    944
+   ],
+   "each": [
+    32,
+    1533,
+    1089,
+    413
+   ],
+   "sidebar": [
+    1124,
+    67,
+    458,
+    584
+   ],
+   "sidebarPanels": [
+    [
+     "panelListen",
+     67,
+     519
+    ],
+    [
+     "panelAdvanced",
+     597,
+     43
+    ]
+   ]
+  },
+  "state": null
+ },
+ "1600|ms|MEASURED_SHELF": {
+  "colour_mode": {
+   "vis": true,
+   "dis": false,
+   "val": "MEASURED_SHELF",
+   "txt": null
+  },
+  "mic_preset_side": {
+   "vis": true,
+   "dis": false,
+   "val": "ShureSM57",
+   "txt": null
+  },
+  "mic_hpf_sides": {
+   "vis": true,
+   "dis": true,
+   "val": "on",
+   "txt": null
+  },
+  "family_side": {
+   "vis": true,
+   "dis": true,
+   "val": "cardioid",
+   "txt": null
+  },
+  "polar_side": {
+   "vis": true,
+   "dis": true,
+   "val": "0.5",
+   "txt": null
+  },
+  "side_split": {
+   "vis": true,
+   "dis": false,
+   "val": "on",
+   "txt": null
+  },
+  "mic_preset_l": {
+   "vis": false,
+   "dis": false,
+   "val": "ShureSM57",
+   "txt": null
+  },
+  "family_l": {
+   "vis": false,
+   "dis": true,
+   "val": "cardioid",
+   "txt": null
+  },
+  "polar_l": {
+   "vis": false,
+   "dis": true,
+   "val": "0.5",
+   "txt": null
+  },
+  "mic_preset_r": {
+   "vis": false,
+   "dis": false,
+   "val": "ShureSM57",
+   "txt": null
+  },
+  "family_r": {
+   "vis": false,
+   "dis": true,
+   "val": "cardioid",
+   "txt": null
+  },
+  "polar_r": {
+   "vis": false,
+   "dis": true,
+   "val": "0.5",
+   "txt": null
+  },
+  "mic_preset_centre": {
+   "vis": true,
+   "dis": false,
+   "val": "ShureSM57",
+   "txt": null
+  },
+  "family_c": {
+   "vis": true,
+   "dis": true,
+   "val": "cardioid",
+   "txt": null
+  },
+  "polar_c": {
+   "vis": true,
+   "dis": true,
+   "val": "0",
+   "txt": null
+  },
+  "patternLockSide": {
+   "vis": true,
+   "dis": false,
+   "val": null,
+   "txt": "Shure SM57 is a fixed cardioid. Set Colour to User defined to shape the pattern."
+  },
+  "patternLockCentre": {
+   "vis": true,
+   "dis": false,
+   "val": null,
+   "txt": "Fixed by the measured preset."
+  },
+  "micEach": {
+   "vis": false,
+   "dis": false,
+   "val": null,
+   "txt": null
+  },
+  "sideSplitHint": {
+   "vis": true,
+   "dis": false,
+   "val": null,
+   "txt": ""
+  },
+  "options": [
+   "Measured",
+   "Bypass",
+   "User defined"
+  ],
+  "layout": {
+   "viewport": [
+    1600,
+    1000
+   ],
+   "main": [
+    18,
+    67,
+    1564,
+    1567
+   ],
+   "micViews": [
+    18,
+    116,
+    1094,
+    1518
+   ],
+   "top": [
+    18,
+    116,
+    553,
+    409
+   ],
+   "combined": [
+    582,
+    116,
+    553,
+    409
+   ],
+   "sourcePlane": [
+    18,
+    536,
+    1117,
+    1099
+   ],
+   "stage": [
+    32,
+    581,
+    847,
+    1016
+   ],
+   "hero": [
+    32,
+    619,
+    847,
+    522
+   ],
+   "tools": [
+    893,
+    581,
+    228,
+    1016
+   ],
+   "each": [
+    0,
+    0,
+    0,
+    0
+   ],
+   "sidebar": [
+    1124,
+    67,
+    458,
+    584
+   ],
+   "sidebarPanels": [
+    [
+     "panelListen",
+     67,
+     519
+    ],
+    [
+     "panelAdvanced",
+     597,
+     43
+    ]
+   ]
+  },
+  "state": null
+ },
+ "1600|ms|ASSUMED_TOYS": {
+  "colour_mode": {
+   "vis": true,
+   "dis": false,
+   "val": "ASSUMED_TOYS",
+   "txt": null
+  },
+  "mic_preset_side": {
+   "vis": true,
+   "dis": false,
+   "val": "ShureSM57",
+   "txt": null
+  },
+  "mic_hpf_sides": {
+   "vis": true,
+   "dis": true,
+   "val": "on",
+   "txt": null
+  },
+  "family_side": {
+   "vis": true,
+   "dis": false,
+   "val": "cardioid",
+   "txt": null
+  },
+  "polar_side": {
+   "vis": true,
+   "dis": false,
+   "val": "0.5",
+   "txt": null
+  },
+  "side_split": {
+   "vis": true,
+   "dis": false,
+   "val": "on",
+   "txt": null
+  },
+  "mic_preset_l": {
+   "vis": false,
+   "dis": false,
+   "val": "ShureSM57",
+   "txt": null
+  },
+  "family_l": {
+   "vis": false,
+   "dis": false,
+   "val": "cardioid",
+   "txt": null
+  },
+  "polar_l": {
+   "vis": false,
+   "dis": false,
+   "val": "0.5",
+   "txt": null
+  },
+  "mic_preset_r": {
+   "vis": false,
+   "dis": false,
+   "val": "ShureSM57",
+   "txt": null
+  },
+  "family_r": {
+   "vis": false,
+   "dis": false,
+   "val": "cardioid",
+   "txt": null
+  },
+  "polar_r": {
+   "vis": false,
+   "dis": false,
+   "val": "0.5",
+   "txt": null
+  },
+  "mic_preset_centre": {
+   "vis": true,
+   "dis": false,
+   "val": "ShureSM57",
+   "txt": null
+  },
+  "family_c": {
+   "vis": true,
+   "dis": false,
+   "val": "cardioid",
+   "txt": null
+  },
+  "polar_c": {
+   "vis": true,
+   "dis": false,
+   "val": "0",
+   "txt": null
+  },
+  "patternLockSide": {
+   "vis": false,
+   "dis": false,
+   "val": null,
+   "txt": "Shure SM57 is a fixed cardioid. Set Colour to User defined to shape the pattern."
+  },
+  "patternLockCentre": {
+   "vis": false,
+   "dis": false,
+   "val": null,
+   "txt": "Fixed by the measured preset."
+  },
+  "micEach": {
+   "vis": true,
+   "dis": false,
+   "val": null,
+   "txt": null
+  },
+  "sideSplitHint": {
+   "vis": true,
+   "dis": false,
+   "val": null,
+   "txt": ""
+  },
+  "options": [
+   "Measured",
+   "Bypass",
+   "User defined"
+  ],
+  "layout": {
+   "viewport": [
+    1600,
+    1000
+   ],
+   "main": [
+    18,
+    67,
+    1564,
+    1917
+   ],
+   "micViews": [
+    18,
+    116,
+    1094,
+    1868
+   ],
+   "top": [
+    18,
+    116,
+    553,
+    409
+   ],
+   "combined": [
+    582,
+    116,
+    553,
+    409
+   ],
+   "sourcePlane": [
+    18,
+    536,
+    1117,
+    1448
+   ],
+   "stage": [
+    32,
+    581,
+    847,
+    944
+   ],
+   "hero": [
+    32,
+    619,
+    847,
+    522
+   ],
+   "tools": [
+    893,
+    581,
+    228,
+    944
+   ],
+   "each": [
+    32,
+    1533,
+    1089,
+    413
+   ],
+   "sidebar": [
+    1124,
+    67,
+    458,
+    584
+   ],
+   "sidebarPanels": [
+    [
+     "panelListen",
+     67,
+     519
+    ],
+    [
+     "panelAdvanced",
+     597,
+     43
+    ]
+   ]
+  },
+  "state": null
+ },
+ "1600|ms|BYPASS": {
+  "colour_mode": {
+   "vis": true,
+   "dis": false,
+   "val": "BYPASS",
+   "txt": null
+  },
+  "mic_preset_side": {
+   "vis": true,
+   "dis": false,
+   "val": "ShureSM57",
+   "txt": null
+  },
+  "mic_hpf_sides": {
+   "vis": true,
+   "dis": true,
+   "val": "on",
+   "txt": null
+  },
+  "family_side": {
+   "vis": true,
+   "dis": false,
+   "val": "cardioid",
+   "txt": null
+  },
+  "polar_side": {
+   "vis": true,
+   "dis": false,
+   "val": "0.5",
+   "txt": null
+  },
+  "side_split": {
+   "vis": true,
+   "dis": false,
+   "val": "on",
+   "txt": null
+  },
+  "mic_preset_l": {
+   "vis": false,
+   "dis": false,
+   "val": "ShureSM57",
+   "txt": null
+  },
+  "family_l": {
+   "vis": false,
+   "dis": false,
+   "val": "cardioid",
+   "txt": null
+  },
+  "polar_l": {
+   "vis": false,
+   "dis": false,
+   "val": "0.5",
+   "txt": null
+  },
+  "mic_preset_r": {
+   "vis": false,
+   "dis": false,
+   "val": "ShureSM57",
+   "txt": null
+  },
+  "family_r": {
+   "vis": false,
+   "dis": false,
+   "val": "cardioid",
+   "txt": null
+  },
+  "polar_r": {
+   "vis": false,
+   "dis": false,
+   "val": "0.5",
+   "txt": null
+  },
+  "mic_preset_centre": {
+   "vis": true,
+   "dis": false,
+   "val": "ShureSM57",
+   "txt": null
+  },
+  "family_c": {
+   "vis": true,
+   "dis": false,
+   "val": "cardioid",
+   "txt": null
+  },
+  "polar_c": {
+   "vis": true,
+   "dis": false,
+   "val": "0",
+   "txt": null
+  },
+  "patternLockSide": {
+   "vis": false,
+   "dis": false,
+   "val": null,
+   "txt": "Shure SM57 is a fixed cardioid. Set Colour to User defined to shape the pattern."
+  },
+  "patternLockCentre": {
+   "vis": false,
+   "dis": false,
+   "val": null,
+   "txt": "Fixed by the measured preset."
+  },
+  "micEach": {
+   "vis": true,
+   "dis": false,
+   "val": null,
+   "txt": null
+  },
+  "sideSplitHint": {
+   "vis": true,
+   "dis": false,
+   "val": null,
+   "txt": ""
+  },
+  "options": [
+   "Measured",
+   "Bypass",
+   "User defined"
+  ],
+  "layout": {
+   "viewport": [
+    1600,
+    1000
+   ],
+   "main": [
+    18,
+    67,
+    1564,
+    1917
+   ],
+   "micViews": [
+    18,
+    116,
+    1094,
+    1868
+   ],
+   "top": [
+    18,
+    116,
+    553,
+    409
+   ],
+   "combined": [
+    582,
+    116,
+    553,
+    409
+   ],
+   "sourcePlane": [
+    18,
+    536,
+    1117,
+    1448
+   ],
+   "stage": [
+    32,
+    581,
+    847,
+    944
+   ],
+   "hero": [
+    32,
+    619,
+    847,
+    522
+   ],
+   "tools": [
+    893,
+    581,
+    228,
+    944
+   ],
+   "each": [
+    32,
+    1533,
+    1089,
+    413
+   ],
+   "sidebar": [
+    1124,
+    67,
+    458,
+    584
+   ],
+   "sidebarPanels": [
+    [
+     "panelListen",
+     67,
+     519
+    ],
+    [
+     "panelAdvanced",
+     597,
+     43
+    ]
+   ]
+  },
+  "state": null
+ },
+ "1600|errors": [],
+ "1920|ortf|MEASURED_SHELF": {
+  "colour_mode": {
+   "vis": true,
+   "dis": false,
+   "val": "MEASURED_SHELF",
+   "txt": null
+  },
+  "mic_preset_side": {
+   "vis": true,
+   "dis": false,
+   "val": "ShureSM57",
+   "txt": null
+  },
+  "mic_hpf_sides": {
+   "vis": true,
+   "dis": true,
+   "val": "on",
+   "txt": null
+  },
+  "family_side": {
+   "vis": true,
+   "dis": true,
+   "val": "cardioid",
+   "txt": null
+  },
+  "polar_side": {
+   "vis": true,
+   "dis": true,
+   "val": "0.5",
+   "txt": null
+  },
+  "side_split": {
+   "vis": true,
+   "dis": false,
+   "val": "on",
+   "txt": null
+  },
+  "mic_preset_l": {
+   "vis": false,
+   "dis": false,
+   "val": "ShureSM57",
+   "txt": null
+  },
+  "family_l": {
+   "vis": false,
+   "dis": true,
+   "val": "cardioid",
+   "txt": null
+  },
+  "polar_l": {
+   "vis": false,
+   "dis": true,
+   "val": "0.5",
+   "txt": null
+  },
+  "mic_preset_r": {
+   "vis": false,
+   "dis": false,
+   "val": "ShureSM57",
+   "txt": null
+  },
+  "family_r": {
+   "vis": false,
+   "dis": true,
+   "val": "cardioid",
+   "txt": null
+  },
+  "polar_r": {
+   "vis": false,
+   "dis": true,
+   "val": "0.5",
+   "txt": null
+  },
+  "mic_preset_centre": {
+   "vis": true,
+   "dis": false,
+   "val": "ShureSM57",
+   "txt": null
+  },
+  "family_c": {
+   "vis": true,
+   "dis": true,
+   "val": "cardioid",
+   "txt": null
+  },
+  "polar_c": {
+   "vis": true,
+   "dis": true,
+   "val": "0.5",
+   "txt": null
+  },
+  "patternLockSide": {
+   "vis": true,
+   "dis": false,
+   "val": null,
+   "txt": "Shure SM57 is a fixed cardioid. Set Colour to User defined to shape the pattern."
+  },
+  "patternLockCentre": {
+   "vis": true,
+   "dis": false,
+   "val": null,
+   "txt": "Fixed by the measured preset."
+  },
+  "micEach": {
+   "vis": false,
+   "dis": false,
+   "val": null,
+   "txt": null
+  },
+  "sideSplitHint": {
+   "vis": true,
+   "dis": false,
+   "val": null,
+   "txt": ""
+  },
+  "options": [
+   "Measured",
+   "Bypass",
+   "User defined"
+  ],
+  "layout": {
+   "viewport": [
+    1920,
+    1000
+   ],
+   "main": [
+    138,
+    67,
+    1644,
+    1585
+   ],
+   "micViews": [
+    138,
+    116,
+    1150,
+    1536
+   ],
+   "top": [
+    138,
+    116,
+    586,
+    426
+   ],
+   "combined": [
+    735,
+    116,
+    553,
+    426
+   ],
+   "sourcePlane": [
+    138,
+    553,
+    1150,
+    1099
+   ],
+   "stage": [
+    152,
+    598,
+    880,
+    1016
+   ],
+   "hero": [
+    152,
+    637,
+    880,
+    522
+   ],
+   "tools": [
+    1046,
+    598,
+    228,
+    1016
+   ],
+   "each": [
+    0,
+    0,
+    0,
+    0
+   ],
+   "sidebar": [
+    1300,
+    67,
+    482,
+    584
+   ],
+   "sidebarPanels": [
+    [
+     "panelListen",
+     67,
+     519
+    ],
+    [
+     "panelAdvanced",
+     597,
+     43
+    ]
+   ]
+  },
+  "state": null
+ },
+ "1920|ortf|ASSUMED_TOYS": {
+  "colour_mode": {
+   "vis": true,
+   "dis": false,
+   "val": "ASSUMED_TOYS",
+   "txt": null
+  },
+  "mic_preset_side": {
+   "vis": true,
+   "dis": false,
+   "val": "ShureSM57",
+   "txt": null
+  },
+  "mic_hpf_sides": {
+   "vis": true,
+   "dis": true,
+   "val": "on",
+   "txt": null
+  },
+  "family_side": {
+   "vis": true,
+   "dis": false,
+   "val": "cardioid",
+   "txt": null
+  },
+  "polar_side": {
+   "vis": true,
+   "dis": false,
+   "val": "0.5",
+   "txt": null
+  },
+  "side_split": {
+   "vis": true,
+   "dis": false,
+   "val": "on",
+   "txt": null
+  },
+  "mic_preset_l": {
+   "vis": false,
+   "dis": false,
+   "val": "ShureSM57",
+   "txt": null
+  },
+  "family_l": {
+   "vis": false,
+   "dis": false,
+   "val": "cardioid",
+   "txt": null
+  },
+  "polar_l": {
+   "vis": false,
+   "dis": false,
+   "val": "0.5",
+   "txt": null
+  },
+  "mic_preset_r": {
+   "vis": false,
+   "dis": false,
+   "val": "ShureSM57",
+   "txt": null
+  },
+  "family_r": {
+   "vis": false,
+   "dis": false,
+   "val": "cardioid",
+   "txt": null
+  },
+  "polar_r": {
+   "vis": false,
+   "dis": false,
+   "val": "0.5",
+   "txt": null
+  },
+  "mic_preset_centre": {
+   "vis": true,
+   "dis": false,
+   "val": "ShureSM57",
+   "txt": null
+  },
+  "family_c": {
+   "vis": true,
+   "dis": false,
+   "val": "cardioid",
+   "txt": null
+  },
+  "polar_c": {
+   "vis": true,
+   "dis": false,
+   "val": "0.5",
+   "txt": null
+  },
+  "patternLockSide": {
+   "vis": false,
+   "dis": false,
+   "val": null,
+   "txt": "Shure SM57 is a fixed cardioid. Set Colour to User defined to shape the pattern."
+  },
+  "patternLockCentre": {
+   "vis": false,
+   "dis": false,
+   "val": null,
+   "txt": "Fixed by the measured preset."
+  },
+  "micEach": {
+   "vis": true,
+   "dis": false,
+   "val": null,
+   "txt": null
+  },
+  "sideSplitHint": {
+   "vis": true,
+   "dis": false,
+   "val": null,
+   "txt": ""
+  },
+  "options": [
+   "Measured",
+   "Bypass",
+   "User defined"
+  ],
+  "layout": {
+   "viewport": [
+    1920,
+    1000
+   ],
+   "main": [
+    138,
+    67,
+    1644,
+    1946
+   ],
+   "micViews": [
+    138,
+    116,
+    1150,
+    1897
+   ],
+   "top": [
+    138,
+    116,
+    586,
+    426
+   ],
+   "combined": [
+    735,
+    116,
+    553,
+    426
+   ],
+   "sourcePlane": [
+    138,
+    553,
+    1150,
+    1459
+   ],
+   "stage": [
+    152,
+    598,
+    880,
+    944
+   ],
+   "hero": [
+    152,
+    637,
+    880,
+    522
+   ],
+   "tools": [
+    1046,
+    598,
+    228,
+    944
+   ],
+   "each": [
+    152,
+    1551,
+    1122,
+    424
+   ],
+   "sidebar": [
+    1300,
+    67,
+    482,
+    584
+   ],
+   "sidebarPanels": [
+    [
+     "panelListen",
+     67,
+     519
+    ],
+    [
+     "panelAdvanced",
+     597,
+     43
+    ]
+   ]
+  },
+  "state": null
+ },
+ "1920|ortf|BYPASS": {
+  "colour_mode": {
+   "vis": true,
+   "dis": false,
+   "val": "BYPASS",
+   "txt": null
+  },
+  "mic_preset_side": {
+   "vis": true,
+   "dis": false,
+   "val": "ShureSM57",
+   "txt": null
+  },
+  "mic_hpf_sides": {
+   "vis": true,
+   "dis": true,
+   "val": "on",
+   "txt": null
+  },
+  "family_side": {
+   "vis": true,
+   "dis": false,
+   "val": "cardioid",
+   "txt": null
+  },
+  "polar_side": {
+   "vis": true,
+   "dis": false,
+   "val": "0.5",
+   "txt": null
+  },
+  "side_split": {
+   "vis": true,
+   "dis": false,
+   "val": "on",
+   "txt": null
+  },
+  "mic_preset_l": {
+   "vis": false,
+   "dis": false,
+   "val": "ShureSM57",
+   "txt": null
+  },
+  "family_l": {
+   "vis": false,
+   "dis": false,
+   "val": "cardioid",
+   "txt": null
+  },
+  "polar_l": {
+   "vis": false,
+   "dis": false,
+   "val": "0.5",
+   "txt": null
+  },
+  "mic_preset_r": {
+   "vis": false,
+   "dis": false,
+   "val": "ShureSM57",
+   "txt": null
+  },
+  "family_r": {
+   "vis": false,
+   "dis": false,
+   "val": "cardioid",
+   "txt": null
+  },
+  "polar_r": {
+   "vis": false,
+   "dis": false,
+   "val": "0.5",
+   "txt": null
+  },
+  "mic_preset_centre": {
+   "vis": true,
+   "dis": false,
+   "val": "ShureSM57",
+   "txt": null
+  },
+  "family_c": {
+   "vis": true,
+   "dis": false,
+   "val": "cardioid",
+   "txt": null
+  },
+  "polar_c": {
+   "vis": true,
+   "dis": false,
+   "val": "0.5",
+   "txt": null
+  },
+  "patternLockSide": {
+   "vis": false,
+   "dis": false,
+   "val": null,
+   "txt": "Shure SM57 is a fixed cardioid. Set Colour to User defined to shape the pattern."
+  },
+  "patternLockCentre": {
+   "vis": false,
+   "dis": false,
+   "val": null,
+   "txt": "Fixed by the measured preset."
+  },
+  "micEach": {
+   "vis": true,
+   "dis": false,
+   "val": null,
+   "txt": null
+  },
+  "sideSplitHint": {
+   "vis": true,
+   "dis": false,
+   "val": null,
+   "txt": ""
+  },
+  "options": [
+   "Measured",
+   "Bypass",
+   "User defined"
+  ],
+  "layout": {
+   "viewport": [
+    1920,
+    1000
+   ],
+   "main": [
+    138,
+    67,
+    1644,
+    1946
+   ],
+   "micViews": [
+    138,
+    116,
+    1150,
+    1897
+   ],
+   "top": [
+    138,
+    116,
+    586,
+    426
+   ],
+   "combined": [
+    735,
+    116,
+    553,
+    426
+   ],
+   "sourcePlane": [
+    138,
+    553,
+    1150,
+    1459
+   ],
+   "stage": [
+    152,
+    598,
+    880,
+    944
+   ],
+   "hero": [
+    152,
+    637,
+    880,
+    522
+   ],
+   "tools": [
+    1046,
+    598,
+    228,
+    944
+   ],
+   "each": [
+    152,
+    1551,
+    1122,
+    424
+   ],
+   "sidebar": [
+    1300,
+    67,
+    482,
+    584
+   ],
+   "sidebarPanels": [
+    [
+     "panelListen",
+     67,
+     519
+    ],
+    [
+     "panelAdvanced",
+     597,
+     43
+    ]
+   ]
+  },
+  "state": null
+ },
+ "1920|errors": []
+}

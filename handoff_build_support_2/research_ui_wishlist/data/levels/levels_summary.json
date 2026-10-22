@@ -1,0 +1,210 @@
+{
+ "play_all0dB": {
+  "peak_dbfs": -6.37,
+  "E_L_db": -2.45,
+  "E_R_db": -3.98,
+  "E_mean_db": -3.15,
+  "K_mean_db": 0.37,
+  "LR_corr": 0.546
+ },
+ "play_decay06": {
+  "peak_dbfs": -19.38,
+  "E_L_db": -11.1,
+  "E_R_db": -12.5,
+  "E_mean_db": -11.74,
+  "K_mean_db": -8.3,
+  "LR_corr": 0.567
+ },
+ "play_decay4": {
+  "peak_dbfs": -25.63,
+  "E_L_db": -11.04,
+  "E_R_db": -12.12,
+  "E_mean_db": -11.54,
+  "K_mean_db": -8.03,
+  "LR_corr": 0.476
+ },
+ "play_default": {
+  "peak_dbfs": -22.6,
+  "E_L_db": -10.82,
+  "E_R_db": -12.02,
+  "E_mean_db": -11.38,
+  "K_mean_db": -7.91,
+  "LR_corr": 0.511
+ },
+ "play_direct": {
+  "peak_dbfs": -9.97,
+  "E_L_db": -7.48,
+  "E_R_db": -8.73,
+  "E_mean_db": -8.06,
+  "K_mean_db": -4.51,
+  "LR_corr": 0.49
+ },
+ "play_early": {
+  "peak_dbfs": -18.28,
+  "E_L_db": -13.47,
+  "E_R_db": -15.08,
+  "E_mean_db": -14.21,
+  "K_mean_db": -10.65,
+  "LR_corr": 0.619
+ },
+ "play_fb1_nolock": {
+  "peak_dbfs": -13.29,
+  "E_L_db": -8.89,
+  "E_R_db": -10.74,
+  "E_mean_db": -9.72,
+  "K_mean_db": -6.18,
+  "LR_corr": 0.565
+ },
+ "play_fdn": {
+  "peak_dbfs": -22.6,
+  "E_L_db": -10.82,
+  "E_R_db": -12.02,
+  "E_mean_db": -11.38,
+  "K_mean_db": -7.91,
+  "LR_corr": 0.511
+ },
+ "play_studio_fb085": {
+  "peak_dbfs": -13.27,
+  "E_L_db": -8.9,
+  "E_R_db": -10.74,
+  "E_mean_db": -9.72,
+  "K_mean_db": -6.18,
+  "LR_corr": 0.564
+ },
+ "render1500_all0dB": {
+  "peak_dbfs": -5.66,
+  "E_L_db": -2.36,
+  "E_R_db": -3.78,
+  "E_mean_db": -3.01,
+  "K_mean_db": 0.55,
+  "LR_corr": 0.402
+ },
+ "render1500_decay06": {
+  "peak_dbfs": -16.1,
+  "E_L_db": -7.94,
+  "E_R_db": -8.75,
+  "E_mean_db": -8.32,
+  "K_mean_db": -4.73,
+  "LR_corr": 0.429
+ },
+ "render1500_decay4": {
+  "peak_dbfs": -22.36,
+  "E_L_db": -8.06,
+  "E_R_db": -8.69,
+  "E_mean_db": -8.36,
+  "K_mean_db": -4.73,
+  "LR_corr": 0.426
+ },
+ "render1500_default": {
+  "peak_dbfs": -19.33,
+  "E_L_db": -7.8,
+  "E_R_db": -8.51,
+  "E_mean_db": -8.14,
+  "K_mean_db": -4.53,
+  "LR_corr": 0.43
+ },
+ "render1500_direct": {
+  "peak_dbfs": -9.97,
+  "E_L_db": -7.48,
+  "E_R_db": -8.73,
+  "E_mean_db": -8.06,
+  "K_mean_db": -4.51,
+  "LR_corr": 0.49
+ },
+ "render1500_early": {
+  "peak_dbfs": -20.36,
+  "E_L_db": -18.22,
+  "E_R_db": -21.1,
+  "E_mean_db": -19.43,
+  "K_mean_db": -15.82,
+  "LR_corr": 0.044
+ },
+ "render1500_fb1_nolock": {
+  "peak_dbfs": -11.88,
+  "E_L_db": -7.15,
+  "E_R_db": -8.94,
+  "E_mean_db": -7.95,
+  "K_mean_db": -4.41,
+  "LR_corr": 0.541
+ },
+ "render1500_fdn": {
+  "peak_dbfs": -19.33,
+  "E_L_db": -7.8,
+  "E_R_db": -8.51,
+  "E_mean_db": -8.14,
+  "K_mean_db": -4.53,
+  "LR_corr": 0.43
+ },
+ "render_all0dB": {
+  "peak_dbfs": -5.66,
+  "E_L_db": -2.36,
+  "E_R_db": -3.78,
+  "E_mean_db": -3.01,
+  "K_mean_db": 0.55,
+  "LR_corr": 0.402
+ },
+ "render_decay06": {
+  "peak_dbfs": -16.1,
+  "E_L_db": -7.94,
+  "E_R_db": -8.75,
+  "E_mean_db": -8.32,
+  "K_mean_db": -4.73,
+  "LR_corr": 0.429
+ },
+ "render_decay4": {
+  "peak_dbfs": -22.36,
+  "E_L_db": -8.03,
+  "E_R_db": -8.67,
+  "E_mean_db": -8.34,
+  "K_mean_db": -4.71,
+  "LR_corr": 0.426
+ },
+ "render_default": {
+  "peak_dbfs": -19.33,
+  "E_L_db": -7.8,
+  "E_R_db": -8.51,
+  "E_mean_db": -8.14,
+  "K_mean_db": -4.53,
+  "LR_corr": 0.43
+ },
+ "render_direct": {
+  "peak_dbfs": -9.97,
+  "E_L_db": -7.48,
+  "E_R_db": -8.73,
+  "E_mean_db": -8.06,
+  "K_mean_db": -4.51,
+  "LR_corr": 0.49
+ },
+ "render_early": {
+  "peak_dbfs": -20.36,
+  "E_L_db": -18.22,
+  "E_R_db": -21.1,
+  "E_mean_db": -19.43,
+  "K_mean_db": -15.82,
+  "LR_corr": 0.044
+ },
+ "render_fb1_nolock": {
+  "peak_dbfs": -11.88,
+  "E_L_db": -7.15,
+  "E_R_db": -8.94,
+  "E_mean_db": -7.95,
+  "K_mean_db": -4.41,
+  "LR_corr": 0.541
+ },
+ "render_fdn": {
+  "peak_dbfs": -19.33,
+  "E_L_db": -7.8,
+  "E_R_db": -8.51,
+  "E_mean_db": -8.14,
+  "K_mean_db": -4.53,
+  "LR_corr": 0.43
+ },
+ "render_studio_fb085": {
+  "peak_dbfs": -11.82,
+  "E_L_db": -7.16,
+  "E_R_db": -8.96,
+  "E_mean_db": -7.97,
+  "K_mean_db": -4.42,
+  "LR_corr": 0.544
+ }
+}

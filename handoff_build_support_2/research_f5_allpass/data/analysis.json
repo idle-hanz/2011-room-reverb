@@ -1,0 +1,317 @@
+{
+ "per_line": {
+  "d=-0.980|lg=1.0": {
+   "play_maxdev_db": 2.2902777330610375e-11,
+   "render_maxdev_db": 2.2902777330610375e-11,
+   "play_minus_render_mag_db": 3.857309866213149e-15,
+   "lossy_ripple_db": [
+    -0.0,
+    0.0
+   ],
+   "delay_only_loss_db": 0.0,
+   "split_node_range_db": [
+    -39.91,
+    39.91
+   ]
+  },
+  "d=-0.980|lg=0.968": {
+   "play_maxdev_db": null,
+   "render_maxdev_db": null,
+   "play_minus_render_mag_db": 3.857309866213149e-15,
+   "lossy_ripple_db": [
+    -12.629,
+    -0.003
+   ],
+   "delay_only_loss_db": -0.282,
+   "split_node_range_db": [
+    -44.21,
+    31.58
+   ]
+  },
+  "d=-0.500|lg=1.0": {
+   "play_maxdev_db": 7.965344873729787e-13,
+   "render_maxdev_db": 7.946058324398721e-13,
+   "play_minus_render_mag_db": 3.857309866213149e-15,
+   "lossy_ripple_db": [
+    -0.0,
+    0.0
+   ],
+   "delay_only_loss_db": 0.0,
+   "split_node_range_db": [
+    -9.54,
+    9.54
+   ]
+  },
+  "d=-0.500|lg=0.968": {
+   "play_maxdev_db": null,
+   "render_maxdev_db": null,
+   "play_minus_render_mag_db": 3.857309866213149e-15,
+   "lossy_ripple_db": [
+    -0.848,
+    -0.094
+   ],
+   "delay_only_loss_db": -0.282,
+   "split_node_range_db": [
+    -10.02,
+    9.08
+   ]
+  },
+  "d=+0.044|lg=1.0": {
+   "play_maxdev_db": 2.9122689489908785e-13,
+   "render_maxdev_db": 2.9122689489908785e-13,
+   "play_minus_render_mag_db": 3.857309866213149e-15,
+   "lossy_ripple_db": [
+    -0.0,
+    0.0
+   ],
+   "delay_only_loss_db": 0.0,
+   "split_node_range_db": [
+    -0.76,
+    0.76
+   ]
+  },
+  "d=+0.044|lg=0.968": {
+   "play_maxdev_db": null,
+   "render_maxdev_db": null,
+   "play_minus_render_mag_db": 3.857309866213149e-15,
+   "lossy_ripple_db": [
+    -0.309,
+    -0.259
+   ],
+   "delay_only_loss_db": -0.282,
+   "split_node_range_db": [
+    -1.05,
+    0.48
+   ]
+  },
+  "d=+0.500|lg=1.0": {
+   "play_maxdev_db": 7.926771775067658e-13,
+   "render_maxdev_db": 7.926771775067658e-13,
+   "play_minus_render_mag_db": 3.857309866213149e-15,
+   "lossy_ripple_db": [
+    -0.0,
+    0.0
+   ],
+   "delay_only_loss_db": 0.0,
+   "split_node_range_db": [
+    -9.54,
+    9.54
+   ]
+  },
+  "d=+0.500|lg=0.968": {
+   "play_maxdev_db": null,
+   "render_maxdev_db": null,
+   "play_minus_render_mag_db": 3.857309866213149e-15,
+   "lossy_ripple_db": [
+    -0.848,
+    -0.094
+   ],
+   "delay_only_loss_db": -0.282,
+   "split_node_range_db": [
+    -10.02,
+    9.08
+   ]
+  },
+  "d=+0.980|lg=1.0": {
+   "play_maxdev_db": 2.454213402381583e-11,
+   "render_maxdev_db": 2.454213402381583e-11,
+   "play_minus_render_mag_db": 3.857309866213149e-15,
+   "lossy_ripple_db": [
+    -0.0,
+    0.0
+   ],
+   "delay_only_loss_db": 0.0,
+   "split_node_range_db": [
+    -39.89,
+    39.91
+   ]
+  },
+  "d=+0.980|lg=0.968": {
+   "play_maxdev_db": null,
+   "render_maxdev_db": null,
+   "play_minus_render_mag_db": 3.857309866213149e-15,
+   "lossy_ripple_db": [
+    -12.629,
+    -0.003
+   ],
+   "delay_only_loss_db": -0.282,
+   "split_node_range_db": [
+    -44.15,
+    31.58
+   ]
+  }
+ },
+ "closed_loop_spectral_radius": {
+  "all +0.98 | lossless g=1/sqrt32, lg=1": {
+   "play": {
+    "rho": 1.0,
+    "min_nonzero": 1.0,
+    "dim": 337
+   },
+   "apd": {
+    "rho": 1.0,
+    "min_nonzero": 1.0,
+    "dim": 337
+   },
+   "render": {
+    "rho": 1.0,
+    "min_nonzero": 1.0,
+    "dim": 337
+   }
+  },
+  "all +0.98 | decay-lock g=0.158, lg=0.97": {
+   "play": {
+    "rho": 0.997779856,
+    "min_nonzero": 0.904632,
+    "dim": 337
+   },
+   "apd": {
+    "rho": 0.997779856,
+    "min_nonzero": 0.904632,
+    "dim": 337
+   },
+   "render": {
+    "rho": 0.997899824,
+    "min_nonzero": 0.928007,
+    "dim": 337
+   }
+  },
+  "all -0.98 | lossless g=1/sqrt32, lg=1": {
+   "play": {
+    "rho": 1.0,
+    "min_nonzero": 1.0,
+    "dim": 321
+   },
+   "apd": {
+    "rho": 1.0,
+    "min_nonzero": 1.0,
+    "dim": 321
+   },
+   "render": {
+    "rho": 1.0,
+    "min_nonzero": 1.0,
+    "dim": 321
+   }
+  },
+  "all -0.98 | decay-lock g=0.158, lg=0.97": {
+   "play": {
+    "rho": 0.997855922,
+    "min_nonzero": 0.900678,
+    "dim": 321
+   },
+   "apd": {
+    "rho": 0.997855922,
+    "min_nonzero": 0.900678,
+    "dim": 321
+   },
+   "render": {
+    "rho": 0.997477941,
+    "min_nonzero": 0.963592,
+    "dim": 321
+   }
+  },
+  "mixed U(-0.98,0.98) | lossless g=1/sqrt32, lg=1": {
+   "play": {
+    "rho": 1.0,
+    "min_nonzero": 1.0,
+    "dim": 366
+   },
+   "apd": {
+    "rho": 1.0,
+    "min_nonzero": 1.0,
+    "dim": 366
+   },
+   "render": {
+    "rho": 1.0,
+    "min_nonzero": 1.0,
+    "dim": 366
+   }
+  },
+  "mixed U(-0.98,0.98) | decay-lock g=0.158, lg=0.97": {
+   "play": {
+    "rho": 0.995736617,
+    "min_nonzero": 0.974635,
+    "dim": 366
+   },
+   "apd": {
+    "rho": 0.995736617,
+    "min_nonzero": 0.974635,
+    "dim": 366
+   },
+   "render": {
+    "rho": 0.995597453,
+    "min_nonzero": 0.966428,
+    "dim": 366
+   }
+  },
+  "hall-like |d|<=0.14 | lossless g=1/sqrt32, lg=1": {
+   "play": {
+    "rho": 1.0,
+    "min_nonzero": 1.0,
+    "dim": 317
+   },
+   "apd": {
+    "rho": 1.0,
+    "min_nonzero": 1.0,
+    "dim": 317
+   },
+   "render": {
+    "rho": 1.0,
+    "min_nonzero": 1.0,
+    "dim": 317
+   }
+  },
+  "hall-like |d|<=0.14 | decay-lock g=0.158, lg=0.97": {
+   "play": {
+    "rho": 0.988685171,
+    "min_nonzero": 0.980439,
+    "dim": 317
+   },
+   "apd": {
+    "rho": 0.988685171,
+    "min_nonzero": 0.980439,
+    "dim": 317
+   },
+   "render": {
+    "rho": 0.987721327,
+    "min_nonzero": 0.977256,
+    "dim": 317
+   }
+  },
+  "zero | lossless g=1/sqrt32, lg=1": {
+   "play": {
+    "rho": 1.0,
+    "min_nonzero": 1.0,
+    "dim": 339
+   },
+   "apd": {
+    "rho": 1.0,
+    "min_nonzero": 1.0,
+    "dim": 339
+   },
+   "render": {
+    "rho": 1.0,
+    "min_nonzero": 1.0,
+    "dim": 339
+   }
+  },
+  "zero | decay-lock g=0.158, lg=0.97": {
+   "play": {
+    "rho": 0.988972347,
+    "min_nonzero": 0.983155,
+    "dim": 339
+   },
+   "apd": {
+    "rho": 0.988972347,
+    "min_nonzero": 0.983155,
+    "dim": 339
+   },
+   "render": {
+    "rho": 0.988049417,
+    "min_nonzero": 0.980442,
+    "dim": 339
+   }
+  }
+ },
+ "apd_equals_play_shifted_1": 0.0
+}

@@ -1,0 +1,975 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>2011 Room Reverb</title>
+  <link rel="icon" href="/static/favicon.svg" type="image/svg+xml" />
+  <link rel="stylesheet" href="/static/css/app.css?v=34" />
+  <link rel="stylesheet" href="/static/css/sl_room_result.css?v=1" />
+  <link rel="stylesheet" href="/static/css/rr_controls.css?v=1" />
+</head>
+<body>
+  <div class="app">
+    <header class="topbar">
+      <div class="brand">
+        <span class="brand-mark"></span>
+        <div>
+          <h1>2011 Room Reverb</h1>
+          <p class="tagline">Place on Floor · orbit in 3D · sculpt the early field</p>
+        </div>
+      </div>
+      <p class="header-status" id="headerStatus" role="status"></p>
+      <div class="top-actions">
+        <label class="file-btn">
+          <input type="file" id="wavInput" accept="audio/wav,.wav" hidden />
+          <span>Upload WAV</span>
+        </label>
+        <button type="button" class="btn" id="liveBtn">Play live</button>
+        <span id="limiterLed" class="limiter-led" hidden>Limiter</span>
+        <button type="button" class="btn primary" id="renderBtn">Render</button>
+      </div>
+    </header>
+    <main class="layout">
+      <section class="stage">
+        <div class="view-switch" role="tablist" aria-label="Room views">
+          <button type="button" class="view-tab active" data-view="edit" role="tab" aria-selected="true">Room</button>
+          <button type="button" class="view-tab" data-view="source" role="tab">Source</button>
+          <button type="button" class="view-tab" data-view="mic" role="tab">Mic</button>
+          <button type="button" class="view-tab" data-view="mix" role="tab">Mix</button>
+          <button type="button" class="view-tab" data-view="space" role="tab">Space</button>
+          <button type="button" class="view-tab" data-view="surfaces" role="tab">Surfaces</button>
+          <button type="button" class="view-tab" data-view="polar" role="tab">Polar</button>
+        </div>
+
+        <div id="editViews">
+          <div class="view-row">
+            <div class="panel map-panel">
+              <div class="panel-head">
+                <h2>Floor plan</h2>
+                <span class="hint">Looking down from ceiling · bottom = Back / mic · top = Front / source · Left = −X</span>
+              </div>
+              <div class="tool-row">
+                <label class="link-heights" title="When on, source height and mic height stay equal">
+                  <input type="checkbox" id="link_heights" />
+                  <span>Link heights</span>
+                </label>
+                <span class="live-metres" id="liveMetres">—</span>
+              </div>
+              <div class="canvas-wrap">
+                <canvas id="floorCanvas" width="900" height="640" aria-label="Room floor plan XZ"></canvas>
+              </div>
+            </div>
+            <div class="panel view3d-panel">
+              <div class="panel-head">
+                <h2>3D room</h2>
+                <span class="hint">Drag orbit · Shift pan · scroll zoom · stays above the floor</span>
+              </div>
+              <div class="tool-row view3d-readout-row" hidden>
+                <span class="live-metres" id="liveMetres3d">—</span>
+              </div>
+              <div class="canvas-wrap view3d-wrap">
+                <canvas id="view3dCanvas" width="900" height="640" aria-label="3D room perspective"></canvas>
+              </div>
+            </div>
+          </div>
+          <div class="panel elev-panel">
+            <div class="panel-head">
+              <h2>Side elevation</h2>
+              <span class="hint">Looking from the right · mic left · source right · drag Src H / Mic H</span>
+            </div>
+            <div class="canvas-wrap">
+              <canvas id="elevCanvas" width="900" height="220" aria-label="Side elevation ZY"></canvas>
+            </div>
+          </div>
+        </div>
+
+
+        <div id="sourceViews" class="source-desk" hidden>
+          <div class="source-grid">
+            <div class="panel source-col">
+              <div class="panel-head">
+                <h2>Sources</h2>
+                <span class="honesty-badge honesty-assumed" id="sourceBadge" hidden>assumed</span>
+              </div>
+              <div class="place-row" role="group" aria-label="Which source">
+                <button type="button" class="chip active" id="sourceChipA">This track</button>
+                <button type="button" class="chip" id="sourceChipB" hidden>Source B</button>
+                <button type="button" class="chip" id="sourceLink" disabled title="Linked tracks are not in this build">+ Link track</button>
+              </div>
+              <label class="ctrl ctrl-select">
+                <span>Radiation</span>
+                <select id="sourcePreset" aria-label="Source radiation preset"></select>
+              </label>
+              <label class="ctrl"><span>Yaw</span><input type="range" id="sourceYaw" min="-180" max="180" step="1" value="0" /><input type="number" id="sourceYawNum" min="-180" max="180" step="1" value="0" aria-label="Yaw degrees" /></label>
+              <label class="ctrl"><span>Pitch</span><input type="range" id="sourcePitch" min="-89" max="89" step="1" value="0" /><input type="number" id="sourcePitchNum" min="-89" max="89" step="1" value="0" aria-label="Pitch degrees" /></label>
+              <label class="ctrl"><span>Size <em>m</em></span><input type="range" id="sourceSize" min="0.005" max="0.4" step="0.001" value="0.02" /><input type="number" id="sourceSizeNum" min="0.005" max="0.4" step="0.001" value="0.02" aria-label="Source size metres" /></label>
+              <p class="hint" id="sourceOnset">Size uses the preset radius until you move this.</p>
+              <div class="place-row">
+                <button type="button" class="chip" id="sourceFaceMic">Face mic</button>
+                <button type="button" class="chip" id="sourceFaceAway">Face away</button>
+                <button type="button" class="chip" id="sourceOmni">Omni</button>
+              </div>
+              <p class="hint" id="sourceOffMic">Omni. No facing.</p>
+              <details class="source-advanced">
+                <summary>Advanced</summary>
+                <p class="hint" id="sourceAim">Aim offset 0° az, 0° el (from the preset).</p>
+                <p class="hint">Facing changes the direct sound and the early reflections. The reverb tail keeps the instrument's average tone and does not change with facing.</p>
+              </details>
+            </div>
+            <div class="panel source-place">
+              <div class="panel-head">
+                <h2>Place and face</h2>
+                <span class="hint">Drag the dot to move. Drag the ring to aim. Shift snaps 15°. Double-click the ring faces the mic.</span>
+              </div>
+              <div class="canvas-wrap source-floor-wrap">
+                <canvas id="srcFloorCanvas" width="720" height="420" tabindex="0" aria-label="Source top view. Arrows aim, F faces the mic, O is omni."></canvas>
+              </div>
+              <div class="canvas-wrap source-elev-wrap">
+                <canvas id="srcElevCanvas" width="720" height="300" tabindex="0" aria-label="Source side view. The ring sets pitch."></canvas>
+              </div>
+            </div>
+            <div class="panel" id="sourcePolarPanel">
+              <div class="panel-head">
+                <h2>Radiation</h2>
+              </div>
+              <div class="place-row" role="group" aria-label="Frequency">
+                <button type="button" class="chip" data-src-freq="250">250</button>
+                <button type="button" class="chip" data-src-freq="500">500</button>
+                <button type="button" class="chip active" data-src-freq="1000">1k</button>
+                <button type="button" class="chip" data-src-freq="2000">2k</button>
+                <button type="button" class="chip" data-src-freq="4000">4k</button>
+                <button type="button" class="chip" data-src-freq="8000">8k</button>
+              </div>
+              <div class="place-row" role="group" aria-label="Polar plane">
+                <button type="button" class="chip active" data-src-plane="h">Horizontal</button>
+                <button type="button" class="chip" data-src-plane="v">Vertical</button>
+              </div>
+              <div class="canvas-wrap source-polar-wrap">
+                <canvas id="sourcePolar" width="520" height="420" aria-label="Source radiation polar"></canvas>
+              </div>
+              <div class="source-hear" aria-live="polite">
+                <h3>What the room hears</h3>
+                <p id="sourceHear">0 dB. Omni leaves the direct untouched.</p>
+                <p class="hint" id="sourceDiffuse">Omni. The tail is the unfiltered inject.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div id="micViews" class="mic-desk" hidden>
+          <div class="mic-desk-grid">
+            <div class="panel mic-map-panel">
+              <div class="panel-head">
+                <h2 id="micPlaneTitle">Top</h2>
+                <div class="place-row" id="micPlaneRow" role="group" aria-label="Mic view">
+                  <button type="button" class="chip active" id="micPlaneTop" data-plane="top">Top</button>
+                  <button type="button" class="chip" id="micPlaneSide" data-plane="side">Side</button>
+                </div>
+              </div>
+              <p class="hint" id="micPlaneHint">Scroll to zoom. Drag a capsule in or out. Drag the amber front to aim — it follows your hand.</p>
+              <span class="live-metres" id="liveMetresMic">—</span>
+              <div class="canvas-wrap mic-floor-wrap diagram-frame" id="micFloorFrame">
+                <button type="button" class="diagram-expand" aria-label="Enlarge top view">Enlarge</button>
+                <canvas id="micFloorCanvas" width="900" height="480" aria-label="Mic stand top plan (zoomed)"></canvas>
+              </div>
+            </div>
+            <div class="panel mic-3d-panel">
+              <div class="panel-head">
+                <h2>Combined pattern</h2>
+              </div>
+              <p class="hint" id="micHaloHint">The slice facing you. Orbit, and the plane turns with the view. This is not the frequency stack.</p>
+              <div class="canvas-wrap mic-3d-wrap diagram-frame" id="mic3dFrame">
+                <button type="button" class="diagram-expand" aria-label="Enlarge combined pattern">Enlarge</button>
+                <canvas id="mic3dCanvas" width="900" height="480" aria-label="Combined polar halo"></canvas>
+              </div>
+            </div>
+            
+          </div>
+        </div>
+
+        <div id="mixViews" class="desk-view" hidden>
+          <div class="desk-scroll">
+            <section class="desk-group" id="deskMics">
+              <div class="desk-group-head">
+                <span>Mics</span>
+                <div class="pair-row" id="pairModeRow" role="group" aria-label="Pair mode">
+                  <button type="button" data-pair="stereo" aria-pressed="true" title="Left and Right stay a stereo pair">Stereo pair</button>
+                  <button type="button" data-pair="ms" aria-pressed="false" title="One strip is Mid, one is Side">M/S pair</button>
+                  <button type="button" data-pair="independent" aria-pressed="false" title="Each mic stands alone">Independent</button>
+                </div>
+              </div>
+              <div class="pair-row" id="panLawRow" role="group" aria-label="Pan law">
+                <button type="button" data-pan-law="linear" aria-pressed="true" title="2011 linear pan. A centred mic is half on each speaker.">2011 linear</button>
+                <button type="button" data-pan-law="power" aria-pressed="false" title="Constant power. Centre keeps the same loudness.">Constant power</button>
+              </div>
+              <div id="msPickers" class="pair-row" hidden>
+                <label>S <select id="ms_s" aria-label="Which strip is S"><option value="l">L</option><option value="c">C</option><option value="r">R</option></select></label>
+                <label>M <select id="ms_m" aria-label="Which strip is M"><option value="l">L</option><option value="c" selected>C</option><option value="r">R</option></select></label>
+              </div>
+              <p class="hint desk-matrix" id="deskMatrix">—</p>
+              <div class="desk-strips">
+                <div class="desk-strip strip-l" data-cap="l">
+                  <div class="desk-name">Left</div>
+                  <div class="route-row lr-row" role="group" aria-label="Left send">
+                    <button type="button" class="lr-btn" data-lr="l" data-side="l" data-v="0">L</button>
+                    <button type="button" class="lr-btn" data-lr="l" data-side="r" data-v="0">R</button>
+                  </div>
+                  <div class="desk-knob" id="trimBox_l"><span>Trim</span><label class="knob"><input type="range" id="trim_l" min="-12" max="12" step="0.5" value="0" aria-label="Left trim" title="Trim in dB" /></label></div>
+                  <div class="desk-knob" id="widthBox_l" hidden><span>Width</span><label class="knob"><input type="range" id="width_l" min="-24" max="24" step="0.1" value="0" aria-label="Left width" title="Side width in dB" /></label></div>
+                  <div class="desk-knob" id="panBox_l"><span id="panLabel_l">Pan</span><label class="knob"><input type="range" id="pan_l" min="-1" max="1" step="0.01" value="-1" aria-label="Left pan" /></label></div>
+                  <button type="button" class="solo-btn" data-solo="l" aria-pressed="false" title="Hear only this mic. The other mics go quiet.">Solo</button>
+                  <div class="desk-slot"><span class="desk-zero"></span><input type="range" class="desk-fader" id="fader_l" min="0" max="1" step="0.001" value="0.5" aria-label="Left fader" title="Send level" /></div>
+                  <button type="button" class="desk-read" id="read_l" title="Send level in dB. Click to type.">0.0</button>
+                  <button type="button" class="desk-mini mute-btn" id="mute_l" aria-pressed="false" title="Silence this mic">Mute</button>
+                  <div class="route-row place-row" role="group" aria-label="Left place"><button type="button" data-place="l" data-name="array" title="This mic stays on the stand with the others">On stand</button><button type="button" data-place="l" data-name="room" title="This mic is placed at its own spot in the room">Room mic</button></div>
+                </div>
+                <div class="desk-strip strip-c" data-cap="c">
+                  <div class="desk-name">Centre</div>
+                  <div class="route-row lr-row" role="group" aria-label="Centre send">
+                    <button type="button" class="lr-btn" data-lr="c" data-side="l" data-v="0">L</button>
+                    <button type="button" class="lr-btn" data-lr="c" data-side="r" data-v="0">R</button>
+                  </div>
+                  <div class="desk-knob" id="trimBox_c"><span>Trim</span><label class="knob"><input type="range" id="trim_c" min="-12" max="12" step="0.5" value="0" aria-label="Centre trim" title="Trim in dB" /></label></div>
+                  <div class="desk-knob" id="widthBox_c" hidden><span>Width</span><label class="knob"><input type="range" id="width_c" min="-24" max="24" step="0.1" value="0" aria-label="Centre width" title="Side width in dB" /></label></div>
+                  <div class="desk-knob" id="panBox_c"><span id="panLabel_c">Pan</span><label class="knob"><input type="range" id="pan_c" min="-1" max="1" step="0.01" value="0" aria-label="Centre pan" /></label></div>
+                  <button type="button" class="solo-btn" data-solo="c" aria-pressed="false" title="Hear only this mic. The other mics go quiet.">Solo</button>
+                  <div class="desk-slot"><span class="desk-zero"></span><input type="range" class="desk-fader" id="fader_c" min="0" max="1" step="0.001" value="0.5" aria-label="Centre fader" title="Send level" /></div>
+                  <button type="button" class="desk-read" id="read_c" title="Send level in dB. Click to type.">0.0</button>
+                  <button type="button" class="desk-mini mute-btn" id="mute_c" aria-pressed="false" title="Silence this mic">Mute</button>
+                  <div class="route-row place-row" role="group" aria-label="Centre place"><button type="button" data-place="c" data-name="array" title="This mic stays on the stand with the others">On stand</button><button type="button" data-place="c" data-name="room" title="This mic is placed at its own spot in the room">Room mic</button></div>
+                </div>
+                <div class="desk-strip strip-r" data-cap="r">
+                  <div class="desk-name">Right</div>
+                  <div class="route-row lr-row" role="group" aria-label="Right send">
+                    <button type="button" class="lr-btn" data-lr="r" data-side="l" data-v="0">L</button>
+                    <button type="button" class="lr-btn" data-lr="r" data-side="r" data-v="0">R</button>
+                  </div>
+                  <div class="desk-knob" id="trimBox_r"><span>Trim</span><label class="knob"><input type="range" id="trim_r" min="-12" max="12" step="0.5" value="0" aria-label="Right trim" title="Trim in dB" /></label></div>
+                  <div class="desk-knob" id="widthBox_r" hidden><span>Width</span><label class="knob"><input type="range" id="width_r" min="-24" max="24" step="0.1" value="0" aria-label="Right width" title="Side width in dB" /></label></div>
+                  <div class="desk-knob" id="panBox_r"><span id="panLabel_r">Pan</span><label class="knob"><input type="range" id="pan_r" min="-1" max="1" step="0.01" value="1" aria-label="Right pan" /></label></div>
+                  <button type="button" class="solo-btn" data-solo="r" aria-pressed="false" title="Hear only this mic. The other mics go quiet.">Solo</button>
+                  <div class="desk-slot"><span class="desk-zero"></span><input type="range" class="desk-fader" id="fader_r" min="0" max="1" step="0.001" value="0.5" aria-label="Right fader" title="Send level" /></div>
+                  <button type="button" class="desk-read" id="read_r" title="Send level in dB. Click to type.">0.0</button>
+                  <button type="button" class="desk-mini mute-btn" id="mute_r" aria-pressed="false" title="Silence this mic">Mute</button>
+                  <div class="route-row place-row" role="group" aria-label="Right place"><button type="button" data-place="r" data-name="array" title="This mic stays on the stand with the others">On stand</button><button type="button" data-place="r" data-name="room" title="This mic is placed at its own spot in the room">Room mic</button></div>
+                </div>
+              </div>
+            </section>
+            <section class="desk-group" id="deskBuses">
+              <div class="desk-group-head">
+                <span>Buses</span>
+                <button type="button" class="desk-lock" id="naturalBtn" aria-pressed="false">Natural</button>
+              </div>
+              <div class="desk-strips">
+                <div class="desk-strip strip-direct" data-mix="direct">
+                  <div class="desk-name">Direct</div>
+                  <div class="desk-knob"><span>Trim</span><label class="knob"><input type="range" id="trim_direct" min="-12" max="12" step="0.5" value="0" aria-label="Direct trim" title="Trim in dB" /></label></div>
+                  <button type="button" class="solo-btn" data-solo="direct" aria-pressed="false" title="Hear only this bus. The other buses go quiet.">Solo</button>
+                  <div class="desk-slot"><span class="desk-zero"></span><input type="range" class="desk-fader" id="fader_direct" min="0" max="1" step="0.001" value="0" aria-label="Direct fader" title="Send level" /></div>
+                  <button type="button" class="desk-read" id="read_direct" title="Send level in dB. Click to type.">0.0</button>
+                  <button type="button" class="desk-mini mute-btn" id="mute_direct" aria-pressed="false" title="Silence this bus">Mute</button>
+                </div>
+                <div class="desk-strip strip-fdn" data-mix="fdn">
+                  <div class="desk-name">FDN</div>
+                  <div class="desk-knob"><span>Trim</span><label class="knob"><input type="range" id="trim_fdn" min="-12" max="12" step="0.5" value="0" aria-label="FDN trim" title="Trim in dB" /></label></div>
+                  <button type="button" class="solo-btn" data-solo="fdn" aria-pressed="false" title="Hear only this bus. The other buses go quiet.">Solo</button>
+                  <div class="desk-slot"><span class="desk-zero"></span><input type="range" class="desk-fader" id="fader_fdn" min="0" max="1" step="0.001" value="0.5" aria-label="FDN fader" title="Send level" /></div>
+                  <label class="desk-decay">
+                    <span>Decay <em>s</em></span>
+                    <input type="range" id="decay_s" min="0.05" max="8" step="0.01" value="1.8" aria-label="Decay seconds" title="Decay length in seconds" />
+                    <output id="decay_s_out">1.80</output>
+                  </label>
+                  <button type="button" class="desk-read" id="read_fdn" title="Send level in dB. Click to type.">0.0</button>
+                  <button type="button" class="desk-mini mute-btn" id="mute_fdn" aria-pressed="false" title="Silence this bus">Mute</button>
+                </div>
+                <div class="desk-strip strip-early" data-mix="early">
+                  <div class="desk-name">Early</div>
+                  <div class="desk-knob"><span>Trim</span><label class="knob"><input type="range" id="trim_early" min="-12" max="12" step="0.5" value="0" aria-label="Early trim" title="Trim in dB" /></label></div>
+                  <button type="button" class="solo-btn" data-solo="early" aria-pressed="false" title="Hear only this bus. The other buses go quiet.">Solo</button>
+                  <div class="desk-slot"><span class="desk-zero"></span><input type="range" class="desk-fader" id="fader_early" min="0" max="1" step="0.001" value="0" aria-label="Early fader" title="Send level" /></div>
+                  <button type="button" class="desk-read" id="read_early" title="Send level in dB. Click to type.">−∞</button>
+                  <button type="button" class="desk-mini mute-btn" id="mute_early" aria-pressed="false" title="Silence this bus">Mute</button>
+                </div>
+                <div class="desk-strip strip-dry" data-mix="dry">
+                  <div class="desk-name">Host</div>
+                  <div class="desk-knob"><span>Trim</span><label class="knob"><input type="range" id="trim_dry" min="-12" max="12" step="0.5" value="0" aria-label="Host dry trim" title="Trim in dB" /></label></div>
+                  <button type="button" class="solo-btn" data-solo="dry" aria-pressed="false" title="Hear only this bus. The other buses go quiet.">Solo</button>
+                  <div class="desk-slot"><span class="desk-zero"></span><input type="range" class="desk-fader" id="fader_dry" min="0" max="1" step="0.001" value="0" aria-label="Host dry fader" title="Send level" /></div>
+                  <button type="button" class="desk-read" id="read_dry" title="Send level in dB. Click to type.">−∞</button>
+                  <button type="button" class="desk-mini mute-btn" id="mute_dry" aria-pressed="false" title="Silence this bus">Mute</button>
+                </div>
+              </div>
+            </section>
+          </div>
+          <p class="hint" id="decayHint">Decay is armed at 1.80 s. Play live and Render use that length.</p>
+          <label class="check" id="physCeilingRow">
+            <input type="checkbox" id="phys_ceiling" checked />
+            <span>Physical ceiling</span>
+          </label>
+          <label class="check" id="subHpRow">
+            <input type="checkbox" id="sub_hp" checked />
+            <span>Rumble filter</span>
+          </label>
+          <p class="hint" id="physReadout" hidden></p>
+          <p class="hint" id="mixHint">0 dB is the calibrated send. L and R choose the speakers; click again for Ø. Stereo mic gangs Left and Right. Natural sets Direct and FDN to 0 dB and gangs them. Solo leaves the faders put.</p>
+        </div>
+
+        <div id="imageViews" class="panel image-panel" hidden>
+          <div class="panel-head">
+            <h2 id="imageViewTitle">Image lattice</h2>
+            <div class="mic-toggles" id="micToggles">
+              <span class="mic-label">Mics</span>
+              <label class="mic-chip"><input type="checkbox" data-mic="L" checked /> L</label>
+              <label class="mic-chip"><input type="checkbox" data-mic="C" /> C</label>
+              <label class="mic-chip"><input type="checkbox" data-mic="R" checked /> R</label>
+              <button type="button" class="mic-all" id="micAll">All</button>
+            </div>
+            <div class="cam-cluster" role="group" aria-label="Space camera">
+              <button type="button" id="spaceZoomOut" aria-label="Zoom out">−</button>
+              <button type="button" id="spaceZoomIn" aria-label="Zoom in">+</button>
+              <button type="button" id="spaceFit">Fit</button>
+            </div>
+          </div>
+          <p class="hint" id="imageViewHint">Drag to orbit · right-drag or Shift to pan · scroll to zoom · double-click to reset</p>
+          <div class="tool-row" id="spaceModeRow" role="group" aria-label="Space view">
+            <span class="mic-label">View</span>
+            <button type="button" class="chip space-mode-chip active" data-space-mode="lattice" aria-pressed="true">Lattice</button>
+            <button type="button" class="chip space-mode-chip" data-space-mode="paths" aria-pressed="false">Paths</button>
+            <button type="button" class="chip space-mode-chip" data-space-mode="legs" aria-pressed="false">Last legs</button>
+          </div>
+          <div class="tool-row">
+            <span class="live-metres" id="liveMetresImg">—</span>
+          </div>
+          <div class="canvas-wrap image-wrap">
+            <canvas id="imageCanvas" width="1200" height="720" aria-label="Early-field image view"></canvas>
+          </div>
+        </div>
+
+        
+        <div id="surfacesViews" hidden>
+            <div class="panel surfaces-panel" id="surfacesPanel">
+              <div class="panel-head">
+                <h2>Surfaces <span class="assumed-tag">ASSUMED</span></h2>
+                <span class="hint">A–F absorb · EQ · seeded path-length jitter · not Structure-locked wall EQ</span>
+              </div>
+              <p class="assumed-banner" id="surfacesBanner">
+                Pick a material for the selected face. Curtain stays on walls. Carpet stays on the floor.
+                Solo and Mute are on this tab only. The direct sound does not change.
+              </p>
+              <div class="room-net-wrap">
+                <div class="room-net-caption">
+                  Room net · click a face
+                  <span class="assumed-tag">ASSUMED orientation</span>
+                  <span class="rn-compass-hint" title="+Z is Front / Ahead">compass: Front = +Z</span>
+                </div>
+                <div class="room-net" id="roomNet" role="listbox" aria-label="Room surface net A–F">
+                  <!-- filled by colour_surfaces.js -->
+                </div>
+              </div>
+              <div class="material-row" id="materialChips">
+                <span class="material-label">Material</span>
+              </div>
+              <div class="material-help">
+                <button type="button" class="chip" id="materialPaintAll" aria-pressed="false">All legal faces</button>
+                <p class="hint" id="materialHint">Click a material to paint the selected face. Grey materials are not allowed on this face. Shift-click, or All legal faces, paints every face that material may use.</p>
+              </div>
+              <p class="hint" id="surfaceHonesty">No material preset on this face yet.</p>
+              <p class="hint" id="surfaceSoloHint"></p>
+              <div class="surf-audition" id="surfAudition">
+                <button type="button" class="chip" id="surfacesSoloOff">Solo off</button>
+                <span class="hint">Solo hears one face. Mute drops that face. The direct sound stays.</span>
+              </div>
+              <div class="surface-cards" id="surfaceCards" role="listbox" aria-label="Surfaces A–F list"></div>
+              <div class="surface-detail" id="surfaceDetail">
+                <div class="surface-detail-head">
+                  <h3 id="surfaceDetailTitle">Surface A</h3>
+                  <span class="hint" id="surfaceDetailHint">—</span>
+                </div>
+                <div class="surface-graphs">
+                  <div class="surf-graph-block">
+                    <div class="surf-graph-label">Absorption vs frequency <em>ASSUMED</em></div>
+                    <canvas id="absorbCanvas" width="520" height="160" aria-label="Absorb curve"></canvas>
+                    <div class="absorb-sliders" id="absorbSliders"></div>
+                  </div>
+                  <div class="surf-graph-block">
+                    <div class="surf-graph-label">Surface EQ <em>ASSUMED shelves / peak</em></div>
+                    <canvas id="eqCanvas" width="520" height="160" aria-label="EQ curve"></canvas>
+                    <div class="eq-controls" id="eqControls"></div>
+                  </div>
+                </div>
+                <details class="surfaces-advanced" id="surfacesAdvanced">
+                  <summary>Advanced</summary>
+                  <div class="diff-split">
+                    <div class="diff-group">
+                      <p class="diff-group-label">Surfaces</p>
+                      <label class="ctrl diffusion-ctrl">
+                        <span>Smear <em>reflection timing</em></span>
+                        <input type="range" id="jitterSlider" min="0" max="1" step="0.01" value="0.15" />
+                        <output id="jitterOut">0.15</output>
+                      </label>
+                    </div>
+                    <div class="diff-group">
+                      <p class="diff-group-label">Structure</p>
+                      <label class="ctrl diffusion-ctrl">
+                        <span>Tail diffusion <em>how the reverb starts</em></span>
+                        <input type="range" id="structureDifSlider" min="0" max="1" step="0.01" value="0.15" />
+                        <output id="structureDifOut">0.15</output>
+                      </label>
+                    </div>
+                  </div>
+                  <div class="diffusion-global">
+                    <label class="ctrl">
+                      <span>Diffusion seed <em>ASSUMED · per render</em></span>
+                      <input type="number" id="diffusion_seed" min="0" step="1" value="0" />
+                    </label>
+                    <label class="ctrl">
+                      <span>λ_ref <em>m ASSUMED roughness</em></span>
+                      <input type="number" id="lambda_ref" min="0" max="1" step="0.001" value="0.02" />
+                    </label>
+                  </div>
+                  <p class="surface-workflow">
+                    Smear only moves reflection timing. Tail diffusion only changes how the reverb starts.
+                    They do not move each other. Smear at 0 keeps each reflection sharp.
+                  </p>
+                </details>
+              </div>
+            </div>
+            <div class="panel colour-panel">
+              <div class="panel-head">
+                <h2>Room colour</h2>
+                <span class="hint">What the faces above do to the wet sound · 1/3 octave · updates after Render</span>
+              </div>
+              <p class="hint">Analyser of the wet sound. Hold A, change a face above, Render, then compare.</p>
+              <div class="colour-toolbar" id="colourToolbar" role="toolbar" aria-label="Colour compare and reference">
+                <div class="colour-legend" id="colourLegend" aria-live="polite">
+                  <span class="cleg now active"><i></i>Now</span>
+                  <span class="cleg last"><i></i>Last</span>
+                  <span class="cleg holda"><i></i>Hold A</span>
+                  <span class="cleg holdb"><i></i>Hold B</span>
+                </div>
+                <div class="colour-tools">
+                  <label class="colour-ref">
+                    <span>0 dB</span>
+                    <select id="colourRefMode" title="dB reference">
+                      <option value="peak" selected>Peak band</option>
+                      <option value="1khz">1 kHz</option>
+                    </select>
+                  </label>
+                  <button type="button" class="chip colour-hold-btn" id="colourHoldA" title="Snapshot Now into Hold A">Hold A</button>
+                  <button type="button" class="chip colour-hold-btn" id="colourHoldB" title="Snapshot Now into Hold B">Hold B</button>
+                  <button type="button" class="chip" id="colourClearCompare" title="Clear Last and Holds">Clear</button>
+                </div>
+              </div>
+              <div class="colour-face-badge" id="colourFaceBadge" title="Selected surface orientation (ASSUMED)">
+                <span class="cfb-arrow" id="colourFaceArrow">←</span>
+                <span class="cfb-text">
+                  <strong id="colourFaceName">A · Left</strong>
+                  <em id="colourFaceAxis">faces −X · ASSUMED</em>
+                </span>
+              </div>
+              <div class="colour-meta" id="colourMeta">Render to see room colouration</div>
+              <div class="colour-hover" id="colourHover" hidden>—</div>
+              <div class="canvas-wrap colour-wrap">
+                <canvas id="colourCanvas" width="1100" height="400" aria-label="1/3-octave Colour curve"></canvas>
+                <div class="colour-tooltip" id="colourTooltip" hidden></div>
+              </div>
+              <div class="colour-spark-block" id="colourSparkBlock">
+                <div class="surf-graph-label">This face · absorb×EQ <em id="colourSparkLabel">A · Left · faces −X · ASSUMED</em></div>
+                <canvas id="colourSparkCanvas" width="1100" height="72" aria-label="Selected surface EQ sparkline"></canvas>
+              </div>
+            </div>
+            <div class="panel" id="airCard">
+              <div class="panel-head"><h2>Air</h2></div>
+              <label class="ctrl" id="humidity_label" title="Relative humidity 50%"><span>Air amount (humidity)</span><input type="range" id="humidity" min="0" max="1" step="0.01" value="0.35" title="Relative humidity 50%" /><output id="humidity_out">50% RH</output></label>
+              <label class="ctrl"><span>Climate</span>
+                <select id="air_climate">
+                  <option value="studio_20C_50RH">Studio 20 °C / 50% RH</option>
+                  <option value="dry_20C_20RH">Dry 20 °C / 20% RH</option>
+                  <option value="humid_20C_80RH">Humid 20 °C / 80% RH</option>
+                  <option value="warm_22C_40RH">Warm 22 °C / 40% RH</option>
+                </select>
+              </label>
+              <label class="ctrl"><span>ISO depth</span><input type="range" id="air_shelf" min="0" max="1" step="0.01" value="1" /><output id="air_shelf_out">1.00</output></label>
+              <p class="hint">Air amount 0 = off. Right is drier air, so more high-frequency loss. ISO depth is the shelf mix on the early images. Direct has no air, and neither does the FDN return. The 2011 one-pole is under Advanced.</p>
+            </div>
+        </div>
+        <div id="polarViews" hidden>
+          <div class="panel polar-panel" id="polarPanel">
+            <div class="panel-head">
+              <h2>Polar</h2>
+              <div class="place-row" id="polarPageRow" role="group" aria-label="Polar page">
+                <button type="button" class="chip active" data-polar-page="combined" aria-pressed="true">Combined</button>
+                <button type="button" class="chip" data-polar-page="each" aria-pressed="false">Each mic</button>
+                <button type="button" class="chip" data-polar-page="speakers" aria-pressed="false">At speakers</button>
+              </div>
+            </div>
+            <div id="polarCombined">
+              <p class="assumed-banner" id="polarBanner">Measured: radius = pattern × mic colour. Rings at 20, 63, 125, 250, 1k, 4k, 8k, 16k. No low-frequency omni morph.</p>
+              <div class="polar-toggles" id="polarToggles">
+                <label class="polar-chip"><input type="checkbox" data-polar="L" /> L</label>
+                <label class="polar-chip"><input type="checkbox" data-polar="C" /> C</label>
+                <label class="polar-chip"><input type="checkbox" data-polar="R" /> R</label>
+                <label class="polar-chip sum"><input type="checkbox" data-polar="sum" checked /> Sum</label>
+                <button type="button" class="chip" id="polarRefresh">Refresh</button>
+                <span class="hint" id="polarMeta">—</span>
+              </div>
+              <div class="canvas-wrap polar-wrap" id="polarWrap">
+                <canvas id="polarCanvas" width="900" height="520" aria-label="3D polar field"></canvas>
+              </div>
+              <p class="hint">Combined uses the same polar field as the Mic source plane.</p>
+            </div>
+            <div id="polarEachHost" hidden></div>
+            <div id="polarSpeakers" hidden>
+              <p class="hint">Each speaker is the desk matrix times the three capsules, with the spacing delay from the centre mic.</p>
+              <canvas id="polarSpeakerCanvas" width="900" height="420" aria-label="Level at the speakers"></canvas>
+            </div>
+          </div>
+        </div>
+      </section>
+      <aside class="sidebar">
+        <button type="button" class="chip room-size-chip" id="roomSizeChip" hidden>6.0 x 8.0 x 3.0 m</button>
+        <div class="panel" id="panelRoom" data-sidebar="room">
+          <div class="panel-head"><h2>Room size</h2></div>
+          <div class="place-row" id="placeRow" role="group" aria-label="Room places">
+            <button type="button" class="chip" data-place="studio">Studio</button>
+            <button type="button" class="chip" data-place="club">Club</button>
+            <button type="button" class="chip" data-place="hall">Hall</button>
+          </div>
+          <p class="hint">Places set size and a starting source/mic. Hall is the 2011 dump.</p>
+          <label class="ctrl"><span>Width <em>m</em></span><input type="range" id="W" min="1" max="80" step="0.1" value="6" /><output id="W_out">6.0</output></label>
+          <label class="ctrl"><span>Ceiling <em>m</em></span><input type="range" id="H" min="1" max="40" step="0.1" value="3" /><output id="H_out">3.0</output></label>
+          <label class="ctrl"><span>Length <em>m</em></span><input type="range" id="L" min="2" max="120" step="0.5" value="8" /><output id="L_out">8.0</output></label>
+          <label class="check" id="smoothRow">
+            <input type="checkbox" id="smooth" checked />
+            <span>Smooth</span>
+          </label>
+          <label class="ctrl" id="movementRow" hidden>
+            <span>Movement</span>
+            <input type="range" id="movement" min="0" max="100" step="1" value="0" />
+            <output id="movement_out">Off</output>
+          </label>
+        </div>
+        <div class="panel" id="panelListen" data-sidebar="listen">
+          <div class="panel-head"><h2>Listen</h2></div>
+          <label class="ctrl ctrl-select">
+            <span>Mic setup</span>
+            <select id="mic_setup" aria-label="Mic setup">
+              <option value="ab_omni">AB spaced pair (omni)</option>
+              <option value="ab_card">AB spaced pair (cardioid)</option>
+              <option value="xy_90">XY coincident 90°</option>
+              <option value="xy_120">XY 120°</option>
+              <option value="ortf" selected>ORTF</option>
+              <option value="ortf_c">ORTF + C</option>
+              <option value="nos">NOS</option>
+              <option value="din">DIN</option>
+              <option value="ms">MS — omni mid, cardioids inward</option>
+              <option value="ms_a">MS · omni Mid + fig‑8 Side</option>
+              <option value="ms_b">MS · cardioid Mid + fig‑8 Side</option>
+              <option value="ms_c">MS · cardioid Mid + two back‑to‑back cardioids</option>
+              <option value="mono_c">Mono centre</option>
+              <option value="binaural">Binaural (dummy head)</option>
+              <option value="custom">Custom</option>
+            </select>
+          </label>
+          <p class="hint mic-setup-hint" id="micSetupHint">Snaps space, polar family, and L/R fronts — then tweak freely.</p>
+          <p class="hint" id="binauralNote" hidden>Binaural: listen on headphones. Speakers will not reproduce the head cues.</p>
+          <label class="ctrl ctrl-select" id="headPresetRow" hidden>
+            <span>Head</span>
+            <select id="binaural_preset" aria-label="Dummy head">
+              <option value="SADIE2_KU100" selected title="SADIE II, Apache-2.0">SADIE II KU100</option>
+              <option value="SADIE2_KEMAR" title="SADIE II, Apache-2.0">SADIE II KEMAR</option>
+              <option value="THK_KU100_FF" title="TH Köln, CC BY-SA 3.0">TH Köln KU100</option>
+            </select>
+          </label>
+          <label class="ctrl" id="headYawRow" hidden><span>Head yaw <em>deg</em></span><input type="range" id="head_yaw" min="-180" max="180" step="1" value="0" /><output id="head_yaw_out">0</output></label>
+          <label class="ctrl" id="spaceRow"><span id="spaceLabel">Capsule space <em>m</em></span><input type="range" id="space" min="0" max="6" step="0.01" value="0.17" /><output id="space_out">0.17</output></label>
+          <label class="ctrl"><span>Stand X <em>m</em></span><input type="range" id="mcx" min="0" max="40" step="0.01" value="3" /><output id="mcx_out">3.00</output></label>
+          <label class="ctrl"><span>Stand Z <em>m</em></span><input type="range" id="mcz" min="0" max="60" step="0.01" value="1.5" /><output id="mcz_out">1.50</output></label>
+          <label class="ctrl"><span>Mic height <em>m</em></span><input type="range" id="my" min="0" max="20" step="0.01" value="1.5" /><output id="my_out">1.50</output></label>
+          <label class="ctrl"><span>Src height <em>m</em></span><input type="range" id="sy" min="0" max="20" step="0.01" value="1.2" /><output id="sy_out">1.20</output></label>
+          
+          <!-- Hidden legacy fields for API compat -->
+          <input type="hidden" id="diverg" value="1" />
+          <input type="hidden" id="toe_half_deg" value="55" />
+          <input type="hidden" id="car_omni" value="1" />
+        </div>
+                <div class="panel" id="panelMics" data-sidebar="mics" hidden>
+          <div class="panel-head"><h2>Mics</h2></div>
+<aside class="mic-polar-tools" id="micToolsMove" aria-label="Mic alignment and presets">
+                  <label class="ctrl ctrl-select" id="colourModeRow">
+                    <span>Colour</span>
+                    <select id="colour_mode" aria-label="Colour mode">
+                      <option value="MEASURED_SHELF" selected>Measured</option>
+                      <option value="ASSUMED_TOYS">User defined</option>
+                      <option value="BYPASS">Bypass</option>
+                    </select>
+                  </label>
+                  <p class="hint pattern-lock" id="patternLockSide" hidden></p>
+                  <label class="link-heights" id="alignHorizontalRow" title="Put L, C and R on one line, and keep the side mics at one height">
+                    <input type="checkbox" id="align_horizontal" checked />
+                    <span>Horizontally aligned</span>
+                  </label>
+                  <div class="pair-row" id="linkModeRow" role="group" aria-label="L and R link">
+                    <button type="button" data-link="mirror" aria-pressed="true">Mirror</button>
+                    <button type="button" data-link="linked" aria-pressed="false">Linked</button>
+                    <button type="button" data-link="split" aria-pressed="false">Split</button>
+                  </div>
+                  <input type="checkbox" id="link_lr_yaw" checked hidden />
+                  <div class="pair-row" id="thirdMicRow" role="group" aria-label="Third mic">
+                    <button type="button" data-third="off" aria-pressed="true">Off</button>
+                    <button type="button" data-third="centre" aria-pressed="false">Centre</button>
+                    <button type="button" data-third="room" aria-pressed="false">Room</button>
+                  </div>
+                  <p class="hint" id="sRouteHint"></p>
+                  <label class="link-heights" title="When on, source height and mic height stay equal">
+                    <input type="checkbox" id="link_heights_mic" />
+                    <span>Link heights</span>
+                  </label>
+                  <div class="mic-choice" id="sideMicChoice">
+                    <label class="ctrl ctrl-select js-preset" id="sidePresetShared">
+                      <span>Side mics</span>
+                      <select id="mic_preset_side" aria-label="Side mic preset">
+                        <option value="ShureSM57">Shure SM57 — dynamic cardioid</option>
+                      </select>
+                    </label>
+                    <label class="link-heights" id="micHpfSidesRow" title="Manufacturer high-pass on the side mics">
+                      <input type="checkbox" id="mic_hpf_sides" />
+                      <span id="micHpfSidesLabel">Side high-pass</span>
+                    </label>
+                    <p class="hint" id="micHpfSidesHint">This microphone has none.</p>
+                    <label class="link-heights" id="proxLRow" hidden title="Proximity shelf on the left capsule inside 0.5 m. Hiding does not turn it off.">
+                      <input type="checkbox" id="prox_l" checked />
+                      <span>L proximity</span>
+                    </label>
+                    <label class="link-heights" id="proxRRow" hidden title="Proximity shelf on the right capsule inside 0.5 m. Hiding does not turn it off.">
+                      <input type="checkbox" id="prox_r" checked />
+                      <span>R proximity</span>
+                    </label>
+                    <div id="sidePatternBlock">
+                      <div id="sidePatternShared" class="js-pattern">
+                        <p class="hint">Pattern · L and R together</p>
+                        <label class="ctrl ctrl-select">
+                          <span>Family</span>
+                          <select id="family_side" aria-label="Side family">
+                            <option value="cardioid" selected>Cardioid family</option>
+                            <option value="bi">Bidirectional</option>
+                          </select>
+                        </label>
+                        <label class="ctrl">
+                          <span>Polar</span>
+                          <input type="range" id="polar_side" min="0" max="1" step="0.01" value="0.5" />
+                          <output id="polar_side_out">Cardioid</output>
+                        </label>
+                      </div>
+                      <label class="link-heights" id="sideSplitRow" hidden title="Own preset and pattern per side">
+                        <input type="checkbox" id="side_split" />
+                        <span>Split L/R</span>
+                      </label>
+                      <p class="hint" id="sideSplitHint"></p>
+                      <div id="sidePatternSplit" hidden>
+                        <p class="hint">Left</p>
+                        <label class="ctrl ctrl-select js-preset">
+                          <span>Preset</span>
+                          <select id="mic_preset_l" aria-label="Left mic preset">
+                            <option value="ShureSM57">Shure SM57 — dynamic cardioid</option>
+                          </select>
+                        </label>
+                        <div class="js-pattern">
+                          <label class="ctrl ctrl-select">
+                            <span>Family</span>
+                            <select id="family_l" aria-label="L family">
+                              <option value="cardioid" selected>Cardioid family</option>
+                              <option value="bi">Bidirectional</option>
+                            </select>
+                          </label>
+                          <label class="ctrl">
+                            <span>Polar</span>
+                            <input type="range" id="polar_l" min="0" max="1" step="0.01" value="0.5" />
+                            <output id="polar_l_out">Cardioid</output>
+                          </label>
+                        </div>
+                        <div id="sideSplitR">
+                        <p class="hint">Right</p>
+                        <label class="ctrl ctrl-select js-preset" id="micPresetRRow">
+                          <span>Preset</span>
+                          <select id="mic_preset_r" aria-label="Right mic preset">
+                            <option value="ShureSM57">Shure SM57 — dynamic cardioid</option>
+                          </select>
+                        </label>
+                        <label class="link-heights" id="micHpfRRow" title="Manufacturer high-pass on the right mic">
+                          <input type="checkbox" id="mic_hpf_r" />
+                          <span id="micHpfRLabel">Right high-pass</span>
+                        </label>
+                        <p class="hint" id="micHpfRHint">This microphone has none.</p>
+                        <div class="js-pattern" id="rPatternBlock">
+                          <label class="ctrl ctrl-select">
+                            <span>Family</span>
+                            <select id="family_r" aria-label="R family">
+                              <option value="cardioid" selected>Cardioid family</option>
+                              <option value="bi">Bidirectional</option>
+                            </select>
+                          </label>
+                          <label class="ctrl">
+                            <span>Polar</span>
+                            <input type="range" id="polar_r" min="0" max="1" step="0.01" value="0.5" />
+                            <output id="polar_r_out">Cardioid</output>
+                          </label>
+                        </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="mic-choice" id="centreMicChoice">
+                    <label class="ctrl ctrl-select js-preset" id="centrePresetRow">
+                      <span>Centre mic</span>
+                      <select id="mic_preset_centre" aria-label="Centre mic preset">
+                        <option value="ShureSM57">Shure SM57 — dynamic cardioid</option>
+                      </select>
+                    </label>
+                    <label class="link-heights" id="micHpfCentreRow" title="Manufacturer high-pass on the centre mic">
+                      <input type="checkbox" id="mic_hpf_centre" />
+                      <span id="micHpfCentreLabel">Centre high-pass</span>
+                    </label>
+                    <p class="hint" id="micHpfCentreHint">This microphone has none.</p>
+                    <label class="link-heights" id="proxCRow" hidden title="Proximity shelf on the centre capsule inside 0.5 m. Hiding does not turn it off.">
+                      <input type="checkbox" id="prox_c" checked />
+                      <span>C proximity</span>
+                    </label>
+                    <div id="centrePatternBlock" class="js-pattern">
+                      <p class="hint">Pattern</p>
+                      <label class="ctrl ctrl-select">
+                        <span>Family</span>
+                        <select id="family_c" aria-label="C family">
+                          <option value="cardioid" selected>Cardioid family</option>
+                          <option value="bi">Bidirectional</option>
+                        </select>
+                      </label>
+                      <label class="ctrl">
+                        <span>Polar</span>
+                        <input type="range" id="polar_c" min="0" max="1" step="0.01" value="0.5" />
+                        <output id="polar_c_out">Cardioid</output>
+                      </label>
+                    </div>
+                  </div>
+                  <div id="roomFields" hidden>
+                    <div data-room-spot="l" hidden>
+                      <p class="hint room-window-title">Room mic (L)</p>
+                      <label class="ctrl"><span>X <em>m</em></span><input type="number" id="room_l_x" step="0.01" /></label>
+                      <label class="ctrl"><span>Z <em>m</em></span><input type="number" id="room_l_z" step="0.01" /></label>
+                      <label class="ctrl"><span>Height <em>m</em></span><input type="number" id="room_l_y" step="0.01" /></label>
+                      <label class="ctrl"><span>Aim <em>deg</em></span><input type="number" id="room_l_yaw" step="0.1" /></label>
+                      <p class="hint room-read" data-room-read="source">Source: — m</p>
+                      <p class="hint room-read" data-room-read="wall">Nearest wall: — m</p>
+                      <canvas class="room-polar" id="roomPolarL" width="140" height="140" aria-label="Left room mic polar"></canvas>
+                      <div class="pair-row"><button type="button" data-place="l" data-name="array">Return to stand</button></div>
+                    </div>
+                    <div data-room-spot="c" hidden>
+                      <p class="hint room-window-title">Room mic (C)</p>
+                      <label class="ctrl"><span>X <em>m</em></span><input type="number" id="room_c_x" step="0.01" /></label>
+                      <label class="ctrl"><span>Z <em>m</em></span><input type="number" id="room_c_z" step="0.01" /></label>
+                      <label class="ctrl"><span>Height <em>m</em></span><input type="number" id="room_c_y" step="0.01" /></label>
+                      <label class="ctrl"><span>Aim <em>deg</em></span><input type="number" id="room_c_yaw" step="0.1" /></label>
+                      <p class="hint room-read" data-room-read="source">Source: — m</p>
+                      <p class="hint room-read" data-room-read="wall">Nearest wall: — m</p>
+                      <div data-room-park="c"></div>
+                      <canvas class="room-polar" id="roomPolarC" width="140" height="140" aria-label="Centre room mic polar"></canvas>
+                      <div class="pair-row"><button type="button" data-place="c" data-name="array">Return to stand</button></div>
+                    </div>
+                    <div data-room-spot="r" hidden>
+                      <p class="hint room-window-title">Room mic (R)</p>
+                      <label class="ctrl"><span>X <em>m</em></span><input type="number" id="room_r_x" step="0.01" /></label>
+                      <label class="ctrl"><span>Z <em>m</em></span><input type="number" id="room_r_z" step="0.01" /></label>
+                      <label class="ctrl"><span>Height <em>m</em></span><input type="number" id="room_r_y" step="0.01" /></label>
+                      <label class="ctrl"><span>Aim <em>deg</em></span><input type="number" id="room_r_yaw" step="0.1" /></label>
+                      <p class="hint room-read" data-room-read="source">Source: — m</p>
+                      <p class="hint room-read" data-room-read="wall">Nearest wall: — m</p>
+                      <div data-room-park="r"></div>
+                      <canvas class="room-polar" id="roomPolarR" width="140" height="140" aria-label="Right room mic polar"></canvas>
+                      <div class="pair-row"><button type="button" data-place="r" data-name="array">Return to stand</button></div>
+                    </div>
+                  </div>
+                </aside>
+          <details class="capsule-toys" id="capsuleColour" hidden>
+            <summary>User defined capsule</summary>
+            <label class="ctrl"><span>Mic response <em>Hz</em></span><input type="range" id="mic_response_hz" min="10000" max="20000" step="100" value="10000" /><output id="mic_response_hz_out">10000</output></label>
+            <label class="ctrl"><span>Capsule size <em>mm</em></span><input type="range" id="capsule_mm" min="12" max="25" step="0.5" value="17" /><output id="capsule_mm_out">17</output></label>
+            <p class="hint">Mic response and capsule size do not drive Measured. User defined still uses capsule size on the early path.</p>
+          </details>
+        </div>
+        <div class="panel" id="panelHadamard" data-sidebar="hadamard">
+          <div class="panel-head"><h2>Hadamard size</h2></div>
+          <div class="hadamard-block" id="hadamardBlock">
+            <div class="hadamard-label">Images and FDN lines</div>
+            <div class="hadamard-row" id="hadamardRow" role="group" aria-label="Hadamard size">
+              <button type="button" class="chip hadamard-chip" data-n="8">8</button>
+              <button type="button" class="chip hadamard-chip" data-n="16">16</button>
+              <button type="button" class="chip hadamard-chip active" data-n="32">32</button>
+              <button type="button" class="chip hadamard-chip" data-n="64">64</button>
+              <button type="button" class="chip hadamard-chip" data-n="128">128</button>
+            </div>
+            <p class="hadamard-readout" id="hadamardReadout">32 images · 32 FDN lines</p>
+            <p class="hadamard-note">Matrix is unscaled ±1 (Sylvester). Decay on the FDN strip sets the tail. 64 and 128 are Render-only. Peaking in the loop is cut-only.</p>
+          </div>
+        </div>
+        <div class="panel preview-panel" id="panelPreview" data-sidebar="preview">
+          <div class="panel-head"><h2>Preview</h2></div>
+          <div class="source-split" id="sourceSplit">
+            <div class="source-split-top">
+              <p class="file-name" id="fileName">No file loaded</p>
+              <div class="source-split-modes" role="group" aria-label="File sources">
+                <button type="button" class="chip active" id="oneSourceBtn">One source</button>
+                <button type="button" class="chip" id="twoSourceBtn" disabled>Two sources</button>
+              </div>
+            </div>
+            <div class="source-split-extra" id="twoSourceExtra" hidden>
+              <label class="check">
+                <input type="checkbox" id="mirrorB" checked />
+                <span>Mirror</span>
+              </label>
+              <label class="balance-row">
+                <span>Balance</span>
+                <input type="range" id="sourceBalance" min="-1" max="1" step="0.01" value="0" />
+                <output id="sourceBalanceOut">Centre</output>
+              </label>
+            </div>
+          </div>
+          <audio id="previewAudio" controls></audio>
+          <p class="path-quiet" id="outPath"></p>
+          <pre class="status" id="status"></pre>
+        </div>
+        <details class="panel advanced" id="panelAdvanced" data-sidebar="advanced">
+          <summary>Advanced / Structure locks</summary>
+          <label class="check">
+            <input type="checkbox" id="reaktor_parity" />
+            <span>Reaktor parity — lock mic X to room centre (W/2)</span>
+          </label>
+          <label>
+            Colour filter
+            <select id="colour_impl" aria-label="Colour filter">
+              <option value="sos">IIR biquads</option>
+              <option value="fir">FIR (Phase 3)</option>
+            </select>
+          </label>
+          <div id="feedbackRow" hidden>
+            <label class="ctrl">
+              <span>2011 law <em>Structure Gain</em></span>
+              <input type="range" id="fdn_g" min="0" max="1" step="0.01" value="1" />
+              <output id="fdn_g_out">1.00</output>
+            </label>
+            <p class="hint" id="feedbackHint">Shown with Reaktor parity or the Hall snapshot. Gain/N is the 2011 uneven tail. Moving this leaves Decay.</p>
+          </div>
+          <label class="ctrl"><span>2011 Air 1-pole</span><input type="range" id="air_lp" min="0" max="1" step="0.01" value="0" /><output id="air_lp_out">0.00</output></label>
+          <p class="hint">Parity and the Hall snapshot set this. 0.5 on the Wet scale is still 400. Default 0 leaves the sound alone. Direct has no air.</p>
+          <label class="ctrl"><span>Minimum IR length <em>ms</em></span><input type="range" id="ir_length_ms" min="50" max="2000" step="10" value="1500" /><output id="ir_length_ms_out">1500</output></label>
+          <button type="button" class="btn" id="reaktorSnapshotBtn">2011 Reaktor snapshot</button>
+          <p class="hint">Hall 57×34×97, source/mic from the dump, the 2011 Gain law, Humidity 400, Mic 10 kHz, live surface Dif.</p>
+          <label class="check">
+            <input type="checkbox" id="live_drag_render" />
+            <span>Also bake an IR when I drop Src / Mic</span>
+          </label>
+          <label class="check" id="sharedTailRow">
+            <input type="checkbox" id="shared_tail" />
+            <span>Shared tail (lighter CPU)</span>
+          </label>
+          <p class="hint">Play only. One reverb network feeds all mics; ignored in binaural.</p>
+          <p class="adv-note">
+            Live geometry is metres from Back-Left-Floor (+X right, +Y up, +Z Front).
+            Structure import (snapshot only): MCZ = L − MZ · SX = W×SoX · SZ = MCZ+(L−MCZ)×SoZ · SY = MY.
+            MLALR/MRALR = Diverg×0.5 ∓ 0.25 (Add) · c = 340 m/s.
+            Free mic X is a modern UI extension (parity off by default).
+            Absolute toe-in (Mic setup / Angle °) is a modern UI extension — XY/ORTF need larger angles than Reaktor Diverg.
+            Room size changes keep absolute metre positions (clamp only).
+            Space uses the same Front-far Z as Floor / 3D.
+            Diffusion λ_ref default 0.02 m (ASSUMED roughness length).
+          </p>
+        </details>
+      </aside>
+<section class="stage-wide" id="stageWide" hidden>
+<div class="panel mic-each-panel" id="micEach">
+              <div class="panel-head">
+                <h2>Each mic <span class="panel-sub">· one mic each, not the combined pattern</span></h2>
+                <span class="honesty-badge honesty-assumed" id="micEachLock" hidden>read-only · preset pattern</span>
+                <div class="pair-row" id="radiusModeRow" role="group" aria-label="Polar radius">
+                  <button type="button" data-radius="db" aria-pressed="true">dB</button>
+                  <button type="button" data-radius="linear" aria-pressed="false">Linear</button>
+                </div>
+              </div>
+              <div class="mic-polar-trio" id="micPolarTrio">
+                <div class="mic-polar-col" data-cap="L">
+                  <div class="mic-polar-title cap-l">Left</div>
+                  <p class="hint mic-unused" hidden>not used</p>
+                  <div class="diagram-frame">
+                    <button type="button" class="diagram-expand" aria-label="Enlarge left polar">Enlarge</button>
+                    <canvas id="micPolarL" width="220" height="220" aria-label="Left polar pattern"></canvas>
+                  </div>
+                  <div class="mic-cap-slot" id="micCapSlotL"></div>
+                </div>
+                <div class="mic-polar-col" data-cap="C">
+                  <div class="mic-polar-title cap-c">Centre</div>
+                  <p class="hint mic-unused" hidden>not used</p>
+                  <div class="diagram-frame">
+                    <button type="button" class="diagram-expand" aria-label="Enlarge centre polar">Enlarge</button>
+                    <canvas id="micPolarC" width="220" height="220" aria-label="Centre polar pattern"></canvas>
+                  </div>
+                  <div class="mic-cap-slot" id="micCapSlotC"></div>
+                </div>
+                <div class="mic-polar-col" data-cap="R">
+                  <div class="mic-polar-title cap-r">Right</div>
+                  <p class="hint mic-unused" hidden>not used</p>
+                  <div class="diagram-frame">
+                    <button type="button" class="diagram-expand" aria-label="Enlarge right polar">Enlarge</button>
+                    <canvas id="micPolarR" width="220" height="220" aria-label="Right polar pattern"></canvas>
+                  </div>
+                  <div class="mic-cap-slot" id="micCapSlotR"></div>
+                </div>
+              </div>
+              <p class="hint mic-desk-foot" id="micEachFoot"></p>
+            </div>
+<div class="panel mic-polar-panel">
+              <div class="panel-head">
+                <h2>Source plane</h2>
+                <span class="honesty-badge honesty-measured" id="micHonestyBadge" title="This badge is the data source for the drawing, not the Colour sound mode.">preset data: measured</span>
+              </div>
+              <div class="mic-polar-body">
+                <div class="mic-polar-stage">
+                  <p class="hint" id="micPatternHint">One plane: the side mics and the source. Frequency runs up the stack. Centre is included with its delay. This slice does not follow the camera.</p>
+                  <div class="mic-hero diagram-frame" id="micHeroWrap">
+                    <button type="button" class="diagram-expand" aria-label="Enlarge source plane">Enlarge</button>
+                    <canvas id="micPolarHero" width="640" height="520" aria-label="Source plane frequency stack"></canvas>
+                  </div>
+                  <p class="hint" id="micHeroMeta">—</p>
+                  <div class="mic-ring-legend" id="micRingLegend" aria-hidden="true"></div>
+                </div>
+              </div>
+            </div>
+</section>
+
+    </main>
+    <div id="toast" class="toast" hidden role="status"></div>
+  </div>
+  <script src="/static/js/vendor/three.min.js"></script>
+  <script src="/static/js/room_math.js?v=17"></script>
+  <script src="/static/js/spectrum_colors.js?v=1"></script>
+  <script src="/static/js/freq_palette.js?v=2"></script>
+  <script src="/static/js/room_view_pose.js?v=1"></script>
+  <script src="/static/js/room_3d.js?v=21"></script>
+  <script src="/static/js/room_editor.js?v=19"></script>
+  <script src="/static/js/image_views.js?v=17"></script>
+  <script src="/static/js/colour_surfaces.js?v=4"></script>
+  <script src="/static/js/polar_field.js?v=7"></script>
+  <script src="/static/js/mic_desk.js?v=19"></script>
+  <script src="/static/js/source_desk.js?v=4"></script>
+  <script src="/static/js/pack_room.js?v=52"></script>
+  <script src="/static/js/live_fdn.js?v=59"></script>
+  <script src="/static/js/lr_buttons.js?v=1"></script>
+  <script src="/static/js/ms_presets.js?v=2"></script>
+  <script src="/static/js/drag_model.js?v=2"></script>
+  <script src="/static/js/room_window_math.js?v=1"></script>
+  <script src="/static/js/app.js?v=62"></script>
+  <script>window.RR_SL_STAGE = 3;</script>
+  <script src="/static/js/sl_room_result.js?v=3"></script>
+  <script src="/static/js/rr_controls.js?v=1"></script>
+  <script src="/static/js/rr_controls_boot.js?v=1"></script>
+</body>
+</html>

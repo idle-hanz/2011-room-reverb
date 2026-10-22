@@ -1,0 +1,176 @@
+--- build_support_2/ui_audit_1004/app/software/engine/fdn.py	2026-10-04 08:58:20.000000000 +0100
++++ st_work/software/engine/fdn.py	2026-10-04 18:03:46.410857766 +0100
+@@ -819,6 +819,71 @@
+     return ("X", "Y", "Z")[i % 3]
+ 
+ 
++# ---- sound_tricks P1 (BOX PROTOTYPE ONLY, not the engine): per-line in-loop attenuation
++# filter (Jot & Chaigne 1991). One biquad per line = first-order low shelf x first-order
++# high shelf, fitted so each line loses -60*tau_i*(1/T(f) - 1/T_dial) dB per pass on top of
++# the broadband lg. FREQ_DECAY = None keeps today's engine bit-exact.
++FREQ_DECAY = None   # dict(ratio=callable(np.ndarray f) -> T(f)/T_mid, report=list)
++
++def _shelf1(G_db, fc, sr, kind):
++    """First-order shelf (bilinear, prewarped at fc). kind 'lo': DC gain G; 'hi': Nyquist gain G."""
++    G = 10.0 ** (G_db / 20.0); r = math.sqrt(G)
++    w = 2.0 * sr * math.tan(math.pi * min(fc, 0.49 * sr) / sr); K = 2.0 * sr
++    if kind == 'lo':   # (s + r w)/(s + w/r)
++        b0, b1, a0, a1 = 1.0, r * w, 1.0, w / r
++    else:              # (r s + w)/(s/r + w)
++        b0, b1, a0, a1 = r, w, 1.0 / r, w
++    B0, B1, A0, A1 = b0 * K + b1, b1 - b0 * K, a0 * K + a1, a1 - a0 * K
++    return B0 / A0, B1 / A0, A1 / A0
++
++def _shelf_pair_biquad(p, sr):
++    lb0, lb1, la1 = _shelf1(p[0], math.exp(p[1]), sr, 'lo')
++    hb0, hb1, ha1 = _shelf1(p[2], math.exp(p[3]), sr, 'hi')
++    return (lb0 * hb0, lb0 * hb1 + lb1 * hb0, lb1 * hb1, la1 + ha1, la1 * ha1)
++
++def _biquad_db(c, f, sr):
++    z = np.exp(-1j * 2 * np.pi * f / sr)
++    h = (c[0] + c[1] * z + c[2] * z * z) / (1 + c[3] * z + c[4] * z * z)
++    return 20 * np.log10(np.abs(h) + 1e-300)
++
++FD_FIT_F = np.geomspace(50.0, 16000.0, 40)
++
++def design_line_absorb(delays, sr, t_dial, ratio_fn):
++    """Per-line (b0,b1,b2,a1,a2) plus accuracy report (T60 error % at octave centres)."""
++    from scipy.optimize import least_squares
++    f = FD_FIT_F
++    T = t_dial * np.asarray(ratio_fn(f), float)
++    coefs, worst = [], 0.0
++    octs = np.array([125, 250, 500, 1000, 2000, 4000, 8000], float)
++    Toct = t_dial * np.asarray(ratio_fn(octs), float)
++    for d in delays:
++        tau = float(d) / float(sr)
++        tgt = -60.0 * tau * (1.0 / T - 1.0 / t_dial)
++        x0 = [float(tgt[0]), math.log(250.0), float(tgt[-1]), math.log(4000.0)]
++        lo = [-40.0, math.log(30.0), -40.0, math.log(800.0)]; hi = [40.0, math.log(2000.0), 40.0, math.log(0.45 * sr)]
++        x0 = [min(max(v, l + 1e-6), h - 1e-6) for v, l, h in zip(x0, lo, hi)]
++        # weight by T error sensitivity: dB error of e gives T error ~ e*T/(60 tau)
++        res = least_squares(lambda p: (_biquad_db(_shelf_pair_biquad(p, sr), f, sr) - tgt) * (T / t_dial),
++                            x0, bounds=(lo, hi))
++        c = _shelf_pair_biquad(res.x, sr)
++        lg_db = -60.0 * tau / t_dial
++        tot = lg_db + _biquad_db(c, octs, sr)
++        Tgot = -60.0 * tau / np.minimum(tot, -1e-9)
++        worst = max(worst, float(np.max(np.abs(Tgot / Toct - 1.0))))
++        coefs.append(c)
++    return np.asarray(coefs, float), worst
++
++
++# ---- SURFACES IN THE LOOP (BOX PROTOTYPE v2). Per-line attenuation cascade designed from per-line
++# decay rates (room-average or directional), with the per-axis peak cuts folded into the fit or replaced
++# by physical panels. SURF_LOOP = None keeps today's engine bit-exact.
++SURF_LOOP = None   # dict(rates_for=callable(delays, sr) -> (n, len(FIT_F)) dB/s, struct="S1P2", peaks="fold"|"replace", report=[])
++
++def _bq_db(c, f, sr):
++    z = np.exp(-1j * 2 * np.pi * np.asarray(f, float) / sr)
++    return 20 * np.log10(np.abs((c[0] + c[1] * z + c[2] * z * z) / (1 + c[3] * z + c[4] * z * z)) + 1e-300)
++
++
+ class FDN:
+     """
+     Square N-line FDN (N = power of 2, Sylvester Hadamard).
+@@ -870,6 +935,11 @@
+                 [10.0 ** (-3.0 * float(d) / (float(sr) * self.line_t60)) for d in self.delays],
+                 dtype=np.float64,
+             )
++        self._ab = None
++        if FREQ_DECAY is not None and self.line_t60 > 0.05:
++            self._ab, worst = design_line_absorb(self.delays, sr, self.line_t60, FREQ_DECAY["ratio"])
++            self._az1 = np.zeros(self.n); self._az2 = np.zeros(self.n)
++            FREQ_DECAY.setdefault("report", []).append(worst)
+         self.max_d = max(self.delays) if self.delays else 0
+         self.bufs = [np.zeros(d, dtype=np.float64) for d in self.delays]
+         self.idx = [0] * self.n
+@@ -926,6 +996,60 @@
+                     self._a2[i] = a2 * inv
+                     self._use_peak[i] = True
+ 
++        self._sl = None
++        if SURF_LOOP is not None and self._lg is not None:
++            import attfilt as _AF
++            if SURF_LOOP.get("peaks") == "replace":
++                self.peaking = False
++            rates = np.asarray(SURF_LOOP["rates_for"](self.delays, sr), float)
++            secs_all, eo, e3 = [], [], []
++            octs = _AF.OCT
++            tot_oct = np.zeros((self.n, len(octs))); want_oct = np.zeros((self.n, len(octs)))
++            for i, d in enumerate(self.delays):
++                tau = float(d) / float(sr)
++                lgdb = 20.0 * math.log10(float(self._lg[i]))
++                pk = None
++                if self.peaking and self._use_peak[i]:
++                    pk = (self._b0[i], self._b1[i], self._b2[i], self._a1[i], self._a2[i])
++                fixed = (lambda ff, lgdb=lgdb, pk=pk: lgdb + (_bq_db(pk, ff, sr) if pk is not None else 0.0) + 0.0 * np.asarray(ff, float))
++                rf = (lambda ff, i=i: np.interp(np.log(ff), np.log(_AF.FIT_F), rates[i]))
++                secs, a, b = _AF.design_line(tau, rf, fixed, sr, SURF_LOOP.get("struct", "S1P2"))
++                dense = np.concatenate([[0.01], np.geomspace(1.0, 0.4999 * sr, 1200)])
++                loop_db = fixed(dense) + _AF.resp_db(secs, dense, sr)
++                mx = float(np.max(loop_db))
++                t_cap = 3.0 * float(np.max(60.0 / rf(_AF.FIT_F)))
++                lim = -60.0 * tau / t_cap
++                bad = mx > lim   # guard: loop gain below 0 dB with margin; no band rings past 3x the longest target
++                if bad or a > 0.5:
++                    SURF_LOOP.setdefault("guard", []).append(dict(line=i, delay=int(d), err=round(a, 3), max_loop_db=round(mx, 4),
++                                                                  at_hz=round(float(dense[int(np.argmax(loop_db))]), 1)))
++                    secs, a, b = _AF.design_line(tau, rf, fixed, sr, "S1")
++                    l2 = fixed(dense) + _AF.resp_db(secs, dense, sr)
++                    if float(np.max(l2)) > lim:
++                        secs, a, b = [(1.0, 0.0, 0.0, 0.0, 0.0)], 1.0, 1.0   # last resort: broadband lg only (always stable)
++                        SURF_LOOP["guard"][-1]["fallback"] = "identity"
++                secs_all.append(secs); eo.append(a); e3.append(b)
++                tot_oct[i] = fixed(octs) + _AF.resp_db(secs, octs, sr); want_oct[i] = -tau * rf(octs)
++            tsum = float(sum(self.delays)) / float(sr)
++            sys_err = (want_oct.sum(0) / tot_oct.sum(0)) - 1.0     # T_got/T_want - 1 of the delay-weighted system
++            _mx_all, _pole = -1e9, 0.0
++            for i, secs in enumerate(secs_all):
++                pk = (self._b0[i], self._b1[i], self._b2[i], self._a1[i], self._a2[i]) if (self.peaking and self._use_peak[i]) else None
++                dd = np.geomspace(5.0, 0.499 * sr, 3000)
++                l = 20.0 * math.log10(float(self._lg[i])) + _AF.resp_db(secs, dd, sr) + (_bq_db(pk, dd, sr) if pk is not None else 0.0)
++                _mx_all = max(_mx_all, float(np.max(l)))
++                for s_ in secs:
++                    _pole = max(_pole, float(np.max(np.abs(np.roots([1.0, s_[3], s_[4]])))) if (s_[3] or s_[4]) else 0.0)
++            SURF_LOOP.setdefault("stab", []).append(dict(max_loop_db=round(_mx_all, 5), max_pole=round(_pole, 6), dffs=bool(self._any_dffs), lg_min=float(np.min(self._lg))))
++            K = max(len(x) for x in secs_all)
++            secs_all = [list(x) + [(1.0, 0.0, 0.0, 0.0, 0.0)] * (K - len(x)) for x in secs_all]
++            self._sl = np.asarray(secs_all, float)                 # (n, K, 5)
++            self._slz1 = np.zeros(self._sl.shape[:2]); self._slz2 = np.zeros(self._sl.shape[:2])
++            SURF_LOOP.setdefault("report", []).append(dict(
++                worst_line_oct_pct=round(100 * max(eo), 2), median_line_oct_pct=round(100 * float(np.median(eo)), 2),
++                worst_line_third_pct=round(100 * max(e3), 2), system_oct_err_pct=[round(100 * float(x), 2) for x in sys_err],
++                sections=int(self._sl.shape[1]), peaks=("off" if not self.peaking else "folded")))
++
+     def _apply_peaking(self, reads: "np.ndarray") -> "np.ndarray":
+         if not self.peaking:
+             return reads
+@@ -981,11 +1105,28 @@
+         lg = self._lg
+         any_dffs = self._any_dffs
+         hy = self._hy
++        ab = self._ab
++        sl = self._sl; sz1 = getattr(self, '_slz1', None); sz2 = getattr(self, '_slz2', None)
++        peaking = self.peaking
++        az1 = getattr(self, '_az1', None); az2 = getattr(self, '_az2', None)
+         for t in range(n_samp):
+             for i in range(n):
+                 reads[i] = bufs[i][idx[i]]
+             if lg is not None:
+                 reads *= lg
++            if ab is not None:
++                xa = reads.copy()
++                ya = ab[:, 0] * xa + az1
++                az1[:] = ab[:, 1] * xa - ab[:, 3] * ya + az2
++                az2[:] = ab[:, 2] * xa - ab[:, 4] * ya
++                reads[:] = ya
++            if sl is not None:
++                for k in range(sl.shape[1]):
++                    xa = reads.copy()
++                    ya = sl[:, k, 0] * xa + sz1[:, k]
++                    sz1[:, k] = sl[:, k, 1] * xa - sl[:, k, 3] * ya + sz2[:, k]
++                    sz2[:, k] = sl[:, k, 2] * xa - sl[:, k, 4] * ya
++                    reads[:] = ya
+             if peaking:
+                 for i in range(n):
+                     if use_peak[i]:

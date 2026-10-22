@@ -1,0 +1,32 @@
+1_default_ortf
+2_big_room_ortf
+3_binaural_default
+4_binaural_big
+5_symmetric_hall_mono_tail
+1_default_ortf__full__A_today.wav {'gain_applied_db': 3.06, 'raw_lufs': np.float64(-23.06), 'final_lufs': np.float64(-20.05), 'peak_dbfs': -6.01}
+1_default_ortf__full__B_shared.wav {'gain_applied_db': 3.35, 'raw_lufs': np.float64(-23.35), 'final_lufs': np.float64(-20.0), 'peak_dbfs': -7.66}
+1_default_ortf__full__C_shared_nojitter.wav {'gain_applied_db': 3.32, 'raw_lufs': np.float64(-23.32), 'final_lufs': np.float64(-20.0), 'peak_dbfs': -7.15}
+1_default_ortf__tailonly__A_today.wav {'gain_applied_db': 11.63, 'raw_lufs': np.float64(-31.63), 'final_lufs': np.float64(-20.15), 'peak_dbfs': -7.39}
+1_default_ortf__tailonly__B_shared.wav {'gain_applied_db': 12.25, 'raw_lufs': np.float64(-32.25), 'final_lufs': np.float64(-20.05), 'peak_dbfs': -7.5}
+1_default_ortf__tailonly__C_shared_nojitter.wav {'gain_applied_db': 11.02, 'raw_lufs': np.float64(-31.02), 'final_lufs': np.float64(-20.14), 'peak_dbfs': -8.29}
+2_big_room_ortf__full__A_today.wav {'gain_applied_db': 3.46, 'raw_lufs': np.float64(-23.46), 'final_lufs': np.float64(-20.0), 'peak_dbfs': -5.36}
+2_big_room_ortf__full__B_shared.wav {'gain_applied_db': 4.35, 'raw_lufs': np.float64(-24.35), 'final_lufs': np.float64(-20.0), 'peak_dbfs': -6.73}
+2_big_room_ortf__full__C_shared_nojitter.wav {'gain_applied_db': 4.24, 'raw_lufs': np.float64(-24.24), 'final_lufs': np.float64(-20.0), 'peak_dbfs': -5.54}
+2_big_room_ortf__tailonly__A_today.wav {'gain_applied_db': 19.57, 'raw_lufs': np.float64(-39.57), 'final_lufs': np.float64(-20.24), 'peak_dbfs': -5.16}
+2_big_room_ortf__tailonly__B_shared.wav {'gain_applied_db': 19.67, 'raw_lufs': np.float64(-39.67), 'final_lufs': np.float64(-20.24), 'peak_dbfs': -5.1}
+2_big_room_ortf__tailonly__C_shared_nojitter.wav {'gain_applied_db': 19.46, 'raw_lufs': np.float64(-39.46), 'final_lufs': np.float64(-20.24), 'peak_dbfs': -5.09}
+3_binaural_default__full__A_today.wav {'gain_applied_db': 4.02, 'raw_lufs': np.float64(-24.02), 'final_lufs': np.float64(-20.11), 'peak_dbfs': -7.01}
+3_binaural_default__full__B_shared.wav {'gain_applied_db': 4.08, 'raw_lufs': np.float64(-24.08), 'final_lufs': np.float64(-20.0), 'peak_dbfs': -6.53}
+3_binaural_default__tailonly__A_today.wav {'gain_applied_db': 13.65, 'raw_lufs': np.float64(-33.65), 'final_lufs': np.float64(-20.1), 'peak_dbfs': -9.13}
+3_binaural_default__tailonly__B_shared.wav {'gain_applied_db': 13.72, 'raw_lufs': np.float64(-33.72), 'final_lufs': np.float64(-20.1), 'peak_dbfs': -8.44}
+4_binaural_big__full__A_today.wav {'gain_applied_db': 6.11, 'raw_lufs': np.float64(-26.11), 'final_lufs': np.float64(-20.0), 'peak_dbfs': -6.01}
+4_binaural_big__full__B_shared.wav {'gain_applied_db': 6.21, 'raw_lufs': np.float64(-26.21), 'final_lufs': np.float64(-20.0), 'peak_dbfs': -5.91}
+4_binaural_big__tailonly__A_today.wav {'gain_applied_db': 25.93, 'raw_lufs': np.float64(-45.93), 'final_lufs': np.float64(-20.31), 'peak_dbfs': -6.41}
+4_binaural_big__tailonly__B_shared.wav {'gain_applied_db': 26.02, 'raw_lufs': np.float64(-46.02), 'final_lufs': np.float64(-20.31), 'peak_dbfs': -5.36}
+5_symmetric_hall_mono_tail__full__A_today.wav {'gain_applied_db': 1.49, 'raw_lufs': np.float64(-21.49), 'final_lufs': np.float64(-20.05), 'peak_dbfs': -7.59}
+5_symmetric_hall_mono_tail__full__B_shared.wav {'gain_applied_db': 2.31, 'raw_lufs': np.float64(-22.31), 'final_lufs': np.float64(-20.0), 'peak_dbfs': -7.97}
+5_symmetric_hall_mono_tail__full__D_shared_fixeddecor.wav {'gain_applied_db': 2.22, 'raw_lufs': np.float64(-22.22), 'final_lufs': np.float64(-20.05), 'peak_dbfs': -7.61}
+5_symmetric_hall_mono_tail__tailonly__A_today.wav {'gain_applied_db': 14.03, 'raw_lufs': np.float64(-34.03), 'final_lufs': np.float64(-20.15), 'peak_dbfs': -7.75}
+5_symmetric_hall_mono_tail__tailonly__B_shared.wav {'gain_applied_db': 14.01, 'raw_lufs': np.float64(-34.01), 'final_lufs': np.float64(-20.22), 'peak_dbfs': -5.78}
+5_symmetric_hall_mono_tail__tailonly__D_shared_fixeddecor.wav {'gain_applied_db': 14.43, 'raw_lufs': np.float64(-34.43), 'final_lufs': np.float64(-20.14), 'peak_dbfs': -6.32}
+done

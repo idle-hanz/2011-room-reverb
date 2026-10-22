@@ -1,0 +1,238 @@
+diff -ruN -x '*.wasm' -x __pycache__ base/software/engine/early_field.py tau2_colB/software/engine/early_field.py
+--- a/engine/early_field.py	2026-10-01 07:39:17.147546592 +0100
++++ b/engine/early_field.py	2026-10-01 10:44:58.319198490 +0100
+@@ -253,36 +253,36 @@
+ # no 4L−Z. Voice 3 is direct. Order is Reaktor voice 1..32 (LIKELY FDN lanes).
+ LIVE_32: Tuple[Tuple[int, int, int], ...] = (
+     (0, 2, 0),
+-    (0, 1, 0),
+-    (0, 0, 0),
+-    (0, -1, 0),
+-    (0, -2, 0),
+-    (0, 2, 1),
+-    (0, 1, 1),
+-    (0, 1, 1),
++    (-1, 1, 0),
+     (0, 0, 1),
++    (1, -2, 0),
++    (0, -2, 0),
++    (1, 2, 0),
++    (-1, 0, 1),
++    (1, -1, 1),
+     (0, 0, 1),
+-    (1, 2, 1),
++    (-1, -1, 0),
++    (0, 0, 0),
+     (1, 1, 1),
+     (1, 0, 1),
+-    (1, -1, 1),
+-    (1, -2, 1),
+-    (1, 2, 0),
+-    (1, 1, 0),
+     (1, 0, 0),
++    (0, -1, 0),
++    (0, 1, 1),
++    (1, 1, 0),
++    (0, 1, 0),
+     (1, -1, 0),
+-    (1, -2, 0),
++    (1, 2, 1),
+     (-1, 2, 0),
+-    (-1, 1, 0),
++    (0, 2, 1),
+     (-1, 0, 0),
+-    (-1, -2, 0),
++    (1, -2, 1),
+     (-1, -2, 0),
+     (-1, 2, 1),
+     (-1, 1, 1),
+-    (-1, 0, 1),
++    (0, 1, 2),
+     (-1, -1, 1),
+     (-1, -2, 1),
+-    (0, 1, 2),
++    (0, 1, 1),
+     (0, 0, 2),
+ )
+ 
+diff -ruN -x '*.wasm' -x __pycache__ base/software/engine/live_stereo.c tau2_colB/software/engine/live_stereo.c
+--- a/engine/live_stereo.c	2026-10-01 07:39:17.147546592 +0100
++++ b/engine/live_stereo.c	2026-10-01 10:44:58.343198472 +0100
+@@ -53,7 +53,7 @@
+     FFTN = 256,
+     MAX_PART = 64,
+     MAX_IRS = 128,
+-    MAX_FILT = 112,
++    MAX_FILT = 176,
+     MAX_SOS = 6,
+     /* 1000 ms is the delay cap. These extra samples cover the fractional read. */
+     RING_GUARD = 8,
+@@ -66,7 +66,7 @@
+     MAX_BLOB = 8192,
+     MAX_IR_FLOATS = MAX_IRS * 8192,
+     MAX_AUDIO = 2048,
+-    ROUTE_LEN = 3 * 32 + 2 * 32 + 2 * 32 + 3 + 3,
++    ROUTE_LEN = 3 * 32 + 2 * 32 + 2 * 32 + 3 + 3 + 3 * 32,
+     BUS_L = 0,
+     BUS_C = 1,
+     BUS_R = 2
+@@ -129,6 +129,7 @@
+     double pb0[3], pb1[3], pb2[3], pa1[3], pa2[3];
+     Bus bus[3];
+     int fdnIdx[3][N];
++    int fdnIdxB[3][N];
+     int earlyIdx[2][N];
+     int earlyBIdx[2][N];
+     int directIdx[3];
+@@ -157,6 +158,7 @@
+     float *outL;
+     float *outR;
+     double yBlk[3][N][PART];
++    double yBlkB[3][N][PART];
+     double eaBlk[3][N][PART];
+     double ebBlk[3][N][PART];
+     double daBlk[3][PART];
+@@ -449,7 +451,7 @@
+         st->directBIdx[b] = -1;
+         st->micG[b] = 1.0;
+         st->micPh[b] = 1.0;
+-        for (i = 0; i < N; i++) st->fdnIdx[b][i] = -1;
++        for (i = 0; i < N; i++) { st->fdnIdx[b][i] = -1; st->fdnIdxB[b][i] = -1; }
+     }
+     st->micPan[0] = -1.0;
+     st->micPan[1] = 0.0;
+@@ -812,6 +814,9 @@
+     }
+     for (b = 0; b < 3; b++) st->directIdx[b] = r[o++];
+     for (b = 0; b < 3; b++) st->directBIdx[b] = r[o++];
++    for (b = 0; b < 3; b++) {
++        for (i = 0; i < N; i++) st->fdnIdxB[b][i] = r[o++];
++    }
+ }
+ 
+ LS_EXPORT("live_force_delay")
+@@ -1114,7 +1119,7 @@
+         }
+         if (mixB) {
+             diffuse(st, b, 1, st->xinArr, bus->fbB, st->yB);
+-            for (i = 0; i < N; i++) st->yBlk[b][i][t] = st->yB[i] + st->yA[i];
++            for (i = 0; i < N; i++) { st->yBlk[b][i][t] = st->yA[i]; st->yBlkB[b][i][t] = st->yB[i]; }
+         } else {
+             fwht(st->reads);
+             for (i = 0; i < N; i++) {
+@@ -1123,7 +1128,8 @@
+                 double mixed = st->g * st->reads[i] + st->xinArr[i];
+                 double y = -gi * mixed + st->delayed[i];
+                 write_lane(st->ring[b][i], line->w, LANE_FDNB, (float)(mixed + gi * y));
+-                st->yBlk[b][i][t] = y + st->yA[i];
++                st->yBlk[b][i][t] = st->yA[i];
++                st->yBlkB[b][i][t] = y;
+             }
+         }
+     }
+@@ -1374,7 +1380,7 @@
+             for (t = 0; t < PART; t++) {
+                 double sumY = 0.0;
+                 double direct, wet;
+-                for (i = 0; i < N; i++) sumY += st->yBlk[b][i][t];
++                for (i = 0; i < N; i++) sumY += st->yBlk[b][i][t] + st->yBlkB[b][i][t];
+                 direct = st->daBlk[b][t] + st->dbBlk[b][t];
+                 wet = st->direct_wet * DIRECT_FOLD * direct
+                     + st->makeup * (st->fdn_wet * sumY + st->early_wet * st->esBlk[b][t]);
+@@ -1419,10 +1425,27 @@
+                     for (t = 0; t < PART; t++) ident[t] += st->fdn_wet * st->yBlk[b][i][t];
+                 }
+             }
++            if (st->two) {
++                for (i = 0; i < N; i++) {
++                    int idx = usable_ir(st, st->fdnIdxB[b][i]);
++                    Filt *f;
++                    if (idx >= 0 && map[idx] < 0) {
++                        f = take_filt(st, b, 0, idx);
++                        if (!f) idx = -1;
++                        else { map[idx] = (int)(f - st->filt); f->npart = st->irNpart[idx]; keep[map[idx]] = 1; }
++                    }
++                    if (idx >= 0) {
++                        int s = map[idx];
++                        for (t = 0; t < PART; t++) st->firIn[s][t] += (float)(st->fdn_wet * st->yBlkB[b][i][t]);
++                    } else if (idx == -1) {
++                        for (t = 0; t < PART; t++) ident[t] += st->fdn_wet * st->yBlkB[b][i][t];
++                    }
++                }
++            }
+             if (b != BUS_C) {
+                 for (i = 0; i < N; i++) {
+                     int tgt = early_target(st->fdnIdx[b], i, st->earlyIdx[eiBase][i]);
+-                    int tgtB = st->two ? early_target(st->fdnIdx[b], i, st->earlyBIdx[eiBase][i]) : -2;
++                    int tgtB = st->two ? early_target(st->fdnIdxB[b], i, st->earlyBIdx[eiBase][i]) : -2;
+                     int u = usable_ir(st, tgt);
+                     int uB = usable_ir(st, tgtB);
+                     if (u >= 0 && map[u] >= 0) {
+@@ -1490,6 +1513,7 @@
+         for (i = 0; i < N; i++) {
+             for (t = 0; t < PART; t++) {
+                 st->yBlk[b][i][t] = 0;
++                st->yBlkB[b][i][t] = 0;
+                 st->eaBlk[b][i][t] = 0;
+                 st->ebBlk[b][i][t] = 0;
+             }
+diff -ruN -x '*.wasm' -x __pycache__ base/software/mic_colour/live_bank.py tau2_colB/software/mic_colour/live_bank.py
+--- a/mic_colour/live_bank.py	2026-10-01 07:39:17.147546592 +0100
++++ b/mic_colour/live_bank.py	2026-10-01 10:44:58.339198475 +0100
+@@ -147,6 +147,7 @@
+         bt = taps_b[di % n_b]
+         sig["direct_b"] = {b: _deg(_theta(bt, b)) for b in buses}
+         sig["early_b"] = {b: [_deg(th) for th in _line_thetas(taps_b, n, b)] for b in ("l", "r")}
++        sig["fdn_b"] = {b: [_deg(th) for th in _line_thetas(taps_b, n, b)] for b in buses}
+     rev = _rev(sig)
+     if colour_rev and str(colour_rev) == rev:
+         return {"on": True, "sr": int(sr), "rev": rev, "same": True}
+@@ -168,4 +169,5 @@
+         bt = taps_b[di % len(taps_b)]
+         out["direct_b"] = {b: ix.idx(_theta(bt, b), b) for b in buses}
+         out["early_b"] = {b: [ix.idx(th, b) for th in _line_thetas(taps_b, n, b)] for b in ("l", "r")}
++        out["fdn_b"] = {b: [ix.idx(th, b) for th in _line_thetas(taps_b, n, b)] for b in buses}
+     return out
+diff -ruN -x '*.wasm' -x __pycache__ base/software/static/js/fdn_worklet.js tau2_colB/software/static/js/fdn_worklet.js
+--- a/static/js/fdn_worklet.js	2026-10-01 07:39:17.151546584 +0100
++++ b/static/js/fdn_worklet.js	2026-10-01 10:44:58.339198475 +0100
+@@ -7,7 +7,7 @@
+  */
+ 
+ var BLOB_LEN = 1981;
+-var ROUTE_LEN = 230;
++var ROUTE_LEN = 326;
+ var MAX_AUDIO = 2048;
+ var MAX_IRS = 128;
+ var MAX_IR_FLOATS = MAX_IRS * 8192;
+diff -ruN -x '*.wasm' -x __pycache__ base/software/static/js/live_fdn.js tau2_colB/software/static/js/live_fdn.js
+--- a/static/js/live_fdn.js	2026-10-01 07:39:17.151546584 +0100
++++ b/static/js/live_fdn.js	2026-10-01 10:44:58.339198475 +0100
+@@ -18,7 +18,7 @@
+   var lastCapLine = "";
+   var WORKLET_VER = 33;
+   var COLOUR_CAP = 128;
+-  var ROUTE_LEN = 230;
++  var ROUTE_LEN = 326;
+ 
+   function status(msg) {
+     var el = document.getElementById("status");
+@@ -165,6 +165,10 @@
+     }
+     for (c = 0; c < 3; c++) r[o++] = at(b.direct && b.direct[names[c]], -1);
+     for (c = 0; c < 3; c++) r[o++] = at(b.direct_b && b.direct_b[names[c]], -1);
++    for (c = 0; c < 3; c++) {
++      row = (b.fdn_b && b.fdn_b[names[c]]) || (b.fdn && b.fdn[names[c]]);
++      for (i = 0; i < 32; i++) r[o++] = at(row && row[i], -1);
++    }
+     return r;
+   }
+ 
+@@ -217,6 +221,7 @@
+       fdn: colour.fdn,
+       early: colour.early || null,
+       early_b: colour.early_b || null,
++      fdn_b: colour.fdn_b || null,
+       over: irs.length > COLOUR_CAP || n > COLOUR_CAP * 8192,
+       n: irs.length
+     };

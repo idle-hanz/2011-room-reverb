@@ -1,0 +1,12 @@
+0615 run1: PASS     t09_silence_cpu                      10.4s  {'byp': {'play_mean_ms': 0.788, 'silence_late_mean_ms': 0.834}, 'col': {'play_mean_ms': 1.02, 'silence_late_mean_ms': 0.993}}
+0615 run1: PASS     t15_perf_active                       8.2s  {'1src_col': 0.932, '2src_col': 1.649}
+0615 run1: FAIL     t19_two_source_radiation_cpu          8.3s  two-source radiation 2.26 ms > 2.13 ms (80% of 2.667 ms) {'play_mean_ms': 2.256, 'silence_late_mean_ms': 1.901, 'limit_ms': 2.133}
+0709 run1: PASS     t09_silence_cpu                      11.0s  {'byp': {'play_mean_ms': 0.787, 'silence_late_mean_ms': 0.756}, 'col': {'play_mean_ms': 1.421, 'silence_late_mean_ms': 0.897}}
+0709 run1: PASS     t15_perf_active                       8.0s  {'1src_col': 0.955, '2src_col': 1.574}
+0709 run1: FAIL     t19_two_source_radiation_cpu          9.3s  two-source radiation 2.89 ms > 2.13 ms (80% of 2.667 ms) {'play_mean_ms': 2.889, 'silence_late_mean_ms': 1.787, 'limit_ms': 2.133}
+0615 run2: PASS     t09_silence_cpu                      10.1s  {'byp': {'play_mean_ms': 0.867, 'silence_late_mean_ms': 0.852}, 'col': {'play_mean_ms': 0.928, 'silence_late_mean_ms': 0.951}}
+0615 run2: PASS     t15_perf_active                       7.8s  {'1src_col': 0.933, '2src_col': 1.534}
+0615 run2: FAIL     t19_two_source_radiation_cpu          9.0s  two-source radiation 2.50 ms > 2.13 ms (80% of 2.667 ms) {'play_mean_ms': 2.495, 'silence_late_mean_ms': 1.842, 'limit_ms': 2.133}
+0709 run2: PASS     t09_silence_cpu                       9.7s  {'byp': {'play_mean_ms': 0.785, 'silence_late_mean_ms': 0.772}, 'col': {'play_mean_ms': 0.935, 'silence_late_mean_ms': 0.943}}
+0709 run2: PASS     t15_perf_active                       8.4s  {'1src_col': 0.914, '2src_col': 1.735}
+0709 run2: PASS     t19_two_source_radiation_cpu          7.5s  {'play_mean_ms': 1.797, 'silence_late_mean_ms': 1.795, 'limit_ms': 2.133}

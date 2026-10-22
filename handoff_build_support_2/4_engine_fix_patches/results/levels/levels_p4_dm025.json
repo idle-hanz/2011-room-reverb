@@ -1,0 +1,30 @@
+{
+ "p4": {
+  "std_lock18": {
+   "fdn": {
+    "play_db": -4.35,
+    "render_db": -5.71
+   }
+  },
+  "small_lock08": {
+   "fdn": {
+    "play_db": -4.71,
+    "render_db": -3.25
+   }
+  },
+  "hall_lock40": {
+   "fdn": {
+    "play_db": -4.7,
+    "render_db": -5.07
+   }
+  },
+  "t14": {
+   "play_peak": 0.7273,
+   "play_rms_db": -13.52
+  },
+  "t14_pinned_src": {
+   "play_peak": 0.6739,
+   "play_rms_db": -13.84
+  }
+ }
+}

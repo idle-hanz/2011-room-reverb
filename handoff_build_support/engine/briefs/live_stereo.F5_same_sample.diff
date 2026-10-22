@@ -1,0 +1,95 @@
+--- b_fix/engine/live_stereo.c	2026-09-27 11:40:34.595486328 +0100
++++ c_same/engine/live_stereo.c	2026-09-27 12:02:06.100927961 +0100
+@@ -95,6 +95,7 @@
+     int dirW, dirWB;
+     int anyDffs, anyDffsB;
+     double fb[N], fbB[N];
++    double M[N * N], MB[N * N];  /* (I + g diag(dffs) H)^-1, Render's same-sample solve */
+ } Bus;
+ 
+ typedef struct Filt {
+@@ -553,6 +554,7 @@
+ LS_EXPORT("live_out_l") float *live_out_l(LiveStereo *st) { return st ? st->outL : 0; }
+ LS_EXPORT("live_out_r") float *live_out_r(LiveStereo *st) { return st ? st->outR : 0; }
+ 
++static void build_mix(double g, const Line *line, int bankB, double *M);
+ static double clampf(double x, double lo, double hi) {
+     if (x < lo) return lo;
+     if (x > hi) return hi;
+@@ -725,6 +727,10 @@
+      * the loop (Hadamard or the Dffs allpass self-loop) loses 60 dB per T60. */
+     st->lineT60 = rf(&r);
+     for (b = 0; b < 3; b++) {
++        build_mix(st->g, st->bus[b].line, 0, st->bus[b].M);
++        build_mix(st->g, st->bus[b].line, 1, st->bus[b].MB);
++    }
++    for (b = 0; b < 3; b++) {
+         for (i = 0; i < N; i++) {
+             Line *line = &st->bus[b].line[i];
+             if (st->lineT60 > 0.05) {
+@@ -739,6 +745,28 @@
+     }
+ }
+ 
++static void build_mix(double g, const Line *line, int bankB, double *M) {
++    double A[N][2 * N];
++    int r, c, k;
++    for (r = 0; r < N; r++) {
++        double d = bankB ? line[r].dffsB : line[r].dffs;
++        for (c = 0; c < N; c++) {
++            int bits = r & c, par = 0;
++            while (bits) { par ^= bits & 1; bits >>= 1; }
++            A[r][c] = (r == c ? 1.0 : 0.0) + g * d * (par ? -1.0 : 1.0);
++            A[r][N + c] = (r == c) ? 1.0 : 0.0;
++        }
++    }
++    for (c = 0; c < N; c++) {
++        int piv = c; double best = A[c][c] < 0 ? -A[c][c] : A[c][c];
++        for (r = c + 1; r < N; r++) { double v = A[r][c] < 0 ? -A[r][c] : A[r][c]; if (v > best) { best = v; piv = r; } }
++        if (piv != c) for (k = 0; k < 2 * N; k++) { double t = A[c][k]; A[c][k] = A[piv][k]; A[piv][k] = t; }
++        { double inv = 1.0 / A[c][c]; for (k = 0; k < 2 * N; k++) A[c][k] *= inv; }
++        for (r = 0; r < N; r++) if (r != c) { double f = A[r][c]; if (f != 0.0) for (k = 0; k < 2 * N; k++) A[r][k] -= f * A[c][k]; }
++    }
++    for (r = 0; r < N; r++) for (c = 0; c < N; c++) M[r * N + c] = A[r][N + c];
++}
++
+ static void zero_filts(LiveStereo *st) {
+     int i;
+     int n = MAX_FILT * MAX_PART * FFTN;
+@@ -985,18 +1013,28 @@
+     Bus *bus = &st->bus[b];
+     int i;
+     double g;
++    const double *M = bankB ? bus->MB : bus->M;
++    double v[N];
++    int j;
++    (void)fb;
+     for (i = 0; i < N; i++) {
+-        Line *line = &bus->line[i];
+-        double gi = bankB ? line->dffsB : line->dffs;
+-        double s = xin[i] + fb[i];
+-        double y = -gi * s + st->delayed[i];
+-        write_lane(st->ring[b][i], line->w, bankB ? LANE_FDNB : LANE_FDN, (float)(s + gi * y));
+-        yOut[i] = y;
+-        st->reads[i] = y;
++        double gi = bankB ? bus->line[i].dffsB : bus->line[i].dffs;
++        v[i] = st->delayed[i] - gi * xin[i];
++    }
++    for (i = 0; i < N; i++) {
++        double acc = 0.0;
++        for (j = 0; j < N; j++) acc += M[i * N + j] * v[j];
++        yOut[i] = acc;
++        st->reads[i] = acc;
+     }
+     fwht(st->reads);
+     g = st->g;
+-    for (i = 0; i < N; i++) fb[i] = g * st->reads[i];
++    for (i = 0; i < N; i++) {
++        Line *line = &bus->line[i];
++        double gi = bankB ? line->dffsB : line->dffs;
++        double s = xin[i] + g * st->reads[i];
++        write_lane(st->ring[b][i], line->w, bankB ? LANE_FDNB : LANE_FDN, (float)(s + gi * yOut[i]));
++    }
+ }
+ 
+ static void bus_sample(LiveStereo *st, int b, double x, double xA, double xB, int two, int t) {

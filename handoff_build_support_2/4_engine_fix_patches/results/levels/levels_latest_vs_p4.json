@@ -1,0 +1,124 @@
+{
+ "latest": {
+  "std_lock18": {
+   "fdn": {
+    "play_db": -8.83,
+    "render_db": -7.87
+   },
+   "direct": {
+    "play_db": -2.41,
+    "render_db": 0.03
+   },
+   "early": {
+    "play_db": -10.9
+   },
+   "all": {
+    "play_db": 1.87,
+    "render_db": 2.73
+   }
+  },
+  "small_lock08": {
+   "fdn": {
+    "play_db": -9.33,
+    "render_db": -7.5
+   },
+   "direct": {
+    "play_db": -2.98,
+    "render_db": -2.74
+   },
+   "early": {
+    "play_db": -11.19
+   },
+   "all": {
+    "play_db": 1.69,
+    "render_db": 1.54
+   }
+  },
+  "hall_lock40": {
+   "fdn": {
+    "play_db": -7.72,
+    "render_db": -5.36
+   },
+   "direct": {
+    "play_db": -4.09,
+    "render_db": 0.03
+   },
+   "early": {
+    "play_db": -9.4
+   },
+   "all": {
+    "play_db": 1.39,
+    "render_db": 3.63
+   }
+  },
+  "t14": {
+   "play_peak": 0.4983,
+   "play_rms_db": -16.37
+  },
+  "t14_pinned_src": {
+   "play_peak": 0.4983,
+   "play_rms_db": -16.37
+  }
+ },
+ "p4": {
+  "std_lock18": {
+   "fdn": {
+    "play_db": -2.36,
+    "render_db": 3.36
+   },
+   "direct": {
+    "play_db": 0.03,
+    "render_db": 0.03
+   },
+   "early": {
+    "play_db": -9.57
+   },
+   "all": {
+    "play_db": 4.02,
+    "render_db": 5.65
+   }
+  },
+  "small_lock08": {
+   "fdn": {
+    "play_db": 0.1,
+    "render_db": 9.43
+   },
+   "direct": {
+    "play_db": -2.74,
+    "render_db": -2.74
+   },
+   "early": {
+    "play_db": -10.59
+   },
+   "all": {
+    "play_db": 3.88,
+    "render_db": 9.64
+   }
+  },
+  "hall_lock40": {
+   "fdn": {
+    "play_db": -4.28,
+    "render_db": -5.32
+   },
+   "direct": {
+    "play_db": 0.03,
+    "render_db": 0.03
+   },
+   "early": {
+    "play_db": -6.99
+   },
+   "all": {
+    "play_db": 4.01,
+    "render_db": 3.45
+   }
+  },
+  "t14": {
+   "play_peak": 0.7273,
+   "play_rms_db": -13.52
+  },
+  "t14_pinned_src": {
+   "play_peak": 0.7273,
+   "play_rms_db": -13.52
+  }
+ }
+}

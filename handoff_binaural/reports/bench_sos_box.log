@@ -1,0 +1,8 @@
+filters=87 K=3: 3.195 ns/biquad/sample, 106.72 us per 128-sample block, 4.002% of one core at 48 kHz (acc 58.2449)
+filters=146 K=3: 3.194 ns/biquad/sample, 179.09 us per 128-sample block, 6.716% of one core at 48 kHz (acc 97.7444)
+filters=34 K=3: 3.205 ns/biquad/sample, 41.84 us per 128-sample block, 1.569% of one core at 48 kHz (acc 22.7624)
+filters=34 K=4: 3.193 ns/biquad/sample, 55.58 us per 128-sample block, 2.084% of one core at 48 kHz (acc 33.7561)
+filters=34 K=5: 3.123 ns/biquad/sample, 67.95 us per 128-sample block, 2.548% of one core at 48 kHz (acc 33.8913)
+filters=34 K=6: 3.094 ns/biquad/sample, 80.78 us per 128-sample block, 3.029% of one core at 48 kHz (acc 30.6874)
+filters=40 K=6: 3.087 ns/biquad/sample, 94.85 us per 128-sample block, 3.557% of one core at 48 kHz (acc 36.1028)
+filters=60 K=6: 3.119 ns/biquad/sample, 143.73 us per 128-sample block, 5.390% of one core at 48 kHz (acc 54.1542)

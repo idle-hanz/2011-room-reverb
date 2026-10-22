@@ -1,0 +1,100 @@
+{
+ "hall_preset_parity|capNone|ship": {
+  "dffs_med": 0.231,
+  "T30_s": 2.814,
+  "ac_peak": 0.16309116710890553,
+  "ned_0p2_0p4": 0.19,
+  "rms_db": -76.53
+ },
+ "hall_preset_parity|capNone|csign": {
+  "dffs_med": 0.231,
+  "T30_s": 2.775,
+  "ac_peak": 0.1713031238332936,
+  "ned_0p2_0p4": 0.18,
+  "rms_db": -76.43
+ },
+ "hall_preset_parity|cap130|ship": {
+  "dffs_med": 0.36,
+  "T30_s": 3.482,
+  "ac_peak": 0.16640810755918717,
+  "ned_0p2_0p4": 0.19,
+  "rms_db": -76.61
+ },
+ "hall_preset_parity|cap130|csign": {
+  "dffs_med": 0.36,
+  "T30_s": 3.548,
+  "ac_peak": 0.1752308321292857,
+  "ned_0p2_0p4": 0.18,
+  "rms_db": -76.47
+ },
+ "hall_preset_parity|cap90|ship": {
+  "dffs_med": 0.52,
+  "T30_s": 5.782,
+  "ac_peak": 0.17511873044061438,
+  "ned_0p2_0p4": 0.2,
+  "rms_db": -76.74
+ },
+ "hall_preset_parity|cap90|csign": {
+  "dffs_med": 0.52,
+  "T30_s": 5.785,
+  "ac_peak": 0.1841360547711369,
+  "ned_0p2_0p4": 0.18,
+  "rms_db": -76.57
+ },
+ "hall_preset_parity|cap65|ship": {
+  "dffs_med": 0.719,
+  "T30_s": 11.107,
+  "ac_peak": 0.19290007135550685,
+  "ned_0p2_0p4": 0.2,
+  "rms_db": -76.89
+ },
+ "hall_preset_parity|cap65|csign": {
+  "dffs_med": 0.719,
+  "T30_s": 7.163,
+  "ac_peak": 0.20032642313986787,
+  "ned_0p2_0p4": 0.18,
+  "rms_db": -76.78
+ },
+ "bigroom_default_surfaces|capNone|ship": {
+  "dffs_med": 0.044,
+  "T30_s": 1.673,
+  "ac_peak": 0.1579357984574888,
+  "ned_0p2_0p4": 0.19,
+  "rms_db": -85.75
+ },
+ "bigroom_default_surfaces|capNone|csign": {
+  "dffs_med": 0.044,
+  "T30_s": 1.661,
+  "ac_peak": 0.12492210870798946,
+  "ned_0p2_0p4": 0.26,
+  "rms_db": -85.68
+ },
+ "bigroom_default_surfaces|cap18|ship": {
+  "dffs_med": 0.491,
+  "T30_s": 1.682,
+  "ac_peak": 0.19107056008051085,
+  "ned_0p2_0p4": 0.26,
+  "rms_db": -84.84
+ },
+ "bigroom_default_surfaces|cap18|csign": {
+  "dffs_med": 0.491,
+  "T30_s": 1.542,
+  "ac_peak": 0.10489695593223029,
+  "ned_0p2_0p4": 0.21,
+  "rms_db": -83.83
+ },
+ "bigroom_default_surfaces|cap12|ship": {
+  "dffs_med": 0.736,
+  "T30_s": 1.711,
+  "ac_peak": 0.2283030691525147,
+  "ned_0p2_0p4": 0.29,
+  "rms_db": -84.19
+ },
+ "bigroom_default_surfaces|cap12|csign": {
+  "dffs_med": 0.736,
+  "T30_s": 1.516,
+  "ac_peak": 0.12941844319929147,
+  "ned_0p2_0p4": 0.23,
+  "rms_db": -82.62
+ }
+}

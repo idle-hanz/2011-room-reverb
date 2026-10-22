@@ -1,0 +1,133 @@
+{
+ "room": [
+  6.0,
+  3.0,
+  8.0
+ ],
+ "source": [
+  3.0,
+  1.5,
+  2.5
+ ],
+ "mic_centre": [
+  3.0,
+  1.5,
+  5.5
+ ],
+ "fs": 48000,
+ "n_taps": 32,
+ "omni_null": {
+  "l": {
+   "early_maxdiff": 0.0,
+   "direct_maxdiff": 0.0,
+   "tail_maxdiff": 0.0
+  },
+  "r": {
+   "early_maxdiff": 0.0,
+   "direct_maxdiff": 0.0,
+   "tail_maxdiff": 0.0
+  }
+ },
+ "trumpet_on_axis_bypass": true,
+ "energy_table": [
+  {
+   "preset": "talking_head",
+   "yaw_rel_deg": 0,
+   "power_match_makeup_dB_1k": 2.2629656141857897,
+   "direct_dB_rel_omni": -0.00523047014200273,
+   "early_dB_rel_omni": -1.2748674655148236,
+   "tail_alpha0_dB_rel_omni": -4.369397617008424,
+   "tail_alpha0.5_dB_rel_omni": -3.2503094714531464,
+   "early_hf_4k_dB": -18.13132594132643,
+   "early_lf_250_dB": -23.816247224609114
+  },
+  {
+   "preset": "talking_head",
+   "yaw_rel_deg": 90,
+   "power_match_makeup_dB_1k": 2.2629656141857897,
+   "direct_dB_rel_omni": -7.354344268993422,
+   "early_dB_rel_omni": -6.141422122825595,
+   "tail_alpha0_dB_rel_omni": -4.369397617008424,
+   "tail_alpha0.5_dB_rel_omni": -4.599504350670966,
+   "early_hf_4k_dB": -23.93483140597307,
+   "early_lf_250_dB": -25.281370095437513
+  },
+  {
+   "preset": "talking_head",
+   "yaw_rel_deg": 180,
+   "power_match_makeup_dB_1k": 2.2629656141857897,
+   "direct_dB_rel_omni": -16.090065964207614,
+   "early_dB_rel_omni": -12.764995310533237,
+   "tail_alpha0_dB_rel_omni": -4.369397617008424,
+   "tail_alpha0.5_dB_rel_omni": -6.746238434025894,
+   "early_hf_4k_dB": -33.01860906100281,
+   "early_lf_250_dB": -26.230743743750217
+  },
+  {
+   "preset": "trumpet",
+   "yaw_rel_deg": 0,
+   "power_match_makeup_dB_1k": 4.392190561773136,
+   "direct_dB_rel_omni": -1.15905579069657,
+   "early_dB_rel_omni": -11.713879369320296,
+   "tail_alpha0_dB_rel_omni": -12.903413278676453,
+   "tail_alpha0.5_dB_rel_omni": -10.875060544023075,
+   "early_hf_4k_dB": -19.531123405158347,
+   "early_lf_250_dB": -23.938125904008448
+  },
+  {
+   "preset": "trumpet",
+   "yaw_rel_deg": 90,
+   "power_match_makeup_dB_1k": 4.392190561773136,
+   "direct_dB_rel_omni": -16.33056418730374,
+   "early_dB_rel_omni": -14.550731801971786,
+   "tail_alpha0_dB_rel_omni": -12.903413278676453,
+   "tail_alpha0.5_dB_rel_omni": -13.938509470309107,
+   "early_hf_4k_dB": -37.61822797622528,
+   "early_lf_250_dB": -26.59559893128643
+  },
+  {
+   "preset": "trumpet",
+   "yaw_rel_deg": 180,
+   "power_match_makeup_dB_1k": 4.392190561773136,
+   "direct_dB_rel_omni": -17.27101356048779,
+   "early_dB_rel_omni": -16.6467162932312,
+   "tail_alpha0_dB_rel_omni": -12.903413278676453,
+   "tail_alpha0.5_dB_rel_omni": -14.741327972929085,
+   "early_hf_4k_dB": -44.913887784833065,
+   "early_lf_250_dB": -26.453341242018574
+  },
+  {
+   "preset": "combo_1x12",
+   "yaw_rel_deg": 0,
+   "power_match_makeup_dB_1k": 12.588709475621659,
+   "direct_dB_rel_omni": -0.263273788001932,
+   "early_dB_rel_omni": -22.16023541141307,
+   "tail_alpha0_dB_rel_omni": -18.950091215132378,
+   "tail_alpha0.5_dB_rel_omni": -11.88257147418631,
+   "early_hf_4k_dB": -19.472338617492056,
+   "early_lf_250_dB": -21.249822358536406
+  },
+  {
+   "preset": "combo_1x12",
+   "yaw_rel_deg": 90,
+   "power_match_makeup_dB_1k": 12.588709475621659,
+   "direct_dB_rel_omni": -33.49223780803085,
+   "early_dB_rel_omni": -25.552546387076013,
+   "tail_alpha0_dB_rel_omni": -18.950091215132378,
+   "tail_alpha0.5_dB_rel_omni": -23.56546880760498,
+   "early_hf_4k_dB": -54.42569315897303,
+   "early_lf_250_dB": -40.352176724025455
+  },
+  {
+   "preset": "combo_1x12",
+   "yaw_rel_deg": 180,
+   "power_match_makeup_dB_1k": 12.588709475621659,
+   "direct_dB_rel_omni": -19.619947015178266,
+   "early_dB_rel_omni": -27.017523663790676,
+   "tail_alpha0_dB_rel_omni": -18.950091215132378,
+   "tail_alpha0.5_dB_rel_omni": -21.447522063018233,
+   "early_hf_4k_dB": -48.616811113483614,
+   "early_lf_250_dB": -25.6847502979932
+  }
+ ]
+}

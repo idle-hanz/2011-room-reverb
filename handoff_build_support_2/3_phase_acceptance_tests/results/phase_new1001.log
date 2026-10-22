@@ -1,0 +1,86 @@
+PASS      0.3s  test_colour_sos::test_colour_tables_match_presets                      
+PASS      0.0s  test_colour_sos::test_colour_at_c1_48k_within_0p5db                    
+PASS      0.0s  test_colour_sos::test_colour_at_c4_44k1_within_0p6db                   
+PASS      0.0s  test_colour_sos::test_colour_44k1_tables_match_presets                 
+PASS      0.0s  test_colour_sos::test_colour_unsupported_rate_disabled_with_notice[32000] 
+PASS      0.0s  test_colour_sos::test_colour_unsupported_rate_disabled_with_notice[88200] 
+PASS      0.0s  test_colour_sos::test_colour_unsupported_rate_disabled_with_notice[96000] 
+PASS      0.0s  test_colour_sos::test_colour_sos_stable[44100]                         
+PASS      0.0s  test_colour_sos::test_colour_sos_stable[48000]                         
+PASS      0.5s  test_colour_sos::test_colour_hpf_on_low_end[44100]                     
+PASS      0.0s  test_colour_sos::test_colour_hpf_on_low_end[48000]                     
+PASS      0.4s  test_colour_sos::test_colour_play_bank_fits_two_sources_apart          
+PASS      4.3s  test_colour_sos::test_colour_cpu_active                                
+PASS      0.1s  test_colour_sos::test_colour_numpy_sos_matches_loop                    
+XFAIL     0.0s  test_decisions_2026_09_28::test_k1_single_yaw_convention               K1 not landed: no YAW_X_SIGN in engine/early_field.py / static/js/room_math.js
+XFAIL     0.9s  test_decisions_2026_09_28::test_k1_left_source_L_louder_and_earlier_play[xy_90] K1 not landed (capsules crossed): xy_90: direct L-R -8.09 dB, early L-R -8.26 dB, arrival L/R [538, 539] samples
+XFAIL     1.0s  test_decisions_2026_09_28::test_k1_left_source_L_louder_and_earlier_play[xy_120] K1 not landed (capsules crossed): xy_120: direct L-R -8.85 dB, early L-R -8.19 dB, arrival L/R [538, 539] samples
+XFAIL     1.0s  test_decisions_2026_09_28::test_k1_left_source_L_louder_and_earlier_play[ortf] K1 not landed (capsules crossed): ortf: direct L-R -8.63 dB, early L-R -8.23 dB, arrival L/R [533, 545] samples
+XFAIL     1.0s  test_decisions_2026_09_28::test_k1_left_source_L_louder_and_earlier_play[nos] K1 not landed (capsules crossed): nos: direct L-R -7.94 dB, early L-R -7.83 dB, arrival L/R [528, 550] samples
+XFAIL     1.0s  test_decisions_2026_09_28::test_k1_left_source_L_louder_and_earlier_play[din] K1 not landed (capsules crossed): din: direct L-R -8.00 dB, early L-R -7.99 dB, arrival L/R [531, 546] samples
+XFAIL     1.0s  test_decisions_2026_09_28::test_k1_left_source_L_louder_and_earlier_play[ms] K1 not landed (capsules crossed): ms: direct L-R -3.33 dB, early L-R -1.29 dB, arrival L/R [537, 539] samples
+XFAIL     3.9s  test_decisions_2026_09_28::test_k1_left_source_L_louder_and_earlier_render[ortf] K1 not landed (capsules crossed): ortf Render: direct L-R -8.63 dB, arrival L/R [533, 545]
+XFAIL     3.4s  test_decisions_2026_09_28::test_k1_left_source_L_louder_and_earlier_render[xy_90] K1 not landed (capsules crossed): xy_90 Render: direct L-R -8.09 dB, arrival L/R [538, 539]
+XFAIL     3.5s  test_decisions_2026_09_28::test_k1_left_source_L_louder_and_earlier_render[ms] K1 not landed (capsules crossed): ms Render: direct L-R -3.33 dB, arrival L/R [537, 539]
+XFAIL     0.0s  test_decisions_2026_09_28::test_k2_air_1pole_default_zero              K2 default not landed: {'server': 0.25, 'app.js': 0.25, 'index.html': 0.25}
+XFAIL     0.0s  test_decisions_2026_09_28::test_k3_default_source_29_distinct_delays   K3 default not landed: sx 3.0 sy 1.5, distinct delays {'l': 20, 'c': 12, 'r': 20}
+XFAIL     0.0s  test_decisions_2026_09_28::test_k3_client_default_matches              K3 client default not landed: app.js sx/sy (3.0, 1.5)
+XFAIL     0.0s  test_decisions_2026_09_28::test_k4_fdn_first_defaults                  K4 defaults not landed: {'fader_fdn': 0.5, 'fader_direct': 0.5, 'fader_early': 0.0, 'early_wet': 0.0} (want {'fader_fdn': 0.5, 'fader_direct': 0.0, 'fader_early': 0.0, 'early_wet': 1.0})
+PASS      1.5s  test_decisions_2026_09_28::test_k4_raise_early_fader_no_stale_replay   
+XFAIL     0.0s  test_decisions_2026_09_28::test_headroom_trim_table                    headroom trim table not in tree (engine/fdn.py LOOP_LEVEL_TRIM_DB)
+XFAIL     3.1s  test_decisions_2026_09_28::test_headroom_t14_fdn_level_matches_pre_f2  headroom trim not landed: FDN bus +3.00 dB vs pre-F2 (limit +-0.5 dB, decision 6) {'play_peak': 0.624, 'play_rms_db': np.float64(-14.0), 'pinned_fdn_peak': 0.284, 'pinned_fdn_rms_db': np.float64(-24.18), 'pinned_fdn_delta_db': np.float64(3.0), 'pinned_mix_peak': 0.636, 'pinned_mix_rms_db': np.float6
+FAIL      2.4s  test_decisions_2026_09_28::test_headroom_t14_whole_mix_informational   AssertionError: FDN bus +3.00 dB vs pre-F2 (limit +-0.5 dB, decision 6) {'play_peak': 0.624, 'play_rms_db': np.float64(-14.0), 'pinned_fdn_peak': 0.284, 'pinned_fdn_rms_db': np.float64(-24.18), 'pinned_fdn_delta_db': np.float64(3.0), 'pinned_mix_peak': 0.636, 'pinned_mix_rms_db': np.float64(-13.96),
+PASS      0.0s  test_locks::test_lock_unscaled_pm1_hadamard_render                     
+PASS      0.0s  test_locks::test_lock_unscaled_pm1_hadamard_play                       
+PASS      0.0s  test_locks::test_lock_geometric_level_inverse_square                   
+PASS      0.0s  test_locks::test_lock_early_images_excite_fdn                          
+XFAIL     0.0s  test_locks::test_lock_two_diffusion_layers_separate_keys               P0.3 diffusion key split not in tree (card "diffusion" still feeds both layers)
+PASS      0.0s  test_p0_engine::test_p0_1_denormal_guard_in_source                     
+PASS      2.1s  test_p0_engine::test_p0_1_silence_cost[colour_off-over0-0.5]           
+PASS      2.5s  test_p0_engine::test_p0_1_silence_cost[colour_on-over1-0.75]           
+XFAIL     0.0s  test_p0_engine::test_p0_2_t60_play_within_8pct[std_lock18]             F2 (per-line loss, line_t60) not in tree (P0.2)
+XFAIL     0.0s  test_p0_engine::test_p0_2_t60_play_within_8pct[small_lock08]           F2 (per-line loss, line_t60) not in tree (P0.2)
+XFAIL     0.0s  test_p0_engine::test_p0_2_t60_play_within_8pct[hall_lock40]            F2 (per-line loss, line_t60) not in tree (P0.2)
+XFAIL     0.0s  test_p0_engine::test_p0_2_t60_play_independent_of_dffs[0.0]            F2 (per-line loss, line_t60) not in tree (P0.2)
+XFAIL     0.0s  test_p0_engine::test_p0_2_t60_play_independent_of_dffs[-0.5]           F2 (per-line loss, line_t60) not in tree (P0.2)
+XFAIL     0.0s  test_p0_engine::test_p0_2_t60_play_independent_of_dffs[-0.9]           F2 (per-line loss, line_t60) not in tree (P0.2)
+XFAIL     0.0s  test_p0_engine::test_p0_2_hf_residue_play                              F2 (per-line loss, line_t60) not in tree (P0.2)
+XFAIL     0.0s  test_p0_engine::test_p0_2_t60_render_within_8pct                       F2 (per-line loss, line_t60) not in tree (P0.2)
+PASS      0.3s  test_p0_engine::test_p0_2_decay_lock_off_unchanged                     
+XFAIL     0.0s  test_p0_engine::test_p0_3_two_diffusion_layers_independent             P0.3 diffusion key split not in tree (card "diffusion" still feeds both layers)
+XFAIL     0.0s  test_p0_engine::test_p0_4_fdn_tail_null_play_vs_render                 P0.4 loop semantics not decided/landed (no build_mix / loop_semantics / packed loop_mix) - F5 is DECISION FOR IDLE
+XFAIL     0.1s  test_p0_engine::test_p0_5_server_defaults_equal_client_state           P0.5b: client does not load /api/defaults (hard-coded state in app.js); 9 shared-key mismatches: decay_lock False/True, decay_s 0.0/1.8, humidity 0.0/0.35, mic_proximity 0.0/0.25, mirror_b False/True, space 0.25/0.17, toe_half_deg None/55, yaw_l_deg None/-55, yaw_r_deg None/55
+PASS      0.0s  test_p0_engine::test_p0_5_scipy_in_requirements                        
+XFAIL     0.0s  test_p0_engine::test_p0_5_loop_mix_not_dead_payload                    P0.5a: loop_mix still computed in render_pipeline.py but never packed/used by Play (dead payload); delete it or consume it with F5 (DECISION FOR IDLE with the loop-semantics choice)
+XFAIL     0.0s  test_p0_engine::test_p0_5_diffusion_master_clamped                     P0.5e/K6 clamp not landed: +0.7 -> 0.7, -5 -> -5.0
+XFAIL     0.0s  test_p0_engine::test_p0_5_diffusion_master_single_value                P0.5e: diffusion_master values differ {'fdn.DIFFUSION_MASTER_DEFAULT': -0.25, 'fdn.DIFFUSION_MASTER_LIVE': -0.5, 'server default': -0.5, 'app.js state': -0.5} - decision 5 (-0.25 everywhere) not landed
+PASS      0.0s  test_p1_blob::test_p1_worklet_ver_consistent_everywhere                
+PASS      0.1s  test_p1_blob::test_p1_blob_len_matches_packer                          
+PASS      1.9s  test_p1_blob::test_p1_wasm_matches_source                              
+XFAIL     0.0s  test_p1_blob::test_p1_blob_v2_header_and_sections                      P1 blob v2 header/section table not in tree (magic 1 only)
+XFAIL     0.0s  test_p1_blob::test_p1_max_blob_raised                                  P1 blob v2 header/section table not in tree (magic 1 only)
+XFAIL     0.0s  test_p1_blob::test_p1_old_wasm_silent_on_v2_blob                       P1 blob v2 header/section table not in tree (magic 1 only)
+PASS      0.9s  test_p2_air::test_lock_direct_is_air_free_play                         
+PASS      3.2s  test_p2_air::test_lock_direct_is_air_free_render                       
+PASS      0.0s  test_p2_air::test_lock_no_air_on_fdn_return_play                       
+PASS      0.0s  test_p2_air::test_lock_no_air_on_fdn_return_render                     
+PASS      0.0s  test_p2_air::test_lock_humidity_one_pole_separate_from_shelf           
+PASS      0.0s  test_p2_air::test_lock_render_stage_order                              
+XFAIL     0.0s  test_p2_air::test_p2_iso_air_fit_within_tolerance                      P2 ISO 9613-1 air not in tree (no engine/air_iso.py, no air_climate)
+XFAIL     0.0s  test_p2_air::test_p2_air_shelf_zero_nulls_iso_off                      P2 ISO 9613-1 air not in tree (no engine/air_iso.py, no air_climate)
+XFAIL     0.0s  test_p2_air::test_p2_play_render_early_null                            P2 ISO 9613-1 air not in tree (no engine/air_iso.py, no air_climate)
+PASS      0.0s  test_p3_p4_surfaces::test_lock_per_hit_cascade_is_serial_render        
+PASS      0.0s  test_p3_p4_surfaces::test_lock_render_passes_every_hit                 
+XFAIL     0.0s  test_p3_p4_surfaces::test_p3a_curtain_wall_only_real_materials         P3A Track A materials/role bans not in tree
+XFAIL     0.0s  test_p3_p4_surfaces::test_p3b_mute_all_panels_leaves_direct_and_fdn    P3B surfaces Solo/Mute not in tree
+XFAIL     0.0s  test_p3_p4_surfaces::test_p4_play_render_early_null                    P4 Play per-hit surface cascade not in tree
+XFAIL     0.0s  test_p3_p4_surfaces::test_p4_flat_cards_bit_exact_bypass               P4 Play per-hit surface cascade not in tree
+XFAIL     0.0s  test_p3_p4_surfaces::test_p4_cpu_budget                                P4 Play per-hit surface cascade not in tree
+PASS      0.0s  test_p5_p6::test_lock_no_scattering_inside_fdn_loop                    
+XFAIL     0.0s  test_p5_p6::test_p5_scatter_zero_is_bit_identical                      P5 scattering (Track C) not in tree
+XFAIL     0.0s  test_p5_p6::test_p5_scatter_after_air                                  P5 scattering (Track C) not in tree
+XFAIL     0.0s  test_p5_p6::test_p5_energy_and_feed_forward                            P5 scattering (Track C) not in tree
+XFAIL     0.0s  test_p5_p6::test_p6_omni_source_bit_identical                          P6 source radiation not in tree
+XFAIL     0.0s  test_p5_p6::test_p6_tail_invariant_to_source_yaw                       P6 source radiation not in tree
+{'PASS': 36, 'FAIL': 1, 'XFAIL': 47, 'SKIP': 0}
+ALLDONE

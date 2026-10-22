@@ -1,0 +1,132 @@
+--- /workspace/audit_1852/software/engine/fdn.py	2026-10-02 18:53:18.000000000 +0100
++++ sw/engine/fdn.py	2026-10-04 07:12:44.033699627 +0100
+@@ -120,6 +120,60 @@
+ )
+ 
+ 
++# ---- BOX-ONLY PROTOTYPE (scratch copy, not software\): rotating FWHT stage ----
++import os as _os
++_ROT_EPS = float(_os.environ.get("ROT_EPS", "0"))      # fraction of pi
++_ROT_HZ = float(_os.environ.get("ROT_HZ", "0.3"))
++_ROT_H = int(_os.environ.get("ROT_STAGE", "16"))       # butterfly distance of the rotated stage
++_ROT_SR = 48000.0
++_GUITAR = _os.environ.get("GUITAR_NPY")
++
++
++def _rot_mix(H, v, n_abs):
++    """H·D·v as an in-place Sylvester FWHT; stage _ROT_H uses Ref(theta), theta = pi/4 + eps*pi*sin(2 pi f t).
++    Unscaled like H: a stage is sqrt2*[[c, s], [s, -c]] (= [[1,1],[1,-1]] at pi/4). Orthogonal at every t."""
++    if _ROT_EPS == 0.0 or H.shape[0] != 32:
++        return H @ v
++    x = v * LOOP_COLUMN_D
++    th = math.pi / 4 + _ROT_EPS * math.pi * math.sin(2 * math.pi * _ROT_HZ * n_abs / _ROT_SR)
++    c = math.sqrt(2.0) * math.cos(th); s = math.sqrt(2.0) * math.sin(th)
++    h = 1
++    while h < 32:
++        a = x.reshape(-1, 2, h)
++        u = a[:, 0, :].copy(); w = a[:, 1, :].copy()
++        if h == _ROT_H:
++            a[:, 0, :] = c * u + s * w
++            a[:, 1, :] = s * u - c * w
++        else:
++            a[:, 0, :] = u + w
++            a[:, 1, :] = u - w
++        x = a.reshape(32)
++        h *= 2
++    return x
++
++# ---- BOX-ONLY PROTOTYPE 2: Frenette delay modulation + Dffs cap ----
++_MOD_MS = float(_os.environ.get("MOD_MS", "0"))      # peak depth in ms (0 = off)
++_MOD_HZ = float(_os.environ.get("MOD_HZ", "0.7"))    # base rate
++_DCAP = float(_os.environ.get("DCAP", "0"))          # |Dffs| cap (0 = off)
++
++
++def _mod_setup(delays, sr):
++    """16 of 32 lines (every other line by sorted length); rate = base x 0.6..1.4 (irrational spread);
++    phase k*112.5 deg (adjacent modulated lines 112.5 deg apart, 16 distinct phases)."""
++    n = len(delays)
++    if _MOD_MS <= 0.0 or n != 32:
++        return None
++    order = sorted(range(n), key=lambda i: (delays[i], i))
++    lines = order[1::2]
++    A = _MOD_MS * 1e-3 * sr
++    cfg = {}
++    for k, i in enumerate(lines):
++        r = 0.6 + 0.8 * ((k * 0.6180339887498949) % 1.0)
++        cfg[i] = (A, 2 * math.pi * _MOD_HZ * r / sr, math.radians(112.5 * k))
++    L = int(max(delays)) + int(A) + 8
++    return dict(cfg=cfg, hist={i: np.zeros(L) for i in cfg}, hp={i: 0 for i in cfg}, yap={i: 0.0 for i in cfg}, L=L)
++
++
+ def loop_hadamard(n: int, parity: bool = False) -> "np.ndarray":
+     """Feedback matrix. n=32 without parity is H·D. Otherwise plain H."""
+     H = unscaled_hadamard_matrix(int(n))
+@@ -904,6 +958,10 @@
+ 
+         Always Python — Mix Direct/tail split needs per-line taps. ASSUMED.
+         """
++        if _GUITAR:
++            from scipy.signal import fftconvolve as _fc
++            _g = np.load(_GUITAR)
++            inject = np.stack([_fc(inject[:, i], _g)[: inject.shape[0]] for i in range(inject.shape[1])], 1)
+         n_samp = inject.shape[0]
+         n = self.n
+         out = np.zeros((n_samp, n), dtype=np.float64)
+@@ -925,9 +983,22 @@
+         lg = self._lg
+         any_dffs = self._any_dffs
+         hy = self._hy
++        _M = _mod_setup(list(delays), self.sr if hasattr(self, "sr") else 48000)
++        if _DCAP > 0.0:
++            dffs = np.clip(np.asarray(dffs, dtype=np.float64), -_DCAP, _DCAP)
+         for t in range(n_samp):
+             for i in range(n):
+                 reads[i] = bufs[i][idx[i]]
++            if _M is not None:
++                Lh = _M["L"]
++                for i, (A, w, ph) in _M["cfg"].items():
++                    D = delays[i] + A * math.sin(w * t + ph)
++                    N = int(math.floor(D - 0.5)); dl = D - N
++                    eta = (1.0 - dl) / (1.0 + dl)
++                    hh = _M["hist"][i]; hp = _M["hp"][i]
++                    y = eta * hh[(hp - N) % Lh] + hh[(hp - N - 1) % Lh] - eta * _M["yap"][i]
++                    _M["yap"][i] = y
++                    reads[i] = y
+             if lg is not None:
+                 reads *= lg
+             if peaking:
+@@ -941,7 +1012,7 @@
+             inj_t = inject[t]
+             if not any_dffs:
+                 # No Dffs: same-sample FDN. This is Play's !mix1 path.
+-                mixed = g * (H @ reads)
++                mixed = g * _rot_mix(H, reads, t)
+                 for i in range(n):
+                     wi = idx[i]
+                     x = mixed[i] + inj_t[i]
+@@ -949,6 +1020,8 @@
+                     v = reads[i]
+                     y = -gi * x + v
+                     bufs[i][wi] = x + gi * y
++                    if _M is not None and i in _M["hist"]:
++                        _M["hist"][i][_M["hp"][i]] = x + gi * y; _M["hp"][i] = (_M["hp"][i] + 1) % _M["L"]
+                     ni = wi + 1
+                     idx[i] = ni - delays[i] if ni >= delays[i] else ni
+                     reads[i] = y
+@@ -956,13 +1029,15 @@
+                 # D3: z^-1, Play's DIFFUSE_FN. H is H·D, or plain H under parity.
+                 sv = inj_t + hy
+                 yv = reads - dffs * sv
+-                hy = g * (H @ yv)
++                hy = g * _rot_mix(H, yv, t)
+                 for i in range(n):
+                     wi = idx[i]
+                     s = float(sv[i])
+                     gi = float(dffs[i])
+                     yy = float(yv[i])
+                     bufs[i][wi] = s + gi * yy
++                    if _M is not None and i in _M["hist"]:
++                        _M["hist"][i][_M["hp"][i]] = s + gi * yy; _M["hp"][i] = (_M["hp"][i] + 1) % _M["L"]
+                     ni = wi + 1
+                     idx[i] = ni - delays[i] if ni >= delays[i] else ni
+                     reads[i] = yy

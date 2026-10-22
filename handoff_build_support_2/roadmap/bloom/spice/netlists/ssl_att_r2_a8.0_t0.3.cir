@@ -1,0 +1,20 @@
+* ssl_att_r2_a8.0_t0.3
+.include /workspace/compressors/spice/models/devices.lib
+Vin in 0 SIN(0 8.0 500 0 0 0)
+Vgate g1 0 PWL(0 1 0.05 1 0.050100000000000006 0)
+Bout out 0 V=v(in)*v(g1)*exp(-20.0*0.11513*v(n1))
+Brect r 0 V=abs(v(out))--0.1155951346655083
+D1 r d DSIG
+Ra d n1 2700.0
+C1 n1 0 0.47u
+R9 n1 0 1200000.0
+
+.control
+set wr_singlescale
+set wr_vecnames
+option numdgt=7
+tran 2.5e-07 0.05 0 2.5e-07
+wrdata /workspace/compressors/spice/raw/ssl_att_r2_a8.0_t0.3.txt v(n1) v(out)
+quit
+.endc
+.end

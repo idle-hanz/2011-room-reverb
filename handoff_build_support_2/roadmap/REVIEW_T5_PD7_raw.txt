@@ -1,0 +1,1 @@
+I'll review the T5 and P-D7 prompts against the live tree only — no edits. First I'll read the handover pin and the prompt files they name.The prompts live under `handoff_build_support_2\roadmap`. Next I’ll check the harness flags, Smooth key, and the render path they name.

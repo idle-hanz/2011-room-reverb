@@ -1,0 +1,15 @@
+{
+ "surf_load_ok": 1,
+ "identity_load_ok": 1,
+ "flat_off_bit_exact": true,
+ "identity_bit_exact": true,
+ "designed_finite": true,
+ "ms_per_block_median": {
+  "A": 0.6774,
+  "B_off": 0.6604,
+  "B_on": 0.708
+ },
+ "delta_on_vs_A_ms": 0.0306,
+ "delta_off_vs_A_ms": -0.017,
+ "note": "node v20.19.2, zig cc wasm32-freestanding -O2 -msimd128 (pristine build is 221799 B vs the app's 221793 B); box CPU, indicative only"
+}

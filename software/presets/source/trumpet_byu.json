@@ -1,0 +1,167 @@
+{
+  "schema": "source_fitter.preset.v1",
+  "id": "trumpet_byu",
+  "label": "Trumpet (BYU, 160-3150 Hz)",
+  "category": "brass",
+  "tag": "MEASURED-FIT",
+  "model": "radiation_shelf_plus_soft_one_pole",
+  "level_reference": "on_axis (0 dB when facing the receiver; omni = exact null)",
+  "frame": {
+    "x": "facing (radiation reference axis of the dataset)",
+    "y": "source left",
+    "z": "up",
+    "facing_definition": "theta=0 column (VERIFIED dataset note for BYU instruments/speech)"
+  },
+  "params": {
+    "lp_order": 2.0,
+    "lo_db": -3.59277,
+    "hi_db": -29.49983,
+    "f0": 2359.08312,
+    "shelf_s": 1.0,
+    "p": 0.66749,
+    "q": 0.45829,
+    "b_ud": -0.28871,
+    "b_lr": 0.04773,
+    "aim_az": -0.81372,
+    "aim_el": -32.92464,
+    "lp_hz": 1049.5537,
+    "lp_mix": 0.46077,
+    "p_lo": 4.0,
+    "dip": 0.39633
+  },
+  "size": {
+    "a_eq_m": 0.0229,
+    "beaming_onset_hz": 2359.1,
+    "rule": "a_eq = c/(2*pi*f0), c=340 m/s as engine (piston ka=1); UI size slider sets size_scale = a_user/a_eq -> f0, lp_hz divided by size_scale"
+  },
+  "di_db": {
+    "125": 1.31,
+    "250": 1.41,
+    "500": 1.83,
+    "1000": 3.49,
+    "2000": 8.16,
+    "4000": 12.63,
+    "8000": 14.01,
+    "16000": 14.54
+  },
+  "diffuse_inject": {
+    "gain_db": -1.2618204159068485,
+    "shelf_f0": 1930.2840189729754,
+    "shelf_gain_db": -13.245786348886762,
+    "shelf_s": 0.7,
+    "fit_rmse_db": 0.06909961995511749,
+    "target_db": {
+      "50": -1.2795646620037209,
+      "104": -1.2984783457501696,
+      "218": -1.3808408327503034,
+      "455": -1.7390708604750669,
+      "951": -3.2856983907803787,
+      "1986": -8.100223583351603,
+      "4148": -12.755385021143395,
+      "8662": -14.096092241831325
+    }
+  },
+  "fit": {
+    "rmse_train_db": 1.8528950860553055,
+    "rmse_holdout_db": 1.8199702417367325,
+    "rmse_per_band_db": {
+      "160": 1.1778556717848143,
+      "200": 1.0278079061921626,
+      "250": 1.0959194425361214,
+      "315": 2.1585309463589573,
+      "400": 1.9330669764485546,
+      "500": 2.2192139374085116,
+      "630": 2.1459002796576185,
+      "800": 2.1197365602136014,
+      "1000": 1.7942608951862493,
+      "1250": 1.9138278119690382,
+      "1600": 1.9299023384567282,
+      "2000": 2.0852898210790856,
+      "2500": 1.8570494844547296,
+      "3150": 1.8052144458164139
+    },
+    "n_dirs": 684,
+    "n_train": 547,
+    "n_holdout": 137,
+    "fit_bands_hz": [
+      160.0,
+      3150.0
+    ],
+    "n_bands": 14,
+    "free_params": [
+      "lo_db",
+      "hi_db",
+      "f0",
+      "shelf_s",
+      "p",
+      "q",
+      "b_ud",
+      "b_lr",
+      "aim_az",
+      "aim_el",
+      "lp_hz",
+      "lp_mix",
+      "p_lo",
+      "dip"
+    ],
+    "fixed_params": {
+      "lp_order": 2.0
+    },
+    "di_data_db": {
+      "160": 2.4555142680293844,
+      "200": 0.787261807702325,
+      "250": -0.590291709051274,
+      "315": -0.5918653362164585,
+      "400": 1.453862318217518,
+      "500": -0.15061266287540942,
+      "630": 0.9007571556744285,
+      "800": 2.2624524102237933,
+      "1000": 2.645590578471431,
+      "1250": 1.9168613070203042,
+      "1600": 4.652353355906951,
+      "2000": 5.888259320660632,
+      "2500": 7.057661252366294,
+      "3150": 7.340711331408432
+    },
+    "di_model_db": {
+      "160": 1.3315297221693312,
+      "200": 1.3638837981567167,
+      "250": 1.4143897297282821,
+      "315": 1.4967399441710842,
+      "400": 1.632908953529129,
+      "500": 1.8345738505795837,
+      "630": 2.1639595082953575,
+      "800": 2.7068002532939457,
+      "1000": 3.490031221979219,
+      "1250": 4.62468832726933,
+      "1600": 6.323219947320285,
+      "2000": 8.1596183240846,
+      "2500": 10.007737253756844,
+      "3150": 11.56593752254816
+    }
+  },
+  "dsp": {
+    "stages": [
+      "broadband_gain(k_lo*lo_db)",
+      "rbj_high_shelf(f0, k*hi_db, shelf_s)",
+      "soft_beaming_lp(lp_hz/k_hi, lp_mix, lp_order 1|2 cascaded one-poles)"
+    ],
+    "fs_ref_hz": 48000,
+    "k": "k_hi = A*u^p*(1-q*u^8); k_lo = A*((1-dip)*u^p_lo*(1-q*u^8) + dip*4u(1-u)); both 0 on axis",
+    "slot": "FIRST stage of each image's serial cascade (before surfaces/air/mic)"
+  },
+  "provenance": {
+    "dataset": "BYU ScholarsArchive Spatial Audio Library \u2014 Trumpet Directivity",
+    "url": "https://scholarsarchive.byu.edu/directivity/13/",
+    "citation": "S. D. Bellows, K. J. Bodon, T. W. Leishman, 'Trumpet Directivity', BYU ScholarsArchive Directivity 13 (2020)",
+    "license": "free & open access; cite as requested (no explicit licence text found)",
+    "grid": "5 deg dual-equiangular 72x37 (SH-resampled, 1/3 octave)",
+    "measurement": "MEASURED (anechoic, rotating semicircular array)",
+    "front_axis": "theta=0 column (VERIFIED dataset note for BYU instruments/speech)"
+  },
+  "tags": {
+    "params": "VERIFIED fit output (this code) of MEASURED data",
+    "model_form": "ASSUMED (engineering model, mirrors mic_fitter v3)",
+    "size_rule": "VERIFIED physics (piston ka=1) applied as ASSUMED mapping"
+  }
+}

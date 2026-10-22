@@ -1,0 +1,21 @@
+PASS     t01_pack_matches_worklet              0.6s  {'blob_len': 3166, 'max_diff': 0.0}
+PASS     t02_wasm_matches_source               3.2s  {'max_diff': 0.0}
+FAIL     t03_golden_play_features_off          1.1s  play_std_unlocked_byp: differs from golden (null -23.6 dB > -100.0 dB, max diff 0.0295). If the change is intended, regenerate goldens and record why.
+FAIL     t04_golden_render_features_off        6.5s  render_std_unlocked_byp: differs from golden (null -22.1 dB > -100.0 dB, max diff 0.0382). If the change is intended, regenerate goldens and record why.
+FAIL     t05_omni_source_identity              1.2s  play_std_unlocked_byp: differs from golden (null -23.6 dB > -100.0 dB, max diff 0.0295). If the change is intended, regenerate goldens and record why.
+PENDING  t06_scattering_zero_identity          0.0s  scattering (Track C) not in this tree
+PASS     t07_tail_yaw_invariance               2.9s  {'key': 'source_yaw', 'tail_db': [np.float64(-75.5335639069917), np.float64(-75.5335639069917), np.float64(-75.5335639069917)], 'spread_db': np.float64(0.0)}
+PASS     t08_fdn_stability                    38.8s  {'dffs0': {'peak': 0.5520886182785034, 'silence_5s_db': np.float64(-37.6), 'silence_last5s_db': np.float64(-109.4)}, 'dffs+0.98': {'peak': 0.9991720914840698, 'silence_5s_db': np.float64(-29.2), 'silence_last5s_db': np.f
+PASS     t09_silence_cpu                      11.9s  {'byp': {'play_mean_ms': 1.01, 'silence_late_mean_ms': 1.081}, 'col': {'play_mean_ms': 1.575, 'silence_late_mean_ms': 1.093}}
+PASS     t10_t60_play                          7.9s  {'std_lock18': {'dial': 1.8, 't30': {'500': np.float64(1.7), '1000': np.float64(1.72), '2000': np.float64(1.8), '4000': np.float64(1.8), '8000': np.float64(1.8)}}, 'small_lock08': {'dial': 0.8, 't30': {'500': np.float64(
+PASS     t11_hf_residue_play                   2.0s  {9000: np.float64(1.8), 11000: np.float64(1.8)}
+SKIP     t12_t60_render                        0.0s  --quick
+SKIP     t13_parity_play_render                0.0s  --quick
+PASS     t14_level_sanity                      6.2s  {'play_peak': 0.549, 'play_rms_db': np.float64(-17.1), 'pinned_fdn_peak': 0.22, 'pinned_fdn_rms_db': np.float64(-27.11), 'pinned_fdn_delta_db': np.float64(0.07), 'pinned_mix_peak': 0.548, 'pinned_mix_rms_db': np.float64(
+PASS     t15_perf_active                       9.5s  {'1src_col': 1.08, '2src_col': 1.939}
+PASS     t16_diffusion_layers_separate         0.0s  {'keys_found': ['jitter_d'], 'note': 'extend: vary one key, assert the other layer is unchanged'}
+PASS     t17_play_hadamard_n                   0.5s  {'n': 16}
+SKIP     t18_tail_null_play_render             0.0s  --quick
+FAIL     t19_two_source_radiation_cpu          9.2s  two-source radiation 2.20 ms > 2.13 ms (80% of 2.667 ms) {'play_mean_ms': 2.197, 'silence_late_mean_ms': 2.03, 'limit_ms': 2.133}
+
+11 pass, 4 fail/error, 3 skip, 1 pending, 0 xfail

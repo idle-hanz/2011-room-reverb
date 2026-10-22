@@ -1,0 +1,484 @@
+
+A Database of Anechoic Microphone
+Array Measurements of Musical
+
+Instruments
+Recordings, Directivities, and Audio Features
+
+Version 3
+
+—
+
+Stefan Weinzierl1, Michael Vorländer2
+
+David Ackermann1, Gottfried Behler2, Fabian Brinkmann1,
+Henrik von Coler1, Erik Detzner1, Johannes Krämer1,
+Alexander Lindau1, Martin Pollow2, Frank Schulz1,
+
+Noam R. Shabtai2.
+
+1TU Berlin, Audio Communication Group
+Einsteinufer 17c, 10587 Berlin-Germany
+
+stefan.weinzierl@tu-berlin.de
+
+2RWTH Aachen University, Institute of Technical Acoustics,
+Kopernikusstraße 5, 52074 Aachen-Germany
+
+mvo@akustik.rwth-aachen.de
+
+February 2, 2024
+
+mailto:stefan.weinzierl@tu-berlin.de
+mailto:mvo@akustik.rwth-aachen.de
+
+
+Spherical sampling grid, trumpet inside the microphone array, and corresponding third
+octave directivity at 1.6 kHz. Red, green, and blue axis point to positive x, y, and z
+direction.
+
+General Information
+
+A collection of 3305 single notes of 41 musical instruments (cf. Table 1) of different
+historical periods was recorded and analyzed. The database includes the instrument
+recordings, radiation patterns (directivities), and audio features such as the sound power
+or spectral centroid. The database is provided under a Creative Commons BY-NC-SA
+licence, giving you the freedom to redistribute, remix, transform, and build upon the
+material for any purpose, but not for commercial purposes. For more information visit
+https://creativecommons.org/licenses/by-nc-sa/4.0.
+The documentation is focused on the structure and content of the database. More
+
+information on the acquisition, processing and validation can be found in the accompa-
+nying publications. If you use this database, please cite:
+
+Ackermann, D., Brinkmann, F., Weinzierl, S. (2024). A Database with Directivities
+of Musical Instruments. J. Audio Eng. Soc. DOI: https://doi.org/10.17743/jaes.
+2022.0128
+
+Weinzierl, S., Vorländer, M., Ackermann, D., Behler, G., Brinkmann, F., Coler, H. v.,
+Detzner, E., Krämer, J., Lindau, A., Pollow, M., Schulz, F., Shabtai, N. R. (2024).
+Musical Instruments - A data base with recordings, directivities, and features of classical
+musical instruments. DepositOnce: Technische Universität Berlin, 5861, Version 3. DOI:
+https://doi.org/10.14279/depositonce-5861.3
+
+Important note: The recordings of the musical instruments were provided in wav
+format in the previous version of this dataset, including scales (tl) and special tones
+(st) [1]. This data is still freely available and can be downloaded from https://doi.
+
+org/10.14279/depositonce-5861.2
+
+https://creativecommons.org/licenses/by-nc-sa/4.0
+https://doi.org/10.17743/jaes.2022.0128
+https://doi.org/10.17743/jaes.2022.0128
+https://doi.org/10.14279/depositonce-5861.3
+https://doi.org/10.14279/depositonce-5861.2
+https://doi.org/10.14279/depositonce-5861.2
+
+
+Database description
+
+Database
+
+0 Documentation.pdf
+
+1a DirectivitiesSingleTones SOFA.zip
+
+1b Directivities3rdOctave SOFA.zip
+
+1c Directivities3rdOctave OpenDAFF.zip
+
+1d DirectivityiesOctave GLL.zip
+
+2 Acoustic guitar modern recordings.zip
+
+...
+
+2 Violin modern recordings.zip
+
+3 Audio Features.csv
+
+4 Pictures.zip
+
+5 Tools.zip
+
+Figure 2: Data structure of the database.
+
+The presented data set includes record-
+ings and radiation patterns of the individ-
+ual tones of 41 modern and historically
+informed musical instruments which have
+been measured with a 32-channel micro-
+phone array in a anechoic environment [2].
+The recordings and directivities are pro-
+vided in standardised SOFA [3] format in
+convection FreeFieldDirectivityTF [4].
+Furthermore, averaged directivities are cal-
+culated from these data for each instrument,
+which are suitable for use in virtual acous-
+tics. In addition, spatially high-resolution
+directivities were generated in OpenDAFF1
+
+version 1.5 and GLL2 format, which al-
+low direct use in the simulation software
+RAVEN [5] and EASE3, respectively.
+The general data structure is outlined in
+
+Figure 2. The database consists of 5 components: (0) this documentation, (1a) radiation
+pattern of the single tones as SOFA files, (1b) one-third octave averaged directivities as
+SOFA files, (1c) high spatial resolution directional patterns in openDAFF format and
+(1d) in GLL format. (2) The recordings of the single tones of the instruments as SOFA
+files, (3) audio features such as the sound power or spectral centroid as CSV file, (4)
+pictures of the instruments during the recording and (5) and a Matlab script to read
+and edit the SOFA data provided. All data were measured with a sampling frequency
+of fS = 44.1 kHz.
+The SOFA files can be read using a variety of APIs4. They can be loaded for example
+
+using the Matlab/Octave API5:
+
+obj = SOFAload('SourceName_midiNote_singleTones.sofa');
+
+or with the sofar Python package6:
+
+sofa = sofar.read_sofa('SourceName_midiNote_singleTones.sofa')
+
+They contain the recorded signals and extracted directivities as complex transfer func-
+tions (TFs) together with metadata describing the data in detail. This includes the
+name of the Instrument in the entry GLOBAL SourceName, the name of the musician
+in GLOBAL Musician, the manufacturer of the instrument GLOBAL SourceManufacturer
+
+and a verbal description of the position of the instrument during the measurement in
+SourceView Reference. The arrangement of the capsules of the microphone array is
+described in ReceiverPosition.
+In the SOFA data of the recordings and the single notes, the respective note and the
+
+dynamic are indicated in GLOBAL Description, e.g. note = A4; dynamic = ff, and
+in the MidiNote field the Midi number7, it is A4 = 69, where the frequency for A4
+
+1cf. www.opendaff.org/ (accessed 02. May 2023).
+2cf. www.afmg.eu/en/ease-speakerlab (accessed 02. May 2023).
+3cf. www.afmg.eu (accessed 02. May 2023).
+4cf. www.sofaconventions.org/mediawiki/index.php/Software_and_APIs (accessed 02. May 2023)
+5cf. www.github.com/sofacoustics/SOFAtoolbox (accessed 02. May 2023)
+6cf. www.pypi.org/project/sofar (accessed 02. May 2023)
+7cf. www.midi.org/specifications-old/item/the-midi-1-0-specification (accessed 02. May
+2023)
+
+2
+
+www.opendaff.org/
+www.afmg.eu/en/ease-speakerlab
+www.afmg.eu
+www.sofaconventions.org/mediawiki/index.php/Software_and_APIs
+www.github.com/sofacoustics/SOFAtoolbox
+www.pypi.org/project/sofar
+www.midi.org/specifications-old/item/the-midi-1-0-specification
+
+
+corresponds to the tuning frequency from the entry SourceTuningFrequency. In the
+SOFA data of the recordings, SteadyPart indicates the range of the manually determined
+stationary portion in samples.
+
+1a DirectivitiesSingleTones SOFA
+
+There is a separate SOFA file for each Instrument, note and dynamic for the single tone
+directivity data and the naming of the file corresponds to the scheme SourceName midi
+
+Note singleTones.sofa. The purely real sound pressure levels are stored as complex
+transfer functions in the field Data.Real with the dimension MxRxN, where M (measure-
+ment) is always 1, R (receiver) = 32, and N refers to the number of the extracted partial
+tones. The Data.Imag field with the dimension MxRxN is included in the dataset for
+consistency reasons, but contains only zeros. The field N indicates the frequencies of the
+fundamental and partials in Hz.
+
+1b Directivities3rdOctave SOFA
+
+For the one-third-octave averaged directivities, there is one SOFA file for each instrument
+with the naming scheme SourceName 3rdOctave.sofa. The averaged and calibrated
+sound pressures are stored in the Data.Real with the dimension MxRxN, where M is
+always 1, R = 32, and N=31 refers to the nominal centre frequencies from 20 Hz to
+20 kHz according to IEC 61260-1:2014 [6]. The data field Data.Imag has been filled
+with zeros. The field N indicates the centre frequencies of the one-third-octave bands in
+Hz. In this case, the entries SourceTuningFrequency, SteadyPart and MidiNote are
+not included in this data representation.
+
+1c Directivities3rdOctave OpenDAFF
+
+The open source and freely available openDAFF format can be read with several APIs8.
+The naming of the data follows the scheme SourceName.daff. The directional patterns
+were stored with a spatial resolution of 5◦ (azimuth and colatitude), i.e. each file contains
+absolute one-third octave spectra at 2522 points. This data can be used directly in the
+acoustic simulation environment RAVEN.
+
+1d Directivityies3rdOctave GLL
+
+The proprietary GLL format enables the integration of complex sound sources into the
+acoustic simulation environment EASE. The directional patterns averaged over a one-
+third-octave were stored as 8192 long FIR filters with a spatial resolution of 5◦, with the
+naming scheme SourceName.gll.
+
+2 Recordings
+
+The Q = 32 channel recordings of the single tones for each note, instrument, and dy-
+namic are available as a one-sided complex TF XS,q(k), with q ∈ {1, 2, ..., Q} and length
+0 ≤ k ≤ N/2 + 1, with N being the even length of the two-sided spectrum Xq(k) given
+by
+
+Xq(k) =
+
+
+XS,q(k), if k = 0
+1
+2 ·XS,q(k), if 0 < k < N
+
+2
+
+XS,q(k), if k = N
+2
+
+1
+2 ·X∗
+
+S,q(k), if k > N
+2
+
+(1)
+
+8cf. www.github.com/svn2github/opendaff (accessed 02. May 2023)
+
+3
+
+www.github.com/svn2github/opendaff
+
+
+with the complex conjugate (·)∗. The two-sided spectrum can be transformed into the
+time domain by means of the inverse fast Fourier transform (IFFT). The naming of
+the data follows the scheme SourceName dynamic midiNote recordings.sofa and the
+recordings are stored in the Data.Real and Data.Imag fields. The fields have the di-
+mension MxRxN, where M is always 1, R corresponds to the number of capsules of the
+microphone array, with R = 32, and N indicates the length of the TF. The field N contains
+the frequencies of the bins of the TF in Hz. The sampling frequency of the recordings
+is fs = 44.1 kHz. The data is calibrated (i.e. a value of 1 corresponds to a pressure of 1
+Pascal) and compensated for the frequency response of the microphone array.
+
+3 Audio Features
+
+The sound power was calculated according to the enveloping surface method [7] according
+to which the sound pressure p is averaged for each microphone within the steady sound
+boundaries
+
+Lp = 10 log10
+
+(
+1
+N
+
+∑
+n p[n]
+
+2
+
+p20
+
+)
+[dB], (2)
+
+with p0 = 2 · 10−5 [Pa], averaged across microphones
+
+L̄p = 10 log10
+
+(
+1
+
+M
+
+∑
+m
+
+100.1Lp,m
+
+)
+[dB], (3)
+
+and referenced to a surface area of 1 m2
+
+Lw = L̄p + 10 log10
+
+(
+S1
+
+S0
+
+)
+[dB], (4)
+
+with spherical surface areas S1 = 54.63 m2, and S0 = 1 m2. In case of transient sounds,
+sound pressures p[n]2 in eq. (2) were subjected to time-weighted filtering (fast) [8] prior
+to averaging.
+
+Timbre-describing audio features were calculated for for a subset of the audio files.
+Scales and special tones were excluded from this calculation.
+Prior to the audio feature extraction, a main microphone was selected for each instru-
+
+ment, based on the highest RMS over all notes. The audio features were then calculated
+using the TimbreToolbox (TTB) [9]. The toolbox calculates various features describ-
+ing the spectral distribution, respectively the harmonic content, as well as the temporal
+envelope.
+The spectral distribution descriptors are first calculated as time-varying features, re-
+
+sulting from a frame-wise analysis of the audio data. Subsequently, the median and
+interquartile range are obtained from the trajectories as single values. Features related
+to the temporal envelope, are represented by single values for each recording.
+
+4 Pictures
+
+This folder contains pictures of the musicians during the recording and detailed photos
+of the instruments.
+
+5 Tools
+
+The Directivity demo.m Matlab script makes it possible to read the recordings from
+the SOFA data, display their spectrum graphically and transform them into the time
+
+4
+
+
+
+domain with the help of the IFFT. This data can then be saved in the script as a WAV
+file and played back with common playback devices.
+
+Furthermore, the script enables the three-dimensional representation of single-tone
+and frequency-averaged directivity in the form of balloon plots based on the SOFA data
+provided.
+Finally, the data can be estimated to any quadrature using spherical spline interpo-
+
+lation. The prerequisite for all processing steps is the installation of the freely available
+AKTools9 and the SOFA API for Matlab, the so called SOFAToolbox, contained therein.
+
+9cf. www.tu.berlin/ak/forschung/publikationen/open-research-tools/aktools (accessed 02.
+May 2023)
+
+5
+
+www.tu.berlin/ak/forschung/publikationen/open-research-tools/aktools
+
+
+Table 1: List of modern (m) and historically informed (h) instruments whose individual
+directivities are available in the database in the indicated pitch range for the
+playing dynamics pianissimo (pp) and fortissimo (ff) and additionally averaged
+in one-third octave bands.
+
+Scale
+
+Group Instrument Era pp ff GLL Name
+
+S
+tr
+in
+g
+
+Violin m G3–G6 G3–G6 Violin
+Violin h G3–C7 G3–C7 –
+Viola m C3–F7 C3–F7 Viola
+Viola h C3–C6 C3–C6 –
+Cello m C2–G6 C2–G6 Violoncello
+Cello h C2–D5 C2–D5 –
+Double bass m E1–E5 E1–D#5 Double bass
+Double bass h E1–E3 E1–E3 –
+Acoutic guitar m C2–B5 E2–B5 Acoustic guitar
+Double action harp m C1–F4 C1–F4 Double action harp
+
+W
+o
+o
+d
+w
+in
+d
+
+Oboe m A#3–A6 A#3–F#6 Oboe
+Classic oboe h C4–D#6 C4–D#6 –
+Romatic oboe h B3–C6 D4–G5 –
+English horn m E3–G#5 E3–G#5 English horn
+Clarinet m D3–A#6 D3–A#6 Clarinet (Bb)
+Clarinet h D3–F6 D3–F6 –
+Bass clarinet m A#1–D#5 A#1–D#5 Bass clarinet
+Bassoon m A#1–E5 A#1–E5 Bassoon
+Classic bassoon h A#1–C5 A#1–C5 –
+Baroque bassoon h A1–F#4 A1–F#4 –
+Contrabassoon m A#0–D#3 A#0–F3 Contrabassoon
+Dulcian h C2–G4 C2–G4 –
+Alto saxophone m C#2–C#5 C#2–C#5 Alto saxophone
+Tenor saxophone m B1–A4 B1–A4 Tenor saxophone
+Transverse flute m B3–A#6 B3–D7 Flute
+Baroque trans. flute h D4–F#6 D4–A#6 –
+Keyed flute h C#4–A6 C#4–A6 –
+
+B
+ra
+ss
+
+Trumpet m F#3–F6 F#3–F6 Trumpet
+Natural trumpet h D3–D6 D3–D6 –
+French horn m D2–F#5 D2–G5 French horn
+Natural horn h A1–B4 A1–B4 –
+Basset horn h F2–A#5 F2–A#5 –
+Tenor trombone m G1–F5 G1–F5 Trombone
+Bass trombone m E1–F4 E1–F4 Bass trombone
+Alto trombone h D2–D#5 C#2–D#5 –
+Bass trombone m B1–B4 C1–B4 –
+Tenor trombone h E1–D5 E1–D5 –
+Tuba m G#0–C5 F0–E5 Tuba
+
+P
+er
+c. Timpani m D2 D2 –
+
+Pedal timpani m D2 D2 Timpani
+
+Soprano – G3–G#5 G3–G#5 Singer (female)
+
+6
+
+
+
+References
+
+[1] S. Weinzierl, M. Vorländer, G. Behler, F. Brinkmann, H. v. Coler, E. Detzner,
+J. Krämer, A. Lindau, M. Pollow, F. Schulz, N. R. Shabtai, “A Database of
+Anechoic Microphone Array Measurements of Musical Instruments,” (2017), doi:
+10.14279/depositonce-5861.2.
+
+[2] N. R. Shabtai, G. Behler, M. Vorländer, S. Weinzierl, “Generation and analysis of
+an acoustic radiation pattern database for forty-one musical instruments,” J. Acoust.
+Soc. Am., vol. 141, no. 2, pp. 1246–1256 (2017), doi:10.1121/1.4976071.
+
+[3] “AES69-2022: AES standard for file exchange - Spatial acoustic data file format,”
+(2022).
+
+[4] P. Majdak, F. Zotter, F. Brinkmann, J. De Muynke, M. Mihocic, M. Noisternig,
+“Spatially Oriented Format for Acoustics 2.1: Introduction and Recent Advances,” J.
+Audio Eng. Soc., vol. 70, no. 7, pp. 565–584 (2022 Jul.), doi:10.17743/jaes.2022.0026.
+
+[5] D. Schröder, M. Vorländer, “RAVEN: A Real-Time Framework for the Auraliza-
+tion of Interactive Virtual Environments,” presented at the Proceedings of Forum
+Acusticum, Aalborg, pp. 1541–1546 (2011).
+
+[6] “IEC 61260-1:2014 Electroacoustics - Octave-band and fractional-octave-band filters
+- Part 1: Specifications,” (2014).
+
+[7] “DIN EN ISO 3745: Determination of sound power levels and sound energy levels of
+noise sources using sound pressure,” (2012).
+
+[8] “DIN EN 61672-1: Sound level meters Part 1: Specifcations,” (2014).
+
+[9] G. Peeters, B. L. Giordano, P. Susini, N. Misdariis, S. McAdams, “The timbre tool-
+box: Extracting audio descriptors from musical signals,” J. Audio Eng. Soc., vol.
+130, no. 5, pp. 2902–2916 (2012 Nov.).
+
+7
+
+
+	tuRedGeneral Information
+	tuRedDatabase description
+	Audio Features
+

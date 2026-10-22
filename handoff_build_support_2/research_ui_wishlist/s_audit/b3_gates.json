@@ -1,0 +1,10 @@
+{
+  "quiet_max_abs": 0.0,
+  "hot_rms_delta_db": 0.194,
+  "peak_render": 1.0,
+  "peak_play": 1.0,
+  "render_message": "Limiter: peak reduced by 14.2 dB (18330 samples)",
+  "limiter_db": 14.19800914527662,
+  "limiter_samples": 18330,
+  "play_limiter_windows": 6
+}

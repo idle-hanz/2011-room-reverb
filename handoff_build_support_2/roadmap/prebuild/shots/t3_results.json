@@ -1,0 +1,13 @@
+{
+ "m+3.5dB": [
+  "Equivalent pair: \u00b190\u00b0, wide cardioid (gradient 0.40)",
+  "Equivalent pair: \u00b153\u00b0, supercardioid (gradient 0.63)",
+  "Equivalent pair: \u00b153\u00b0, supercardioid (gradient 0.63)"
+ ],
+ "m0dB": [
+  "Equivalent pair: \u00b190\u00b0, cardioid (gradient 0.50)",
+  "Equivalent pair: \u00b163\u00b0, hypercardioid (gradient 0.69)",
+  "Equivalent pair: \u00b163\u00b0, hypercardioid (gradient 0.69)"
+ ],
+ "errors": []
+}

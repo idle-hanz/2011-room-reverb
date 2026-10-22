@@ -1,0 +1,22 @@
+{
+ "flat_off_bit_exact": true,
+ "identity_load_ok": 1,
+ "identity_bit_exact": true,
+ "designed_load_ok": 1,
+ "unstable_refused": true,
+ "designed_finite": true,
+ "tail_0p5_1s_db_flat": -25.43,
+ "tail_0p5_1s_db_surf": -45.49,
+ "design_stab": {
+  "max_loop_db": -0.18923,
+  "max_pole": 0.997372
+ },
+ "ms_per_block_median": {
+  "A": 0.4204,
+  "B_off": 0.4113,
+  "B_on": 0.4784
+ },
+ "delta_on_vs_A_ms": 0.058,
+ "delta_off_vs_A_ms": -0.0091,
+ "note": "gcc -O2 native .so via ctypes (call overhead included in all three); box CPU, indicative only"
+}

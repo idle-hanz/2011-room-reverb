@@ -1,0 +1,246 @@
+{
+ "meta": {
+  "sw": "/workspace/build_support_2/snapshot_2026-10-02_1630/software",
+  "when": "2026-10-02 16:47:24",
+  "node": "/usr/bin/node",
+  "python": "/workspace/scratch_er_dropout/venv/bin/python",
+  "sha1": {
+   "engine/live_stereo.c": "83de8182f037",
+   "static/wasm/live_stereo.wasm": "08a95563546d",
+   "static/js/fdn_worklet.js": "38844747c836",
+   "render_pipeline.py": "221fb6dce0e9",
+   "engine/fdn.py": "f58138b73645"
+  }
+ },
+ "results": [
+  {
+   "test": "t01_pack_matches_worklet",
+   "status": "PASS",
+   "secs": 0.6,
+   "detail": {
+    "blob_len": 3166,
+    "max_diff": 0.0
+   },
+   "doc": "Harness sanity: the Python packer (lib/pack.py) and the real fdn_worklet.js packRoom agree."
+  },
+  {
+   "test": "t02_wasm_matches_source",
+   "status": "PASS",
+   "secs": 3.2,
+   "detail": {
+    "max_diff": 0.0
+   },
+   "doc": "static/wasm/live_stereo.wasm is built from engine/live_stereo.c (native build IR == wasm IR, bit-exact)."
+  },
+  {
+   "test": "t03_golden_play_features_off",
+   "status": "FAIL",
+   "secs": 1.1,
+   "detail": "play_std_unlocked_byp: differs from golden (null -23.6 dB > -100.0 dB, max diff 0.0295). If the change is intended, regenerate goldens and record why.",
+   "doc": "Play IR with new features off equals the golden baseline (null <= -100 dB)."
+  },
+  {
+   "test": "t04_golden_render_features_off",
+   "status": "FAIL",
+   "secs": 6.5,
+   "detail": "render_std_unlocked_byp: differs from golden (null -22.1 dB > -100.0 dB, max diff 0.0382). If the change is intended, regenerate goldens and record why.",
+   "doc": "Render IR (BYPASS colour, 0.5 s) equals the golden baseline (null <= -100 dB)."
+  },
+  {
+   "test": "t05_omni_source_identity",
+   "status": "FAIL",
+   "secs": 1.2,
+   "detail": "play_std_unlocked_byp: differs from golden (null -23.6 dB > -100.0 dB, max diff 0.0295). If the change is intended, regenerate goldens and record why.",
+   "doc": "Source radiation OMNI must reproduce today's golden (Play + Render)."
+  },
+  {
+   "test": "t06_scattering_zero_identity",
+   "status": "PENDING",
+   "secs": 0.0,
+   "detail": "scattering (Track C) not in this tree",
+   "doc": "Per-reflection scattering amount 0 must reproduce today's golden (Play)."
+  },
+  {
+   "test": "t07_tail_yaw_invariance",
+   "status": "PASS",
+   "secs": 2.9,
+   "detail": {
+    "key": "source_yaw",
+    "tail_db": [
+     -75.5335639069917,
+     -75.5335639069917,
+     -75.5335639069917
+    ],
+    "spread_db": 0.0
+   },
+   "doc": "Tail energy (80 ms-1 s) invariant (<=0.5 dB) under source yaw 0/90/180 (source radiation)."
+  },
+  {
+   "test": "t08_fdn_stability",
+   "status": "PASS",
+   "secs": 38.8,
+   "detail": {
+    "dffs0": {
+     "peak": 0.5520886182785034,
+     "silence_5s_db": -37.6,
+     "silence_last5s_db": -109.4
+    },
+    "dffs+0.98": {
+     "peak": 0.9991720914840698,
+     "silence_5s_db": -29.2,
+     "silence_last5s_db": -100.1
+    },
+    "dffs-0.98": {
+     "peak": 0.9456390738487244,
+     "silence_5s_db": -30.2,
+     "silence_last5s_db": -100.7
+    },
+    "dffs_as_is": {
+     "peak": 0.6619365811347961,
+     "silence_5s_db": -35.9,
+     "silence_last5s_db": -107.6
+    }
+   },
+   "doc": "No NaN/Inf/growth across the full Dffs range and max decay (8 s) / max loop gain; 15 s noise then 15 s silence."
+  },
+  {
+   "test": "t09_silence_cpu",
+   "status": "PASS",
+   "secs": 11.9,
+   "detail": {
+    "byp": {
+     "play_mean_ms": 1.01,
+     "silence_late_mean_ms": 1.081
+    },
+    "col": {
+     "play_mean_ms": 1.575,
+     "silence_late_mean_ms": 1.093
+    }
+   },
+   "doc": "WASM cost after input stops stays near the playing cost (no denormal blow-up): silence <= 1.3x play and <= 50% budget (colour off)."
+  },
+  {
+   "test": "t10_t60_play",
+   "status": "PASS",
+   "secs": 7.9,
+   "detail": {
+    "std_lock18": {
+     "dial": 1.8,
+     "t30": {
+      "500": 1.7,
+      "1000": 1.72,
+      "2000": 1.8,
+      "4000": 1.8,
+      "8000": 1.8
+     }
+    },
+    "small_lock08": {
+     "dial": 0.8,
+     "t30": {
+      "500": 0.75,
+      "1000": 0.77,
+      "2000": 0.75,
+      "4000": 0.78,
+      "8000": 0.78
+     }
+    },
+    "hall_lock40": {
+     "dial": 4.0,
+     "t30": {
+      "500": 3.88,
+      "1000": 3.97,
+      "2000": 4.01,
+      "4000": 3.95,
+      "8000": 3.97
+     }
+    }
+   },
+   "doc": "Play FDN T30 per octave (500 Hz-8 kHz) within +-15 % of the dialled decay (decay lock)."
+  },
+  {
+   "test": "t11_hf_residue_play",
+   "status": "PASS",
+   "secs": 2.0,
+   "detail": {
+    "9000": 1.8,
+    "11000": 1.8
+   },
+   "doc": "No slow HF residue: 9-11 kHz late decay (0.6-0.8 x dial after onset) T60 <= 1.25 x dial."
+  },
+  {
+   "test": "t12_t60_render",
+   "status": "SKIP",
+   "secs": 0.0,
+   "detail": "--quick",
+   "doc": "[slow] Render FDN T30 per octave within +-15 % of the dialled decay (std room, 1.8 s)."
+  },
+  {
+   "test": "t13_parity_play_render",
+   "status": "SKIP",
+   "secs": 0.0,
+   "detail": "--quick",
+   "doc": "[slow] Play vs Render, same scene, colour off & on: tail T30 +-10 %/band, tail octave balance +-1.5 dB,\ntail level +-1 dB, stereo tail corr +-0.1, direct level +-0.5 dB. Early field: XFAIL until Play gets the per-hit cascade."
+  },
+  {
+   "test": "t14_level_sanity",
+   "status": "PASS",
+   "secs": 6.2,
+   "detail": {
+    "play_peak": 0.549,
+    "play_rms_db": -17.1,
+    "pinned_fdn_peak": 0.22,
+    "pinned_fdn_rms_db": -27.11,
+    "pinned_fdn_delta_db": 0.07,
+    "pinned_mix_peak": 0.548,
+    "pinned_mix_rms_db": -14.93,
+    "pinned_mix_delta_db": 1.44
+   },
+   "doc": "Nominal scene, colour on, uniform noise +-0.3 (-15.2 dBFS RMS, hot): Play peak < 0.95 (limiter idle), finite.\nHeadroom decision 6: with the fixed loop trim the FDN bus (FDN only, source/air pinned to the old defaults,\ndiffusion at the locked -0.25) must sit within +-0.5 dB of the pre-F2 level. Whole-mix delta is reported (direct/early moved\nwith F3's Play/Render parity fix, not trimmed)."
+  },
+  {
+   "test": "t15_perf_active",
+   "status": "PASS",
+   "secs": 9.5,
+   "detail": {
+    "1src_col": 1.08,
+    "2src_col": 1.939
+   },
+   "doc": "Active cost on this machine: 1 source + colour <= 60 % budget, 2 sources + colour <= 85 % (x --perf-scale)."
+  },
+  {
+   "test": "t16_diffusion_layers_separate",
+   "status": "PASS",
+   "secs": 0.0,
+   "detail": {
+    "keys_found": [
+     "jitter_d"
+    ],
+    "note": "extend: vary one key, assert the other layer is unchanged"
+   },
+   "doc": "Lock: Surfaces \u0394d jitter and Structure Dffs are separate controls (one key must not drive both)."
+  },
+  {
+   "test": "t17_play_hadamard_n",
+   "status": "PASS",
+   "secs": 0.5,
+   "detail": {
+    "n": 16
+   },
+   "doc": "Play follows hadamard_n (8..128) like Render."
+  },
+  {
+   "test": "t18_tail_null_play_render",
+   "status": "SKIP",
+   "secs": 0.0,
+   "detail": "--quick",
+   "doc": "[slow] FDN-only Play tail nulls Render (same-sample loop solve, integer delays): residual <= -30 dB over 0-2 s."
+  },
+  {
+   "test": "t19_two_source_radiation_cpu",
+   "status": "FAIL",
+   "secs": 9.2,
+   "detail": "two-source radiation 2.20 ms > 2.13 ms (80% of 2.667 ms) {'play_mean_ms': 2.197, 'silence_late_mean_ms': 2.03, 'limit_ms': 2.133}",
+   "doc": "Two directional sources, colour on, stay within 80% of the 2.667 ms block budget.\n\nThe brief's 80% line includes scattering, which is not in this tree. This\nmeasures talking_head plus trumpet_byu (both SRC_RAD filters live). Omni\nwould pack an empty section and is not this test. Silence must stay near\nthe playing cost."
+  }
+ ]
+}

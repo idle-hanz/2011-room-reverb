@@ -1,0 +1,41 @@
+{
+  "mic_id": "proxy_ldc_cardioid",
+  "display_name": "ASSUMED LDC Cardioid (U87-card-ish)",
+  "honesty": "ASSUMED",
+  "family": "ldc_cardioid",
+  "source": "synthetic_proxy_curves_mimicking_published_off_axis_shapes",
+  "params": {
+    "f0": 1640.8938766703477,
+    "depth_max_db": -20.921080516277787,
+    "res_hz": 13135.448967779857,
+    "lp_mix": 0.9999999999999999,
+    "fc_floor": 3755.7917690796135,
+    "p": 1.00144540790127
+  },
+  "train_rmse_db": 0.4220459880617506,
+  "holdout_rmse_db": 0.46699955233541,
+  "train_mse_db": 0.1781228160390193,
+  "holdout_mse_db": 0.21808858188147334,
+  "holdout_angles_deg": [
+    45.0,
+    135.0
+  ],
+  "train_angles_deg": [
+    0.0,
+    15.0,
+    30.0,
+    60.0,
+    90.0,
+    120.0,
+    150.0,
+    180.0
+  ],
+  "fit_message": "DE success=False nit=40 fun=0.181290; LS success=True cost=45.779202",
+  "preset": "proxy_ldc_cardioid.json",
+  "plots": {
+    "polar": "plots/polars/proxy_ldc_cardioid_polar.png",
+    "colour": "plots/colour/proxy_ldc_cardioid_colour.png",
+    "fit_train": "plots/fit/proxy_ldc_cardioid_train.png",
+    "fit_holdout": "plots/fit/proxy_ldc_cardioid_holdout.png"
+  }
+}

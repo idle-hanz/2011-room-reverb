@@ -1,0 +1,41 @@
+{
+  "id": "acoustic_ceiling_tile",
+  "display_name": "Acoustic ceiling tile",
+  "candidate": "B",
+  "model": "low_shelf_high_shelf",
+  "rmse_r_db": 0.1660796644402147,
+  "absorb_l1": 0.013106144448956929,
+  "candidate_rmse": {
+    "A": 0.2278435411752326,
+    "B": 0.1660796644402147
+  },
+  "params": {
+    "r0_db": -1.0128629767685533e-30,
+    "f_lo": 799.999999996667,
+    "depth_lo_db": -2.61274550329899,
+    "shelf_slope_lo": 3.7886049860814537,
+    "f0": 461.9383811270204,
+    "depth_db": -6.392318737214798,
+    "shelf_slope": 5.871328283647663
+  },
+  "roles": [
+    "ceiling"
+  ],
+  "banned_on": [
+    "floor",
+    "wall"
+  ],
+  "absorb": [
+    0.45,
+    0.55,
+    0.7,
+    0.8,
+    0.8,
+    0.75,
+    0.78
+  ],
+  "extras": {
+    "notes": "Ceiling role primary; do not paint on floor.",
+    "prefer_lf_candidate": true
+  }
+}

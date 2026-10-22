@@ -1,0 +1,278 @@
+{
+ "MEASURED_SHELF|owns=False": {
+  "render_db": {
+   "card": [
+    -3.53,
+    -5.36
+   ],
+   "bi": [
+    -3.62,
+    -5.72
+   ],
+   "omni": [
+    -3.41,
+    -4.96
+   ]
+  },
+  "play_db": {
+   "card": [
+    -2.45,
+    -3.98
+   ],
+   "bi": [
+    -2.37,
+    -4.03
+   ],
+   "omni": [
+    -2.46,
+    -3.8
+   ]
+  },
+  "render_null_bi_vs_card": [
+   -20.1,
+   -15.2
+  ],
+  "render_null_omni_vs_card": [
+   -22.6,
+   -18.3
+  ],
+  "play_null_bi_vs_card": [
+   -20.3,
+   -16.1
+  ],
+  "play_null_omni_vs_card": [
+   -22.6,
+   -18.6
+  ]
+ },
+ "MEASURED_SHELF|owns=True": {
+  "render_db": {
+   "card": [
+    -3.53,
+    -5.36
+   ],
+   "bi": [
+    -3.53,
+    -5.36
+   ],
+   "omni": [
+    -3.53,
+    -5.36
+   ]
+  },
+  "play_db": {
+   "card": [
+    -2.45,
+    -3.98
+   ],
+   "bi": [
+    -2.45,
+    -3.98
+   ],
+   "omni": [
+    -2.45,
+    -3.98
+   ]
+  },
+  "render_null_bi_vs_card": [
+   -2996.5,
+   -2994.6
+  ],
+  "render_null_omni_vs_card": [
+   -2996.5,
+   -2994.6
+  ],
+  "play_null_bi_vs_card": [
+   -2997.5,
+   -2996.0
+  ],
+  "play_null_omni_vs_card": [
+   -2997.5,
+   -2996.0
+  ]
+ },
+ "BYPASS|owns=False": {
+  "render_db": {
+   "card": [
+    0.18,
+    -0.64
+   ],
+   "bi": [
+    -0.06,
+    -1.42
+   ],
+   "omni": [
+    0.44,
+    0.06
+   ]
+  },
+  "play_db": {
+   "card": [
+    0.81,
+    0.09
+   ],
+   "bi": [
+    0.65,
+    -0.54
+   ],
+   "omni": [
+    1.02,
+    0.72
+   ]
+  },
+  "render_null_bi_vs_card": [
+   -17.8,
+   -13.5
+  ],
+  "render_null_omni_vs_card": [
+   -20.7,
+   -17.3
+  ],
+  "play_null_bi_vs_card": [
+   -17.5,
+   -13.4
+  ],
+  "play_null_omni_vs_card": [
+   -20.2,
+   -17.0
+  ]
+ },
+ "BYPASS|owns=True": {
+  "render_db": {
+   "card": [
+    0.18,
+    -0.64
+   ],
+   "bi": [
+    0.18,
+    -0.64
+   ],
+   "omni": [
+    0.18,
+    -0.64
+   ]
+  },
+  "play_db": {
+   "card": [
+    0.81,
+    0.09
+   ],
+   "bi": [
+    0.81,
+    0.09
+   ],
+   "omni": [
+    0.81,
+    0.09
+   ]
+  },
+  "render_null_bi_vs_card": [
+   -3000.2,
+   -2999.4
+  ],
+  "render_null_omni_vs_card": [
+   -3000.2,
+   -2999.4
+  ],
+  "play_null_bi_vs_card": [
+   -3000.8,
+   -3000.1
+  ],
+  "play_null_omni_vs_card": [
+   -3000.8,
+   -3000.1
+  ]
+ },
+ "ASSUMED_TOYS|owns=False": {
+  "render_db": {
+   "card": [
+    -0.29,
+    -1.47
+   ],
+   "bi": [
+    -0.49,
+    -2.0
+   ],
+   "omni": [
+    -0.09,
+    -0.94
+   ]
+  },
+  "play_db": {
+   "card": [
+    0.68,
+    -0.16
+   ],
+   "bi": [
+    0.55,
+    -0.67
+   ],
+   "omni": [
+    0.85,
+    0.36
+   ]
+  },
+  "render_null_bi_vs_card": [
+   -19.4,
+   -14.9
+  ],
+  "render_null_omni_vs_card": [
+   -22.0,
+   -18.1
+  ],
+  "play_null_bi_vs_card": [
+   -19.0,
+   -14.7
+  ],
+  "play_null_omni_vs_card": [
+   -21.5,
+   -18.0
+  ]
+ },
+ "ASSUMED_TOYS|owns=True": {
+  "render_db": {
+   "card": [
+    -0.29,
+    -1.47
+   ],
+   "bi": [
+    -0.29,
+    -1.47
+   ],
+   "omni": [
+    -0.29,
+    -1.47
+   ]
+  },
+  "play_db": {
+   "card": [
+    0.68,
+    -0.16
+   ],
+   "bi": [
+    0.68,
+    -0.16
+   ],
+   "omni": [
+    0.68,
+    -0.16
+   ]
+  },
+  "render_null_bi_vs_card": [
+   -2999.7,
+   -2998.5
+  ],
+  "render_null_omni_vs_card": [
+   -2999.7,
+   -2998.5
+  ],
+  "play_null_bi_vs_card": [
+   -3000.7,
+   -2999.8
+  ],
+  "play_null_omni_vs_card": [
+   -3000.7,
+   -2999.8
+  ]
+ }
+}

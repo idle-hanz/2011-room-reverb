@@ -1,0 +1,72 @@
+{
+  "schema": "surfaces_fitter.material.v1",
+  "id": "acoustic_ceiling_tile",
+  "display_name": "Acoustic ceiling tile",
+  "honesty": "ASSUMED_TEXTBOOK",
+  "roles": [
+    "ceiling"
+  ],
+  "banned_on": [
+    "floor",
+    "wall"
+  ],
+  "absorb_hz": [
+    125.0,
+    250.0,
+    500.0,
+    1000.0,
+    2000.0,
+    4000.0,
+    8000.0
+  ],
+  "absorb": [
+    0.45,
+    0.55,
+    0.7,
+    0.8,
+    0.8,
+    0.75,
+    0.78
+  ],
+  "alpha_octave": [
+    0.45,
+    0.55,
+    0.7,
+    0.8,
+    0.8,
+    0.75,
+    0.78
+  ],
+  "model": "low_shelf_high_shelf",
+  "candidate": "B",
+  "params": {
+    "r0_db": -1.0128629767685533e-30,
+    "f_lo": 799.999999996667,
+    "depth_lo_db": -2.61274550329899,
+    "shelf_slope_lo": 3.7886049860814537,
+    "f0": 461.9383811270204,
+    "depth_db": -6.392318737214798,
+    "shelf_slope": 5.871328283647663
+  },
+  "rmse_r_db": 0.1660796644402147,
+  "absorb_l1": 0.013106144448956929,
+  "candidate_rmse_r_db": {
+    "A": 0.2278435411752326,
+    "B": 0.1660796644402147
+  },
+  "freq_range_hz": [
+    20.0,
+    16000.0
+  ],
+  "source_note": "Mineral-fiber / ACT NRC~0.70 class typical table",
+  "usage": "One bounce: apply R(f); multi-bounce: cascade product along hit list. Do not put curtain/carpet roles on illegal faces.",
+  "fit": {
+    "success": true,
+    "message": "DE success=False; LS success=True cost=2.648"
+  },
+  "locks": {
+    "live_software": "do not import into live software/ engine in this pack",
+    "honesty": "ASSUMED_TEXTBOOK \u2014 not Structure VERIFIED",
+    "depth": "absolute per bounce (not per metre)"
+  }
+}

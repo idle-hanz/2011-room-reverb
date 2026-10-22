@@ -1,0 +1,49 @@
+{
+ "parity_indices_equal_old_LIVE_32": "is_kw_only))):\n                 ^^^^^^^^^^^^\n  File \"/usr/lib/python3.13/dataclasses.py\", line 757, in _is_type\n    ns = sys.modules.get(cls.__module__).__dict__\n         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAttributeError: 'NoneType' object has no attribute '__dict__'. Did you mean: '__dir__'?\n",
+ "play_parity_humidity0_two0_null_db": -Infinity,
+ "play_parity_humidity0_two1_null_db": -Infinity,
+ "render_parity_humidity0_null_db": -Infinity,
+ "play_parity_humidity0.35_null_db (air change only)": -41.9,
+ "play_level_new_vs_1550_default_h035": {
+  "direct_iso1": {
+   "new_db": -56.14,
+   "old_db": -56.14,
+   "delta_db": 0.0
+  },
+  "direct_iso0": {
+   "new_db": -56.14,
+   "old_db": -56.14,
+   "delta_db": 0.0
+  },
+  "early_iso1": {
+   "new_db": -62.8,
+   "old_db": -62.77,
+   "delta_db": -0.03
+  },
+  "early_iso0": {
+   "new_db": -62.66,
+   "old_db": -62.77,
+   "delta_db": 0.11
+  },
+  "fdn_iso1": {
+   "new_db": -60.2,
+   "old_db": -60.18,
+   "delta_db": -0.02
+  },
+  "fdn_iso0": {
+   "new_db": -60.07,
+   "old_db": -60.18,
+   "delta_db": 0.11
+  },
+  "mix_iso1": {
+   "new_db": -51.45,
+   "old_db": -51.47,
+   "delta_db": 0.02
+  },
+  "mix_iso0": {
+   "new_db": -51.39,
+   "old_db": -51.47,
+   "delta_db": 0.08
+  }
+ }
+}

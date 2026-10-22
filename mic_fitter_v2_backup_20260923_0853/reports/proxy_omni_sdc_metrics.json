@@ -1,0 +1,41 @@
+{
+  "mic_id": "proxy_omni_sdc",
+  "display_name": "ASSUMED Omni SDC (measurement-ish)",
+  "honesty": "ASSUMED",
+  "family": "omni",
+  "source": "synthetic_proxy_curves_mimicking_published_off_axis_shapes",
+  "params": {
+    "f0": 944.7093541701709,
+    "depth_max_db": -2.706663241981331,
+    "res_hz": 8100.343269973271,
+    "lp_mix": 0.9999999999999999,
+    "fc_floor": 4581.111897034283,
+    "p": 0.6087802661504005
+  },
+  "train_rmse_db": 0.16431344928229635,
+  "holdout_rmse_db": 0.1753676495423121,
+  "train_mse_db": 0.026998909615045776,
+  "holdout_mse_db": 0.0307538125059952,
+  "holdout_angles_deg": [
+    45.0,
+    135.0
+  ],
+  "train_angles_deg": [
+    0.0,
+    15.0,
+    30.0,
+    60.0,
+    90.0,
+    120.0,
+    150.0,
+    180.0
+  ],
+  "fit_message": "DE success=False nit=40 fun=0.028521; LS success=True cost=7.111253",
+  "preset": "proxy_omni_sdc.json",
+  "plots": {
+    "polar": "plots/polars/proxy_omni_sdc_polar.png",
+    "colour": "plots/colour/proxy_omni_sdc_colour.png",
+    "fit_train": "plots/fit/proxy_omni_sdc_train.png",
+    "fit_holdout": "plots/fit/proxy_omni_sdc_holdout.png"
+  }
+}

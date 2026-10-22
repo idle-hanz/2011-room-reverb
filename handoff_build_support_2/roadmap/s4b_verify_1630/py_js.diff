@@ -1,0 +1,527 @@
+--- snapshot_2026-10-02_1140/software/engine/fdn.py	2026-10-01 21:27:02.000000000 +0100
++++ snapshot_2026-10-02_1630/software/engine/fdn.py	2026-10-02 16:29:58.309364098 +0100
+@@ -106,11 +106,29 @@
+ 
+ 
+ def unscaled_hadamard_matrix(n: int) -> "np.ndarray":
+-    """±1 Hadamard as float64 ndarray (unscaled)."""
++    """±1 Hadamard as float64 ndarray (unscaled). Left pure: no column signs."""
+     return np.asarray(unscaled_hadamard_signs(n), dtype=np.float64)
+ 
+ 
+-def diffuser_output_mix(g: float, dffs: Sequence[float]) -> "np.ndarray":
++# H·D column signs. Mirror-invariant under (b0 b4)(b1 b3), so a symmetric
++# scene stays mono. Breaks the all-ones funnel through line 0. n=8 and n=16
++# stay plain H. reaktor_parity keeps plain H (the 2011 matrix).
++LOOP_COLUMN_D = np.array(
++    [1, -1, -1, -1, -1, -1, 1, -1, -1, 1, -1, 1, 1, 1, 1, 1,
++     -1, 1, 1, 1, -1, 1, 1, 1, -1, 1, 1, 1, -1, 1, 1, 1],
++    dtype=np.float64,
++)
++
++
++def loop_hadamard(n: int, parity: bool = False) -> "np.ndarray":
++    """Feedback matrix. n=32 without parity is H·D. Otherwise plain H."""
++    H = unscaled_hadamard_matrix(int(n))
++    if int(n) == 32 and not parity:
++        H = H * LOOP_COLUMN_D[None, :]
++    return H
++
++
++def diffuser_output_mix(g: float, dffs: Sequence[float], parity: bool = False) -> "np.ndarray":
+     """(I + g diag(dffs) H)⁻¹. The Hadamard hears the diffuser output.
+ 
+     Same-sample Schroeder step, H unscaled ±1, g = Gain/N:
+@@ -125,7 +143,7 @@
+     n = int(d.shape[0])
+     if n < 1 or (n & (n - 1)) != 0:
+         raise ValueError(f"diffuser mix size must be power of 2, got {n}")
+-    H = unscaled_hadamard_matrix(n)
++    H = loop_hadamard(n, parity)
+     A = np.eye(n, dtype=np.float64) + float(g) * (np.diag(d) @ H)
+     return np.linalg.inv(A)
+ 
+@@ -535,7 +553,11 @@
+     c: float,
+     depth_per_axis: float,
+ ) -> List[dict]:
+-    """Cut-only axial peaking, one bank per X/Y/Z (same as FDN.axis_for_line)."""
++    """Cut-only axial peaking, one bank per X/Y/Z (same as FDN.axis_for_line).
++
++    Float64 design, packed as float32 by the blob. Play restores b2 in double
++    at load so the stored numerator still has unity DC. Do not scale it here.
++    """
+     W, Hh, L = float(room[0]), float(room[1]), float(room[2])
+     dims = {"X": W, "Y": Hh, "Z": L}
+     gain_db = -abs(float(depth_per_axis))
+@@ -546,7 +568,11 @@
+             b0, b1, b2, a1, a2 = normalize_biquad(
+                 rbj_peaking(float(sr), f0, PEAKING_Q, gain_db)
+             )
+-            out.append({"on": True, "b0": b0, "b1": b1, "b2": b2, "a1": a1, "a2": a2})
++            out.append({
++                "on": True,
++                "b0": float(b0), "b1": float(b1), "b2": float(b2),
++                "a1": float(a1), "a2": float(a2),
++            })
+         else:
+             out.append({"on": False, "b0": 1.0, "b1": 0.0, "b2": 0.0, "a1": 0.0, "a2": 0.0})
+     return out
+@@ -774,6 +800,7 @@
+         dffs: Optional[Sequence[float]] = None,
+         mic_g: Optional[Sequence[float]] = None,
+         line_t60: float = 0.0,
++        parity: bool = False,
+     ) -> None:
+         n_lines = int(n) if n is not None else len(delays)
+         if n_lines < 1 or (n_lines & (n_lines - 1)) != 0:
+@@ -798,7 +825,8 @@
+         self.max_d = max(self.delays) if self.delays else 0
+         self.bufs = [np.zeros(d, dtype=np.float64) for d in self.delays]
+         self.idx = [0] * self.n
+-        self.H = unscaled_hadamard_matrix(self.n)  # (N,N) ±1 unscaled
++        self.parity = bool(parity)
++        self.H = loop_hadamard(self.n, self.parity)
+         if dffs is None:
+             self.dffs = np.zeros(self.n, dtype=np.float64)
+         else:
+@@ -811,7 +839,7 @@
+         self._any_dffs = bool(np.any(np.abs(self.dffs) > 1e-15))
+         # Built once per g / Dffs row. None keeps the plain-delay Hadamard.
+         self._y_mix = (
+-            diffuser_output_mix(self.g, self.dffs) if self._any_dffs else None
++            diffuser_output_mix(self.g, self.dffs, self.parity) if self._any_dffs else None
+         )
+         if mic_g is None:
+             self.mic_g = np.ones(self.n, dtype=np.float64)
+--- snapshot_2026-10-02_1140/software/render_pipeline.py	2026-10-02 11:11:12.000000000 +0100
++++ snapshot_2026-10-02_1630/software/render_pipeline.py	2026-10-02 16:29:58.305364098 +0100
+@@ -91,9 +91,11 @@
+     mirror_x_partner_index,
+     _MIRROR_X_LETTER,
+     card_structure_dif,
+-    effective_surfaces,
+     parse_lambda_ref,
+     parse_surfaces,
++    parse_solo,
++    parse_mute,
++    image_in_early,
+     solo_mute_gates,
+     surfaces_hit_by_n,
+     surfaces_payload,
+@@ -382,6 +384,8 @@
+     air_iso: bool = True,
+     src_images=None,
+     mirror_x: bool = False,
++    surfaces_solo=None,
++    surfaces_mute=None,
+ ):
+     """Render early IR. Optional ASSUMED surfaces absorb×EQ + path-length jitter.
+ 
+@@ -408,7 +412,12 @@
+     # Mirrored source B reuses A's jitter draw: partner image order, side mic
+     # swapped, side-wall letters swapped. One source is unchanged.
+     partner = mirror_x_partner_index([tuple(t.n) for t in taps]) if mirror_x else None
++    solo_l = parse_solo(surfaces_solo)
++    mute_s = parse_mute(surfaces_mute)
+     for ti, t in enumerate(taps):
++        # D11 / D16: a silenced image is absent. D15: solo drops n=(0,0,0).
++        if not image_in_early(t.n, solo_l, mute_s):
++            continue
+         d_l = float(t.distance_l)
+         d_r = float(t.distance_r)
+         # ASSUMED surface hit from geometric n (not Structure A–F OCR masks)
+@@ -600,7 +609,6 @@
+     air_shelf=1.0,
+     diffusion_master=DIFFUSION_MASTER_LIVE,
+     mic_response_hz=10000.0,
+-    omit_direct_inject=False,
+     apply_mic=False,
+     weights=None,
+     colour=None,
+@@ -608,6 +616,7 @@
+     air_climate: str = "studio_20C_50RH",
+     air_iso: bool = True,
+     src_diffuse=None,
++    reaktor_parity: bool = False,
+ ):
+     """2011 wet: L / C / R Diffuser Delay loops + Hadamard feedback + Mixer fold.
+ 
+@@ -624,8 +633,6 @@
+     dff_per_tap = [
+         tap_dff(t.n, surfaces, master=diffusion_master) for t in taps
+     ] if n_t else []
+-    diffusion = diffusion_scale_from_room(room)
+-    di = direct_line_index(taps, n_lines)
+     buses = {
+         "l": np.zeros(n_samp, dtype=np.float64),
+         "c": np.zeros(n_samp, dtype=np.float64),
+@@ -639,14 +646,12 @@
+             air_climate=air_climate, air_iso=air_iso,
+         )
+         _scale_inject_reflect(inj, taps, surfaces)
+-        if omit_direct_inject and 0 <= di < n_lines:
+-            inj[:, di] = 0.0
+         if src_diffuse is not None and not src_diffuse.bypass:
+             from source_radiation import apply_coef
+             for i in range(n_lines):
+                 inj[:, i] = apply_coef(inj[:, i], src_diffuse)
+         dffs = dffs_from_taps(
+-            taps, dff_per_tap, diffusion, n=n_lines, channel=ch,
++            taps, dff_per_tap, diffusion_scale_from_room(room), n=n_lines, channel=ch,
+         )
+         mic_g = None
+         if apply_mic:
+@@ -663,6 +668,7 @@
+             dffs=dffs,
+             mic_g=mic_g,
+             line_t60=line_t60,
++            parity=bool(reaktor_parity),
+         )
+         poly = fdn.process_block_poly(inj)
+         # Headroom decision 6: fixed Render loop trim (F2 row only while line absorption is on).
+@@ -701,13 +707,14 @@
+ 
+     n_samp = int(float(sr) * float(length_ms) / 1000.0) + 1
+     n_lines = 32
+-    diffusion = diffusion_scale_from_room(room)
+     dff = [tap_dff(t.n, None, master=DIFFUSION_MASTER_LIVE) for t in taps]
+     polys = {}
+     for ch in ("l", "r"):
+         dly = fdn_delays_from_taps(taps, sr=sr, c=c, n=n_lines, channel=ch)
+         inj = build_inject_from_taps(taps, n_samp, sr, c, n_lines, channel=ch)
+-        dffs = dffs_from_taps(taps, dff, diffusion, n=n_lines, channel=ch)
++        dffs = dffs_from_taps(
++            taps, dff, diffusion_scale_from_room(room), n=n_lines, channel=ch,
++        )
+         fdn = FDN(
+             dly, g=g, room=room, sr=sr, c=c,
+             depth_per_axis=depth, peaking=True, n=n_lines, dffs=dffs,
+@@ -848,6 +855,9 @@
+     air_climate: str = "studio_20C_50RH",
+     air_iso: bool = True,
+     src_plan=None,
++    surfaces_solo=None,
++    surfaces_mute=None,
++    reaktor_parity: bool = False,
+ ):
+     weights = capsule_speaker_weights(
+         mic_gain_l, mic_gain_c, mic_gain_r,
+@@ -869,6 +879,8 @@
+             air_climate=air_climate,
+             air_iso=air_iso,
+             src_images=None if src_plan is None else src_plan.images,
++            surfaces_solo=surfaces_solo,
++            surfaces_mute=surfaces_mute,
+         )
+     else:
+         Le = np.zeros(1, dtype=np.float64)
+@@ -883,7 +895,6 @@
+         air_lp=air_lp, air_shelf=air_shelf,
+         diffusion_master=diffusion_master,
+         mic_response_hz=mic_response_hz,
+-        omit_direct_inject=False,
+         apply_mic=False,
+         weights=weights,
+         colour=colour,
+@@ -891,6 +902,7 @@
+         air_climate=air_climate,
+         air_iso=air_iso,
+         src_diffuse=None if src_plan is None else src_plan.diffuse,
++        reaktor_parity=bool(reaktor_parity),
+     )
+     n = max(len(Le), len(Lf), len(Ld))
+     def _pad(a):
+@@ -1059,7 +1071,8 @@
+         colour_impl=colour_impl,
+     )
+     surfaces = parse_surfaces(surfaces) if surfaces is not None else default_surfaces()
+-    surfaces = effective_surfaces(surfaces, surfaces_solo, surfaces_mute)
++    # Solo/Mute colours the early field only. FDN inject, Dffs and makeup
++    # stay on the un-gated cards.
+     seed = int(diffusion_seed)
+     lam = parse_lambda_ref(lambda_ref)
+     n_dry = len(dry)
+@@ -1220,6 +1233,8 @@
+                     air_iso=air_iso,
+                     src_images=None if src_plan is None else src_plan.images,
+                     mirror_x=bool(mirror_x),
++                    surfaces_solo=surfaces_solo,
++                    surfaces_mute=surfaces_mute,
+                 )
+                 n_ir = max(len(Ld), len(Le))
+ 
+@@ -1245,7 +1260,6 @@
+                     air_lp=air_lp, air_shelf=air_shelf,
+                     diffusion_master=diffusion_master,
+                     mic_response_hz=mic_response_hz,
+-                    omit_direct_inject=False,
+                     apply_mic=False,
+                     weights=weights,
+                     colour=mic_colour,
+@@ -1253,6 +1267,7 @@
+                     air_climate=air_climate,
+                     air_iso=air_iso,
+                     src_diffuse=None if src_plan is None else src_plan.diffuse,
++                    reaktor_parity=bool(reaktor_parity),
+                 )
+                 return float(fdn_wet) * mk * left, float(fdn_wet) * mk * right
+ 
+@@ -1364,6 +1379,9 @@
+             air_climate=air_climate,
+             air_iso=air_iso,
+             src_plan=src_plan,
++            surfaces_solo=surfaces_solo,
++            surfaces_mute=surfaces_mute,
++            reaktor_parity=bool(reaktor_parity),
+         )
+         yL = fft_convolve(dry, ir_L)
+         yR = fft_convolve(dry, ir_R)
+@@ -1470,6 +1488,9 @@
+             air_climate=air_climate,
+             air_iso=air_iso,
+             src_plan=hop_plan,
++            surfaces_solo=surfaces_solo,
++            surfaces_mute=surfaces_mute,
++            reaktor_parity=bool(reaktor_parity),
+         )
+         end = min(start + frame, n_dry)
+         block = np.zeros(frame, dtype=np.float64)
+@@ -1547,6 +1568,18 @@
+     return air_g, lp, shelf, shelf2
+ 
+ 
++def _early_gate_row(taps, n: int, solo_l, mute_s) -> list:
++    """1 if the image stays in the early field, else 0. Same on every bus."""
++    n_t = len(taps) if taps else 0
++    row = []
++    for i in range(int(n)):
++        if n_t <= 0:
++            row.append(1.0)
++            continue
++        row.append(1.0 if image_in_early(taps[i % n_t].n, solo_l, mute_s) else 0.0)
++    return row
++
++
+ def live_fdn_params(
+     p: dict,
+     sr: int = SAMPLE_RATE_HZ,
+@@ -1565,10 +1598,8 @@
+     room: Vec3 = (float(p["W"]), float(p["H"]), float(p["L"]))
+     c = SPEED_OF_SOUND_M_S
+     surfaces = parse_surfaces(p.get("surfaces")) if p.get("surfaces") is not None else default_surfaces()
+-    # Same gate as Render. Play early shares this inject, so a muted face
+-    # leaves Play early and the FDN together. Render early keeps the tap and
+-    # skips the filter. There is no Play surface-EQ cascade in this phase.
+-    surfaces = effective_surfaces(surfaces, p.get("surfaces_solo"), p.get("surfaces_mute"))
++    # FDN inject, Dffs and makeup use the un-gated cards. Solo/Mute is an
++    # early-field gate (SURF), not a hole in the tail.
+     asked = p.get("hadamard_n", 32)
+     try:
+         asked_i = int(asked)
+@@ -1646,14 +1677,16 @@
+         reaktor_parity=parity,
+     )
+     dff_per_tap = [tap_dff(t.n, surfaces, master=diffusion_master) for t in taps]
+-    diffusion = diffusion_scale_from_room(room)
++    solo_l = parse_solo(p.get("surfaces_solo"))
++    mute_s = parse_mute(p.get("surfaces_mute"))
+     peaking = live_peaking_banks(room, rate, c, DEFAULT_DEPTH)
++    dffs_scale = diffusion_scale_from_room(room)
+     buses = {}
+     mean_ms_acc = 0.0
+     mean_ms_n = 0
+     for ch in ("l", "c", "r"):
+         dly = fdn_delays_from_taps(taps, sr=rate, c=c, n=n_had, channel=ch)
+-        dffs = dffs_from_taps(taps, dff_per_tap, diffusion, n=n_had, channel=ch)
++        dffs = dffs_from_taps(taps, dff_per_tap, dffs_scale, n=n_had, channel=ch)
+         mic_g = mic_g_from_taps(taps, n_had, ch, sr, res_hz=mic_response_hz)
+         delay_ms = [1000.0 * float(d) / float(rate) for d in dly]
+         inject = []
+@@ -1795,7 +1828,7 @@
+                 air_g_b.append(ag)
+                 shelf_b.append(sh)
+                 shelf2_b.append(sh2)
+-            dffs_b = dffs_from_taps(taps_b, dff_b, diffusion, n=n_had, channel=ch)
++            dffs_b = dffs_from_taps(taps_b, dff_b, dffs_scale, n=n_had, channel=ch)
+             buses[ch]["b"] = {
+                 "delay_ms": delay_ms_b,
+                 "inject": inject_b,
+@@ -1843,7 +1876,14 @@
+             taps_b, prep_b, rate, p.get("source_size_m"),
+         )
+     src_rad = _srcmod.pack_play(plan_a, plan_b)
+-    return {
++    early_gate = None
++    if solo_l is not None or mute_s:
++        bank_b = taps_b if taps_b is not None else taps
++        early_gate = []
++        for _bus in ("l", "c", "r"):
++            early_gate += _early_gate_row(taps, n_had, solo_l, mute_s)
++            early_gate += _early_gate_row(bank_b, n_had, solo_l, mute_s)
++    out = {
+         "ok": True,
+         "n": n_had,
+         "g": g_loop,
+@@ -1866,7 +1906,7 @@
+         "mic_phase_r": float(p.get("mic_phase_r", 1.0)),
+         "direct_index": int(di),
+         "hadamard_n": n_had,
+-        "loop_semantics": 0,
++        "loop_semantics": 1 if parity else 0,
+         "solo_mute": solo_mute_gates(p.get("surfaces_solo"), p.get("surfaces_mute")),
+         "makeup": makeup,
+         "direct_makeup": dm,
+@@ -1894,6 +1934,9 @@
+         "src_rad": src_rad,
+         "tag": "ASSUMED live FDN — same delays/inject/Dffs/mic/air/peaking as offline IR",
+     }
++    if early_gate is not None:
++        out["early_gate"] = early_gate
++    return out
+ 
+ 
+ def _pb_num(v, d: float) -> float:
+@@ -1943,12 +1986,21 @@
+     return [_pb_num(v, 0.0) for v in src]
+ 
+ 
++def _pb_surf(d: dict) -> list:
++    """SURF v0: early_gate[3 buses][32] for bank A, then bank B. Empty = no Solo/Mute."""
++    g = d.get("early_gate") if isinstance(d, dict) else None
++    if not isinstance(g, (list, tuple)) or len(g) != 192:
++        return []
++    return [_pb_num(v, 1.0) for v in g]
++
++
+ def pack_blob_v2(params: dict) -> list:
+     """v2 room blob. Same layout as fdn_worklet.js packRoom and the harness packer.
+ 
+     CORE is the magic-1 body without the magic, plus hadamard_n, loop_semantics,
+-    and solo_mute[6]. AIR is the second shelf (1152) or empty. SURF and SCATTER
+-    stay empty. SRC_RAD is 716 floats, or empty when the source is omni.
++    and solo_mute[6]. AIR is the second shelf (1152) or empty. SURF is the
++    early gate (192) or empty (no Solo/Mute, bit-exact). SCATTER stays empty.
++    SRC_RAD is 716 floats, or empty when the source is omni.
+     """
+     d = params or {}
+     di = int(_pb_num(d.get("direct_index"), 10.0))
+@@ -2007,7 +2059,7 @@
+             shelf = b.get("shelf2") or []
+             for i in range(32):
+                 _pb_shelf(air, shelf[i] if i < len(shelf) else None)
+-    parts = [(1, core), (2, air), (3, []), (4, []), (5, _pb_src(d))]
++    parts = [(1, core), (2, air), (3, _pb_surf(d)), (4, []), (5, _pb_src(d))]
+     off = 5 + 4 * len(parts)
+     directory: list = []
+     body: list = []
+--- snapshot_2026-10-02_1140/software/surface_colour.py	2026-10-02 11:23:14.000000000 +0100
++++ snapshot_2026-10-02_1630/software/surface_colour.py	2026-10-02 16:29:58.305364098 +0100
+@@ -444,6 +444,24 @@
+     return rows
+ 
+ 
++def image_in_early(n: Tuple[int, int, int], solo_l: Optional[str], mute_s: set) -> bool:
++    """D16 / D15. True when this image stays in the early field.
++
++    No solo and no mute: every image stays. Solo X keeps every image that
++    touches X, and drops the direct image n=(0,0,0). Mute X, with no solo,
++    drops every image that touches X and keeps the direct image.
++    """
++    nx, ny, nz = int(n[0]), int(n[1]), int(n[2])
++    if nx == 0 and ny == 0 and nz == 0:
++        return solo_l is None
++    hits = surfaces_hit_by_n((nx, ny, nz))
++    if solo_l is not None:
++        return solo_l in hits
++    if mute_s:
++        return not any(h in mute_s for h in hits)
++    return True
++
++
+ def surfaces_hit_by_n(n: Tuple[int, int, int]) -> List[str]:
+     """ASSUMED: which surface cards colour this image index (wall crossings).
+ 
+--- snapshot_2026-10-02_1140/software/engine/selfcheck.py	2026-10-02 07:52:26.000000000 +0100
++++ snapshot_2026-10-02_1630/software/engine/selfcheck.py	2026-10-02 16:29:58.309364098 +0100
+@@ -838,7 +838,7 @@
+     root = Path(__file__).resolve().parent.parent
+     if str(root) not in sys.path:
+         sys.path.insert(0, str(root))
+-    from fdn import FDN, diffuser_output_mix, unscaled_hadamard_matrix
++    from fdn import FDN, diffuser_output_mix, loop_hadamard, unscaled_hadamard_matrix
+     from render_pipeline import live_fdn_params
+ 
+     assert np.allclose(diffuser_output_mix(0.05, [0.0, 0.0, 0.0, 0.0]), np.eye(4))
+@@ -875,13 +875,13 @@
+     assert "loop_mix" not in live["buses"]["l"]
+     g = float(live["g"])
+     dffs_l = np.asarray(live["buses"]["l"]["dffs"], dtype=np.float64)
+-    H = unscaled_hadamard_matrix(32)
++    H = loop_hadamard(32)
+     Mb = diffuser_output_mix(g, dffs_l)
+     G = np.diag(dffs_l)
+     rho = float(np.max(np.abs(np.linalg.eigvals((G + g * H) @ Mb))))
+     assert rho <= 1.0 + 1e-8
+     assert rho > 0.9
+-    bug = (np.eye(32) - G @ G) * g @ H + G
++    bug = (np.eye(32) - G @ G) * g @ unscaled_hadamard_matrix(32) + G
+     assert float(np.max(np.abs(np.linalg.eigvals(bug)))) > 1.0
+ 
+ 
+--- snapshot_2026-10-02_1140/software/static/js/app.js	2026-10-02 11:19:18.000000000 +0100
++++ snapshot_2026-10-02_1630/software/static/js/app.js	2026-10-02 16:29:58.329364098 +0100
+@@ -355,6 +355,16 @@
+     o.mic_phase_l = src.phase_l;
+     o.mic_phase_c = src.phase_c;
+     o.mic_phase_r = src.phase_r;
++    /* D12: a face solo listens to Early only. The Mix faders stay put, so
++       Solo off and every save restore the previous Mix. */
++    if (src.surfaces_solo) {
++      var earlyFader = stripLinear(src, "early");
++      var ewEnable = (src.early_wet == null || !isFinite(Number(src.early_wet))) ? 1 : Math.max(0, Math.min(1, Number(src.early_wet)));
++      o.direct_wet = 0;
++      o.fdn_wet = 0;
++      o.dry_gain = 0;
++      o.early_wet = ewEnable * (earlyFader > 0 ? earlyFader : 1);
++    }
+     return o;
+   }
+ 
+--- snapshot_2026-10-02_1140/software/static/js/colour_surfaces.js	2026-10-02 11:19:18.000000000 +0100
++++ snapshot_2026-10-02_1630/software/static/js/colour_surfaces.js	2026-10-02 16:29:58.329364098 +0100
+@@ -1144,6 +1144,15 @@
+       off.classList.toggle("is-on", !solo);
+       off.setAttribute("aria-pressed", solo ? "false" : "true");
+     }
++    var hint = document.getElementById("surfaceSoloHint");
++    if (hint) {
++      if (!solo) hint.textContent = "";
++      else if (solo === "D") {
++        hint.textContent = "Solo: listening to early reflections only. Back wall (−Z): Play's 32 images have no first-order back-wall image.";
++      } else {
++        hint.textContent = "Solo: listening to early reflections only.";
++      }
++    }
+   };
+ 
+   ColourSurfaces.prototype._setSolo = function (letter) {
+--- snapshot_2026-10-02_1140/software/static/index.html	2026-10-02 11:12:02.000000000 +0100
++++ snapshot_2026-10-02_1630/software/static/index.html	2026-10-02 16:29:58.329364098 +0100
+@@ -462,6 +462,7 @@
+               </div>
+               <p class="hint" id="materialHint">Click a material to paint the selected face. Grey materials are not allowed on this face. Shift-click, or All legal faces, paints every face that material may use.</p>
+               <p class="hint" id="surfaceHonesty">No material preset on this face yet.</p>
++              <p class="hint" id="surfaceSoloHint"></p>
+               <div class="surf-audition" id="surfAudition">
+                 <button type="button" class="chip" id="surfacesSoloOff">Solo off</button>
+                 <span class="hint">Solo hears one face. Mute drops that face. The direct sound stays.</span>
+@@ -727,7 +728,7 @@
+   <script src="/static/js/polar_field.js?v=4"></script>
+   <script src="/static/js/mic_desk.js?v=8"></script>
+   <script src="/static/js/source_desk.js?v=2"></script>
+-  <script src="/static/js/live_fdn.js?v=41"></script>
++  <script src="/static/js/live_fdn.js?v=43"></script>
+   <script src="/static/js/app.js?v=29"></script>
+ </body>
+ </html>

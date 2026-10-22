@@ -1,0 +1,10 @@
+bigroom_default_surfaces A_today {'path': '/workspace/build_support_2/roadmap/robotic_1240/hall_b/ab_wav/bigroom_default_surfaces__A_today.wav', 'raw_minus_A_db': 0.0}
+bigroom_default_surfaces B_output_signs {'path': '/workspace/build_support_2/roadmap/robotic_1240/hall_b/ab_wav/bigroom_default_surfaces__B_output_signs.wav', 'raw_minus_A_db': 7.51}
+bigroom_default_surfaces C_cap50_plus_output_signs {'path': '/workspace/build_support_2/roadmap/robotic_1240/hall_b/ab_wav/bigroom_default_surfaces__C_cap50_plus_output_signs.wav', 'raw_minus_A_db': 7.94}
+bigroom_default_surfaces D_column_signs {'path': '/workspace/build_support_2/roadmap/robotic_1240/hall_b/ab_wav/bigroom_default_surfaces__D_column_signs.wav', 'raw_minus_A_db': -0.83}
+bigroom_default_surfaces E_cap50_plus_column_signs {'path': '/workspace/build_support_2/roadmap/robotic_1240/hall_b/ab_wav/bigroom_default_surfaces__E_cap50_plus_column_signs.wav', 'raw_minus_A_db': 0.9}
+hall_preset_parity A_today {'path': '/workspace/build_support_2/roadmap/robotic_1240/hall_b/ab_wav/hall_preset_parity__A_today.wav', 'raw_minus_A_db': 0.0}
+hall_preset_parity B_output_signs {'path': '/workspace/build_support_2/roadmap/robotic_1240/hall_b/ab_wav/hall_preset_parity__B_output_signs.wav', 'raw_minus_A_db': -1.23}
+hall_preset_parity C_cap50_plus_output_signs {'path': '/workspace/build_support_2/roadmap/robotic_1240/hall_b/ab_wav/hall_preset_parity__C_cap50_plus_output_signs.wav', 'raw_minus_A_db': -1.07}
+hall_preset_parity D_column_signs {'path': '/workspace/build_support_2/roadmap/robotic_1240/hall_b/ab_wav/hall_preset_parity__D_column_signs.wav', 'raw_minus_A_db': -0.74}
+hall_preset_parity E_cap50_plus_column_signs {'path': '/workspace/build_support_2/roadmap/robotic_1240/hall_b/ab_wav/hall_preset_parity__E_cap50_plus_column_signs.wav', 'raw_minus_A_db': -1.75}

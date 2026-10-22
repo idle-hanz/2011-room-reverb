@@ -1,0 +1,274 @@
+{
+ "console": [
+  [
+   "warning",
+   "Scripts \"build/three.js\" and \"build/three.min.js\" are deprecated with r150+, and will be removed with r160. Please use ES Modules or alternatives: https://threejs.org/docs/index.html#manual/en/introduction/Installation"
+  ],
+  [
+   "error",
+   "Failed to load resource: the server responded with a status of 404 (Not Found)"
+  ],
+  [
+   "error",
+   "Failed to load resource: the server responded with a status of 404 (Not Found)"
+  ]
+ ],
+ "steps": {
+  "live_running": true,
+  "worklet_ver_seen": [
+   "http://127.0.0.1:7873/static/js/live_fdn.js?v=43",
+   "http://127.0.0.1:7873/static/wasm/live_stereo.wasm?v=43"
+  ],
+  "0_mix_set": {
+   "body": {
+    "direct_wet": 1.5848931924611136,
+    "fdn_wet": 1.24093776075172,
+    "early_wet": 0.45409096109724756,
+    "dry_gain": 0.15848931924611134,
+    "fader_direct": 0.62,
+    "fader_fdn": 0.55,
+    "fader_early": 0.41,
+    "fader_dry": 0.3,
+    "mute_early": false,
+    "mute_fdn": false,
+    "surfaces_solo": null,
+    "surfaces_mute": {
+     "A": false,
+     "B": false,
+     "C": false,
+     "D": false,
+     "E": false,
+     "F": false
+    }
+   },
+   "faders": [
+    "0.62",
+    "0.55",
+    "0.41",
+    "0.3"
+   ],
+   "posts": 0
+  },
+  "0_hint_no_solo": {
+   "text": "",
+   "visible": true
+  },
+  "1_solo_A": {
+   "body": {
+    "direct_wet": 0,
+    "fdn_wet": 0,
+    "early_wet": 0.45409096109724756,
+    "dry_gain": 0,
+    "fader_direct": 0.62,
+    "fader_fdn": 0.55,
+    "fader_early": 0.41,
+    "fader_dry": 0.3,
+    "mute_early": false,
+    "mute_fdn": false,
+    "surfaces_solo": "A",
+    "surfaces_mute": {
+     "A": false,
+     "B": false,
+     "C": false,
+     "D": false,
+     "E": false,
+     "F": false
+    }
+   },
+   "faders": [
+    "0.62",
+    "0.55",
+    "0.41",
+    "0.3"
+   ],
+   "hint": {
+    "text": "Solo: listening to early reflections only.",
+    "visible": true
+   }
+  },
+  "2_solo_D": {
+   "body": {
+    "direct_wet": 0,
+    "fdn_wet": 0,
+    "early_wet": 0.45409096109724756,
+    "dry_gain": 0,
+    "fader_direct": 0.62,
+    "fader_fdn": 0.55,
+    "fader_early": 0.41,
+    "fader_dry": 0.3,
+    "mute_early": false,
+    "mute_fdn": false,
+    "surfaces_solo": "D",
+    "surfaces_mute": {
+     "A": false,
+     "B": false,
+     "C": false,
+     "D": false,
+     "E": false,
+     "F": false
+    }
+   },
+   "hint": {
+    "text": "Solo: listening to early reflections only. Back wall (\u2212Z): Play's 32 images have no first-order back-wall image.",
+    "visible": true
+   }
+  },
+  "3_mix_faders_while_solo": [
+   "0.62",
+   "0.55",
+   "0.41",
+   "0.3"
+  ],
+  "4_solo_off": {
+   "body": {
+    "direct_wet": 1.5848931924611136,
+    "fdn_wet": 1.24093776075172,
+    "early_wet": 0.45409096109724756,
+    "dry_gain": 0.15848931924611134,
+    "fader_direct": 0.62,
+    "fader_fdn": 0.55,
+    "fader_early": 0.41,
+    "fader_dry": 0.3,
+    "mute_early": false,
+    "mute_fdn": false,
+    "surfaces_solo": null,
+    "surfaces_mute": {
+     "A": false,
+     "B": false,
+     "C": false,
+     "D": false,
+     "E": false,
+     "F": false
+    }
+   },
+   "faders": [
+    "0.62",
+    "0.55",
+    "0.41",
+    "0.3"
+   ],
+   "hint": {
+    "text": "",
+    "visible": true
+   }
+  },
+  "5_mute_A_only": {
+   "body": {
+    "direct_wet": 1.5848931924611136,
+    "fdn_wet": 1.24093776075172,
+    "early_wet": 0.45409096109724756,
+    "dry_gain": 0.15848931924611134,
+    "fader_direct": 0.62,
+    "fader_fdn": 0.55,
+    "fader_early": 0.41,
+    "fader_dry": 0.3,
+    "mute_early": false,
+    "mute_fdn": false,
+    "surfaces_solo": null,
+    "surfaces_mute": {
+     "A": true,
+     "B": false,
+     "C": false,
+     "D": false,
+     "E": false,
+     "F": false
+    }
+   },
+   "hint": {
+    "text": "",
+    "visible": true
+   }
+  },
+  "6_early0_solo": {
+   "before": {
+    "direct_wet": 1.5848931924611136,
+    "fdn_wet": 1.24093776075172,
+    "early_wet": 0,
+    "dry_gain": 0.15848931924611134,
+    "fader_direct": 0.62,
+    "fader_fdn": 0.55,
+    "fader_early": 0,
+    "fader_dry": 0.3,
+    "mute_early": false,
+    "mute_fdn": false,
+    "surfaces_solo": null,
+    "surfaces_mute": {
+     "A": false,
+     "B": false,
+     "C": false,
+     "D": false,
+     "E": false,
+     "F": false
+    }
+   },
+   "solo": {
+    "direct_wet": 0,
+    "fdn_wet": 0,
+    "early_wet": 1,
+    "dry_gain": 0,
+    "fader_direct": 0.62,
+    "fader_fdn": 0.55,
+    "fader_early": 0,
+    "fader_dry": 0.3,
+    "mute_early": false,
+    "mute_fdn": false,
+    "surfaces_solo": "B",
+    "surfaces_mute": {
+     "A": false,
+     "B": false,
+     "C": false,
+     "D": false,
+     "E": false,
+     "F": false
+    }
+   },
+   "off": {
+    "direct_wet": 1.5848931924611136,
+    "fdn_wet": 1.24093776075172,
+    "early_wet": 0,
+    "dry_gain": 0.15848931924611134,
+    "fader_direct": 0.62,
+    "fader_fdn": 0.55,
+    "fader_early": 0,
+    "fader_dry": 0.3,
+    "mute_early": false,
+    "mute_fdn": false,
+    "surfaces_solo": null,
+    "surfaces_mute": {
+     "A": false,
+     "B": false,
+     "C": false,
+     "D": false,
+     "E": false,
+     "F": false
+    }
+   }
+  }
+ },
+ "shots": [
+  "ui1630_01_solo_A_hint.png",
+  "ui1630_02_solo_D_hint.png",
+  "ui1630_03_mix_while_solo.png"
+ ],
+ "verdict": {
+  "solo_zeroes_direct_fdn_dry": true,
+  "solo_early_equals_fader_early": true,
+  "solo_faders_unchanged_in_body": true,
+  "solo_off_exact_restore": true,
+  "mute_alone_no_mix_change": true,
+  "early0_solo_unity": true,
+  "hint_A": {
+   "text": "Solo: listening to early reflections only.",
+   "visible": true
+  },
+  "hint_D": {
+   "text": "Solo: listening to early reflections only. Back wall (\u2212Z): Play's 32 images have no first-order back-wall image.",
+   "visible": true
+  },
+  "hint_off": {
+   "text": "",
+   "visible": true
+  },
+  "ui_faders_never_moved": true
+ }
+}

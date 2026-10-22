@@ -1,0 +1,191 @@
+--- a/app_server.py
++++ b/app_server.py
+@@ -33,6 +33,7 @@
+ )
+ 
+ from polar_field import compute_polar_field
++from fdn import DIFFUSION_MASTER_DEFAULT, DIFFUSION_MASTER_MIN  # locked 28 Sep 2026
+ from surface_colour import (
+     DEFAULT_DIFFUSION_SEED,
+     DEFAULT_LAMBDA_REF_M,
+@@ -55,12 +56,12 @@
+     "W": 6.0,
+     "H": 3.0,
+     "L": 8.0,
+-    "sx": 3.0,
++    "sx": 2.6,  # K3 locked 28 Sep 2026
+     "sz": 4.75,
+     "mcx": 3.0,
+     "mcz": 1.5,
+     "my": 1.5,
+-    "sy": 1.5,
++    "sy": 1.2,  # K3 locked 28 Sep 2026
+     "link_heights": False,
+     "space": 0.25,
+     "diverg": 1.0,
+@@ -267,6 +268,10 @@
+                 sy_arg = float(raw_sy)
+             except (TypeError, ValueError):
+                 sy_arg = None
++    elif body.get("my") is None:
++        # K3 (locked 28 Sep 2026): a body with neither sy nor my gets the default source
++        # height. A body that sends my but not sy keeps the legacy "sy follows my".
++        sy_arg = DEFAULTS["sy"]
+     sx, sz, my, mcz, space, mcx, sy = clamp_inside_room(
+         W, H, L,
+         sx=_f(body.get("sx"), DEFAULTS["sx"]),
+@@ -337,9 +342,9 @@
+         "diffusion_seed": parse_diffusion_seed(body.get("diffusion_seed"), DEFAULT_DIFFUSION_SEED),
+         "lambda_ref": parse_lambda_ref(body.get("lambda_ref"), DEFAULT_LAMBDA_REF_M),
+         "humidity": _f(body.get("humidity"), 0.0),
+-        "air_lp": _f(body.get("air_lp"), 0.25),
++        "air_lp": _f(body.get("air_lp"), 0.0),  # K2 locked: 1-pole kept, default mix 0
+         "air_shelf": _f(body.get("air_shelf"), 1.0),
+-        "diffusion_master": _span(body.get("diffusion_master"), -0.5, -1.0, 0.0),
++        "diffusion_master": _span(body.get("diffusion_master"), DIFFUSION_MASTER_DEFAULT, DIFFUSION_MASTER_MIN, 0.0),
+         "decay_s": _f(body.get("decay_s"), 0.0),
+         "decay_lock": _b(body.get("decay_lock"), False),
+         "mic_gain_l": _span(body.get("mic_gain_l"), 1.0, 0.0, 16.0),
+@@ -625,9 +630,9 @@
+             diffusion_seed=p["diffusion_seed"],
+             lambda_ref=p["lambda_ref"],
+             humidity=p.get("humidity") or 0.0,
+-            air_lp=p.get("air_lp") if p.get("air_lp") is not None else 0.25,
++            air_lp=p.get("air_lp") if p.get("air_lp") is not None else 0.0,
+             air_shelf=p.get("air_shelf") if p.get("air_shelf") is not None else 1.0,
+-            diffusion_master=p.get("diffusion_master") if p.get("diffusion_master") is not None else -0.5,
++            diffusion_master=p.get("diffusion_master") if p.get("diffusion_master") is not None else DIFFUSION_MASTER_DEFAULT,
+             decay_s=p.get("decay_s") or 0.0,
+             decay_lock=bool(p.get("decay_lock")),
+             mic_gain_l=p.get("mic_gain_l", 1.0),
+--- a/engine/fdn.py
++++ b/engine/fdn.py
+@@ -194,8 +194,13 @@
+ DFFS_KNOB_DEFAULT = 0.0333
+ # Diffusion Master (485): Min 0, Max −0.5, Default −0.25. Live dump at Max.
+ # 202: sum(ADif…) × MDif → Clipper. MDif = this master (359 DMix).
++# Locked 28 Sep 2026 (Idle): app default is the Structure Default −0.25 and the
++# accepted range is clamped to the Structure span [−0.5, 0]. LIVE is kept as a
++# name for callers; it now equals the default (the −0.5 live dump is still
++# reachable as the clamp end-stop).
+ DIFFUSION_MASTER_DEFAULT = -0.25
+-DIFFUSION_MASTER_LIVE = -0.5
++DIFFUSION_MASTER_MIN = -0.5
++DIFFUSION_MASTER_LIVE = DIFFUSION_MASTER_DEFAULT
+ 
+ 
+ def dff_after_master(sum_dif: float, master: float = DIFFUSION_MASTER_LIVE) -> float:
+--- a/render_pipeline.py
++++ b/render_pipeline.py
+@@ -872,7 +876,7 @@
+     humidity: float = 0.0,
+     air_lp: float = 0.25,
+     air_shelf: float = 1.0,
+-    diffusion_master: float = -0.5,
++    diffusion_master: float = DIFFUSION_MASTER_LIVE,
+     decay_s: float = 0.0,
+     decay_lock: bool = False,
+     mic_gain_l: float = 1.0,
+@@ -1386,9 +1393,9 @@
+     decay_s = float(p.get("decay_s") or 0.0)
+     grid = grid_bias_for_hadamard_n(n_had)
+     humidity = float(p.get("humidity") or 0.0)
+-    air_lp = float(p.get("air_lp") if p.get("air_lp") is not None else 0.25)
++    air_lp = float(p.get("air_lp") if p.get("air_lp") is not None else 0.0)
+     air_shelf = float(p.get("air_shelf") if p.get("air_shelf") is not None else 1.0)
+-    diffusion_master = float(p.get("diffusion_master") if p.get("diffusion_master") is not None else -0.5)
++    diffusion_master = float(p.get("diffusion_master") if p.get("diffusion_master") is not None else DIFFUSION_MASTER_LIVE)
+     mic_response_hz = float(p.get("mic_response_hz") or 10000.0)
+     ir_length_ms = float(p.get("ir_length_ms") if p.get("ir_length_ms") is not None else 1500.0)
+     colour_sr = p.get("sample_rate")
+--- a/static/index.html
++++ b/static/index.html
+@@ -261,7 +261,7 @@
+                   <div class="desk-name">Direct</div>
+                   <div class="desk-knob"><span>Trim</span><label class="knob"><input type="range" id="trim_direct" min="-12" max="12" step="0.5" value="0" aria-label="Direct trim" /></label></div>
+                   <button type="button" class="solo-btn" data-solo="direct" aria-pressed="false">Solo</button>
+-                  <div class="desk-slot"><span class="desk-zero"></span><input type="range" class="desk-fader" id="fader_direct" min="0" max="1" step="0.001" value="0.5" aria-label="Direct fader" /></div>
++                  <div class="desk-slot"><span class="desk-zero"></span><input type="range" class="desk-fader" id="fader_direct" min="0" max="1" step="0.001" value="0" aria-label="Direct fader" /></div>
+                   <button type="button" class="desk-read" id="read_direct">0.0</button>
+                   <button type="button" class="desk-mini mute-btn" id="mute_direct" aria-pressed="false">Mute</button>
+                 </div>
+@@ -490,7 +490,7 @@
+           <label class="ctrl"><span>Stand X <em>m</em></span><input type="range" id="mcx" min="0" max="40" step="0.01" value="3" /><output id="mcx_out">3.00</output></label>
+           <label class="ctrl"><span>Stand Z <em>m</em></span><input type="range" id="mcz" min="0" max="60" step="0.01" value="1.5" /><output id="mcz_out">1.50</output></label>
+           <label class="ctrl"><span>Mic height <em>m</em></span><input type="range" id="my" min="0" max="20" step="0.01" value="1.5" /><output id="my_out">1.50</output></label>
+-          <label class="ctrl"><span>Src height <em>m</em></span><input type="range" id="sy" min="0" max="20" step="0.01" value="1.5" /><output id="sy_out">1.50</output></label>
++          <label class="ctrl"><span>Src height <em>m</em></span><input type="range" id="sy" min="0" max="20" step="0.01" value="1.2" /><output id="sy_out">1.20</output></label>
+           <div class="capsule-stack" id="capsuleStackListen">
+             <div class="capsule-row" data-cap="L">
+               <span class="cap-id cap-l">Left</span>
+@@ -548,7 +548,7 @@
+           </div>
+           <label class="ctrl"><span>IR length <em>ms</em></span><input type="range" id="ir_length_ms" min="50" max="2000" step="10" value="1500" /><output id="ir_length_ms_out">1500</output></label>
+           <label class="ctrl"><span>Humidity</span><input type="range" id="humidity" min="0" max="1" step="0.01" value="0.35" /><output id="humidity_out">0.35</output></label>
+-          <label class="ctrl"><span>Air 1-pole mix</span><input type="range" id="air_lp" min="0" max="1" step="0.01" value="0.25" /><output id="air_lp_out">0.25</output></label>
++          <label class="ctrl"><span>Air 1-pole mix</span><input type="range" id="air_lp" min="0" max="1" step="0.01" value="0" /><output id="air_lp_out">0.00</output></label>
+           <label class="ctrl"><span>Air shelf mix</span><input type="range" id="air_shelf" min="0" max="1" step="0.01" value="1" /><output id="air_shelf_out">1.00</output></label>
+           <p class="hint">Humidity 0 = off. 0.5 = Structure Wet 400. 1-pole can be dark; mix it down with Air 1-pole.</p>
+           <button type="button" class="btn" id="reaktorSnapshotBtn">2011 Reaktor snapshot</button>
+--- a/static/js/app.js
++++ b/static/js/app.js
+@@ -64,7 +64,8 @@
+ 
+   var state = {
+     W: 6, H: 3, L: 8,
+-    sx: 3, sz: 4.75, mcx: 3, mcz: 1.5, my: 1.5, sy: 1.5,
++    /* K3 (locked 28 Sep 2026): source x 2.6 m, height 1.2 m → 29 distinct delays per bus. */
++    sx: 2.6, sz: 4.75, mcx: 3, mcz: 1.5, my: 1.5, sy: 1.2,
+     link_heights: false,
+     space: 0.17, diverg: 1, toe_half_deg: 55, car_omni: 1,
+     pattern_l: "cardioid", pattern_c: "cardioid", pattern_r: "cardioid",
+@@ -82,22 +83,25 @@
+     mic_hpf_centre: false,
+     preset_owns_pattern: true,
+     mic_setup: "ortf",
+-    early_wet: 0, fdn_wet: 1, direct_wet: 1, dry_gain: 0, fdn_g: 1, ir_length_ms: 1500,
++    /* K4 (locked): early_wet is the early-bus enable (×fader). 1.0 so raising the early fader works at once. */
++    early_wet: 1.0, fdn_wet: 1, direct_wet: 1, dry_gain: 0, fdn_g: 1, ir_length_ms: 1500,
+     decay_s: 1.8, decay_lock: true,
+     solo_direct: false, solo_fdn: false, solo_early: false, solo_dry: false,
+     stereo_mic: false, natural_bus: false,
+     fader_l: 0.5, fader_c: 0.5, fader_r: 0.5,
+-    fader_direct: 0.5, fader_fdn: 0.5, fader_early: 0, fader_dry: 0,
++    /* K4 (locked): FDN-first mixing. FDN fader on (0 dB), direct and early faders down. */
++    fader_direct: 0, fader_fdn: 0.5, fader_early: 0, fader_dry: 0,
+     trim_l: 0, trim_c: 0, trim_r: 0,
+     trim_direct: 0, trim_fdn: 0, trim_early: 0, trim_dry: 0,
+     pan_l: -1, pan_c: 0, pan_r: 1,
+     mute_l: false, mute_c: false, mute_r: false,
+     mute_direct: false, mute_fdn: false, mute_early: false, mute_dry: false,
+     phase_l: 1, phase_c: 1, phase_r: 1,
+-    humidity: 0.35, air_lp: 0.25, air_shelf: 1, diffusion_master: -0.5,
++    /* K2 (locked): air 1-pole mix default 0 (shelf still gives HF loss). diffusion_master −0.25 (Structure), clamp [−0.5, 0]. */
++    humidity: 0.35, air_lp: 0, air_shelf: 1, diffusion_master: -0.25,
+     reaktor_parity: false, live_drag_render: false,
+     two_sources: false, mirror_b: true, source_balance: 0,
+-    sx_b: 3, sy_b: 1.5, sz_b: 4.75,
++    sx_b: 3.4, sy_b: 1.2, sz_b: 4.75, /* K3: mirror of the default source (W − 2.6, 1.2) */
+     path_on: false, path_preset: "still",
+     ellipse_rate: 1, ellipse_rx: 0.42, ellipse_rz: 0.35,
+     hadamard_n: 32,
+@@ -176,7 +180,7 @@
+     state.mute_fdn = false;
+     state.mute_early = false;
+     state.mute_dry = false;
+-    state.early_wet = 0;
++    state.early_wet = 1.0; /* K4: bus enable; early fader (0) keeps it silent */
+     state.fdn_wet = 1;
+     state.direct_wet = 1;
+     state.dry_gain = 0;
+@@ -293,7 +297,9 @@
+     var i;
+     o.direct_wet = stripLinear(src, "direct");
+     o.fdn_wet = stripLinear(src, "fdn");
+-    o.early_wet = stripLinear(src, "early");
++    /* K4: early send = bus enable (early_wet, default 1) × early fader. */
++    var ewEnable = (src.early_wet == null || !isFinite(Number(src.early_wet))) ? 1 : Math.max(0, Math.min(1, Number(src.early_wet)));
++    o.early_wet = ewEnable * stripLinear(src, "early");
+     o.dry_gain = stripLinear(src, "dry");
+     var any = false;
+     for (i = 0; i < SOLO_BUSES.length; i++) {

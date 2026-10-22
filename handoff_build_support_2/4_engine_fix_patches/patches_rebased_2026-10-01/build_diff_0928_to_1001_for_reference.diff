@@ -1,0 +1,725 @@
+diff -ruN -x .venv -x __pycache__ -x renders -x '*.wasm' -x 44100 snapshot_2026-09-28_2040/software/app_server.py snapshot_2026-10-01_0736/software/app_server.py
+--- snapshot_2026-09-28_2040/software/app_server.py	2026-09-28 09:35:03.000000000 +0100
++++ snapshot_2026-10-01_0736/software/app_server.py	2026-09-29 20:50:12.000000000 +0100
+@@ -691,6 +691,8 @@
+         f"Surfaces: ASSUMED absorb×EQ + path-length jitter "
+         f"(seed={p['diffusion_seed']} λ_ref={p['lambda_ref']} m)"
+     )
++    if info.get("colour_notice"):
++        status += "\n" + str(info.get("colour_notice"))
+     return {
+         "ok": True,
+         "preview_url": f"/api/preview?path={preview.name}",
+diff -ruN -x .venv -x __pycache__ -x renders -x '*.wasm' -x 44100 snapshot_2026-09-28_2040/software/engine/live_stereo.c snapshot_2026-10-01_0736/software/engine/live_stereo.c
+--- snapshot_2026-09-28_2040/software/engine/live_stereo.c	2026-09-28 13:02:52.000000000 +0100
++++ snapshot_2026-10-01_0736/software/engine/live_stereo.c	2026-09-29 21:55:48.000000000 +0100
+@@ -52,7 +52,7 @@
+     PART = 128,
+     FFTN = 256,
+     MAX_PART = 64,
+-    MAX_IRS = 64,
++    MAX_IRS = 128,
+     MAX_FILT = 112,
+     MAX_SOS = 6,
+     /* 1000 ms is the delay cap. These extra samples cover the fractional read. */
+@@ -775,7 +775,12 @@
+     int i, o;
+     if (!st || st->magic != 0x2011) return;
+     if (nIrs < 0) nIrs = 0;
+-    if (nIrs > MAX_IRS) nIrs = MAX_IRS;
++    if (nIrs > MAX_IRS) {
++        st->n_irs = 0;
++        st->colour_on = 0;
++        zero_filts(st);
++        return;
++    }
+     o = 0;
+     for (i = 0; i < nIrs; i++) {
+         int len = st->lenScratch[i];
+@@ -1036,14 +1041,14 @@
+         }
+         for (i = 0; i < N; i++) {
+             Line *line = &bus->line[i];
+-            double xin = 0.0;
+-            if (runEarly || runFdn) xin = tint(line, x * line->inj, 0);
++            /* Kind 0 is the FDN inject as well. Tint it once, and keep the lane current. */
++            double xin = tint(line, x * line->inj, 0);
+             if (runEarly) {
+                 double ev = read_lane(st->ring[b][i], LANE_EARLY, line->w, line->delay, cap);
+-                write_lane(st->ring[b][i], line->w, LANE_EARLY, (float)xin);
+                 st->eaBlk[b][i][t] = ev;
+                 early += ev;
+             }
++            write_lane(st->ring[b][i], line->w, LANE_EARLY, (float)xin);
+             if (mix1) st->xinArr[i] = xin + LS_DC;
+             else if (runFdn) {
+                 double gi = line->dffs;
+@@ -1065,17 +1070,20 @@
+         return;
+     }
+ 
+-    if (runEarly) {
+-        for (i = 0; i < N; i++) {
+-            Line *line = &bus->line[i];
++    for (i = 0; i < N; i++) {
++        Line *line = &bus->line[i];
++        /* Kinds 1 and 2 stay running while Early is down. Kinds 0 and 3 stay with the FDN. */
++        double eA = tint(line, xA * line->inj, 1);
++        double eB = tint(line, xB * line->injB, 2);
++        if (runEarly) {
+             double ev = read_lane(st->ring[b][i], LANE_EARLY, line->w, line->delay, cap);
+             double evB = read_lane(st->ring[b][i], LANE_EARLYB, line->w, line->delayB, cap);
+-            write_lane(st->ring[b][i], line->w, LANE_EARLY, (float)tint(line, xA * line->inj, 1));
+-            write_lane(st->ring[b][i], line->w, LANE_EARLYB, (float)tint(line, xB * line->injB, 2));
+             st->eaBlk[b][i][t] = ev;
+             st->ebBlk[b][i][t] = evB;
+             early += ev + evB;
+         }
++        write_lane(st->ring[b][i], line->w, LANE_EARLY, (float)eA);
++        write_lane(st->ring[b][i], line->w, LANE_EARLYB, (float)eB);
+     }
+     if (runFdn) {
+         int mixA = bus->anyDffs;
+diff -ruN -x .venv -x __pycache__ -x renders -x '*.wasm' -x 44100 snapshot_2026-09-28_2040/software/mic_colour/colour.py snapshot_2026-10-01_0736/software/mic_colour/colour.py
+--- snapshot_2026-09-28_2040/software/mic_colour/colour.py	2026-09-28 09:33:34.000000000 +0100
++++ snapshot_2026-10-01_0736/software/mic_colour/colour.py	2026-09-29 20:50:12.000000000 +0100
+@@ -43,6 +43,12 @@
+         self.hpf_centre = centre
+         self.hpf_engaged = sides or centre
+         self.measured = fitter_on_for(self.mode)
++        self.notice = ""
++        if self.measured and self.impl == COLOUR_SOS:
++            from mic_colour.sos_table import rate_supported, unsupported_rate_notice
++            if not rate_supported(self.sr):
++                self.measured = False
++                self.notice = unsupported_rate_notice(self.sr)
+         self.early_toys = self.mode == ASSUMED_TOYS
+         self.include_offaxis_shelf = shelf_in_scalars_for(self.mode)
+         self.preset_ids = {
+diff -ruN -x .venv -x __pycache__ -x renders -x '*.wasm' -x 44100 snapshot_2026-09-28_2040/software/mic_colour/live_bank.py snapshot_2026-10-01_0736/software/mic_colour/live_bank.py
+--- snapshot_2026-09-28_2040/software/mic_colour/live_bank.py	2026-09-28 09:33:51.000000000 +0100
++++ snapshot_2026-10-01_0736/software/mic_colour/live_bank.py	2026-09-29 20:50:12.000000000 +0100
+@@ -76,8 +76,11 @@
+     return hashlib.sha1(text.encode("utf-8")).hexdigest()[:16]
+ 
+ 
+-def _empty(on: bool, sr: int) -> dict:
+-    return {"on": bool(on), "sr": int(sr), "rev": "", "same": False}
++def _empty(on: bool, sr: int, notice: str = "") -> dict:
++    out = {"on": bool(on), "sr": int(sr), "rev": "", "same": False}
++    if notice:
++        out["notice"] = notice
++    return out
+ 
+ 
+ class _Indexer:
+@@ -118,15 +121,16 @@
+     on=False so the worklet keeps today's unfiltered mix.
+     """
+     sr = _parse_sr(sample_rate)
++    notice = str(getattr(colour, "notice", "") or "")
+     if not getattr(colour, "measured", False) or sr is None or not taps:
+-        return _empty(False, sr or 0)
++        return _empty(False, sr or 0, notice)
+     if int(colour.sr) != int(sr):
+-        return _empty(False, sr)
++        return _empty(False, sr, notice)
+     n = int(n)
+     di = int(direct_index)
+     n_t = len(taps)
+     if n <= 0 or n_t <= 0:
+-        return _empty(False, sr)
++        return _empty(False, sr, notice)
+     direct_tap = taps[di % n_t]
+     buses = ("l", "c", "r")
+     sig = {
+diff -ruN -x .venv -x __pycache__ -x renders -x '*.wasm' -x 44100 snapshot_2026-09-28_2040/software/mic_colour/sos_table.py snapshot_2026-10-01_0736/software/mic_colour/sos_table.py
+--- snapshot_2026-09-28_2040/software/mic_colour/sos_table.py	2026-09-28 09:34:18.000000000 +0100
++++ snapshot_2026-10-01_0736/software/mic_colour/sos_table.py	2026-09-29 20:50:12.000000000 +0100
+@@ -19,10 +19,33 @@
+ 
+ SCHEMA = "colour_sos_wtable.v1"
+ _TABLES: dict = {}
++# Fitted w-tables exist only at these rates. 48000 stays in sos_tables/;
++# 44100 lives in sos_tables/44100/. Any other rate disables SOS colour.
++SUPPORTED_RATES = (44100, 48000)
+ 
+ 
+-def tables_dir() -> Path:
+-    return Path(__file__).resolve().parent / "sos_tables"
++def rate_supported(sr) -> bool:
++    try:
++        return int(sr) in SUPPORTED_RATES
++    except (TypeError, ValueError):
++        return False
++
++
++def unsupported_rate_notice(sr) -> str:
++    try:
++        rate = str(int(sr))
++    except (TypeError, ValueError):
++        rate = "unknown rate"
++    return (
++        f"Mic colour is OFF at {rate} Hz: SOS colour runs at 44100 and 48000 only."
++    )
++
++
++def tables_dir(sr: int | None = None) -> Path:
++    base = Path(__file__).resolve().parent / "sos_tables"
++    if sr is not None and int(sr) != 48000:
++        return base / str(int(sr))
++    return base
+ 
+ 
+ def preset_hash(preset: dict) -> str:
+@@ -35,18 +58,22 @@
+     return hashlib.sha1(text.encode("utf-8")).hexdigest()[:16]
+ 
+ 
+-def _load_one(mic_id: str):
+-    if mic_id in _TABLES:
+-        return _TABLES[mic_id]
+-    path = tables_dir() / f"{mic_id}.json"
++def _load_one(mic_id: str, sr: int = 48000):
++    key = (mic_id, int(sr))
++    if key in _TABLES:
++        return _TABLES[key]
++    if not rate_supported(sr):
++        _TABLES[key] = None
++        return None
++    path = tables_dir(int(sr)) / f"{mic_id}.json"
+     if not path.is_file():
+-        _TABLES[mic_id] = None
++        _TABLES[key] = None
+         return None
+     data = json.loads(path.read_text(encoding="utf-8"))
+-    if str(data.get("schema") or "") != SCHEMA:
+-        _TABLES[mic_id] = None
++    if str(data.get("schema") or "") != SCHEMA or int(data.get("fit_fs") or 48000) != int(sr):
++        _TABLES[key] = None
+         return None
+-    _TABLES[mic_id] = data
++    _TABLES[key] = data
+     return data
+ 
+ 
+@@ -63,7 +90,7 @@
+ 
+ def pack_for(mic_id: str, model, theta_deg: float, sr: int, hpf=None, hpf_engaged: bool = False):
+     """SOS record (float32, magic -2011) or None for identity / missing table."""
+-    table = _load_one(mic_id)
++    table = _load_one(mic_id, int(sr))
+     if table is None:
+         return False
+     layout = list(table.get("layout") or LAYOUTS[int(table.get("K") or 3)])
+diff -ruN -x .venv -x __pycache__ -x renders -x '*.wasm' -x 44100 snapshot_2026-09-28_2040/software/render_pipeline.py snapshot_2026-10-01_0736/software/render_pipeline.py
+--- snapshot_2026-09-28_2040/software/render_pipeline.py	2026-09-28 09:35:03.000000000 +0100
++++ snapshot_2026-10-01_0736/software/render_pipeline.py	2026-09-29 20:50:12.000000000 +0100
+@@ -1132,6 +1132,7 @@
+                 "diffusion_seed": seed,
+                 "lambda_ref": lam,
+                 "colour_mode": mic_colour.mode,
++                "colour_notice": getattr(mic_colour, "notice", ""),
+                 "mic_preset_l": mic_colour.preset_ids["l"],
+                 "mic_preset_c": mic_colour.preset_ids["c"],
+                 "mic_preset_r": mic_colour.preset_ids["r"],
+@@ -1208,6 +1209,7 @@
+             "diffusion_seed": seed,
+             "lambda_ref": lam,
+             "colour_mode": mic_colour.mode,
++            "colour_notice": getattr(mic_colour, "notice", ""),
+             "mic_preset_l": mic_colour.preset_ids["l"],
+             "mic_preset_c": mic_colour.preset_ids["c"],
+             "mic_preset_r": mic_colour.preset_ids["r"],
+@@ -1312,6 +1314,7 @@
+         "diffusion_seed": seed,
+         "lambda_ref": lam,
+         "colour_mode": mic_colour.mode,
++        "colour_notice": getattr(mic_colour, "notice", ""),
+         "mic_preset_l": mic_colour.preset_ids["l"],
+         "mic_preset_c": mic_colour.preset_ids["c"],
+         "mic_preset_r": mic_colour.preset_ids["r"],
+@@ -1355,9 +1358,10 @@
+     Same geometry / inject / Dffs / cut-only peaking as the offline IR.
+     Air 1-pole + shelf run in the worklet (not baked into inject). N locked
+     to 32 for CPU. Makeup is running Mixer level (not IR-window RMS).
+-    Measured colour is the same minimum-phase FIR as Render, designed at
+-    p["sample_rate"] (the AudioContext rate). The `sr` argument stays the
+-    air and peaking rate. Do not pass the AudioContext rate as `sr`.
++    When p["sample_rate"] is present and at least 8000, delays, the
++    decay-lock mean, air, the shelf, and peaking use that integer. Missing
++    or below 8000 stays on `sr` (44100 when the caller omits it). Measured
++    colour already designs at the posted rate.
+     """
+     room: Vec3 = (float(p["W"]), float(p["H"]), float(p["L"]))
+     c = SPEED_OF_SOUND_M_S
+@@ -1378,6 +1382,8 @@
+         colour_sr_i = int(colour_sr) if colour_sr not in (None, "") else 0
+     except (TypeError, ValueError):
+         colour_sr_i = 0
++    # Posted sound-card rate. mic_g stays on `sr`.
++    rate = colour_sr_i if colour_sr_i >= 8000 else int(sr)
+     mic_colour = MicColour(
+         p.get("colour_mode"),
+         p.get("mic_preset_l"),
+@@ -1407,15 +1413,15 @@
+     )
+     dff_per_tap = [tap_dff(t.n, surfaces, master=diffusion_master) for t in taps]
+     diffusion = diffusion_scale_from_room(room)
+-    peaking = live_peaking_banks(room, sr, c, DEFAULT_DEPTH)
++    peaking = live_peaking_banks(room, rate, c, DEFAULT_DEPTH)
+     buses = {}
+     mean_ms_acc = 0.0
+     mean_ms_n = 0
+     for ch in ("l", "c", "r"):
+-        dly = fdn_delays_from_taps(taps, sr=sr, c=c, n=n_had, channel=ch)
++        dly = fdn_delays_from_taps(taps, sr=rate, c=c, n=n_had, channel=ch)
+         dffs = dffs_from_taps(taps, dff_per_tap, diffusion, n=n_had, channel=ch)
+         mic_g = mic_g_from_taps(taps, n_had, ch, sr, res_hz=mic_response_hz)
+-        delay_ms = [1000.0 * float(d) / float(sr) for d in dly]
++        delay_ms = [1000.0 * float(d) / float(rate) for d in dly]
+         inject = []
+         air_g = []
+         shelf = []
+@@ -1432,7 +1438,7 @@
+                 dist_m = float(getattr(t, "distance_c", 0.5 * (t.distance_l + t.distance_r)))
+             amp *= tap_reflect_gain(t.n, surfaces)
+             inject.append(amp)
+-            ag, _lp, sh = _live_air_for_distance(dist_m, sr, humidity, air_lp, air_shelf)
++            ag, _lp, sh = _live_air_for_distance(dist_m, rate, humidity, air_lp, air_shelf)
+             air_g.append(ag)
+             shelf.append(sh)
+             mean_ms_acc += delay_ms[i]
+@@ -1448,8 +1454,8 @@
+         }
+     mean_ms = mean_ms_acc / float(max(1, mean_ms_n))
+     if decay_lock and decay_s > 0.05:
+-        dly_mean = fdn_delays_from_taps(taps, sr=sr, c=c, n=n_had, channel="c")
+-        g = structure_gain_for_rt60(dly_mean, decay_s, sr, n_had) / float(n_had)
++        dly_mean = fdn_delays_from_taps(taps, sr=rate, c=c, n=n_had, channel="c")
++        g = structure_gain_for_rt60(dly_mean, decay_s, rate, n_had) / float(n_had)
+     lim = 0.99 / math.sqrt(float(n_had))
+     g = float(max(0.0, min(lim, g)))
+     di = direct_line_index(taps, n_had)
+@@ -1510,8 +1516,8 @@
+         )
+         dff_b = [tap_dff(t.n, surfaces, master=diffusion_master) for t in taps_b]
+         for ch in ("l", "c", "r"):
+-            dly_b = fdn_delays_from_taps(taps_b, sr=sr, c=c, n=n_had, channel=ch)
+-            delay_ms_b = [1000.0 * float(d) / float(sr) for d in dly_b]
++            dly_b = fdn_delays_from_taps(taps_b, sr=rate, c=c, n=n_had, channel=ch)
++            delay_ms_b = [1000.0 * float(d) / float(rate) for d in dly_b]
+             inject_b = []
+             air_g_b = []
+             shelf_b = []
+@@ -1529,7 +1535,7 @@
+                     dist_m = float(getattr(t, "distance_c", 0.5 * (t.distance_l + t.distance_r)))
+                 amp *= tap_reflect_gain(t.n, surfaces)
+                 inject_b.append(amp)
+-                ag, _lp, sh = _live_air_for_distance(dist_m, sr, humidity, air_lp, air_shelf)
++                ag, _lp, sh = _live_air_for_distance(dist_m, rate, humidity, air_lp, air_shelf)
+                 air_g_b.append(ag)
+                 shelf_b.append(sh)
+             dffs_b = dffs_from_taps(taps_b, dff_b, diffusion, n=n_had, channel=ch)
+@@ -1587,6 +1593,7 @@
+         "gain_b": gb,
+         "source_b": source_b_out,
+         "colour_mode": mic_colour.mode,
++        "colour_notice": getattr(mic_colour, "notice", ""),
+         "colour_impl": mic_colour.impl,
+         "mic_preset_l": mic_colour.preset_ids["l"],
+         "mic_preset_c": mic_colour.preset_ids["c"],
+diff -ruN -x .venv -x __pycache__ -x renders -x '*.wasm' -x 44100 snapshot_2026-09-28_2040/software/static/index.html snapshot_2026-10-01_0736/software/static/index.html
+--- snapshot_2026-09-28_2040/software/static/index.html	2026-09-28 13:02:52.000000000 +0100
++++ snapshot_2026-10-01_0736/software/static/index.html	2026-09-29 21:55:48.000000000 +0100
+@@ -621,7 +621,7 @@
+   <script src="/static/js/colour_surfaces.js"></script>
+   <script src="/static/js/polar_field.js?v=4"></script>
+   <script src="/static/js/mic_desk.js?v=7"></script>
+-  <script src="/static/js/live_fdn.js?v=30"></script>
++  <script src="/static/js/live_fdn.js?v=33"></script>
+   <script src="/static/js/app.js?v=21"></script>
+ </body>
+ </html>
+diff -ruN -x .venv -x __pycache__ -x renders -x '*.wasm' -x 44100 snapshot_2026-09-28_2040/software/static/js/fdn_worklet.js snapshot_2026-10-01_0736/software/static/js/fdn_worklet.js
+--- snapshot_2026-09-28_2040/software/static/js/fdn_worklet.js	2026-09-28 09:37:02.000000000 +0100
++++ snapshot_2026-10-01_0736/software/static/js/fdn_worklet.js	2026-09-29 21:56:48.000000000 +0100
+@@ -9,7 +9,8 @@
+ var BLOB_LEN = 1981;
+ var ROUTE_LEN = 230;
+ var MAX_AUDIO = 2048;
+-var MAX_IR_FLOATS = 64 * 8192;
++var MAX_IRS = 128;
++var MAX_IR_FLOATS = MAX_IRS * 8192;
+ 
+ function num(v, dflt) {
+   var n = Number(v);
+@@ -141,7 +142,16 @@
+   }
+ 
+   _apply(data) {
+-    var blob, dst, route, irs, lens, nIrs, i;
++    var blob, dst, route, irs, lens, nIrs, i, over;
++    irs = data.irs;
++    lens = data.ir_len;
++    nIrs = data.n_irs | 0;
++    over = !!(irs && lens && nIrs > 0 && (irs.length > MAX_IR_FLOATS || nIrs > MAX_IRS));
++    if (!over && (data.colour_over | 0) > MAX_IRS) {
++      over = true;
++      nIrs = data.colour_over | 0;
++    }
++    if (over) data.colour_on = 0;
+     data.snap = this.snap;
+     blob = packRoom(data);
+     if (blob.length !== BLOB_LEN) {
+@@ -151,14 +161,9 @@
+     this._viewF(this.api.live_blob_ptr(this.st), blob.length).set(blob);
+     this.api.live_load_room(this.st, blob.length);
+     this.snap = false;
+-    irs = data.irs;
+-    lens = data.ir_len;
+-    nIrs = data.n_irs | 0;
+-    if (irs && lens && nIrs > 0) {
+-      if (irs.length > MAX_IR_FLOATS || nIrs > 64) {
+-        this._fail("Live mic filters are too long.");
+-        return;
+-      }
++    if (over) {
++      this.port.postMessage({ type: "colour_cap", n: nIrs, cap: MAX_IRS });
++    } else if (irs && lens && nIrs > 0) {
+       this._viewF(this.api.live_ir_ptr(this.st), irs.length).set(irs);
+       dst = this._viewI(this.api.live_len_ptr(this.st), nIrs);
+       for (i = 0; i < nIrs; i++) dst[i] = lens[i] | 0;
+diff -ruN -x .venv -x __pycache__ -x renders -x '*.wasm' -x 44100 snapshot_2026-09-28_2040/software/static/js/live_fdn.js snapshot_2026-10-01_0736/software/static/js/live_fdn.js
+--- snapshot_2026-09-28_2040/software/static/js/live_fdn.js	2026-09-28 13:02:52.000000000 +0100
++++ snapshot_2026-10-01_0736/software/static/js/live_fdn.js	2026-09-29 22:00:00.000000000 +0100
+@@ -15,7 +15,9 @@
+   var monoFile = false;
+   var colourRev = "";
+   var bank = null;
+-  var WORKLET_VER = 30;
++  var lastCapLine = "";
++  var WORKLET_VER = 33;
++  var COLOUR_CAP = 128;
+   var ROUTE_LEN = 230;
+ 
+   function status(msg) {
+@@ -63,6 +65,7 @@
+     node = null;
+     bank = null;
+     colourRev = "";
++    lastCapLine = "";
+     var AC = global.AudioContext || global.webkitAudioContext;
+     if (!AC) {
+       status("Web Audio is not available in this browser.");
+@@ -109,7 +112,15 @@
+     node._ver = WORKLET_VER;
+     node.port.onmessage = function (ev) {
+       var d = ev && ev.data;
+-      if (!d || d.type !== "error") return;
++      var line;
++      if (!d) return;
++      if (d.type === "colour_cap") {
++        line = "Mic colour is OFF: " + d.n + " entries, cap " + d.cap + ".";
++        if (line !== lastCapLine) status(line);
++        lastCapLine = line;
++        return;
++      }
++      if (d.type !== "error") return;
+       status("Live FDN: " + (d.message || "error"));
+     };
+     node.onprocessorerror = function (ev) {
+@@ -157,14 +168,29 @@
+     return r;
+   }
+ 
++  var lastColourNotice = "";
++
++  function colourNotice(colour) {
++    var msg = "";
++    if (colour.notice) msg = String(colour.notice);
++    else if (colour.on && ctx && colour.sr !== ctx.sampleRate) {
++      msg = "Mic colour is OFF: the bank is for " + colour.sr
++        + " Hz and the device is running at " + ctx.sampleRate + " Hz.";
++    }
++    if (msg && msg !== lastColourNotice) status(msg);
++    lastColourNotice = msg;
++  }
++
+   function takeColour(p) {
+     var colour = p.colour || {};
++    colourNotice(colour);
+     var on = !!(colour.on && ctx && colour.sr === ctx.sampleRate);
+     var packed = null;
+     var lengths = null;
+     var i, ir, o, n, irs;
+     if (!on) return { on: false };
+     if (colour.same && colour.rev && colour.rev === colourRev && bank) {
++      if (bank.over) return { on: false, route: buildRoute(bank), over: bank.n };
+       return { on: true, route: buildRoute(bank) };
+     }
+     if (!colour.irs || !colour.direct || !colour.fdn) return { on: false, hold: true };
+@@ -190,9 +216,16 @@
+       direct_b: colour.direct_b || null,
+       fdn: colour.fdn,
+       early: colour.early || null,
+-      early_b: colour.early_b || null
++      early_b: colour.early_b || null,
++      over: irs.length > COLOUR_CAP || n > COLOUR_CAP * 8192,
++      n: irs.length
+     };
+     colourRev = bank.rev;
++    if (bank.over) return { on: false, route: buildRoute(bank), over: bank.n };
++    if (lastCapLine) {
++      status("Live FDN running — drag Src / Mic. This is the room, not a baked IR.");
++    }
++    lastCapLine = "";
+     return { on: true, route: buildRoute(bank), irs: packed, ir_len: lengths, n_irs: irs.length };
+   }
+ 
+@@ -256,6 +289,7 @@
+       mono: !!monoFile
+     };
+     if (colour.route) msg.route = colour.route;
++    if (colour.over) msg.colour_over = colour.over;
+     if (colour.irs) {
+       msg.irs = colour.irs;
+       msg.ir_len = colour.ir_len;
+diff -ruN -x .venv -x __pycache__ -x renders -x '*.wasm' -x 44100 snapshot_2026-09-28_2040/software/tests/test_live_stereo.py snapshot_2026-10-01_0736/software/tests/test_live_stereo.py
+--- snapshot_2026-09-28_2040/software/tests/test_live_stereo.py	2026-09-28 13:03:18.000000000 +0100
++++ snapshot_2026-10-01_0736/software/tests/test_live_stereo.py	2026-09-29 21:55:48.000000000 +0100
+@@ -456,6 +456,92 @@
+     assert float(np.max(np.abs(yL))) < 1.0
+ 
+ 
++def test_early_lane_written_while_fader_down():
++    """Early stays silent under the gate, and matches an always-on run once raised.
++
++    The down stretch is longer than the line delay. Air is on, so a lane that
++    was not tinted and written while Early was down cannot match.
++    """
++    delay = 64
++    n0 = PART * 4
++    n1 = PART * 4
++    n = n0 + n1
++    cases = (
++        ("one fdn", False, 1.0, False),
++        ("one both down", False, 0.0, False),
++        ("one fdn diffuse", False, 1.0, True),
++        ("two fdn", True, 1.0, False),
++        ("two both down", True, 0.0, False),
++        ("two fdn diffuse", True, 1.0, True),
++    )
++
++    def maxabs(a, b):
++        return float(np.max(np.abs(np.asarray(a, np.float64) - np.asarray(b, np.float64))))
++
++    for name, two, fdn, diffuse in cases:
++        rng = np.random.default_rng(21 if two else 9)
++        if two:
++            left = rng.normal(scale=0.08, size=n).astype(np.float32)
++            right = rng.normal(scale=0.08, size=n).astype(np.float32)
++            left[n0 - 1] = np.float32(0.5)
++            right[n0 - 1] = np.float32(-0.45)
++        else:
++            left = rng.normal(scale=0.08, size=n).astype(np.float32)
++            left[n0 - 1] = np.float32(0.5)
++            right = left
++        if diffuse:
++            inj = [[0.05] * N, [0.0] * N, [0.0] * N]
++            dffs = [[-0.4] * N, [0.0] * N, [0.0] * N]
++            air = [[0.5] * N, [0.0] * N, [0.0] * N]
++            g = 0.158
++        else:
++            inj = inj_one(0, 0, 1.0)
++            dffs = [[0.0] * N, [0.0] * N, [0.0] * N]
++            air = [[0.0] * N, [0.0] * N, [0.0] * N]
++            air[0][0] = 0.5
++            g = 0.0
++
++        def blob(early):
++            return make_blob(
++                g=g, fdn_wet=fdn, direct_wet=0.0, early_wet=early, dry=0.0,
++                two=1 if two else 0, colour=0, inject=inj,
++                inject_b=inj if two else None, dffs=dffs,
++                dffs_b=dffs if two else None, air_g=air, air_lp=1.0,
++                gains=[1.0, 0.0, 0.0],
++            )
++
++        def run(early0):
++            eng = Engine()
++            eng.load(blob(early0), delay=delay)
++            aL, aR = eng.process(left[:n0], right[:n0])
++            lane = eng.probe(0, 0, 2, 0)
++            lane_b = eng.probe(0, 0, 3, 0) if two else 0.0
++            fdn_lane = eng.probe(0, 0, 0, 0)
++            fdn_b = eng.probe(0, 0, 1, 0) if two else 0.0
++            eng.load(blob(1.0), delay=delay)
++            bL, bR = eng.process(left[n0:], right[n0:])
++            return aL, aR, bL, bR, lane, lane_b, fdn_lane, fdn_b
++
++        off = run(0.0)
++        low = run(5.0e-5)
++        on = run(1.0)
++        down_gap = max(maxabs(off[0], on[0]), maxabs(off[1], on[1]))
++        up_gap = max(maxabs(off[2], on[2]), maxabs(off[3], on[3]))
++        low_gap = max(maxabs(low[0], off[0]), maxabs(low[1], off[1]))
++        assert down_gap > 1.0e-3, (name, down_gap)
++        assert up_gap < 1.0e-6, (name, up_gap)
++        assert low_gap < 1.0e-8, (name, low_gap)
++        if fdn == 0.0:
++            assert max(float(np.max(np.abs(off[0]))), float(np.max(np.abs(off[1])))) < 1.0e-8, name
++        assert abs(off[4] - on[4]) < 1.0e-6, (name, off[4], on[4])
++        assert abs(on[4]) > 1.0e-4, (name, on[4])
++        assert abs(off[6] - on[6]) < 1.0e-6, (name, off[6], on[6])
++        if two:
++            assert abs(off[5] - on[5]) < 1.0e-6, (name, off[5], on[5])
++            assert abs(on[5]) > 1.0e-4, (name, on[5])
++            assert abs(off[7] - on[7]) < 1.0e-6, (name, off[7], on[7])
++
++
+ def test_source_has_no_cap_and_keeps_32():
+     text = (ROOT / "engine" / "live_stereo.c").read_text(encoding="utf-8")
+     assert "0.68" not in text
+@@ -466,9 +552,9 @@
+     work = (ROOT / "static" / "js" / "fdn_worklet.js").read_text(encoding="utf-8")
+     page = (ROOT / "static" / "index.html").read_text(encoding="utf-8")
+     assert "createConvolver" not in live
+-    assert "WORKLET_VER = 30" in live
++    assert "WORKLET_VER = 33" in live
+     assert "LANES = 4" in text
+-    assert "live_fdn.js?v=30" in page
++    assert "live_fdn.js?v=33" in page
+     assert "MAX_SOS" in text
+     assert "design_sos" in text
+     assert "LS_DC" in text
+@@ -488,6 +574,7 @@
+     test_numpy_fir_and_inject_scale()
+     test_air_pole_and_no_gain_cap()
+     test_silence_after_air_stays_finite()
++    test_early_lane_written_while_fader_down()
+     test_source_has_no_cap_and_keeps_32()
+     print("core ok")
+     test_colour_stays_finite_and_realtime()
+diff -ruN -x .venv -x __pycache__ -x renders -x '*.wasm' -x 44100 snapshot_2026-09-28_2040/software/tests/test_mic_colour_relative.py snapshot_2026-10-01_0736/software/tests/test_mic_colour_relative.py
+--- snapshot_2026-09-28_2040/software/tests/test_mic_colour_relative.py	2026-09-28 13:02:52.000000000 +0100
++++ snapshot_2026-10-01_0736/software/tests/test_mic_colour_relative.py	2026-09-29 21:55:48.000000000 +0100
+@@ -337,7 +337,7 @@
+             self.theta_r = 0.0
+             self.theta_c = theta_c
+ 
+-    sr = 8000
++    sr = 48000
+     c = 340.0
+     n_lines = 8
+     taps = []
+@@ -403,7 +403,7 @@
+         prep, car_omni=1.0, yaw_l_deg=-40.0, yaw_c_deg=0.0, yaw_r_deg=50.0,
+     )
+     taps = compute_taps(room, prep.source, stand, hadamard_n=8, include_offaxis_shelf=False)
+-    sr = 16000
++    sr = 48000
+     c = 340.0
+     wall = precompute_wall_peaking_coeffs(room, sr, c, 1.5)
+     ap = {0: None, 1: allpass_ir_for_stages(1, sr), 2: allpass_ir_for_stages(2, sr)}
+@@ -701,9 +701,10 @@
+ 
+     store = get_store()
+     f = np.geomspace(20, 20000, 600)
++    mics = [path.stem for path in sorted(tables_dir().glob("*.json"))]
++    assert len(mics) == 20
+     worst = []
+-    for path in sorted(tables_dir().glob("*.json")):
+-        mic_id = path.stem
++    for mic_id in mics:
+         model = store.model_for(mic_id)
+         colour = MicColour("MEASURED_SHELF", mic_id, mic_id, mic_id, 48000)
+         errs = []
+@@ -724,13 +725,48 @@
+     p95 = float(np.percentile(worst, 95))
+     assert max(worst) <= 0.5
+     assert p95 <= 0.5, p95
+-    colour44 = MicColour("MEASURED_SHELF", "ShureSM57", "ShureSM57", "ShureSM57", 44100)
+-    rec = colour44.payload_for(math.radians(90.0), "l")
+-    sos = unpack_record(rec)
+-    model = store.model_for("ShureSM57")
+-    ana = np.asarray(relative_db(model, f, 90.0))
+-    err44 = float(np.max(np.abs(sos_db(sos, f, 44100) - ana)))
+-    assert err44 <= 0.6, err44
++    f44 = f[f < 0.45 * 44100.0]
++    assert f44.size > 0
++    worst44 = []
++    for mic_id in mics:
++        model = store.model_for(mic_id)
++        colour = MicColour("MEASURED_SHELF", mic_id, mic_id, mic_id, 44100)
++        errs = []
++        for deg in range(1, 181):
++            rec = colour.payload_for(math.radians(deg), "l")
++            if rec is None:
++                ana = np.asarray(relative_db(model, f44, float(deg)))
++                assert float(np.max(np.abs(ana))) < 0.05
++                continue
++            sos = unpack_record(rec)
++            assert sos is not None, mic_id
++            ana = np.asarray(relative_db(model, f44, float(deg)))
++            e = float(np.max(np.abs(sos_db(sos, f44, 44100) - ana)))
++            errs.append(e)
++        assert errs, mic_id
++        worst44.extend(errs)
++        assert max(errs) <= 0.6, (mic_id, max(errs))
++    assert max(worst44) <= 0.6
++    from render_pipeline import live_fdn_params
++    for sr in (32000, 88200, 96000):
++        sos_off = MicColour("MEASURED_SHELF", "ShureSM57", "ShureSM57", "ShureSM57", sr)
++        assert sos_off.measured is False
++        assert str(sr) in sos_off.notice
++        assert "44100" in sos_off.notice and "48000" in sos_off.notice
++        assert sos_off.payload_for(math.radians(90.0), "l") is None
++        fir = MicColour(
++            "MEASURED_SHELF", "ShureSM57", "ShureSM57", "ShureSM57", sr,
++            colour_impl="fir",
++        )
++        assert fir.measured is True
++        assert not fir.notice
++        fir_rec = fir.payload_for(math.radians(90.0), "l")
++        assert fir_rec is not None
++        assert unpack_record(fir_rec) is None
++        got = live_fdn_params(_live_scene(sample_rate=sr))
++        assert got["colour"]["on"] is False
++        assert got["colour"]["notice"] == sos_off.notice
++        assert got["colour_notice"] == sos_off.notice
+ 
+ 
+ def test_live_colour_parity():
+@@ -883,6 +919,16 @@
+     assert not np.allclose(ir_b, ir_l)
+     assert "c" not in two["colour"]["early_b"]
+ 
++    one_wet = live_fdn_params(_live_scene(early_wet=1.0))
++    assert one_wet["colour"]["on"] is True
++    assert len(one_wet["colour"]["irs"]) <= 128
++    apart = live_fdn_params(_live_scene(
++        two_sources=True, mirror_b=False, sx_b=1.5, sz_b=5.5, early_wet=1.0,
++    ))
++    assert apart["colour"]["on"] is True
++    n_apart = len(apart["colour"]["irs"])
++    assert 64 < n_apart <= 128, n_apart
++
+     work = (SOFTWARE / "static/js/fdn_worklet.js").read_text(encoding="utf-8")
+     live_js = (SOFTWARE / "static/js/live_fdn.js").read_text(encoding="utf-8")
+     page = (SOFTWARE / "static/index.html").read_text(encoding="utf-8")
+@@ -890,8 +936,12 @@
+     assert "apply_mic=True" not in pipe
+     assert "mic_one_pole_coeff" not in pipe
+     stereo = (SOFTWARE / "engine" / "live_stereo.c").read_text(encoding="utf-8")
+-    assert "WORKLET_VER = 30" in live_js
+-    assert "live_fdn.js?v=30" in page
++    assert "WORKLET_VER = 33" in live_js
++    assert "live_fdn.js?v=33" in page
++    assert "MAX_IRS = 128" in stereo
++    assert "var MAX_IRS = 128" in work
++    assert "Mic colour is OFF:" in live_js
++    assert "entries, cap" in live_js
+     assert "design_sos" in stereo
+     assert "MAX_SOS" in stereo
+ 

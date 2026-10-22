@@ -1,0 +1,32 @@
+{
+  "page_body_has_mic_x_c": false,
+  "page_room_c": [
+    5.5,
+    2.5,
+    0.4
+  ],
+  "images_mics_C": [
+    3.0,
+    1.5,
+    1.5
+  ],
+  "images_uses_stand": true,
+  "audio_centre": [
+    5.5,
+    2.5,
+    0.4
+  ],
+  "audio_matches_room_spot": true,
+  "stand_lr": [
+    [
+      2.915,
+      1.5,
+      1.5
+    ],
+    [
+      3.085,
+      1.5,
+      1.5
+    ]
+  ]
+}

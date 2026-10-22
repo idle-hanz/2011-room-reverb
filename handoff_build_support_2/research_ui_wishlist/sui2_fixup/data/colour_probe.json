@@ -1,0 +1,170 @@
+{
+ "surfaces": {
+  "tabs": [
+   "Room",
+   "Source",
+   "Mic",
+   "Mix",
+   "Space",
+   "Surfaces",
+   "Colour",
+   "Polar"
+  ],
+  "stagePanels": [
+   [
+    "surfacesPanel",
+    18,
+    116,
+    1094,
+    2105
+   ],
+   [
+    "airCard",
+    18,
+    2232,
+    1094,
+    271
+   ]
+  ],
+  "sidebarPanels": [
+   [
+    "panelRoom",
+    1124,
+    67,
+    458,
+    323
+   ],
+   [
+    "panelPreview",
+    1124,
+    401,
+    458,
+    172
+   ],
+   [
+    "panelAdvanced",
+    1124,
+    584,
+    458,
+    43
+   ]
+  ],
+  "controls": [
+   "Room",
+   "Source",
+   "Mic",
+   "Mix",
+   "Space",
+   "Surfaces",
+   "Colour",
+   "Polar",
+   "\u2191FCeilingfaces +Y",
+   "\u2190ALeftfaces \u2212X",
+   "\u2191BFrontfaces +Z",
+   "\u2192CRightfaces +X",
+   "\u2193DBackfaces \u2212Z",
+   "\u2193EFloorfaces \u2212Y",
+   "materialPaintAll",
+   "Plaster (smooth)",
+   "Gypsum board (painte",
+   "Brick (unglazed)",
+   "Concrete (painted)",
+   "Wood parquet",
+   "Plywood panel",
+   "Carpet on concrete",
+   "Carpet on foam",
+   "Glass window",
+   "Acoustic ceiling til",
+   "Absorber panel (2 in",
+   "Heavy curtain",
+   "Absorber panel (1 in",
+   "Absorber panel (2 in",
+   "Absorber panel (4 in",
+   "surfacesSoloOff",
+   "Solo",
+   "Mute",
+   "Solo",
+   "Mute",
+   "Solo",
+   "Mute",
+   "Solo",
+   "Mute",
+   "Solo",
+   "Mute",
+   "Solo",
+   "Mute",
+   "",
+   "",
+   "",
+   "",
+   "",
+   "",
+   "",
+   "",
+   "",
+   "",
+   "",
+   "",
+   "",
+   "",
+   "jitterSlider",
+   "structureDifSlider",
+   "diffusion_seed",
+   "lambda_ref",
+   "humidity",
+   "air_climate",
+   "air_shelf"
+  ]
+ },
+ "colour": {
+  "tabs": [
+   "Room",
+   "Source",
+   "Mic",
+   "Mix",
+   "Space",
+   "Surfaces",
+   "Colour",
+   "Polar"
+  ],
+  "stagePanels": [
+   [
+    "panel colour-panel",
+    18,
+    116,
+    1094,
+    696
+   ]
+  ],
+  "sidebarPanels": [
+   [
+    "panelPreview",
+    1124,
+    67,
+    458,
+    172
+   ],
+   [
+    "panelAdvanced",
+    1124,
+    250,
+    458,
+    43
+   ]
+  ],
+  "controls": [
+   "Room",
+   "Source",
+   "Mic",
+   "Mix",
+   "Space",
+   "Surfaces",
+   "Colour",
+   "Polar",
+   "colourRefMode",
+   "colourHoldA",
+   "colourHoldB",
+   "colourClearCompare"
+  ]
+ }
+}

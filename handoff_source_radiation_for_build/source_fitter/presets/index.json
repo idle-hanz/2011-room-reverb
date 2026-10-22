@@ -1,0 +1,873 @@
+{
+  "schema": "source_fitter.index.v1",
+  "presets": [
+    {
+      "id": "acoustic_guitar",
+      "label": "Acoustic guitar (steel/modern, TU Berlin)",
+      "category": "strings",
+      "tag": "MEASURED-FIT",
+      "rmse_train_db": 2.3371556501734827,
+      "rmse_holdout_db": 2.3316470561867884,
+      "fit_bands_hz": [
+        80.0,
+        16000.0
+      ],
+      "a_eq_m": 0.3525,
+      "di_1k_db": 3.92,
+      "di_4k_db": 3.92,
+      "dataset": "TU Berlin \u2014 A Database of Anechoic Microphone Array Measurements of Musical Instruments (1b_Directivities3rdOctave_SOFA)"
+    },
+    {
+      "id": "cab_1x12_closed",
+      "label": "Guitar cab 1x12 closed-back (ASSUMED, derived)",
+      "category": "guitar_amp",
+      "tag": "ASSUMED",
+      "rmse_train_db": null,
+      "rmse_holdout_db": null,
+      "fit_bands_hz": null,
+      "a_eq_m": 0.0254,
+      "di_1k_db": 10.33,
+      "di_4k_db": 17.93,
+      "dataset": "none \u2014 derived"
+    },
+    {
+      "id": "cab_4x12_closed",
+      "label": "Guitar cab 4x12 closed-back (ASSUMED, derived)",
+      "category": "guitar_amp",
+      "tag": "ASSUMED",
+      "rmse_train_db": null,
+      "rmse_holdout_db": null,
+      "fit_bands_hz": null,
+      "a_eq_m": 0.0508,
+      "di_1k_db": 13.41,
+      "di_4k_db": 19.39,
+      "dataset": "none \u2014 derived"
+    },
+    {
+      "id": "cello",
+      "label": "Cello (modern, TU Berlin)",
+      "category": "strings",
+      "tag": "MEASURED-FIT",
+      "rmse_train_db": 2.396328262151645,
+      "rmse_holdout_db": 3.171774519447415,
+      "fit_bands_hz": [
+        63.0,
+        16000.0
+      ],
+      "a_eq_m": 0.0119,
+      "di_1k_db": 2.57,
+      "di_4k_db": 3.57,
+      "dataset": "TU Berlin \u2014 A Database of Anechoic Microphone Array Measurements of Musical Instruments (1b_Directivities3rdOctave_SOFA)"
+    },
+    {
+      "id": "combo_1x10",
+      "label": "Guitar combo 1x10 (Fender Princeton Reverb)",
+      "category": "guitar_amp",
+      "tag": "MEASURED-FIT",
+      "rmse_train_db": 5.259053715661568,
+      "rmse_holdout_db": 5.320235506647648,
+      "fit_bands_hz": [
+        99.2126,
+        8000.0
+      ],
+      "a_eq_m": 0.0201,
+      "di_1k_db": 12.61,
+      "di_4k_db": 18.53,
+      "dataset": "BYU ScholarsArchive Spatial Audio Library \u2014 Guitar Amplifier Directivity"
+    },
+    {
+      "id": "combo_1x12",
+      "label": "Guitar combo 1x12 open-back (Fender Deluxe Reverb)",
+      "category": "guitar_amp",
+      "tag": "MEASURED-FIT",
+      "rmse_train_db": 5.487851109039582,
+      "rmse_holdout_db": 5.475221526314453,
+      "fit_bands_hz": [
+        99.2126,
+        8000.0
+      ],
+      "a_eq_m": 0.0254,
+      "di_1k_db": 13.42,
+      "di_4k_db": 19.15,
+      "dataset": "BYU ScholarsArchive Spatial Audio Library \u2014 Guitar Amplifier Directivity"
+    },
+    {
+      "id": "combo_1x12_bluesdlx",
+      "label": "Guitar combo 1x12 (Fender Blues Deluxe)",
+      "category": "guitar_amp",
+      "tag": "MEASURED-FIT",
+      "rmse_train_db": 4.919088809448553,
+      "rmse_holdout_db": 4.852204136266086,
+      "fit_bands_hz": [
+        99.2126,
+        8000.0
+      ],
+      "a_eq_m": 0.0227,
+      "di_1k_db": 12.56,
+      "di_4k_db": 18.03,
+      "dataset": "BYU ScholarsArchive Spatial Audio Library \u2014 Guitar Amplifier Directivity"
+    },
+    {
+      "id": "combo_1x12_bluesjr",
+      "label": "Guitar combo 1x12 (Fender Blues Junior)",
+      "category": "guitar_amp",
+      "tag": "MEASURED-FIT",
+      "rmse_train_db": 5.53903786364374,
+      "rmse_holdout_db": 5.485390967763998,
+      "fit_bands_hz": [
+        99.2126,
+        8000.0
+      ],
+      "a_eq_m": 0.022,
+      "di_1k_db": 12.77,
+      "di_4k_db": 19.37,
+      "dataset": "BYU ScholarsArchive Spatial Audio Library \u2014 Guitar Amplifier Directivity"
+    },
+    {
+      "id": "combo_2x12",
+      "label": "Guitar combo 2x12 (Fender Twin Reverb)",
+      "category": "guitar_amp",
+      "tag": "MEASURED-FIT",
+      "rmse_train_db": 5.659762495392388,
+      "rmse_holdout_db": 5.734241684805751,
+      "fit_bands_hz": [
+        99.2126,
+        8000.0
+      ],
+      "a_eq_m": 0.0187,
+      "di_1k_db": 14.04,
+      "di_4k_db": 20.7,
+      "dataset": "BYU ScholarsArchive Spatial Audio Library \u2014 Guitar Amplifier Directivity"
+    },
+    {
+      "id": "combo_2x12_ac30",
+      "label": "Guitar combo 2x12 (Vox AC30)",
+      "category": "guitar_amp",
+      "tag": "MEASURED-FIT",
+      "rmse_train_db": 5.809826090180326,
+      "rmse_holdout_db": 5.873016983111631,
+      "fit_bands_hz": [
+        99.2126,
+        8000.0
+      ],
+      "a_eq_m": 0.0194,
+      "di_1k_db": 15.77,
+      "di_4k_db": 24.26,
+      "dataset": "BYU ScholarsArchive Spatial Audio Library \u2014 Guitar Amplifier Directivity"
+    },
+    {
+      "id": "omni",
+      "label": "Omni (current engine sound \u2014 null)",
+      "category": "reference",
+      "tag": "ASSUMED-EXACT",
+      "rmse_train_db": null,
+      "rmse_holdout_db": null,
+      "fit_bands_hz": null,
+      "a_eq_m": 0.0271,
+      "di_1k_db": -0.0,
+      "di_4k_db": -0.0,
+      "dataset": "none (analytic)"
+    },
+    {
+      "id": "piano_grand_lid_open",
+      "label": "Grand piano, lid open (ASSUMED placeholder)",
+      "category": "keys",
+      "tag": "ASSUMED",
+      "rmse_train_db": null,
+      "rmse_holdout_db": null,
+      "fit_bands_hz": null,
+      "a_eq_m": 0.0601,
+      "di_1k_db": 2.84,
+      "di_4k_db": 4.1,
+      "dataset": "none"
+    },
+    {
+      "id": "singer_soprano",
+      "label": "Singer (soprano, TU Berlin)",
+      "category": "voice",
+      "tag": "MEASURED-FIT",
+      "rmse_train_db": 2.402640171688252,
+      "rmse_holdout_db": 3.1659101747146994,
+      "fit_bands_hz": [
+        200.0,
+        16000.0
+      ],
+      "a_eq_m": 0.0156,
+      "di_1k_db": 3.89,
+      "di_4k_db": 6.16,
+      "dataset": "TU Berlin \u2014 A Database of Anechoic Microphone Array Measurements of Musical Instruments (1b_Directivities3rdOctave_SOFA)"
+    },
+    {
+      "id": "talking_head",
+      "label": "Talking head (average speech, 6 talkers)",
+      "category": "voice",
+      "tag": "MEASURED-FIT",
+      "rmse_train_db": 1.8535074753735086,
+      "rmse_holdout_db": 1.8574478335571092,
+      "fit_bands_hz": [
+        100.0,
+        10000.0
+      ],
+      "a_eq_m": 0.0212,
+      "di_1k_db": 2.54,
+      "di_4k_db": 4.24,
+      "dataset": "BYU ScholarsArchive Spatial Audio Library \u2014 Average Speech Directivity"
+    },
+    {
+      "id": "trumpet",
+      "label": "Trumpet (Bach 239, TU Berlin)",
+      "category": "brass",
+      "tag": "MEASURED-FIT",
+      "rmse_train_db": 1.9728275961741963,
+      "rmse_holdout_db": 1.8219485979598402,
+      "fit_bands_hz": [
+        200.0,
+        16000.0
+      ],
+      "a_eq_m": 0.0301,
+      "di_1k_db": 5.09,
+      "di_4k_db": 13.15,
+      "dataset": "TU Berlin \u2014 A Database of Anechoic Microphone Array Measurements of Musical Instruments (1b_Directivities3rdOctave_SOFA)"
+    },
+    {
+      "id": "trumpet_byu",
+      "label": "Trumpet (BYU, 160-3150 Hz)",
+      "category": "brass",
+      "tag": "MEASURED-FIT",
+      "rmse_train_db": 1.8528950860553055,
+      "rmse_holdout_db": 1.8199702417367325,
+      "fit_bands_hz": [
+        160.0,
+        3150.0
+      ],
+      "a_eq_m": 0.0229,
+      "di_1k_db": 3.49,
+      "di_4k_db": 12.63,
+      "dataset": "BYU ScholarsArchive Spatial Audio Library \u2014 Trumpet Directivity"
+    },
+    {
+      "id": "tu_alto_saxophone_modern",
+      "label": "Alto saxophone modern (TU Berlin)",
+      "category": "library_tu",
+      "tag": "MEASURED-FIT",
+      "rmse_train_db": 2.394377896097599,
+      "rmse_holdout_db": 2.455674959637694,
+      "fit_bands_hz": [
+        160.0,
+        16000.0
+      ],
+      "a_eq_m": 0.0319,
+      "di_1k_db": 2.28,
+      "di_4k_db": 6.74,
+      "dataset": "TU Berlin \u2014 A Database of Anechoic Microphone Array Measurements of Musical Instruments (1b_Directivities3rdOctave_SOFA)"
+    },
+    {
+      "id": "tu_alto_trombone_historical",
+      "label": "Alto trombone historical (TU Berlin)",
+      "category": "library_tu",
+      "tag": "MEASURED-FIT",
+      "rmse_train_db": 2.0460830804063863,
+      "rmse_holdout_db": 1.794983926159586,
+      "fit_bands_hz": [
+        80.0,
+        16000.0
+      ],
+      "a_eq_m": 0.0123,
+      "di_1k_db": 4.68,
+      "di_4k_db": 13.18,
+      "dataset": "TU Berlin \u2014 A Database of Anechoic Microphone Array Measurements of Musical Instruments (1b_Directivities3rdOctave_SOFA)"
+    },
+    {
+      "id": "tu_baroque_bassoon_historical",
+      "label": "Baroque bassoon historical (TU Berlin)",
+      "category": "library_tu",
+      "tag": "MEASURED-FIT",
+      "rmse_train_db": 2.25712273613401,
+      "rmse_holdout_db": 2.6555722864054037,
+      "fit_bands_hz": [
+        50.0,
+        16000.0
+      ],
+      "a_eq_m": 0.0178,
+      "di_1k_db": 1.98,
+      "di_4k_db": 4.1,
+      "dataset": "TU Berlin \u2014 A Database of Anechoic Microphone Array Measurements of Musical Instruments (1b_Directivities3rdOctave_SOFA)"
+    },
+    {
+      "id": "tu_baroque_traverse_flute_historical",
+      "label": "Baroque traverse flute historical (TU Berlin)",
+      "category": "library_tu",
+      "tag": "MEASURED-FIT",
+      "rmse_train_db": 3.3605134867416337,
+      "rmse_holdout_db": 2.972761371864473,
+      "fit_bands_hz": [
+        250.0,
+        16000.0
+      ],
+      "a_eq_m": 0.042,
+      "di_1k_db": 1.86,
+      "di_4k_db": 4.11,
+      "dataset": "TU Berlin \u2014 A Database of Anechoic Microphone Array Measurements of Musical Instruments (1b_Directivities3rdOctave_SOFA)"
+    },
+    {
+      "id": "tu_bass_clarinet_modern",
+      "label": "Bass clarinet modern (TU Berlin)",
+      "category": "library_tu",
+      "tag": "MEASURED-FIT",
+      "rmse_train_db": 2.5542116367907917,
+      "rmse_holdout_db": 2.686364156199407,
+      "fit_bands_hz": [
+        63.0,
+        16000.0
+      ],
+      "a_eq_m": 0.0337,
+      "di_1k_db": 1.94,
+      "di_4k_db": 3.06,
+      "dataset": "TU Berlin \u2014 A Database of Anechoic Microphone Array Measurements of Musical Instruments (1b_Directivities3rdOctave_SOFA)"
+    },
+    {
+      "id": "tu_bass_trombone_historical",
+      "label": "Bass trombone historical (TU Berlin)",
+      "category": "library_tu",
+      "tag": "MEASURED-FIT",
+      "rmse_train_db": 1.8336362843675578,
+      "rmse_holdout_db": 1.454259263039773,
+      "fit_bands_hz": [
+        63.0,
+        16000.0
+      ],
+      "a_eq_m": 0.0092,
+      "di_1k_db": 5.43,
+      "di_4k_db": 15.16,
+      "dataset": "TU Berlin \u2014 A Database of Anechoic Microphone Array Measurements of Musical Instruments (1b_Directivities3rdOctave_SOFA)"
+    },
+    {
+      "id": "tu_bass_trombone_modern",
+      "label": "Bass trombone modern (TU Berlin)",
+      "category": "library_tu",
+      "tag": "MEASURED-FIT",
+      "rmse_train_db": 1.8375276629919897,
+      "rmse_holdout_db": 1.7908510630203194,
+      "fit_bands_hz": [
+        40.0,
+        16000.0
+      ],
+      "a_eq_m": 0.0601,
+      "di_1k_db": 8.1,
+      "di_4k_db": 14.37,
+      "dataset": "TU Berlin \u2014 A Database of Anechoic Microphone Array Measurements of Musical Instruments (1b_Directivities3rdOctave_SOFA)"
+    },
+    {
+      "id": "tu_basset_horn_historical",
+      "label": "Basset horn historical (TU Berlin)",
+      "category": "library_tu",
+      "tag": "MEASURED-FIT",
+      "rmse_train_db": 3.1865887870498666,
+      "rmse_holdout_db": 3.075603174581107,
+      "fit_bands_hz": [
+        80.0,
+        16000.0
+      ],
+      "a_eq_m": 0.0089,
+      "di_1k_db": 4.58,
+      "di_4k_db": 10.08,
+      "dataset": "TU Berlin \u2014 A Database of Anechoic Microphone Array Measurements of Musical Instruments (1b_Directivities3rdOctave_SOFA)"
+    },
+    {
+      "id": "tu_bassoon_modern",
+      "label": "Bassoon modern (TU Berlin)",
+      "category": "library_tu",
+      "tag": "MEASURED-FIT",
+      "rmse_train_db": 2.3294421652664146,
+      "rmse_holdout_db": 2.1893308902963957,
+      "fit_bands_hz": [
+        63.0,
+        16000.0
+      ],
+      "a_eq_m": 0.0432,
+      "di_1k_db": 1.25,
+      "di_4k_db": 6.16,
+      "dataset": "TU Berlin \u2014 A Database of Anechoic Microphone Array Measurements of Musical Instruments (1b_Directivities3rdOctave_SOFA)"
+    },
+    {
+      "id": "tu_cello_historical",
+      "label": "Cello historical (TU Berlin)",
+      "category": "library_tu",
+      "tag": "MEASURED-FIT",
+      "rmse_train_db": 2.1492046498069906,
+      "rmse_holdout_db": 2.5455839819736057,
+      "fit_bands_hz": [
+        63.0,
+        16000.0
+      ],
+      "a_eq_m": 0.0283,
+      "di_1k_db": 2.27,
+      "di_4k_db": 2.9,
+      "dataset": "TU Berlin \u2014 A Database of Anechoic Microphone Array Measurements of Musical Instruments (1b_Directivities3rdOctave_SOFA)"
+    },
+    {
+      "id": "tu_clarinet_historical",
+      "label": "Clarinet historical (TU Berlin)",
+      "category": "library_tu",
+      "tag": "MEASURED-FIT",
+      "rmse_train_db": 2.671434246086548,
+      "rmse_holdout_db": 2.5519478428848315,
+      "fit_bands_hz": [
+        160.0,
+        16000.0
+      ],
+      "a_eq_m": 0.0186,
+      "di_1k_db": 4.31,
+      "di_4k_db": 16.88,
+      "dataset": "TU Berlin \u2014 A Database of Anechoic Microphone Array Measurements of Musical Instruments (1b_Directivities3rdOctave_SOFA)"
+    },
+    {
+      "id": "tu_clarinet_modern",
+      "label": "Clarinet modern (TU Berlin)",
+      "category": "library_tu",
+      "tag": "MEASURED-FIT",
+      "rmse_train_db": 2.7635489796394563,
+      "rmse_holdout_db": 2.4000836438402238,
+      "fit_bands_hz": [
+        160.0,
+        16000.0
+      ],
+      "a_eq_m": 0.0175,
+      "di_1k_db": 4.22,
+      "di_4k_db": 14.24,
+      "dataset": "TU Berlin \u2014 A Database of Anechoic Microphone Array Measurements of Musical Instruments (1b_Directivities3rdOctave_SOFA)"
+    },
+    {
+      "id": "tu_classic_bassoon_historical",
+      "label": "Classic bassoon historical (TU Berlin)",
+      "category": "library_tu",
+      "tag": "MEASURED-FIT",
+      "rmse_train_db": 2.2909594364641075,
+      "rmse_holdout_db": 2.5964757797231535,
+      "fit_bands_hz": [
+        63.0,
+        16000.0
+      ],
+      "a_eq_m": 0.0162,
+      "di_1k_db": 2.42,
+      "di_4k_db": 3.39,
+      "dataset": "TU Berlin \u2014 A Database of Anechoic Microphone Array Measurements of Musical Instruments (1b_Directivities3rdOctave_SOFA)"
+    },
+    {
+      "id": "tu_classic_oboe_historical",
+      "label": "Classic oboe historical (TU Berlin)",
+      "category": "library_tu",
+      "tag": "MEASURED-FIT",
+      "rmse_train_db": 2.703679028432436,
+      "rmse_holdout_db": 2.450346382063783,
+      "fit_bands_hz": [
+        250.0,
+        16000.0
+      ],
+      "a_eq_m": 0.0158,
+      "di_1k_db": 2.23,
+      "di_4k_db": 13.11,
+      "dataset": "TU Berlin \u2014 A Database of Anechoic Microphone Array Measurements of Musical Instruments (1b_Directivities3rdOctave_SOFA)"
+    },
+    {
+      "id": "tu_classic_oboe_historical_rom",
+      "label": "Classic oboe historical rom (TU Berlin)",
+      "category": "library_tu",
+      "tag": "MEASURED-FIT",
+      "rmse_train_db": 2.9522916774979016,
+      "rmse_holdout_db": 2.712012066327069,
+      "fit_bands_hz": [
+        250.0,
+        16000.0
+      ],
+      "a_eq_m": 0.0184,
+      "di_1k_db": 2.72,
+      "di_4k_db": 10.34,
+      "dataset": "TU Berlin \u2014 A Database of Anechoic Microphone Array Measurements of Musical Instruments (1b_Directivities3rdOctave_SOFA)"
+    },
+    {
+      "id": "tu_contrabassoon_modern",
+      "label": "Contrabassoon modern (TU Berlin)",
+      "category": "library_tu",
+      "tag": "MEASURED-FIT",
+      "rmse_train_db": 2.4065608041995237,
+      "rmse_holdout_db": 2.337451717153901,
+      "fit_bands_hz": [
+        31.5,
+        16000.0
+      ],
+      "a_eq_m": 0.0076,
+      "di_1k_db": 1.01,
+      "di_4k_db": 2.32,
+      "dataset": "TU Berlin \u2014 A Database of Anechoic Microphone Array Measurements of Musical Instruments (1b_Directivities3rdOctave_SOFA)"
+    },
+    {
+      "id": "tu_double_action_harp_modern",
+      "label": "Double action harp modern (TU Berlin)",
+      "category": "library_tu",
+      "tag": "MEASURED-FIT",
+      "rmse_train_db": 3.2347962807714565,
+      "rmse_holdout_db": 3.255571962787864,
+      "fit_bands_hz": [
+        31.5,
+        16000.0
+      ],
+      "a_eq_m": 0.0057,
+      "di_1k_db": 0.55,
+      "di_4k_db": 1.51,
+      "dataset": "TU Berlin \u2014 A Database of Anechoic Microphone Array Measurements of Musical Instruments (1b_Directivities3rdOctave_SOFA)"
+    },
+    {
+      "id": "tu_double_bass_historical",
+      "label": "Double bass historical (TU Berlin)",
+      "category": "library_tu",
+      "tag": "MEASURED-FIT",
+      "rmse_train_db": 2.1103577454064317,
+      "rmse_holdout_db": 2.4924930443955344,
+      "fit_bands_hz": [
+        40.0,
+        16000.0
+      ],
+      "a_eq_m": 0.0448,
+      "di_1k_db": 2.03,
+      "di_4k_db": 2.85,
+      "dataset": "TU Berlin \u2014 A Database of Anechoic Microphone Array Measurements of Musical Instruments (1b_Directivities3rdOctave_SOFA)"
+    },
+    {
+      "id": "tu_double_bass_modern",
+      "label": "Double bass modern (TU Berlin)",
+      "category": "library_tu",
+      "tag": "MEASURED-FIT",
+      "rmse_train_db": 2.1814732120982883,
+      "rmse_holdout_db": 2.4949809340835287,
+      "fit_bands_hz": [
+        40.0,
+        16000.0
+      ],
+      "a_eq_m": 0.1462,
+      "di_1k_db": -5.55,
+      "di_4k_db": -6.78,
+      "dataset": "TU Berlin \u2014 A Database of Anechoic Microphone Array Measurements of Musical Instruments (1b_Directivities3rdOctave_SOFA)"
+    },
+    {
+      "id": "tu_dulcian_historical",
+      "label": "Dulcian historical (TU Berlin)",
+      "category": "library_tu",
+      "tag": "MEASURED-FIT",
+      "rmse_train_db": 2.0564734602794505,
+      "rmse_holdout_db": 2.445438590073163,
+      "fit_bands_hz": [
+        63.0,
+        16000.0
+      ],
+      "a_eq_m": 0.0478,
+      "di_1k_db": 2.05,
+      "di_4k_db": 3.49,
+      "dataset": "TU Berlin \u2014 A Database of Anechoic Microphone Array Measurements of Musical Instruments (1b_Directivities3rdOctave_SOFA)"
+    },
+    {
+      "id": "tu_english_horn_modern",
+      "label": "English horn modern (TU Berlin)",
+      "category": "library_tu",
+      "tag": "MEASURED-FIT",
+      "rmse_train_db": 2.2328263478089556,
+      "rmse_holdout_db": 2.1778131998305708,
+      "fit_bands_hz": [
+        160.0,
+        16000.0
+      ],
+      "a_eq_m": 0.0341,
+      "di_1k_db": 3.53,
+      "di_4k_db": 7.14,
+      "dataset": "TU Berlin \u2014 A Database of Anechoic Microphone Array Measurements of Musical Instruments (1b_Directivities3rdOctave_SOFA)"
+    },
+    {
+      "id": "tu_french_horn_modern",
+      "label": "French horn modern (TU Berlin)",
+      "category": "library_tu",
+      "tag": "MEASURED-FIT",
+      "rmse_train_db": 4.233406041175392,
+      "rmse_holdout_db": 8.202627094486793,
+      "fit_bands_hz": [
+        80.0,
+        16000.0
+      ],
+      "a_eq_m": 0.0618,
+      "di_1k_db": 18.34,
+      "di_4k_db": 31.48,
+      "dataset": "TU Berlin \u2014 A Database of Anechoic Microphone Array Measurements of Musical Instruments (1b_Directivities3rdOctave_SOFA)"
+    },
+    {
+      "id": "tu_keyed_flute_historical",
+      "label": "Keyed flute historical (TU Berlin)",
+      "category": "library_tu",
+      "tag": "MEASURED-FIT",
+      "rmse_train_db": 3.451441630095054,
+      "rmse_holdout_db": 3.2733035809137583,
+      "fit_bands_hz": [
+        250.0,
+        16000.0
+      ],
+      "a_eq_m": 0.1089,
+      "di_1k_db": 3.71,
+      "di_4k_db": 4.58,
+      "dataset": "TU Berlin \u2014 A Database of Anechoic Microphone Array Measurements of Musical Instruments (1b_Directivities3rdOctave_SOFA)"
+    },
+    {
+      "id": "tu_natural_horn_historical",
+      "label": "Natural horn historical (TU Berlin)",
+      "category": "library_tu",
+      "tag": "MEASURED-FIT",
+      "rmse_train_db": 2.49900700246332,
+      "rmse_holdout_db": 2.8320209848760305,
+      "fit_bands_hz": [
+        50.0,
+        16000.0
+      ],
+      "a_eq_m": 0.0897,
+      "di_1k_db": 15.21,
+      "di_4k_db": 18.71,
+      "dataset": "TU Berlin \u2014 A Database of Anechoic Microphone Array Measurements of Musical Instruments (1b_Directivities3rdOctave_SOFA)"
+    },
+    {
+      "id": "tu_natural_trumpet_historical",
+      "label": "Natural trumpet historical (TU Berlin)",
+      "category": "library_tu",
+      "tag": "MEASURED-FIT",
+      "rmse_train_db": 2.013228037076782,
+      "rmse_holdout_db": 1.8828032214822832,
+      "fit_bands_hz": [
+        125.0,
+        16000.0
+      ],
+      "a_eq_m": 0.0046,
+      "di_1k_db": 5.16,
+      "di_4k_db": 14.31,
+      "dataset": "TU Berlin \u2014 A Database of Anechoic Microphone Array Measurements of Musical Instruments (1b_Directivities3rdOctave_SOFA)"
+    },
+    {
+      "id": "tu_oboe_modern",
+      "label": "Oboe modern (TU Berlin)",
+      "category": "library_tu",
+      "tag": "MEASURED-FIT",
+      "rmse_train_db": 2.4746261356358277,
+      "rmse_holdout_db": 3.0413902779181248,
+      "fit_bands_hz": [
+        250.0,
+        16000.0
+      ],
+      "a_eq_m": 0.0316,
+      "di_1k_db": 1.34,
+      "di_4k_db": 2.95,
+      "dataset": "TU Berlin \u2014 A Database of Anechoic Microphone Array Measurements of Musical Instruments (1b_Directivities3rdOctave_SOFA)"
+    },
+    {
+      "id": "tu_pedal_timpani",
+      "label": "Pedal timpani (TU Berlin)",
+      "category": "library_tu",
+      "tag": "MEASURED-FIT",
+      "rmse_train_db": 2.656713654419554,
+      "rmse_holdout_db": 3.353908023371913,
+      "fit_bands_hz": [
+        80.0,
+        16000.0
+      ],
+      "a_eq_m": 0.0085,
+      "di_1k_db": -1.89,
+      "di_4k_db": -0.89,
+      "dataset": "TU Berlin \u2014 A Database of Anechoic Microphone Array Measurements of Musical Instruments (1b_Directivities3rdOctave_SOFA)"
+    },
+    {
+      "id": "tu_romantic_oboe_historical",
+      "label": "Romantic oboe historical (TU Berlin)",
+      "category": "library_tu",
+      "tag": "MEASURED-FIT",
+      "rmse_train_db": 2.9522902423983606,
+      "rmse_holdout_db": 2.7120077013175443,
+      "fit_bands_hz": [
+        250.0,
+        16000.0
+      ],
+      "a_eq_m": 0.0184,
+      "di_1k_db": 2.72,
+      "di_4k_db": 10.34,
+      "dataset": "TU Berlin \u2014 A Database of Anechoic Microphone Array Measurements of Musical Instruments (1b_Directivities3rdOctave_SOFA)"
+    },
+    {
+      "id": "tu_tenor_saxophone_modern",
+      "label": "Tenor saxophone modern (TU Berlin)",
+      "category": "library_tu",
+      "tag": "MEASURED-FIT",
+      "rmse_train_db": 2.313556275216874,
+      "rmse_holdout_db": 2.533418486987957,
+      "fit_bands_hz": [
+        100.0,
+        16000.0
+      ],
+      "a_eq_m": 0.0388,
+      "di_1k_db": 3.88,
+      "di_4k_db": 7.09,
+      "dataset": "TU Berlin \u2014 A Database of Anechoic Microphone Array Measurements of Musical Instruments (1b_Directivities3rdOctave_SOFA)"
+    },
+    {
+      "id": "tu_tenor_trombone_historical",
+      "label": "Tenor trombone historical (TU Berlin)",
+      "category": "library_tu",
+      "tag": "MEASURED-FIT",
+      "rmse_train_db": 1.950746275898966,
+      "rmse_holdout_db": 1.635170727710416,
+      "fit_bands_hz": [
+        40.0,
+        16000.0
+      ],
+      "a_eq_m": 0.0064,
+      "di_1k_db": 3.5,
+      "di_4k_db": 13.5,
+      "dataset": "TU Berlin \u2014 A Database of Anechoic Microphone Array Measurements of Musical Instruments (1b_Directivities3rdOctave_SOFA)"
+    },
+    {
+      "id": "tu_tenor_trombone_modern",
+      "label": "Tenor trombone modern (TU Berlin)",
+      "category": "library_tu",
+      "tag": "MEASURED-FIT",
+      "rmse_train_db": 1.9185533906183638,
+      "rmse_holdout_db": 1.7797223410731333,
+      "fit_bands_hz": [
+        50.0,
+        16000.0
+      ],
+      "a_eq_m": 0.0125,
+      "di_1k_db": 7.61,
+      "di_4k_db": 15.05,
+      "dataset": "TU Berlin \u2014 A Database of Anechoic Microphone Array Measurements of Musical Instruments (1b_Directivities3rdOctave_SOFA)"
+    },
+    {
+      "id": "tu_timpani",
+      "label": "Timpani (TU Berlin)",
+      "category": "library_tu",
+      "tag": "MEASURED-FIT",
+      "rmse_train_db": 3.9866479963640877,
+      "rmse_holdout_db": 3.754172562174799,
+      "fit_bands_hz": [
+        80.0,
+        16000.0
+      ],
+      "a_eq_m": 0.0756,
+      "di_1k_db": -1.97,
+      "di_4k_db": -1.33,
+      "dataset": "TU Berlin \u2014 A Database of Anechoic Microphone Array Measurements of Musical Instruments (1b_Directivities3rdOctave_SOFA)"
+    },
+    {
+      "id": "tu_transverse_flute_modern",
+      "label": "Transverse flute modern (TU Berlin)",
+      "category": "library_tu",
+      "tag": "MEASURED-FIT",
+      "rmse_train_db": 3.4619412845568296,
+      "rmse_holdout_db": 3.7639682820327094,
+      "fit_bands_hz": [
+        250.0,
+        16000.0
+      ],
+      "a_eq_m": 0.0582,
+      "di_1k_db": 1.25,
+      "di_4k_db": 3.9,
+      "dataset": "TU Berlin \u2014 A Database of Anechoic Microphone Array Measurements of Musical Instruments (1b_Directivities3rdOctave_SOFA)"
+    },
+    {
+      "id": "tu_tuba_modern",
+      "label": "Tuba modern (TU Berlin)",
+      "category": "library_tu",
+      "tag": "MEASURED-FIT",
+      "rmse_train_db": 3.8891545054563292,
+      "rmse_holdout_db": 3.0357581029115415,
+      "fit_bands_hz": [
+        25.0,
+        16000.0
+      ],
+      "a_eq_m": 0.0071,
+      "di_1k_db": 13.39,
+      "di_4k_db": 25.33,
+      "dataset": "TU Berlin \u2014 A Database of Anechoic Microphone Array Measurements of Musical Instruments (1b_Directivities3rdOctave_SOFA)"
+    },
+    {
+      "id": "tu_viola_historical",
+      "label": "Viola historical (TU Berlin)",
+      "category": "library_tu",
+      "tag": "MEASURED-FIT",
+      "rmse_train_db": 2.2528639403922965,
+      "rmse_holdout_db": 3.065728768989146,
+      "fit_bands_hz": [
+        125.0,
+        16000.0
+      ],
+      "a_eq_m": 0.0589,
+      "di_1k_db": -0.15,
+      "di_4k_db": 0.68,
+      "dataset": "TU Berlin \u2014 A Database of Anechoic Microphone Array Measurements of Musical Instruments (1b_Directivities3rdOctave_SOFA)"
+    },
+    {
+      "id": "tu_viola_modern",
+      "label": "Viola modern (TU Berlin)",
+      "category": "library_tu",
+      "tag": "MEASURED-FIT",
+      "rmse_train_db": 2.020447778585679,
+      "rmse_holdout_db": 2.4422297655255703,
+      "fit_bands_hz": [
+        125.0,
+        16000.0
+      ],
+      "a_eq_m": 0.0426,
+      "di_1k_db": 1.41,
+      "di_4k_db": 2.28,
+      "dataset": "TU Berlin \u2014 A Database of Anechoic Microphone Array Measurements of Musical Instruments (1b_Directivities3rdOctave_SOFA)"
+    },
+    {
+      "id": "tu_violin_historical",
+      "label": "Violin historical (TU Berlin)",
+      "category": "library_tu",
+      "tag": "MEASURED-FIT",
+      "rmse_train_db": 2.151294615888503,
+      "rmse_holdout_db": 3.0776446796771912,
+      "fit_bands_hz": [
+        200.0,
+        16000.0
+      ],
+      "a_eq_m": 0.0536,
+      "di_1k_db": 1.6,
+      "di_4k_db": 2.11,
+      "dataset": "TU Berlin \u2014 A Database of Anechoic Microphone Array Measurements of Musical Instruments (1b_Directivities3rdOctave_SOFA)"
+    },
+    {
+      "id": "violin",
+      "label": "Violin (modern, TU Berlin)",
+      "category": "strings",
+      "tag": "MEASURED-FIT",
+      "rmse_train_db": 2.165125810365221,
+      "rmse_holdout_db": 2.666534275707373,
+      "fit_bands_hz": [
+        200.0,
+        16000.0
+      ],
+      "a_eq_m": 0.0538,
+      "di_1k_db": 0.85,
+      "di_4k_db": 1.51,
+      "dataset": "TU Berlin \u2014 A Database of Anechoic Microphone Array Measurements of Musical Instruments (1b_Directivities3rdOctave_SOFA)"
+    },
+    {
+      "id": "violin_byu",
+      "label": "Violin (BYU, 200-2500 Hz)",
+      "category": "strings",
+      "tag": "MEASURED-FIT",
+      "rmse_train_db": 2.116819063235342,
+      "rmse_holdout_db": 2.108767347740375,
+      "fit_bands_hz": [
+        200.0,
+        2500.0
+      ],
+      "a_eq_m": 0.0045,
+      "di_1k_db": 1.81,
+      "di_4k_db": 3.86,
+      "dataset": "BYU ScholarsArchive Spatial Audio Library \u2014 Violin Directivity"
+    }
+  ]
+}

@@ -1,0 +1,36 @@
+{
+  "_readme": "Copy this file next to each WAV with the SAME stem (RR2011_....wav -> RR2011_....json). Fill every value you read; leave null if you could not read it. Terminal numbers are the Controls macro outputs (Structure shot 358). Do not guess: null is better than a guess.",
+  "schema": "rr2011.capture.v1",
+  "capture": {
+    "date": "2026-09-__",
+    "host": "Studio One 6 / Reaktor standalone / other",
+    "reaktor_version": "e.g. 5.9.4 or 6.x (Help > About)",
+    "plugin_format": "VST2 / VST3 / standalone",
+    "sample_rate": 48000,
+    "bit_depth": "32-bit float",
+    "buffer_size": 512,
+    "impulse_file": "RR2011_impulse_48k_0dBFS_stereo.wav",
+    "impulse_at_s": 0.5,
+    "impulse_dbfs": 0.0,
+    "latency_samples": 0,
+    "take": 1
+  },
+  "room": {"W": 6.0, "H": 3.0, "L": 8.0},
+  "source": {"SX_term23": null, "SZ_term24": null, "pad_note": "Sound Position pad; read terminals 23/24 by hover in Structure"},
+  "mic": {
+    "MSS_term25": null, "MRa_term26": null, "MY_term27": null, "HZ_term28": null,
+    "Car_term29": null, "HF_term30": null, "HpF_term31": null, "Hp_term32": null,
+    "diverg_MDPC": null,
+    "panel": {"Mic Response": null, "Angle": null, "Height": null, "Depth": null, "Car/Omni": null, "Space": null}
+  },
+  "fdn": {
+    "GainF": null,
+    "diffusion_master": null,
+    "surface_diffusion": {"Sides": null, "Ahead": null, "Behind": null, "Floor": null, "Ceiling": null},
+    "diffuser_diffusion_in": null,
+    "dffs_voice1": null, "dffs_voice2": null, "dis_voice1": null
+  },
+  "air": {"humidity_wet": null},
+  "other": {"AGC": "Off", "AGC_dB": null, "Clip Diffusion": "On", "volume_trim": null,
+            "stacked_macro": "All", "surfaces_dB_all_zero": true, "notes": ""}
+}

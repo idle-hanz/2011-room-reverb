@@ -1,0 +1,77 @@
+--- a/software/engine/fdn.py
++++ b/software/engine/fdn.py
+@@ -849,6 +849,7 @@
+         mic_g: Optional[Sequence[float]] = None,
+         line_t60: float = 0.0,
+         parity: bool = False,
++        surf: Optional[dict] = None,
+     ) -> None:
+         n_lines = int(n) if n is not None else len(delays)
+         if n_lines < 1 or (n_lines & (n_lines - 1)) != 0:
+@@ -925,6 +926,34 @@
+                     self._a1[i] = a1 * inv
+                     self._a2[i] = a2 * inv
+                     self._use_peak[i] = True
++        # SL2 Surfaces in the loop: per-line attenuation sections. None (Flat 2011) = old path untouched.
++        self._sl = None
++        if surf is not None and self._lg is not None:
++            self._init_surf(surf)
++
++    def _init_surf(self, surf: dict) -> None:
++        """Design the per-line S1P2 sections (surf_loop.design_bus). D-SL3: per-axis cuts at or above
++        surf['keep_cut_below_hz'] are replaced (dropped); lower ones stay and are folded into the fit."""
++        import surf_loop as _SL
++        W, Hh, L = self.room
++        dims = {"X": W, "Y": Hh, "Z": L}
++        keep_below = float(surf.get("keep_cut_below_hz", _SL.KEEP_CUT_BELOW_HZ))
++        peaks = []
++        for i in range(self.n):
++            keep = False
++            if self.peaking and self._use_peak[i]:
++                keep = axial_mode_hz(self.c, dims[axis_for_line(i)]) < keep_below
++                self._use_peak[i] = keep
++            peaks.append((self._b0[i], self._b1[i], self._b2[i], self._a1[i], self._a2[i]) if keep else None)
++        if not bool(np.any(self._use_peak)):
++            self.peaking = False
++        rates = np.asarray(surf["rates_for"](self.delays, self.sr, surf.get("hits")), float)
++        res = _SL.design_bus(self.delays, self.sr, self._lg, peaks, rates, surf.get("struct", "S1P2"))
++        self._sl = res["secs"]
++        self._slz1 = np.zeros(self._sl.shape[:2])
++        self._slz2 = np.zeros(self._sl.shape[:2])
++        surf.setdefault("report", []).append(dict(res["report"], stab=res["stab"], guard=res["guard"],
++                                                  kept_cuts=int(sum(p is not None for p in peaks))))
+ 
+     def _apply_peaking(self, reads: "np.ndarray") -> "np.ndarray":
+         if not self.peaking:
+@@ -946,7 +975,7 @@
+         Prefers fdn_core.so (C) when N==32; otherwise Python+numpy.
+         """
+         assert inject.shape[1] == self.n
+-        if _FDN_CORE is not None and self.n == 32 and not self._any_dffs and not self._any_mic and self._lg is None:
++        if _FDN_CORE is not None and self.n == 32 and not self._any_dffs and not self._any_mic and self._lg is None and self._sl is None:
+             return self._process_block_c(inject)
+         return self._process_block_py(inject)
+ 
+@@ -981,11 +1010,22 @@
+         lg = self._lg
+         any_dffs = self._any_dffs
+         hy = self._hy
++        sl = self._sl
++        if sl is not None:
++            sz1, sz2 = self._slz1, self._slz2
++            n_sec = sl.shape[1]
+         for t in range(n_samp):
+             for i in range(n):
+                 reads[i] = bufs[i][idx[i]]
+             if lg is not None:
+                 reads *= lg
++            if sl is not None:
++                for k in range(n_sec):
++                    xa = reads.copy()
++                    ya = sl[:, k, 0] * xa + sz1[:, k]
++                    sz1[:, k] = sl[:, k, 1] * xa - sl[:, k, 3] * ya + sz2[:, k]
++                    sz2[:, k] = sl[:, k, 2] * xa - sl[:, k, 4] * ya
++                    reads[:] = ya
+             if peaking:
+                 for i in range(n):
+                     if use_peak[i]:

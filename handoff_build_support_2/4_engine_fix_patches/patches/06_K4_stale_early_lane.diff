@@ -1,0 +1,46 @@
+--- a/engine/live_stereo.c
++++ b/engine/live_stereo.c
+@@ -1059,14 +1059,16 @@
+         }
+         for (i = 0; i < N; i++) {
+             Line *line = &bus->line[i];
+-            double xin = 0.0;
+-            if (runEarly || runFdn) xin = tint(line, x * line->inj, 0);
++            /* K4 stale-early fix (28 Sep 2026): the early lane is written every
++               sample, even with the early fader down, so raising the fader never
++               replays input captured before it was lowered. Read only if on. */
++            double xin = tint(line, x * line->inj, 0);
+             if (runEarly) {
+                 double ev = read_lane(st->ring[b][i], LANE_EARLY, line->w, line->delay, cap);
+-                write_lane(st->ring[b][i], line->w, LANE_EARLY, (float)xin);
+                 st->eaBlk[b][i][t] = ev;
+                 early += ev;
+             }
++            write_lane(st->ring[b][i], line->w, LANE_EARLY, (float)xin);
+             if (mix1) st->xinArr[i] = xin + LS_DC;
+             else if (runFdn) {
+                 double gi = line->dffs;
+@@ -1088,17 +1090,18 @@
+         return;
+     }
+ 
+-    if (runEarly) {
+-        for (i = 0; i < N; i++) {
+-            Line *line = &bus->line[i];
++    /* K4 stale-early fix: always write EARLY/EARLYB; read only when the bus is on. */
++    for (i = 0; i < N; i++) {
++        Line *line = &bus->line[i];
++        if (runEarly) {
+             double ev = read_lane(st->ring[b][i], LANE_EARLY, line->w, line->delay, cap);
+             double evB = read_lane(st->ring[b][i], LANE_EARLYB, line->w, line->delayB, cap);
+-            write_lane(st->ring[b][i], line->w, LANE_EARLY, (float)tint(line, xA * line->inj, 1));
+-            write_lane(st->ring[b][i], line->w, LANE_EARLYB, (float)tint(line, xB * line->injB, 2));
+             st->eaBlk[b][i][t] = ev;
+             st->ebBlk[b][i][t] = evB;
+             early += ev + evB;
+         }
++        write_lane(st->ring[b][i], line->w, LANE_EARLY, (float)tint(line, xA * line->inj, 1));
++        write_lane(st->ring[b][i], line->w, LANE_EARLYB, (float)tint(line, xB * line->injB, 2));
+     }
+     if (runFdn) {
+         int mixA = bus->anyDffs;

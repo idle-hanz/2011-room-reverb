@@ -1,0 +1,108 @@
+--- a/software/render_pipeline.py
++++ b/software/render_pipeline.py
+@@ -30,6 +30,11 @@
+ if str(_ENGINE) not in sys.path:
+     sys.path.insert(0, str(_ENGINE))
+ 
++import contextvars as _cv  # noqa: E402
++import functools as _ft  # noqa: E402
++import inspect as _insp  # noqa: E402
++# SL2: Surfaces-in-the-loop spec for the current render (None = Flat 2011, the old code path).
++_SURF_CTX: "_cv.ContextVar[Optional[dict]]" = _cv.ContextVar("rr_surf_ctx", default=None)
+ from early_field import (  # noqa: E402
+     DEFAULT_HADAMARD_N,
+     SAMPLE_RATE_HZ,
+@@ -905,6 +910,17 @@
+     )
+ 
+ 
++def _surf_bus(taps, n_lines, line_t60):
++    """SL2/SL4: per-bus surf dict for FDN, or None (Flat 2011 / lock off). Hits = faces of each line's image."""
++    ctx = _SURF_CTX.get()
++    if ctx is None or float(line_t60) <= 0.05:
++        return None
++    from surface_colour import surfaces_hit_by_n
++    n_t = len(taps) if taps is not None else 0
++    hits = [surfaces_hit_by_n(taps[i % n_t].n) for i in range(int(n_lines))] if n_t else [[] for _ in range(int(n_lines))]
++    return dict(ctx, hits=hits)
++
++
+ def render_fdn_ir(
+     taps, room, sr, c, length_ms, g, depth_per_axis, delays, n_lines=32,
+     surfaces=None,
+@@ -973,6 +989,7 @@
+             mic_g=mic_g,
+             line_t60=line_t60,
+             parity=bool(reaktor_parity),
++            surf=_surf_bus(taps, n_lines, line_t60),
+         )
+         poly = fdn.process_block_poly(inj)
+         # Headroom decision 6. F2 applies while line absorption is on.
+@@ -1269,7 +1286,7 @@
+     })
+ 
+ 
+-def render(
++def _render_core(
+     dry: np.ndarray,
+     sr: int,
+     *,
+@@ -1370,6 +1387,10 @@
+     desk=None,
+     mic_hpf_l: Optional[bool] = None,
+     mic_hpf_r: Optional[bool] = None,
++    decay_mode: str = "flat",
++    surf_treatment=None,
++    surf_cal=None,
++    surf_directional: bool = True,
+ ) -> Tuple[np.ndarray, np.ndarray, dict]:
+     """Render dry mono through early-field (+ optional FDN) with optional motion.
+ 
+@@ -1890,6 +1911,47 @@
+     return mix_L, mix_R, info
+ 
+ 
++
++@_ft.wraps(_render_core)
++def render(*args, **kw):
++    """Render entry point. decay_mode "flat" (default, Flat 2011) calls _render_core unchanged.
++    decay_mode "surfaces" (SL2/SL4/SL5) designs per-line attenuation sections from the Surfaces table
++    (+ Treatment rows, directional rates, optional Render calibration) and passes them to every FDN bus."""
++    if str(kw.get("decay_mode") or "flat").lower() != "surfaces":
++        return _render_core(*args, **kw)
++    import surf_loop as _SLP
++    import surf_panels as _SP
++    import surf_target as _STG
++    ba = _insp.signature(_render_core).bind(*args, **kw)
++    ba.apply_defaults()
++    a = ba.arguments
++    W, H, L = float(a["W"]), float(a["H"]), float(a["L"])
++    surfaces = parse_surfaces(a["surfaces"]) if a["surfaces"] is not None else default_surfaces()
++    cards = _SP.cards_with_treatment(surfaces, a.get("surf_treatment") or [])
++    hum = float(a["humidity"] or 0.0)
++    if any("absorb_fn" in c for c in cards.values()):
++        # Treatment is part of the face: early reflections and the FDN injection see the treated
++        # octave alpha as well (as the box prototype did), not only the loop.
++        from surface_colour import ABSORB_BAND_HZ as _BH
++        a["surfaces"] = {k: (dict(surfaces[k], absorb=[round(float(x), 4) for x in cards[k]["absorb_fn"](np.asarray(_BH, float))])
++                             if "absorb_fn" in cards[k] else surfaces[k]) for k in surfaces}
++    anchor = float(a["decay_s"]) if (a["decay_lock"] and float(a["decay_s"] or 0.0) > 0.05) else None
++    if anchor is None:   # lock off: absolute length from the materials, the dial shows the result
++        a["decay_s"] = float(np.mean(_STG.room_target(W, H, L, cards, hum, np.array([500.0, 1000.0]))))
++        a["decay_lock"] = True
++    spec = _SLP.make_spec(W, H, L, cards, hum, anchor, directional=bool(a.get("surf_directional", True)),
++                          cal=a.get("surf_cal"))
++    tok = _SURF_CTX.set(spec)
++    try:
++        y_l, y_r, info = _render_core(*ba.args, **ba.kwargs)
++    finally:
++        _SURF_CTX.reset(tok)
++    info = dict(info or {})
++    info["surf"] = dict(decay_mode="surfaces", target_T_oct=spec["target_T_oct"], anchor_s=anchor,
++                        decay_s_used=float(a["decay_s"]), directional=spec["directional"],
++                        cal=a.get("surf_cal"), buses=spec["report"])
++    return y_l, y_r, info
++
+ def _shelf_off() -> dict:
+     return {"on": False, "b0": 1.0, "b1": 0.0, "b2": 0.0, "a1": 0.0, "a2": 0.0}
+ 

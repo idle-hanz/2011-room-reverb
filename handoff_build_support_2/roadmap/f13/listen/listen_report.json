@@ -1,0 +1,169 @@
+{
+  "guitar": "C:\\Users\\IdleHanz\\Desktop\\2011 Room Reverb\\handoff_build_support_2\\roadmap\\robotic_1240\\test_guitar_dualmono_clean.wav",
+  "seconds": 8,
+  "rate": 48000,
+  "bit_depth": 24,
+  "hall_choice": "Mirror hall from test_mirror_symmetry.HALL: 57 x 34.2 x 97 m, decay_s 0.71, sx 44.09, balance 0 (twoC). Kept this scene instead of dial 4 and sx 24. The 12 s impulse windows already fall 74 dB, so 8 s of the guitar still hears the tail.",
+  "files": {
+    "boot_two_phys": {
+      "peak": 0.873852,
+      "limiter": [],
+      "t30_hz": [
+        125,
+        250,
+        500,
+        1000,
+        2000,
+        4000
+      ],
+      "t30_lr": [
+        [
+          2.2296,
+          2.0451,
+          1.9557,
+          1.5334,
+          1.1539,
+          0.8491
+        ],
+        [
+          2.2128,
+          2.1949,
+          1.9552,
+          1.5344,
+          1.1543,
+          0.8462
+        ]
+      ],
+      "phys_ceiling_in_body": "ABSENT",
+      "two_sources": true,
+      "decay_s": 1.8,
+      "W": 6.0,
+      "H": 3.0,
+      "L": 8.0,
+      "sx": 2.6,
+      "source_balance": 0.0,
+      "pair_scale": 1.0,
+      "written_peak": 0.873852
+    },
+    "boot_two_dial": {
+      "peak": 0.85276,
+      "limiter": [],
+      "t30_hz": [
+        125,
+        250,
+        500,
+        1000,
+        2000,
+        4000
+      ],
+      "t30_lr": [
+        [
+          1.7154,
+          1.6121,
+          1.8139,
+          1.7351,
+          1.8217,
+          1.8101
+        ],
+        [
+          1.7363,
+          1.6811,
+          1.7712,
+          1.7361,
+          1.8214,
+          1.8022
+        ]
+      ],
+      "phys_ceiling_in_body": false,
+      "two_sources": true,
+      "decay_s": 1.8,
+      "W": 6.0,
+      "H": 3.0,
+      "L": 8.0,
+      "sx": 2.6,
+      "source_balance": 0.0,
+      "pair_scale": 1.0,
+      "written_peak": 0.85276
+    },
+    "hall_two_phys": {
+      "peak": 0.015484,
+      "limiter": [],
+      "t30_hz": [
+        125,
+        250,
+        500,
+        1000,
+        2000,
+        4000
+      ],
+      "t30_lr": [
+        [
+          11.0589,
+          9.82,
+          7.6967,
+          5.8552,
+          3.9428,
+          2.6282
+        ],
+        [
+          11.0589,
+          9.82,
+          7.6967,
+          5.8552,
+          3.9428,
+          2.6282
+        ]
+      ],
+      "phys_ceiling_in_body": "ABSENT",
+      "two_sources": true,
+      "decay_s": 0.71,
+      "W": 57.0,
+      "H": 34.2,
+      "L": 97.0,
+      "sx": 44.09,
+      "source_balance": 0.0,
+      "pair_scale": 1.0,
+      "written_peak": 0.015484
+    },
+    "hall_two_dial": {
+      "peak": 0.009719,
+      "limiter": [],
+      "t30_hz": [
+        125,
+        250,
+        500,
+        1000,
+        2000,
+        4000
+      ],
+      "t30_lr": [
+        [
+          0.7176,
+          0.7012,
+          0.5988,
+          0.6043,
+          0.6366,
+          0.6069
+        ],
+        [
+          0.7176,
+          0.7012,
+          0.5988,
+          0.6043,
+          0.6366,
+          0.6069
+        ]
+      ],
+      "phys_ceiling_in_body": false,
+      "two_sources": true,
+      "decay_s": 0.71,
+      "W": 57.0,
+      "H": 34.2,
+      "L": 97.0,
+      "sx": 44.09,
+      "source_balance": 0.0,
+      "pair_scale": 1.0,
+      "written_peak": 0.009719
+    }
+  }
+}

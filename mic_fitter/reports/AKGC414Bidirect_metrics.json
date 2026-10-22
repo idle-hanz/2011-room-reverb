@@ -1,0 +1,44 @@
+{
+  "mic_id": "AKGC414Bidirect",
+  "display_name": "AKG C414 Bidirect \u2014 LDC fig-8",
+  "honesty": "MEASURED",
+  "family": "fig8",
+  "source": "Franco et al. Zenodo 10.5281/zenodo.4633508 (Raw_IRs, 5m, 24-bit, selected angles)",
+  "params": {
+    "f0": 200.0002859814414,
+    "depth_max_db": -17.79721112742918,
+    "shelf_slope": 0.6000000000000001,
+    "f_lo": 248.28390453272488,
+    "depth_lo_db": -0.9152270771256192,
+    "res_hz": 1500.0008216023655,
+    "lp_mix": 0.3276882351494259,
+    "fc_floor": 4693.456985436847,
+    "p": 0.6000000000000001
+  },
+  "train_rmse_db": 7.226517989209081,
+  "holdout_rmse_db": 2.7460053670863735,
+  "train_mse_db": 52.22256224836246,
+  "holdout_mse_db": 7.5405454760671695,
+  "holdout_angles_deg": [
+    45.0,
+    135.0
+  ],
+  "train_angles_deg": [
+    0.0,
+    15.0,
+    30.0,
+    60.0,
+    90.0,
+    120.0,
+    150.0,
+    180.0
+  ],
+  "fit_message": "DE success=False nit=70 fun=52.619884; LS success=True cost=13455.776461",
+  "preset": "AKGC414Bidirect.json",
+  "plots": {
+    "polar": "plots/polars/AKGC414Bidirect_polar.png",
+    "colour": "plots/colour/AKGC414Bidirect_colour.png",
+    "fit_train": "plots/fit/AKGC414Bidirect_train.png",
+    "fit_holdout": "plots/fit/AKGC414Bidirect_holdout.png"
+  }
+}

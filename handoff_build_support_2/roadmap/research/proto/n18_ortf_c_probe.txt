@@ -1,0 +1,4 @@
+C gain 1 vs 0 (desk idle): null -8.9 dB
+C gain 1 vs third_mic off: null -8.3 dB
+energy dB: C on 0.65, C off 1.17
+LR corr 0-80ms: C on 0.138, C off 0.001

@@ -1,0 +1,170 @@
+{
+ "csign (ship)": {
+  "all5": "0/8",
+  "per_scene": {
+   "default": 0,
+   "big": 6,
+   "small": 5,
+   "mid": 3,
+   "ortf_wide": 0
+  },
+  "mean_rms": {
+   "default": 0.138,
+   "big": 0.057,
+   "small": 0.086,
+   "mid": 0.097,
+   "ortf_wide": 0.188
+  },
+  "lf_bias_250_500": 0.13,
+  "worst_ac1936": 0.142,
+  "worst_acmax": 0.24,
+  "worst_comb_db": 3.69
+ },
+ "plain H": {
+  "all5": "0/8",
+  "per_scene": {
+   "default": 4,
+   "big": 7,
+   "small": 1,
+   "mid": 5,
+   "ortf_wide": 3
+  },
+  "mean_rms": {
+   "default": 0.075,
+   "big": 0.06,
+   "small": 0.112,
+   "mid": 0.068,
+   "ortf_wide": 0.089
+  },
+  "lf_bias_250_500": -0.024,
+  "worst_ac1936": 0.363,
+  "worst_acmax": 0.488,
+  "worst_comb_db": 11.14
+ },
+ "D\u00b7H\u00b7D": {
+  "all5": "1/8",
+  "per_scene": {
+   "default": 6,
+   "big": 5,
+   "small": 8,
+   "mid": 3,
+   "ortf_wide": 3
+  },
+  "mean_rms": {
+   "default": 0.084,
+   "big": 0.065,
+   "small": 0.06,
+   "mid": 0.096,
+   "ortf_wide": 0.095
+  },
+  "lf_bias_250_500": 0.072,
+  "worst_ac1936": 0.289,
+  "worst_acmax": 0.425,
+  "worst_comb_db": 10.18
+ },
+ "jitter 0.6": {
+  "all5": "0/8",
+  "per_scene": {
+   "default": 2,
+   "big": 7,
+   "small": 8,
+   "mid": 5,
+   "ortf_wide": 0
+  },
+  "mean_rms": {
+   "default": 0.096,
+   "big": 0.056,
+   "small": 0.058,
+   "mid": 0.085,
+   "ortf_wide": 0.128
+  },
+  "lf_bias_250_500": 0.099,
+  "worst_ac1936": 0.127,
+  "worst_acmax": 0.175,
+  "worst_comb_db": 2.98
+ },
+ "tap x2": {
+  "all5": "0/8",
+  "per_scene": {
+   "default": 2,
+   "big": 6,
+   "small": 7,
+   "mid": 7,
+   "ortf_wide": 0
+  },
+  "mean_rms": {
+   "default": 0.108,
+   "big": 0.082,
+   "small": 0.058,
+   "mid": 0.06,
+   "ortf_wide": 0.194
+  },
+  "lf_bias_250_500": 0.067,
+  "worst_ac1936": 0.128,
+  "worst_acmax": 0.189,
+  "worst_comb_db": 3.66
+ },
+ "wtap": {
+  "all5": "0/8",
+  "per_scene": {
+   "default": 1,
+   "big": 6,
+   "small": 8,
+   "mid": 8,
+   "ortf_wide": 0
+  },
+  "mean_rms": {
+   "default": 0.11,
+   "big": 0.075,
+   "small": 0.062,
+   "mid": 0.05,
+   "ortf_wide": 0.164
+  },
+  "lf_bias_250_500": 0.076,
+  "worst_ac1936": 0.13,
+  "worst_acmax": 0.232,
+  "worst_comb_db": 3.5
+ },
+ "dv33": {
+  "all5": "1/8",
+  "per_scene": {
+   "default": 5,
+   "big": 7,
+   "small": 7,
+   "mid": 3,
+   "ortf_wide": 4
+  },
+  "mean_rms": {
+   "default": 0.084,
+   "big": 0.052,
+   "small": 0.066,
+   "mid": 0.092,
+   "ortf_wide": 0.089
+  },
+  "lf_bias_250_500": 0.07,
+  "worst_ac1936": 0.092,
+  "worst_acmax": 0.13,
+  "worst_comb_db": 3.8
+ },
+ "dv133": {
+  "all5": "4/8",
+  "per_scene": {
+   "default": 6,
+   "big": 7,
+   "small": 5,
+   "mid": 8,
+   "ortf_wide": 7
+  },
+  "mean_rms": {
+   "default": 0.058,
+   "big": 0.059,
+   "small": 0.086,
+   "mid": 0.07,
+   "ortf_wide": 0.072
+  },
+  "lf_bias_250_500": 0.023,
+  "worst_ac1936": 0.067,
+  "worst_acmax": 0.154,
+  "worst_comb_db": 4.1
+ }
+}

@@ -1,0 +1,20 @@
+neve neve 7000 -12 16x  | M1 -155.5 dBFS (k7@1000) | M2<16k -155.5 @1000 | M2 peak -106.3 @21000
+neve neve 7000 -6 16x  | M1 -152.1 dBFS (k5@13000) | M2<16k -152.1 @13000 | M2 peak -100.3 @21000
+neve neve 7000 +0 16x  | M1 -78.2 dBFS (k6@6000) | M2<16k -78.2 @6000 | M2 peak -78.2 @6000
+neve neve 7000 +6 16x  | M1 -74.5 dBFS (k7@1000) | M2<16k -74.5 @1000 | M2 peak -74.5 @1000
+neve neve 9000 -12 16x  | M1 -155.5 dBFS (k7@15000) | M2<16k -155.5 @15000 | M2 peak -116.9 @18000
+neve neve 9000 -6 16x  | M1 -149.1 dBFS (k5@3000) | M2<16k -149.1 @3000 | M2 peak -110.9 @18000
+neve neve 9000 +0 16x  | M1 -75.0 dBFS (k3@21000) | M2<16k -77.2 @6000 | M2 peak -75.0 @21000
+neve neve 9000 +6 16x  | M1 -64.7 dBFS (k5@3000) | M2<16k -64.7 @3000 | M2 peak -64.7 @3000
+neve neve 13000 -12 16x  | M1 -155.4 dBFS (k7@5000) | M2<16k -155.4 @5000 | M2 peak -120.9 @13000
+neve neve 13000 -6 16x  | M1 -150.8 dBFS (k17@19000) | M2<16k -154.7 @5000 | M2 peak -114.9 @13000
+neve neve 13000 +0 16x  | M1 -63.2 dBFS (k3@9000) | M2<16k -63.2 @9000 | M2 peak -63.2 @9000
+neve neve 13000 +6 16x  | M1 -56.7 dBFS (k3@9000) | M2<16k -56.7 @9000 | M2 peak -56.7 @9000
+neve neve 17000 -12 16x  | M1 -154.3 dBFS (k2@14000) | M2<16k -154.3 @14000 | M2 peak -108.3 @17000
+neve neve 17000 -6 16x  | M1 -141.8 dBFS (k2@14000) | M2<16k -141.8 @14000 | M2 peak -102.3 @17000
+neve neve 17000 +0 16x  | M1 -68.6 dBFS (k3@3000) | M2<16k -68.6 @3000 | M2 peak -68.6 @3000
+neve neve 17000 +6 16x  | M1 -54.0 dBFS (k4@20000) | M2<16k -61.8 @14000 | M2 peak -54.0 @20000
+neve SWEEP alsw_neve_+0 UAD  | worst non-harmonic (f>5k) -107.8 dBFS
+neve SWEEP alsw_neve_+0 16x  | worst non-harmonic (f>5k) -105.2 dBFS
+neve SWEEP alsw_neve_+6 UAD  | worst non-harmonic (f>5k) -103.5 dBFS
+neve SWEEP alsw_neve_+6 16x  | worst non-harmonic (f>5k) -100.3 dBFS

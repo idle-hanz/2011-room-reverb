@@ -1,0 +1,42 @@
+{
+ "play_std_lock18_byp|ship_vs_build_golden": {
+  "null_db": -3003.3,
+  "max_abs_diff": 0.0
+ },
+ "play_std_lock18_byp|nocsign_vs_old_golden": {
+  "null_db": -3003.3,
+  "max_abs_diff": 0.0
+ },
+ "play_std_lock18_col|ship_vs_build_golden": {
+  "null_db": -3001.1,
+  "max_abs_diff": 0.0
+ },
+ "play_std_lock18_col|nocsign_vs_old_golden": {
+  "null_db": -3001.1,
+  "max_abs_diff": 0.0
+ },
+ "play_std_unlocked_byp|ship_vs_build_golden": {
+  "null_db": -3005.8,
+  "max_abs_diff": 0.0
+ },
+ "play_std_unlocked_byp|nocsign_vs_old_golden": {
+  "null_db": -3005.8,
+  "max_abs_diff": 0.0
+ },
+ "play_std_unlocked_col|ship_vs_build_golden": {
+  "null_db": -3004.3,
+  "max_abs_diff": 0.0
+ },
+ "play_std_unlocked_col|nocsign_vs_old_golden": {
+  "null_db": -3004.3,
+  "max_abs_diff": 0.0
+ },
+ "render_std_unlocked_byp|ship_vs_build_golden": {
+  "null_db": -225.0,
+  "max_abs_diff": 7.275957614183426e-12
+ },
+ "render_std_unlocked_byp|nocsign_vs_old_golden": {
+  "null_db": -238.3,
+  "max_abs_diff": 1.8189894035458565e-12
+ }
+}

@@ -1,0 +1,186 @@
+{
+  "schema": "mic_fitter.preset_index.v3",
+  "presets": [
+    {
+      "mic_id": "AKGC414Bidirect",
+      "display_name": "AKG C414 Bidirect \u2014 LDC fig-8",
+      "honesty": "MEASURED",
+      "family": "fig8",
+      "file": "AKGC414Bidirect.json",
+      "holdout_rmse_db": 2.7460053670863735,
+      "train_rmse_db": 7.226517989209081
+    },
+    {
+      "mic_id": "AKGC414Cardioid",
+      "display_name": "AKG C414 Cardioid \u2014 LDC multipattern",
+      "honesty": "MEASURED",
+      "family": "ldc_cardioid",
+      "file": "AKGC414Cardioid.json",
+      "holdout_rmse_db": 3.3182157365655476,
+      "train_rmse_db": 3.5006798172233653
+    },
+    {
+      "mic_id": "AKGC414Hyper",
+      "display_name": "AKG C414 Hyper \u2014 LDC multipattern",
+      "honesty": "MEASURED",
+      "family": "hypercardioid",
+      "file": "AKGC414Hyper.json",
+      "holdout_rmse_db": 2.629788423836835,
+      "train_rmse_db": 3.6593389007182338
+    },
+    {
+      "mic_id": "AKGC414Omni",
+      "display_name": "AKG C414 Omni \u2014 LDC multipattern",
+      "honesty": "MEASURED",
+      "family": "omni",
+      "file": "AKGC414Omni.json",
+      "holdout_rmse_db": 2.638039600138112,
+      "train_rmse_db": 2.9877431911946775
+    },
+    {
+      "mic_id": "Coles4038",
+      "display_name": "Coles 4038 \u2014 fig-8 ribbon",
+      "honesty": "MEASURED",
+      "family": "fig8_ribbon",
+      "file": "Coles4038.json",
+      "holdout_rmse_db": 3.0569376624874223,
+      "train_rmse_db": 6.19444929767776
+    },
+    {
+      "mic_id": "DPA4006",
+      "display_name": "DPA 4006 \u2014 measurement omni",
+      "honesty": "MEASURED",
+      "family": "omni",
+      "file": "DPA4006.json",
+      "holdout_rmse_db": 0.9309008715999614,
+      "train_rmse_db": 0.8740134535287772
+    },
+    {
+      "mic_id": "ElectroVoiceRE20",
+      "display_name": "Electro-Voice RE20 \u2014 dynamic cardioid",
+      "honesty": "MEASURED",
+      "family": "dynamic_cardioid",
+      "file": "ElectroVoiceRE20.json",
+      "holdout_rmse_db": 3.5317159175815696,
+      "train_rmse_db": 3.328493610362699
+    },
+    {
+      "mic_id": "NeumannU87AiBidirect",
+      "display_name": "Neumann U87 Ai Bidirect \u2014 LDC fig-8",
+      "honesty": "MEASURED",
+      "family": "fig8",
+      "file": "NeumannU87AiBidirect.json",
+      "holdout_rmse_db": 2.626498799755544,
+      "train_rmse_db": 5.7383944880415125
+    },
+    {
+      "mic_id": "NeumannU87AiCardioid",
+      "display_name": "Neumann U87 Ai Cardioid \u2014 LDC",
+      "honesty": "MEASURED",
+      "family": "ldc_cardioid",
+      "file": "NeumannU87AiCardioid.json",
+      "holdout_rmse_db": 4.150390671556011,
+      "train_rmse_db": 3.400660139153216
+    },
+    {
+      "mic_id": "NeumannU87AiOmni",
+      "display_name": "Neumann U87 Ai Omni \u2014 LDC",
+      "honesty": "MEASURED",
+      "family": "omni",
+      "file": "NeumannU87AiOmni.json",
+      "holdout_rmse_db": 2.3194825184366357,
+      "train_rmse_db": 2.463835082758299
+    },
+    {
+      "mic_id": "RodeNT2ABidirect",
+      "display_name": "R\u00f8de NT2-A Bidirect (fig-8)",
+      "honesty": "MEASURED",
+      "family": "fig8",
+      "file": "RodeNT2ABidirect.json",
+      "holdout_rmse_db": 2.2602131414605036,
+      "train_rmse_db": 4.461003793664815
+    },
+    {
+      "mic_id": "RodeNT2ACardioid",
+      "display_name": "R\u00f8de NT2-A Cardioid",
+      "honesty": "MEASURED",
+      "family": "ldc_cardioid",
+      "file": "RodeNT2ACardioid.json",
+      "holdout_rmse_db": 4.100012759505153,
+      "train_rmse_db": 3.5996881665161
+    },
+    {
+      "mic_id": "RodeNT2AOmni",
+      "display_name": "R\u00f8de NT2-A Omni",
+      "honesty": "MEASURED",
+      "family": "omni",
+      "file": "RodeNT2AOmni.json",
+      "holdout_rmse_db": 1.3731352974067106,
+      "train_rmse_db": 1.9546261633084452
+    },
+    {
+      "mic_id": "RoyerR121",
+      "display_name": "Royer R-121 \u2014 fig-8 ribbon",
+      "honesty": "MEASURED",
+      "family": "fig8_ribbon",
+      "file": "RoyerR121.json",
+      "holdout_rmse_db": 3.911475868504405,
+      "train_rmse_db": 9.461580335772032
+    },
+    {
+      "mic_id": "SchoepsCMC5UBidirect",
+      "display_name": "Schoeps CMC5-U Bidirect \u2014 SDC fig-8",
+      "honesty": "MEASURED",
+      "family": "fig8",
+      "file": "SchoepsCMC5UBidirect.json",
+      "holdout_rmse_db": 2.084430397609987,
+      "train_rmse_db": 4.124596234445988
+    },
+    {
+      "mic_id": "SchoepsCMC5UCardioid",
+      "display_name": "Schoeps CMC5-U Cardioid \u2014 SDC",
+      "honesty": "MEASURED",
+      "family": "sdc_cardioid",
+      "file": "SchoepsCMC5UCardioid.json",
+      "holdout_rmse_db": 4.316139767305082,
+      "train_rmse_db": 3.5466335023742146
+    },
+    {
+      "mic_id": "SchoepsCMC5UOmni",
+      "display_name": "Schoeps CMC5-U Omni \u2014 SDC",
+      "honesty": "MEASURED",
+      "family": "omni",
+      "file": "SchoepsCMC5UOmni.json",
+      "holdout_rmse_db": 1.3496049275714004,
+      "train_rmse_db": 1.0306010481145347
+    },
+    {
+      "mic_id": "SennheiserMD441",
+      "display_name": "Sennheiser MD 441 \u2014 dynamic hypercardioid",
+      "honesty": "MEASURED",
+      "family": "hypercardioid",
+      "file": "SennheiserMD441.json",
+      "holdout_rmse_db": 5.663945101816893,
+      "train_rmse_db": 3.275094633967355
+    },
+    {
+      "mic_id": "ShureSM57",
+      "display_name": "Shure SM57 \u2014 dynamic cardioid",
+      "honesty": "MEASURED",
+      "family": "dynamic_cardioid",
+      "file": "ShureSM57.json",
+      "holdout_rmse_db": 2.847995483911337,
+      "train_rmse_db": 3.34063628085002
+    },
+    {
+      "mic_id": "ShureSM58",
+      "display_name": "Shure SM58 \u2014 dynamic cardioid",
+      "honesty": "MEASURED",
+      "family": "dynamic_cardioid",
+      "file": "ShureSM58.json",
+      "holdout_rmse_db": 4.8010009820524395,
+      "train_rmse_db": 4.190327691754697
+    }
+  ],
+  "note": "Structure LP is separate. Optional HPF switches are manufacturer defaults (not fitted)."
+}

@@ -1,0 +1,72 @@
+{
+  "schema": "surfaces_fitter.material.v1",
+  "id": "glass_window",
+  "display_name": "Glass window",
+  "honesty": "ASSUMED_TEXTBOOK",
+  "roles": [
+    "wall"
+  ],
+  "banned_on": [
+    "floor",
+    "ceiling"
+  ],
+  "absorb_hz": [
+    125.0,
+    250.0,
+    500.0,
+    1000.0,
+    2000.0,
+    4000.0,
+    8000.0
+  ],
+  "absorb": [
+    0.35,
+    0.25,
+    0.18,
+    0.12,
+    0.07,
+    0.04,
+    0.04
+  ],
+  "alpha_octave": [
+    0.35,
+    0.25,
+    0.18,
+    0.12,
+    0.07,
+    0.04,
+    0.04
+  ],
+  "model": "low_shelf_high_shelf",
+  "candidate": "B",
+  "params": {
+    "r0_db": -6.805433166879811e-34,
+    "f_lo": 387.3655498335804,
+    "depth_lo_db": -1.9066540976774806,
+    "shelf_slope_lo": 3.423072387976545,
+    "f0": 408.26172039492246,
+    "depth_db": -0.2205796467467608,
+    "shelf_slope": 0.9267629649474936
+  },
+  "rmse_r_db": 0.05502483743205957,
+  "absorb_l1": 0.010798160327111965,
+  "candidate_rmse_r_db": {
+    "A": 0.698101989520212,
+    "B": 0.05502483743205957
+  },
+  "freq_range_hz": [
+    20.0,
+    16000.0
+  ],
+  "source_note": "Large ordinary window glass (panel LF resonance)",
+  "usage": "One bounce: apply R(f); multi-bounce: cascade product along hit list. Do not put curtain/carpet roles on illegal faces.",
+  "fit": {
+    "success": true,
+    "message": "DE success=False; LS success=False cost=0.2907"
+  },
+  "locks": {
+    "live_software": "do not import into live software/ engine in this pack",
+    "honesty": "ASSUMED_TEXTBOOK \u2014 not Structure VERIFIED",
+    "depth": "absolute per bounce (not per metre)"
+  }
+}

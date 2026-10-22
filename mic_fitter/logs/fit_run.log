@@ -1,0 +1,258 @@
+2026-09-22 23:05:59,650 INFO === mic_fitter run start ===
+2026-09-22 23:05:59,652 INFO ASSUMED DEMO DATA — synthetic curves mimicking published off-axis shapes. Found zip(s): ['Microphone_Impulse_Responses.zip'] — extract selected mic WAVs into data/zenodo/ When available, drop Franco et al. WAVs into /workspace/mic_fitter/data/zenodo and re-run.
+2026-09-22 23:05:59,652 INFO Mics to fit: ['proxy_dynamic_cardioid', 'proxy_sdc_cardioid', 'proxy_ldc_cardioid', 'proxy_fig8_ribbon', 'proxy_supercardioid_dynamic', 'proxy_omni_sdc']
+2026-09-22 23:05:59,652 INFO Fitting proxy_dynamic_cardioid (ASSUMED / dynamic_cardioid) …
+2026-09-22 23:05:59,935 INFO   done in 0.3s | train RMSE=0.653 dB | holdout RMSE=0.865 dB | DE success=False nit=40 fun=0.428624; LS success=True cost=109.429903
+2026-09-22 23:05:59,935 INFO   params={'f0': 1450.9395744832543, 'depth_max_db': -23.999999999999996, 'res_hz': 9725.431112344228, 'lp_mix': 0.9999999999999999, 'fc_floor': 1470.1188366104998, 'p': 0.9340477729111533}
+2026-09-22 23:06:01,830 INFO Fitting proxy_sdc_cardioid (ASSUMED / sdc_cardioid) …
+2026-09-22 23:06:02,117 INFO   done in 0.3s | train RMSE=0.485 dB | holdout RMSE=0.517 dB | DE success=False nit=40 fun=0.239396; LS success=True cost=60.431935
+2026-09-22 23:06:02,117 INFO   params={'f0': 1472.2267418846038, 'depth_max_db': -19.215432489529775, 'res_hz': 13901.757355293903, 'lp_mix': 0.9999999999999999, 'fc_floor': 3733.8730027684073, 'p': 0.8283799974970113}
+2026-09-22 23:06:03,612 INFO Fitting proxy_ldc_cardioid (ASSUMED / ldc_cardioid) …
+2026-09-22 23:06:03,879 INFO   done in 0.3s | train RMSE=0.422 dB | holdout RMSE=0.467 dB | DE success=False nit=40 fun=0.181290; LS success=True cost=45.779202
+2026-09-22 23:06:03,879 INFO   params={'f0': 1640.8938766703477, 'depth_max_db': -20.921080516277787, 'res_hz': 13135.448967779857, 'lp_mix': 0.9999999999999999, 'fc_floor': 3755.7917690796135, 'p': 1.00144540790127}
+2026-09-22 23:06:05,412 INFO Fitting proxy_fig8_ribbon (ASSUMED / fig8_ribbon) …
+2026-09-22 23:06:05,686 INFO   done in 0.3s | train RMSE=3.521 dB | holdout RMSE=1.855 dB | DE success=False nit=40 fun=12.447712; LS success=True cost=3174.829845
+2026-09-22 23:06:05,686 INFO   params={'f0': 1783.193255792595, 'depth_max_db': -23.9999999999996, 'res_hz': 1500.0000000013783, 'lp_mix': 0.9999999999643195, 'fc_floor': 2391.9792679644024, 'p': 0.6000000000000002}
+2026-09-22 23:06:07,427 INFO Fitting proxy_supercardioid_dynamic (ASSUMED / supercardioid) …
+2026-09-22 23:06:07,727 INFO   done in 0.3s | train RMSE=1.109 dB | holdout RMSE=1.575 dB | DE success=False nit=40 fun=1.249071; LS success=True cost=315.067225
+2026-09-22 23:06:07,727 INFO   params={'f0': 1449.5755591485974, 'depth_max_db': -23.999999999999996, 'res_hz': 9670.125933492895, 'lp_mix': 0.9999999999999999, 'fc_floor': 800.0000000000001, 'p': 0.8950432302976326}
+2026-09-22 23:06:09,155 INFO Fitting proxy_omni_sdc (ASSUMED / omni) …
+2026-09-22 23:06:09,428 INFO   done in 0.3s | train RMSE=0.164 dB | holdout RMSE=0.175 dB | DE success=False nit=40 fun=0.028521; LS success=True cost=7.111253
+2026-09-22 23:06:09,429 INFO   params={'f0': 944.7093541701709, 'depth_max_db': -2.706663241981331, 'res_hz': 8100.343269973271, 'lp_mix': 0.9999999999999999, 'fc_floor': 4581.111897034283, 'p': 0.6087802661504005}
+2026-09-22 23:06:10,891 INFO All fits complete in 11.2s
+2026-09-22 23:06:10,892 INFO MORNING_REPORT.md written
+2026-09-22 23:06:10,892 INFO Wrote MORNING_REPORT.md and reports/
+2026-09-22 23:07:54,896 INFO === mic_fitter run start ===
+2026-09-22 23:07:55,237 INFO MEASURED from Franco et al. Zenodo extract (6 mics, DOI 10.5281/zenodo.4633508). WAVs under /workspace/mic_fitter/data/zenodo. Angles held out: 45°, 135°.
+2026-09-22 23:07:55,237 INFO Mics to fit: ['ShureSM57', 'SchoepsCMC5UCardioid', 'NeumannU87AiCardioid', 'RoyerR121', 'ElectroVoiceRE20', 'AKGC414Cardioid']
+2026-09-22 23:07:55,237 INFO Fitting ShureSM57 (MEASURED / dynamic_cardioid) …
+2026-09-22 23:07:55,660 INFO   done in 0.4s | train RMSE=4.870 dB | holdout RMSE=6.036 dB | DE success=False nit=60 fun=23.591315; LS success=True cost=6070.653323
+2026-09-22 23:07:55,660 INFO   params={'f0': 800.0000000000001, 'depth_max_db': -23.999999999999996, 'res_hz': 1909.3738334949617, 'lp_mix': 0.9999999999989989, 'fc_floor': 3727.3069533128146, 'p': 0.6670281868405219}
+2026-09-22 23:07:57,793 INFO Fitting SchoepsCMC5UCardioid (MEASURED / sdc_cardioid) …
+2026-09-22 23:07:58,204 INFO   done in 0.4s | train RMSE=5.277 dB | holdout RMSE=5.648 dB | DE success=False nit=60 fun=27.726940; LS success=True cost=7127.775963
+2026-09-22 23:07:58,204 INFO   params={'f0': 800.0000000002923, 'depth_max_db': -14.093604157502382, 'res_hz': 1500.000000004558, 'lp_mix': 0.9999999999999989, 'fc_floor': 6750.701043063782, 'p': 0.6000000000015165}
+2026-09-22 23:07:59,975 INFO Fitting NeumannU87AiCardioid (MEASURED / ldc_cardioid) …
+2026-09-22 23:08:00,410 INFO   done in 0.4s | train RMSE=5.592 dB | holdout RMSE=6.222 dB | DE success=False nit=60 fun=31.099688; LS success=True cost=8004.682711
+2026-09-22 23:08:00,410 INFO   params={'f0': 800.0000000000018, 'depth_max_db': -19.421584659451796, 'res_hz': 1500.0000004714677, 'lp_mix': 0.9999999999999999, 'fc_floor': 4449.663423562683, 'p': 0.6000000000000001}
+2026-09-22 23:08:02,170 INFO Fitting RoyerR121 (MEASURED / fig8_ribbon) …
+2026-09-22 23:08:02,578 INFO   done in 0.4s | train RMSE=8.957 dB | holdout RMSE=4.105 dB | DE success=False nit=60 fun=79.851056; LS success=True cost=20538.574602
+2026-09-22 23:08:02,579 INFO   params={'f0': 800.0000000000001, 'depth_max_db': -18.814830216708266, 'res_hz': 1500.0000000000002, 'lp_mix': 0.9999999999999999, 'fc_floor': 4362.126093806076, 'p': 0.6000000000000001}
+2026-09-22 23:08:04,512 INFO Fitting ElectroVoiceRE20 (MEASURED / dynamic_cardioid) …
+2026-09-22 23:08:04,989 INFO   done in 0.5s | train RMSE=4.578 dB | holdout RMSE=4.107 dB | DE success=False nit=60 fun=20.843764; LS success=True cost=5366.674545
+2026-09-22 23:08:04,989 INFO   params={'f0': 800.0000000001432, 'depth_max_db': -16.246322763170195, 'res_hz': 15999.999998712112, 'lp_mix': 0.9999999992865035, 'fc_floor': 7999.999999959447, 'p': 0.6839325018048001}
+2026-09-22 23:08:06,957 INFO Fitting AKGC414Cardioid (MEASURED / ldc_cardioid) …
+2026-09-22 23:08:07,402 INFO   done in 0.4s | train RMSE=5.518 dB | holdout RMSE=6.239 dB | DE success=False nit=60 fun=30.329778; LS success=True cost=7796.193957
+2026-09-22 23:08:07,402 INFO   params={'f0': 800.0000000000001, 'depth_max_db': -19.438630012170616, 'res_hz': 1500.0000000000002, 'lp_mix': 0.9999999999999999, 'fc_floor': 4935.722819653547, 'p': 0.6000000000000001}
+2026-09-22 23:08:09,459 INFO All fits complete in 14.6s
+2026-09-22 23:08:09,459 INFO MORNING_REPORT.md written
+2026-09-22 23:08:09,460 INFO Wrote MORNING_REPORT.md and reports/
+2026-09-22 23:08:20,772 INFO === mic_fitter run start ===
+2026-09-22 23:08:21,104 INFO MEASURED from Franco et al. Zenodo extract (6 mics, DOI 10.5281/zenodo.4633508). WAVs under /workspace/mic_fitter/data/zenodo. Angles held out: 45°, 135°.
+2026-09-22 23:08:21,104 INFO Mics to fit: ['ShureSM57', 'SchoepsCMC5UCardioid', 'NeumannU87AiCardioid', 'RoyerR121', 'ElectroVoiceRE20', 'AKGC414Cardioid']
+2026-09-22 23:08:21,104 INFO Fitting ShureSM57 (MEASURED / dynamic_cardioid) …
+2026-09-22 23:08:21,618 INFO   done in 0.5s | train RMSE=21.552 dB | holdout RMSE=5.146 dB | DE success=False nit=80 fun=461.818706; LS success=True cost=118908.454214
+2026-09-22 23:08:21,618 INFO   params={'f0': 6450.865838627163, 'depth_max_db': -5.4854439912291766e-21, 'res_hz': 1500.0000000000002, 'lp_mix': 0.9999999999999999, 'fc_floor': 7999.999999999999, 'p': 3.4999999999999996}
+2026-09-22 23:08:23,626 INFO Fitting SchoepsCMC5UCardioid (MEASURED / sdc_cardioid) …
+2026-09-22 23:08:24,148 INFO   done in 0.5s | train RMSE=27.291 dB | holdout RMSE=9.347 dB | DE success=False nit=80 fun=740.492944; LS success=True cost=190670.912463
+2026-09-22 23:08:24,148 INFO   params={'f0': 6155.1554346834655, 'depth_max_db': -1.1185894780240645e-16, 'res_hz': 1500.0000000000002, 'lp_mix': 0.9999999999999999, 'fc_floor': 7999.999999999992, 'p': 2.1236369590571376}
+2026-09-22 23:08:25,874 INFO Fitting NeumannU87AiCardioid (MEASURED / ldc_cardioid) …
+2026-09-22 23:08:26,388 INFO   done in 0.5s | train RMSE=23.506 dB | holdout RMSE=9.418 dB | DE success=False nit=80 fun=549.334491; LS success=True cost=141446.259807
+2026-09-22 23:08:26,388 INFO   params={'f0': 3929.919548748722, 'depth_max_db': -2.4479242038735235e-09, 'res_hz': 1500.0000011385473, 'lp_mix': 0.9999999999999984, 'fc_floor': 7999.999983397208, 'p': 3.0386278424093267}
+2026-09-22 23:08:28,109 INFO Fitting RoyerR121 (MEASURED / fig8_ribbon) …
+2026-09-22 23:08:28,494 INFO   done in 0.4s | train RMSE=19.415 dB | holdout RMSE=1.806 dB | DE success=True nit=61 fun=374.760480; LS success=True cost=96500.809878
+2026-09-22 23:08:28,494 INFO   params={'f0': 7290.461447948572, 'depth_max_db': -9.538014288237802e-07, 'res_hz': 11907.570725583977, 'lp_mix': 0.9999999450810194, 'fc_floor': 2323.516003017372, 'p': 2.8895077532693114}
+2026-09-22 23:08:30,318 INFO Fitting ElectroVoiceRE20 (MEASURED / dynamic_cardioid) …
+2026-09-22 23:08:30,835 INFO   done in 0.5s | train RMSE=22.242 dB | holdout RMSE=5.539 dB | DE success=False nit=80 fun=491.850896; LS success=True cost=126647.979851
+2026-09-22 23:08:30,835 INFO   params={'f0': 6257.350979039771, 'depth_max_db': -6.102239767493732e-21, 'res_hz': 1500.0000000000002, 'lp_mix': 0.9999999999999999, 'fc_floor': 7999.999999999999, 'p': 3.4999999999999996}
+2026-09-22 23:08:32,518 INFO Fitting AKGC414Cardioid (MEASURED / ldc_cardioid) …
+2026-09-22 23:08:33,038 INFO   done in 0.5s | train RMSE=23.168 dB | holdout RMSE=5.099 dB | DE success=False nit=80 fun=533.637582; LS success=True cost=137407.508368
+2026-09-22 23:08:33,039 INFO   params={'f0': 11990.21878039005, 'depth_max_db': -1.0415590194980599e-11, 'res_hz': 1500.0000026044843, 'lp_mix': 0.9999999999999999, 'fc_floor': 7999.999922102023, 'p': 2.6809229549764995}
+2026-09-22 23:08:34,877 INFO All fits complete in 14.1s
+2026-09-22 23:08:34,877 INFO MORNING_REPORT.md written
+2026-09-22 23:08:34,878 INFO Wrote MORNING_REPORT.md and reports/
+2026-09-22 23:08:55,614 INFO === mic_fitter run start ===
+2026-09-22 23:08:55,952 INFO MEASURED from Franco et al. Zenodo extract (6 mics, DOI 10.5281/zenodo.4633508). WAVs under /workspace/mic_fitter/data/zenodo. Angles held out: 45°, 135°.
+2026-09-22 23:08:55,952 INFO Mics to fit: ['ShureSM57', 'SchoepsCMC5UCardioid', 'NeumannU87AiCardioid', 'RoyerR121', 'ElectroVoiceRE20', 'AKGC414Cardioid']
+2026-09-22 23:08:55,953 INFO Fitting ShureSM57 (MEASURED / dynamic_cardioid) …
+2026-09-22 23:08:56,603 INFO   done in 0.7s | train RMSE=5.349 dB | holdout RMSE=5.120 dB | DE success=False nit=100 fun=28.447587; LS success=True cost=7325.037761
+2026-09-22 23:08:56,604 INFO   params={'f0': 800.0000000000002, 'depth_max_db': -23.999999999999996, 'res_hz': 1856.3954269891963, 'lp_mix': 0.9999999999999929, 'fc_floor': 4025.775082865489, 'p': 0.7104244383847033}
+2026-09-22 23:08:58,714 INFO Fitting SchoepsCMC5UCardioid (MEASURED / sdc_cardioid) …
+2026-09-22 23:08:59,392 INFO   done in 0.7s | train RMSE=4.316 dB | holdout RMSE=5.326 dB | DE success=False nit=100 fun=18.524946; LS success=True cost=4770.048447
+2026-09-22 23:08:59,392 INFO   params={'f0': 800.0000000001402, 'depth_max_db': -18.92327112534651, 'res_hz': 1500.000000002899, 'lp_mix': 0.9999999999991931, 'fc_floor': 7999.999999753482, 'p': 0.6867439764538247}
+2026-09-22 23:09:01,822 INFO Fitting NeumannU87AiCardioid (MEASURED / ldc_cardioid) …
+2026-09-22 23:09:02,726 INFO   done in 0.9s | train RMSE=4.445 dB | holdout RMSE=4.515 dB | DE success=False nit=100 fun=19.643398; LS success=True cost=5058.004212
+2026-09-22 23:09:02,726 INFO   params={'f0': 800.0000000000001, 'depth_max_db': -21.582007871580842, 'res_hz': 1500.0000000000002, 'lp_mix': 0.9999999999999999, 'fc_floor': 4814.204208666394, 'p': 0.7296195832760488}
+2026-09-22 23:09:04,650 INFO Fitting RoyerR121 (MEASURED / fig8_ribbon) …
+2026-09-22 23:09:05,334 INFO   done in 0.7s | train RMSE=9.235 dB | holdout RMSE=3.649 dB | DE success=False nit=100 fun=84.788418; LS success=True cost=21832.346200
+2026-09-22 23:09:05,334 INFO   params={'f0': 800.0000000000001, 'depth_max_db': -18.275138497655444, 'res_hz': 1500.0000000000146, 'lp_mix': 0.9999999999999999, 'fc_floor': 4721.839614815983, 'p': 0.6000000000000001}
+2026-09-22 23:09:07,163 INFO Fitting ElectroVoiceRE20 (MEASURED / dynamic_cardioid) …
+2026-09-22 23:09:07,817 INFO   done in 0.7s | train RMSE=4.745 dB | holdout RMSE=4.476 dB | DE success=False nit=100 fun=22.382379; LS success=True cost=5763.453443
+2026-09-22 23:09:07,817 INFO   params={'f0': 800.000000000007, 'depth_max_db': -15.543523051544748, 'res_hz': 15999.999999997484, 'lp_mix': 0.9999999999999908, 'fc_floor': 7721.419042761914, 'p': 0.7256794199518184}
+2026-09-22 23:09:09,529 INFO Fitting AKGC414Cardioid (MEASURED / ldc_cardioid) …
+2026-09-22 23:09:10,178 INFO   done in 0.6s | train RMSE=4.674 dB | holdout RMSE=4.989 dB | DE success=False nit=100 fun=21.716387; LS success=True cost=5591.937866
+2026-09-22 23:09:10,178 INFO   params={'f0': 800.0000000000002, 'depth_max_db': -22.35855818890321, 'res_hz': 1500.0000000000039, 'lp_mix': 0.9999999999999687, 'fc_floor': 5389.246575387094, 'p': 0.7671282916891781}
+2026-09-22 23:09:12,059 INFO All fits complete in 16.4s
+2026-09-22 23:09:12,060 INFO MORNING_REPORT.md written
+2026-09-22 23:09:12,060 INFO Wrote MORNING_REPORT.md and reports/
+2026-09-23 08:07:54,547 INFO === mic_fitter run start ===
+2026-09-23 08:07:54,904 INFO MEASURED from Franco et al. Zenodo extract (6 mics, DOI 10.5281/zenodo.4633508). WAVs under /workspace/mic_fitter/data/zenodo. Angles held out: 45°, 135°.
+2026-09-23 08:07:54,904 INFO Mics to fit: ['ShureSM57', 'SchoepsCMC5UCardioid', 'NeumannU87AiCardioid', 'RoyerR121', 'ElectroVoiceRE20', 'AKGC414Cardioid']
+2026-09-23 08:07:54,904 INFO Fitting ShureSM57 (MEASURED / dynamic_cardioid) …
+2026-09-23 08:07:55,643 INFO   done in 0.7s | train RMSE=3.102 dB | holdout RMSE=2.691 dB | DE success=False nit=55 fun=9.504443; LS success=True cost=2468.409495
+2026-09-23 08:07:55,643 INFO   params={'f0': 282.64305043153263, 'depth_max_db': -16.6094127675118, 'shelf_slope': 11.999999999999998, 'f_lo': 399.99999999999994, 'depth_lo_db': -8.999999999999998, 'res_hz': 5862.5241006499555, 'lp_mix': 0.7272337594340735, 'fc_floor': 5055.104486088218, 'p': 0.8408974252369269}
+2026-09-23 08:07:58,111 INFO Fitting SchoepsCMC5UCardioid (MEASURED / sdc_cardioid) …
+2026-09-23 08:07:58,820 INFO   done in 0.7s | train RMSE=3.497 dB | holdout RMSE=4.296 dB | DE success=False nit=55 fun=12.075559; LS success=True cost=3135.578969
+2026-09-23 08:07:58,820 INFO   params={'f0': 1826.7734775741314, 'depth_max_db': -20.647392338879353, 'shelf_slope': 1.5000000000000024, 'f_lo': 309.06273247504595, 'depth_lo_db': -7.636485143971856, 'res_hz': 2410.2621966950537, 'lp_mix': 0.9999999999999999, 'fc_floor': 7994.458273330464, 'p': 0.6731248998366675}
+2026-09-23 08:08:00,994 INFO Fitting NeumannU87AiCardioid (MEASURED / ldc_cardioid) …
+2026-09-23 08:08:01,725 INFO   done in 0.7s | train RMSE=3.317 dB | holdout RMSE=4.182 dB | DE success=False nit=55 fun=10.897989; LS success=True cost=2818.981080
+2026-09-23 08:08:01,725 INFO   params={'f0': 839.6151008158505, 'depth_max_db': -23.99999999992459, 'shelf_slope': 1.5000000000135814, 'f_lo': 40.000000008990504, 'depth_lo_db': 1.4278987617952865, 'res_hz': 1500.0000000143098, 'lp_mix': 0.9999999999956937, 'fc_floor': 3905.1365443504387, 'p': 0.6717600145119944}
+2026-09-23 08:08:03,950 INFO Fitting RoyerR121 (MEASURED / fig8_ribbon) …
+2026-09-23 08:08:04,660 INFO   done in 0.7s | train RMSE=9.418 dB | holdout RMSE=3.994 dB | DE success=False nit=55 fun=87.671579; LS success=True cost=22712.200672
+2026-09-23 08:08:04,660 INFO   params={'f0': 935.0825234519216, 'depth_max_db': -18.727843593067213, 'shelf_slope': 1.5000000000000009, 'f_lo': 399.99077318094976, 'depth_lo_db': -7.504079019211212, 'res_hz': 1500.0000000107345, 'lp_mix': 0.9999999999999999, 'fc_floor': 3327.4916366985412, 'p': 0.6000000000000001}
+2026-09-23 08:08:06,753 INFO Fitting ElectroVoiceRE20 (MEASURED / dynamic_cardioid) …
+2026-09-23 08:08:07,458 INFO   done in 0.7s | train RMSE=3.286 dB | holdout RMSE=3.456 dB | DE success=False nit=55 fun=10.665335; LS success=True cost=2767.067453
+2026-09-23 08:08:07,458 INFO   params={'f0': 1133.0025310801059, 'depth_max_db': -19.282556424753636, 'shelf_slope': 1.5000000000000002, 'f_lo': 399.99999999990337, 'depth_lo_db': -6.319031763363072, 'res_hz': 15999.998719232706, 'lp_mix': 0.9999999999999999, 'fc_floor': 7155.812005281187, 'p': 0.920773620838011}
+2026-09-23 08:08:09,749 INFO Fitting AKGC414Cardioid (MEASURED / ldc_cardioid) …
+2026-09-23 08:08:10,478 INFO   done in 0.7s | train RMSE=3.454 dB | holdout RMSE=3.337 dB | DE success=False nit=55 fun=11.868335; LS success=True cost=3055.688149
+2026-09-23 08:08:10,478 INFO   params={'f0': 751.5154053615861, 'depth_max_db': -23.999999999999996, 'shelf_slope': 1.8048261382450295, 'f_lo': 387.8295840159298, 'depth_lo_db': -1.7012830572617321, 'res_hz': 1529.5584479895547, 'lp_mix': 0.9999999999999999, 'fc_floor': 4382.262020458735, 'p': 0.7377429245572956}
+2026-09-23 08:08:12,646 INFO All fits complete in 18.1s
+2026-09-23 08:08:12,647 INFO MORNING_REPORT.md written
+2026-09-23 08:08:12,647 INFO Wrote MORNING_REPORT.md and reports/
+2026-09-23 08:08:34,777 INFO === mic_fitter run start ===
+2026-09-23 08:08:35,109 INFO MEASURED from Franco et al. Zenodo extract (6 mics, DOI 10.5281/zenodo.4633508). WAVs under /workspace/mic_fitter/data/zenodo. Angles held out: 45°, 135°.
+2026-09-23 08:08:35,109 INFO Mics to fit: ['ShureSM57', 'SchoepsCMC5UCardioid', 'NeumannU87AiCardioid', 'RoyerR121', 'ElectroVoiceRE20', 'AKGC414Cardioid']
+2026-09-23 08:08:35,109 INFO Fitting ShureSM57 (MEASURED / dynamic_cardioid) …
+2026-09-23 08:08:35,994 INFO   done in 0.9s | train RMSE=3.360 dB | holdout RMSE=2.864 dB | DE success=False nit=70 fun=11.747334; LS success=True cost=3005.346014
+2026-09-23 08:08:35,994 INFO   params={'f0': 200.00000000000003, 'depth_max_db': -23.70185779703961, 'shelf_slope': 1.5000000000000002, 'f_lo': 289.1617768243881, 'depth_lo_db': -1.4629114720429321, 'res_hz': 1500.0001468612936, 'lp_mix': 0.30318419485241205, 'fc_floor': 6199.282688136083, 'p': 0.85524090237471}
+2026-09-23 08:08:38,495 INFO Fitting SchoepsCMC5UCardioid (MEASURED / sdc_cardioid) …
+2026-09-23 08:08:39,470 INFO   done in 1.0s | train RMSE=3.632 dB | holdout RMSE=4.342 dB | DE success=False nit=70 fun=14.100307; LS success=True cost=3601.344543
+2026-09-23 08:08:39,470 INFO   params={'f0': 200.00000000000003, 'depth_max_db': -12.851688117506624, 'shelf_slope': 1.5000000000000002, 'f_lo': 345.0494667767861, 'depth_lo_db': -2.486043541175986, 'res_hz': 1500.0000000000002, 'lp_mix': 0.3051319566014657, 'fc_floor': 7882.729099572972, 'p': 0.6000000000000001}
+2026-09-23 08:08:41,666 INFO Fitting NeumannU87AiCardioid (MEASURED / ldc_cardioid) …
+2026-09-23 08:08:42,622 INFO   done in 1.0s | train RMSE=3.405 dB | holdout RMSE=4.175 dB | DE success=False nit=70 fun=11.802373; LS success=True cost=3016.044499
+2026-09-23 08:08:42,622 INFO   params={'f0': 501.3003669181594, 'depth_max_db': -18.08169832985605, 'shelf_slope': 1.5000000000000002, 'f_lo': 214.2343108336787, 'depth_lo_db': 0.27051825225811393, 'res_hz': 1500.0008487933776, 'lp_mix': 0.2842821420251232, 'fc_floor': 5227.657348182853, 'p': 0.6081563995737225}
+2026-09-23 08:08:45,011 INFO Fitting RoyerR121 (MEASURED / fig8_ribbon) …
+2026-09-23 08:08:45,977 INFO   done in 1.0s | train RMSE=9.500 dB | holdout RMSE=3.778 dB | DE success=False nit=70 fun=91.407309; LS success=True cost=23392.412355
+2026-09-23 08:08:45,978 INFO   params={'f0': 200.00000000000003, 'depth_max_db': -14.239383954227112, 'shelf_slope': 1.5000000000000002, 'f_lo': 399.97995603197336, 'depth_lo_db': -2.8793875557983624, 'res_hz': 1500.000000001187, 'lp_mix': 0.3264708838442886, 'fc_floor': 5642.736649099946, 'p': 0.6000000000000001}
+2026-09-23 08:08:48,171 INFO Fitting ElectroVoiceRE20 (MEASURED / dynamic_cardioid) …
+2026-09-23 08:08:49,225 INFO   done in 1.1s | train RMSE=3.419 dB | holdout RMSE=3.621 dB | DE success=False nit=70 fun=12.040421; LS success=True cost=3081.577337
+2026-09-23 08:08:49,225 INFO   params={'f0': 200.00000000000003, 'depth_max_db': -16.527150333825006, 'shelf_slope': 1.5000000000000002, 'f_lo': 241.43195352940631, 'depth_lo_db': -1.4036990114538708, 'res_hz': 14506.36713938076, 'lp_mix': 0.27770182016585737, 'fc_floor': 3593.017587490806, 'p': 0.9308441860944817}
+2026-09-23 08:08:51,598 INFO Fitting AKGC414Cardioid (MEASURED / ldc_cardioid) …
+2026-09-23 08:08:52,515 INFO   done in 0.9s | train RMSE=3.501 dB | holdout RMSE=3.317 dB | DE success=False nit=70 fun=12.439089; LS success=True cost=3183.069957
+2026-09-23 08:08:52,515 INFO   params={'f0': 348.38841345557074, 'depth_max_db': -18.311819028416924, 'shelf_slope': 1.5000000000000002, 'f_lo': 220.16724309110543, 'depth_lo_db': -0.008478107259925892, 'res_hz': 1500.0101340331175, 'lp_mix': 0.2733882668182314, 'fc_floor': 5797.494172398859, 'p': 0.6711499416584061}
+2026-09-23 08:08:54,671 INFO All fits complete in 19.9s
+2026-09-23 08:08:54,671 INFO MORNING_REPORT.md written
+2026-09-23 08:08:54,671 INFO Wrote MORNING_REPORT.md and reports/
+2026-09-23 08:48:53,421 INFO === mic_fitter run start ===
+2026-09-23 08:48:54,339 INFO MEASURED from Franco et al. Zenodo extract (17 mics, DOI 10.5281/zenodo.4633508). WAVs under /workspace/mic_fitter/data/zenodo. Angles held out: 45°, 135°.
+2026-09-23 08:48:54,339 INFO Mics to fit: ['ShureSM57', 'SchoepsCMC5UCardioid', 'NeumannU87AiCardioid', 'RoyerR121', 'ElectroVoiceRE20', 'AKGC414Cardioid', 'ShureSM58', 'SennheiserMD441', 'NeumannU87AiOmni', 'NeumannU87AiBidirect', 'AKGC414Omni', 'AKGC414Hyper', 'AKGC414Bidirect', 'SchoepsCMC5UOmni', 'SchoepsCMC5UBidirect', 'Coles4038', 'DPA4006']
+2026-09-23 08:48:54,339 INFO Fitting ShureSM57 (MEASURED / dynamic_cardioid) …
+2026-09-23 08:48:55,214 INFO   done in 0.9s | train RMSE=3.340 dB | holdout RMSE=2.848 dB | DE success=False nit=70 fun=11.425597; LS success=True cost=2924.285716
+2026-09-23 08:48:55,214 INFO   params={'f0': 200.00000000000003, 'depth_max_db': -23.999999999999996, 'shelf_slope': 1.1171208939741357, 'f_lo': 289.8333175186037, 'depth_lo_db': -0.9312259916026595, 'res_hz': 1500.0000048745737, 'lp_mix': 0.26871355031311683, 'fc_floor': 4699.017876813556, 'p': 0.8138098093719608}
+2026-09-23 08:48:57,797 INFO Fitting SchoepsCMC5UCardioid (MEASURED / sdc_cardioid) …
+2026-09-23 08:48:58,717 INFO   done in 0.9s | train RMSE=3.547 dB | holdout RMSE=4.316 dB | DE success=False nit=70 fun=12.892090; LS success=True cost=3298.226289
+2026-09-23 08:48:58,717 INFO   params={'f0': 200.00000000000003, 'depth_max_db': -16.08634173786684, 'shelf_slope': 0.6000000000000001, 'f_lo': 247.76618525463965, 'depth_lo_db': -0.9206012288591747, 'res_hz': 1500.0000000000455, 'lp_mix': 0.2946585100273428, 'fc_floor': 7598.009325489034, 'p': 0.6214774572469456}
+2026-09-23 08:49:01,017 INFO Fitting NeumannU87AiCardioid (MEASURED / ldc_cardioid) …
+2026-09-23 08:49:01,895 INFO   done in 0.9s | train RMSE=3.402 dB | holdout RMSE=4.157 dB | DE success=False nit=70 fun=11.752053; LS success=True cost=3007.905798
+2026-09-23 08:49:01,895 INFO   params={'f0': 668.7278521563848, 'depth_max_db': -19.452382486953283, 'shelf_slope': 1.3513758495329655, 'f_lo': 211.02647248991366, 'depth_lo_db': 0.34740711018111803, 'res_hz': 1500.0002215920647, 'lp_mix': 0.28867915586209403, 'fc_floor': 5536.027624468319, 'p': 0.6039960230989353}
+2026-09-23 08:49:04,280 INFO Fitting RoyerR121 (MEASURED / fig8_ribbon) …
+2026-09-23 08:49:05,143 INFO   done in 0.9s | train RMSE=9.462 dB | holdout RMSE=3.911 dB | DE success=False nit=70 fun=89.925891; LS success=True cost=23010.196817
+2026-09-23 08:49:05,144 INFO   params={'f0': 200.00005321776968, 'depth_max_db': -17.831143670494104, 'shelf_slope': 0.6000000000000001, 'f_lo': 286.78124268587163, 'depth_lo_db': -1.1049435668635448, 'res_hz': 1500.0004836117596, 'lp_mix': 0.317186100676994, 'fc_floor': 5374.440596879762, 'p': 0.6000000000000001}
+2026-09-23 08:49:07,393 INFO Fitting ElectroVoiceRE20 (MEASURED / dynamic_cardioid) …
+2026-09-23 08:49:08,255 INFO   done in 0.9s | train RMSE=3.328 dB | holdout RMSE=3.532 dB | DE success=False nit=70 fun=11.249483; LS success=True cost=2879.863458
+2026-09-23 08:49:08,255 INFO   params={'f0': 1103.1843158244262, 'depth_max_db': -23.999999999999996, 'shelf_slope': 0.6448321321385297, 'f_lo': 211.31821653893778, 'depth_lo_db': -0.30083551287238103, 'res_hz': 14116.889873424596, 'lp_mix': 0.27500506138833547, 'fc_floor': 3557.7819924157147, 'p': 0.9370486172672455}
+2026-09-23 08:49:10,706 INFO Fitting AKGC414Cardioid (MEASURED / ldc_cardioid) …
+2026-09-23 08:49:11,587 INFO   done in 0.9s | train RMSE=3.501 dB | holdout RMSE=3.318 dB | DE success=False nit=70 fun=12.405735; LS success=True cost=3175.560023
+2026-09-23 08:49:11,587 INFO   params={'f0': 356.6508426751982, 'depth_max_db': -18.436336652005327, 'shelf_slope': 1.47927110556251, 'f_lo': 220.15707632939046, 'depth_lo_db': 0.006884922338797788, 'res_hz': 1500.0116360705758, 'lp_mix': 0.2738436358181679, 'fc_floor': 5841.478276870021, 'p': 0.6707511082054439}
+2026-09-23 08:49:13,890 INFO Fitting ShureSM58 (MEASURED / dynamic_cardioid) …
+2026-09-23 08:49:14,837 INFO   done in 0.9s | train RMSE=4.190 dB | holdout RMSE=4.801 dB | DE success=False nit=70 fun=17.772175; LS success=True cost=4548.895431
+2026-09-23 08:49:14,837 INFO   params={'f0': 200.00000000000003, 'depth_max_db': -23.999999999999996, 'shelf_slope': 0.6000000000000001, 'f_lo': 194.2217968720648, 'depth_lo_db': -0.3805552506657193, 'res_hz': 1500.5626831131915, 'lp_mix': 0.269293552798084, 'fc_floor': 5364.509619819168, 'p': 0.7807161755139367}
+2026-09-23 08:49:17,296 INFO Fitting SennheiserMD441 (MEASURED / hypercardioid) …
+2026-09-23 08:49:18,173 INFO   done in 0.9s | train RMSE=3.275 dB | holdout RMSE=5.663 dB | DE success=False nit=70 fun=10.921544; LS success=True cost=2793.571611
+2026-09-23 08:49:18,173 INFO   params={'f0': 200.00156938612733, 'depth_max_db': -21.229734660833536, 'shelf_slope': 0.6582748985632317, 'f_lo': 220.20672143766856, 'depth_lo_db': -0.00907746489166462, 'res_hz': 1500.000407822951, 'lp_mix': 0.27178185048028275, 'fc_floor': 5158.428140938212, 'p': 0.6000000000000001}
+2026-09-23 08:49:20,432 INFO Fitting NeumannU87AiOmni (MEASURED / omni) …
+2026-09-23 08:49:21,362 INFO   done in 0.9s | train RMSE=2.584 dB | holdout RMSE=2.538 dB | DE success=False nit=70 fun=6.926808; LS success=True cost=1771.902482
+2026-09-23 08:49:21,362 INFO   params={'f0': 11875.89371107132, 'depth_max_db': -23.999999999999996, 'shelf_slope': 3.9999999999999996, 'f_lo': 252.49394688957062, 'depth_lo_db': -0.38573715626252747, 'res_hz': 1500.0000000000005, 'lp_mix': 0.2927914410014913, 'fc_floor': 5919.634693319768, 'p': 0.6000000000000001}
+2026-09-23 08:49:23,755 INFO Fitting NeumannU87AiBidirect (MEASURED / fig8) …
+2026-09-23 08:49:24,652 INFO   done in 0.9s | train RMSE=5.738 dB | holdout RMSE=2.627 dB | DE success=False nit=70 fun=33.180446; LS success=True cost=8491.206514
+2026-09-23 08:49:24,652 INFO   params={'f0': 3249.622515193218, 'depth_max_db': -20.143859109809775, 'shelf_slope': 0.6000000000000001, 'f_lo': 239.53568992839115, 'depth_lo_db': -0.6814753437290718, 'res_hz': 1500.0000000000002, 'lp_mix': 0.3062112253439259, 'fc_floor': 4222.1365929536505, 'p': 0.6000000000000001}
+2026-09-23 08:49:26,980 INFO Fitting AKGC414Omni (MEASURED / omni) …
+2026-09-23 08:49:27,863 INFO   done in 0.9s | train RMSE=2.988 dB | holdout RMSE=2.638 dB | DE success=False nit=70 fun=9.106583; LS success=True cost=2330.777019
+2026-09-23 08:49:27,864 INFO   params={'f0': 9881.41995204842, 'depth_max_db': -23.999999999999996, 'shelf_slope': 3.0306528651670535, 'f_lo': 240.29340635420266, 'depth_lo_db': -0.33117242650347184, 'res_hz': 1500.0059890074922, 'lp_mix': 0.2836706572311825, 'fc_floor': 5950.171033929277, 'p': 0.6000000000000001}
+2026-09-23 08:49:30,351 INFO Fitting AKGC414Hyper (MEASURED / hypercardioid) …
+2026-09-23 08:49:31,241 INFO   done in 0.9s | train RMSE=3.659 dB | holdout RMSE=2.629 dB | DE success=False nit=70 fun=13.610870; LS success=True cost=3475.367524
+2026-09-23 08:49:31,241 INFO   params={'f0': 200.0000000000002, 'depth_max_db': -17.761665915622036, 'shelf_slope': 1.489227319610061, 'f_lo': 225.15807994831525, 'depth_lo_db': -0.04424384573814718, 'res_hz': 1500.0001739503282, 'lp_mix': 0.30562916975947607, 'fc_floor': 5402.393396479592, 'p': 0.6000000000000001}
+2026-09-23 08:49:33,743 INFO Fitting AKGC414Bidirect (MEASURED / fig8) …
+2026-09-23 08:49:34,667 INFO   done in 0.9s | train RMSE=7.227 dB | holdout RMSE=2.746 dB | DE success=False nit=70 fun=52.697150; LS success=True cost=13455.776376
+2026-09-23 08:49:34,667 INFO   params={'f0': 200.0002548644208, 'depth_max_db': -17.797181589372414, 'shelf_slope': 0.6000000000000001, 'f_lo': 248.4502868880003, 'depth_lo_db': -0.9151777015363921, 'res_hz': 1500.000109053709, 'lp_mix': 0.32768168797753694, 'fc_floor': 4693.898421470857, 'p': 0.6000000000000001}
+2026-09-23 08:49:37,082 INFO Fitting SchoepsCMC5UOmni (MEASURED / omni) …
+2026-09-23 08:49:38,061 INFO   done in 1.0s | train RMSE=1.031 dB | holdout RMSE=1.341 dB | DE success=False nit=70 fun=1.234347; LS success=True cost=315.523464
+2026-09-23 08:49:38,061 INFO   params={'f0': 11002.914384916481, 'depth_max_db': -23.999999999999996, 'shelf_slope': 3.9999999999999996, 'f_lo': 222.10973052947978, 'depth_lo_db': -0.1025522603270168, 'res_hz': 3485.1499389455116, 'lp_mix': 0.25368435330631517, 'fc_floor': 4900.988066501802, 'p': 0.6000000000000001}
+2026-09-23 08:49:40,525 INFO Fitting SchoepsCMC5UBidirect (MEASURED / fig8) …
+2026-09-23 08:49:41,477 INFO   done in 1.0s | train RMSE=4.125 dB | holdout RMSE=2.085 dB | DE success=False nit=70 fun=17.224422; LS success=True cost=4408.443259
+2026-09-23 08:49:41,477 INFO   params={'f0': 7583.812636832468, 'depth_max_db': -18.689330491466624, 'shelf_slope': 0.6000000000000001, 'f_lo': 193.03134940164284, 'depth_lo_db': -0.7566389268092754, 'res_hz': 1500.000000000128, 'lp_mix': 0.27700244425159026, 'fc_floor': 3156.120048795109, 'p': 0.6000000000000001}
+2026-09-23 08:49:43,789 INFO Fitting Coles4038 (MEASURED / fig8_ribbon) …
+2026-09-23 08:49:44,655 INFO   done in 0.9s | train RMSE=6.194 dB | holdout RMSE=3.057 dB | DE success=False nit=70 fun=38.664562; LS success=True cost=9892.431971
+2026-09-23 08:49:44,655 INFO   params={'f0': 200.0001128783092, 'depth_max_db': -11.87594107740357, 'shelf_slope': 0.6000000000000001, 'f_lo': 234.80501385739478, 'depth_lo_db': -0.7601586830534365, 'res_hz': 1500.0005183642368, 'lp_mix': 0.31073377976049465, 'fc_floor': 5244.257867419391, 'p': 0.6000000000000001}
+2026-09-23 08:49:47,077 INFO Fitting DPA4006 (MEASURED / omni) …
+2026-09-23 08:49:48,202 INFO   done in 1.1s | train RMSE=0.934 dB | holdout RMSE=1.050 dB | DE success=False nit=70 fun=1.068751; LS success=True cost=273.284186
+2026-09-23 08:49:48,202 INFO   params={'f0': 11999.779228275584, 'depth_max_db': -23.999999999999996, 'shelf_slope': 3.9999999999999996, 'f_lo': 220.04488240060053, 'depth_lo_db': 0.010196904399641679, 'res_hz': 1500.0000000004873, 'lp_mix': 0.25911928521540845, 'fc_floor': 4960.287282411501, 'p': 0.6587703308851247}
+2026-09-23 08:49:50,466 INFO All fits complete in 57.0s
+2026-09-23 08:49:50,467 INFO MORNING_REPORT.md written
+2026-09-23 08:49:50,467 INFO Wrote MORNING_REPORT.md and reports/
+2026-09-23 08:50:07,014 INFO === mic_fitter run start ===
+2026-09-23 08:50:07,915 INFO MEASURED from Franco et al. Zenodo extract (17 mics, DOI 10.5281/zenodo.4633508). WAVs under /workspace/mic_fitter/data/zenodo. Angles held out: 45°, 135°.
+2026-09-23 08:50:07,915 INFO Mics to fit: ['ShureSM57', 'SchoepsCMC5UCardioid', 'NeumannU87AiCardioid', 'RoyerR121', 'ElectroVoiceRE20', 'AKGC414Cardioid', 'ShureSM58', 'SennheiserMD441', 'NeumannU87AiOmni', 'NeumannU87AiBidirect', 'AKGC414Omni', 'AKGC414Hyper', 'AKGC414Bidirect', 'SchoepsCMC5UOmni', 'SchoepsCMC5UBidirect', 'Coles4038', 'DPA4006']
+2026-09-23 08:50:07,915 INFO Fitting ShureSM57 (MEASURED / dynamic_cardioid) …
+2026-09-23 08:50:08,792 INFO   done in 0.9s | train RMSE=3.341 dB | holdout RMSE=2.848 dB | DE success=False nit=70 fun=11.444415; LS success=True cost=2927.565709
+2026-09-23 08:50:08,792 INFO   params={'f0': 200.00000000000003, 'depth_max_db': -23.999999999999996, 'shelf_slope': 1.1132513766017254, 'f_lo': 289.79044546409676, 'depth_lo_db': -0.9262662545479734, 'res_hz': 1500.0004099442817, 'lp_mix': 0.26829942508104715, 'fc_floor': 4672.535805865078, 'p': 0.8132753068527583}
+2026-09-23 08:50:11,404 INFO Fitting SchoepsCMC5UCardioid (MEASURED / sdc_cardioid) …
+2026-09-23 08:50:12,365 INFO   done in 1.0s | train RMSE=3.547 dB | holdout RMSE=4.316 dB | DE success=False nit=70 fun=12.908413; LS success=True cost=3298.226463
+2026-09-23 08:50:12,365 INFO   params={'f0': 200.00000000000003, 'depth_max_db': -16.086176399293713, 'shelf_slope': 0.6000000000000001, 'f_lo': 247.69816792900176, 'depth_lo_db': -0.920662157473726, 'res_hz': 1500.0000000000002, 'lp_mix': 0.2946662043675183, 'fc_floor': 7595.688064680623, 'p': 0.6214766830438848}
+2026-09-23 08:50:14,617 INFO Fitting NeumannU87AiCardioid (MEASURED / ldc_cardioid) …
+2026-09-23 08:50:15,494 INFO   done in 0.9s | train RMSE=3.401 dB | holdout RMSE=4.150 dB | DE success=False nit=70 fun=11.767683; LS success=True cost=3012.056366
+2026-09-23 08:50:15,495 INFO   params={'f0': 765.0274902653846, 'depth_max_db': -20.093301924875494, 'shelf_slope': 1.2972559132475152, 'f_lo': 209.53261099747354, 'depth_lo_db': 0.37675863755905176, 'res_hz': 1500.0000261755463, 'lp_mix': 0.2902997704353872, 'fc_floor': 5650.425132934155, 'p': 0.6022950754493743}
+2026-09-23 08:50:17,870 INFO Fitting RoyerR121 (MEASURED / fig8_ribbon) …
+2026-09-23 08:50:18,797 INFO   done in 0.9s | train RMSE=9.462 dB | holdout RMSE=3.911 dB | DE success=False nit=70 fun=89.967159; LS success=True cost=23010.196758
+2026-09-23 08:50:18,797 INFO   params={'f0': 200.0000002362417, 'depth_max_db': -17.831521473487285, 'shelf_slope': 0.6000000000000001, 'f_lo': 286.8110225914407, 'depth_lo_db': -1.1046230777093495, 'res_hz': 1500.0002041190194, 'lp_mix': 0.317183673001222, 'fc_floor': 5375.651747401621, 'p': 0.6000000000000001}
+2026-09-23 08:50:21,076 INFO Fitting ElectroVoiceRE20 (MEASURED / dynamic_cardioid) …
+2026-09-23 08:50:21,951 INFO   done in 0.9s | train RMSE=3.328 dB | holdout RMSE=3.532 dB | DE success=False nit=70 fun=11.251062; LS success=True cost=2880.197554
+2026-09-23 08:50:21,951 INFO   params={'f0': 1106.409831071917, 'depth_max_db': -23.999999999999996, 'shelf_slope': 0.6409255834061125, 'f_lo': 211.45618398367876, 'depth_lo_db': -0.2888168353815412, 'res_hz': 14128.495970523794, 'lp_mix': 0.27529514725933607, 'fc_floor': 3530.6539896163945, 'p': 0.9365045539975528}
+2026-09-23 08:50:24,368 INFO Fitting AKGC414Cardioid (MEASURED / ldc_cardioid) …
+2026-09-23 08:50:25,257 INFO   done in 0.9s | train RMSE=3.501 dB | holdout RMSE=3.318 dB | DE success=False nit=70 fun=12.424547; LS success=True cost=3180.168415
+2026-09-23 08:50:25,257 INFO   params={'f0': 363.3790361787889, 'depth_max_db': -18.534848059937737, 'shelf_slope': 1.463408226221397, 'f_lo': 219.73914572617107, 'depth_lo_db': 0.018758254659365065, 'res_hz': 1500.009731315695, 'lp_mix': 0.27418992584783775, 'fc_floor': 5874.955571009443, 'p': 0.6704385487789598}
+2026-09-23 08:50:27,529 INFO Fitting ShureSM58 (MEASURED / dynamic_cardioid) …
+2026-09-23 08:50:28,501 INFO   done in 1.0s | train RMSE=4.190 dB | holdout RMSE=4.801 dB | DE success=False nit=70 fun=17.776411; LS success=True cost=4548.895569
+2026-09-23 08:50:28,501 INFO   params={'f0': 200.00000000000003, 'depth_max_db': -23.999999999999996, 'shelf_slope': 0.6000000000000001, 'f_lo': 194.39755638106806, 'depth_lo_db': -0.38027718166945856, 'res_hz': 1500.6379521370686, 'lp_mix': 0.26929651396822984, 'fc_floor': 5364.713301406919, 'p': 0.7807139815483786}
+2026-09-23 08:50:31,035 INFO Fitting SennheiserMD441 (MEASURED / hypercardioid) …
+2026-09-23 08:50:31,965 INFO   done in 0.9s | train RMSE=3.275 dB | holdout RMSE=5.664 dB | DE success=False nit=70 fun=10.921157; LS success=True cost=2793.996413
+2026-09-23 08:50:31,965 INFO   params={'f0': 200.00104884992794, 'depth_max_db': -21.261527748576714, 'shelf_slope': 0.651182849036821, 'f_lo': 219.8475288973311, 'depth_lo_db': 0.00989414074661616, 'res_hz': 1500.002986319497, 'lp_mix': 0.2712688479112171, 'fc_floor': 5118.467525845489, 'p': 0.6000000000000001}
+2026-09-23 08:50:34,231 INFO Fitting NeumannU87AiOmni (MEASURED / omni) …
+2026-09-23 08:50:35,098 INFO   done in 0.9s | train RMSE=2.464 dB | holdout RMSE=2.319 dB | DE success=False nit=70 fun=6.242127; LS success=True cost=1597.948485
+2026-09-23 08:50:35,099 INFO   params={'f0': 10041.421197747917, 'depth_max_db': -19.20312521033122, 'shelf_slope': 11.41540546441811, 'f_lo': 262.91546121188117, 'depth_lo_db': -0.42275458527701676, 'res_hz': 2481.7455851748564, 'lp_mix': 0.26919653478007444, 'fc_floor': 6429.432581077348, 'p': 0.6000000000000001}
+2026-09-23 08:50:37,565 INFO Fitting NeumannU87AiBidirect (MEASURED / fig8) …
+2026-09-23 08:50:38,518 INFO   done in 1.0s | train RMSE=5.738 dB | holdout RMSE=2.626 dB | DE success=False nit=70 fun=33.177439; LS success=True cost=8491.207391
+2026-09-23 08:50:38,518 INFO   params={'f0': 3359.9029190977594, 'depth_max_db': -20.239629527365118, 'shelf_slope': 0.6000000000000001, 'f_lo': 239.2412999302356, 'depth_lo_db': -0.6873608850453116, 'res_hz': 1500.0000000003135, 'lp_mix': 0.3064159525692415, 'fc_floor': 4230.827546878981, 'p': 0.6000000000000001}
+2026-09-23 08:50:41,055 INFO Fitting AKGC414Omni (MEASURED / omni) …
+2026-09-23 08:50:41,945 INFO   done in 0.9s | train RMSE=2.988 dB | holdout RMSE=2.638 dB | DE success=False nit=70 fun=9.110504; LS success=True cost=2331.929258
+2026-09-23 08:50:41,945 INFO   params={'f0': 9807.16291900873, 'depth_max_db': -23.999999999999996, 'shelf_slope': 3.100012114160725, 'f_lo': 242.43564291432207, 'depth_lo_db': -0.34208209736199385, 'res_hz': 1500.0080162041681, 'lp_mix': 0.2832137377677979, 'fc_floor': 6002.42219953281, 'p': 0.6000000000000001}
+2026-09-23 08:50:44,435 INFO Fitting AKGC414Hyper (MEASURED / hypercardioid) …
+2026-09-23 08:50:45,310 INFO   done in 0.9s | train RMSE=3.659 dB | holdout RMSE=2.630 dB | DE success=False nit=70 fun=13.653874; LS success=True cost=3480.009711
+2026-09-23 08:50:45,310 INFO   params={'f0': 200.00000000000315, 'depth_max_db': -17.786634428706712, 'shelf_slope': 1.4793735187528014, 'f_lo': 223.29493413898527, 'depth_lo_db': -0.02844526970196577, 'res_hz': 1500.0001664193776, 'lp_mix': 0.3055629569964796, 'fc_floor': 5403.097363984535, 'p': 0.6000000000000001}
+2026-09-23 08:50:47,698 INFO Fitting AKGC414Bidirect (MEASURED / fig8) …
+2026-09-23 08:50:48,558 INFO   done in 0.9s | train RMSE=7.227 dB | holdout RMSE=2.746 dB | DE success=False nit=70 fun=52.619884; LS success=True cost=13455.776461
+2026-09-23 08:50:48,559 INFO   params={'f0': 200.0002859814414, 'depth_max_db': -17.79721112742918, 'shelf_slope': 0.6000000000000001, 'f_lo': 248.28390453272488, 'depth_lo_db': -0.9152270771256192, 'res_hz': 1500.0008216023655, 'lp_mix': 0.3276882351494259, 'fc_floor': 4693.456985436847, 'p': 0.6000000000000001}
+2026-09-23 08:50:50,808 INFO Fitting SchoepsCMC5UOmni (MEASURED / omni) …
+2026-09-23 08:50:51,681 INFO   done in 0.9s | train RMSE=1.031 dB | holdout RMSE=1.350 dB | DE success=False nit=70 fun=1.172212; LS success=True cost=300.066534
+2026-09-23 08:50:51,681 INFO   params={'f0': 10529.557321107039, 'depth_max_db': -22.312846297318863, 'shelf_slope': 4.757575588170816, 'f_lo': 224.1169462242109, 'depth_lo_db': -0.1257197256379913, 'res_hz': 5409.448041361462, 'lp_mix': 0.2523749471644026, 'fc_floor': 5244.871084191734, 'p': 0.6000000000000001}
+2026-09-23 08:50:54,058 INFO Fitting SchoepsCMC5UBidirect (MEASURED / fig8) …
+2026-09-23 08:50:54,987 INFO   done in 0.9s | train RMSE=4.125 dB | holdout RMSE=2.084 dB | DE success=False nit=70 fun=17.225503; LS success=True cost=4408.443139
+2026-09-23 08:50:54,987 INFO   params={'f0': 7638.243173231971, 'depth_max_db': -18.71106918016628, 'shelf_slope': 0.6000000000000001, 'f_lo': 192.58174346939623, 'depth_lo_db': -0.7575635781073159, 'res_hz': 1500.0000020933953, 'lp_mix': 0.27703300070917813, 'fc_floor': 3157.898040673983, 'p': 0.6000000000000001}
+2026-09-23 08:50:57,444 INFO Fitting Coles4038 (MEASURED / fig8_ribbon) …
+2026-09-23 08:50:58,372 INFO   done in 0.9s | train RMSE=6.194 dB | holdout RMSE=3.057 dB | DE success=False nit=70 fun=38.684272; LS success=True cost=9892.432004
+2026-09-23 08:50:58,372 INFO   params={'f0': 200.00003177605709, 'depth_max_db': -11.875142550740794, 'shelf_slope': 0.6000000000000001, 'f_lo': 235.1594229118391, 'depth_lo_db': -0.7602830802165925, 'res_hz': 1500.0007270249603, 'lp_mix': 0.3107442499725204, 'fc_floor': 5241.531433738029, 'p': 0.6000000000000001}
+2026-09-23 08:51:01,031 INFO Fitting DPA4006 (MEASURED / omni) …
+2026-09-23 08:51:02,010 INFO   done in 1.0s | train RMSE=0.874 dB | holdout RMSE=0.931 dB | DE success=False nit=70 fun=0.851471; LS success=True cost=217.919702
+2026-09-23 08:51:02,010 INFO   params={'f0': 11044.036356110752, 'depth_max_db': -17.12874911813715, 'shelf_slope': 8.190175905459276, 'f_lo': 219.98400886436144, 'depth_lo_db': 0.0035863408480218554, 'res_hz': 6797.162778604721, 'lp_mix': 0.25209998372183756, 'fc_floor': 4830.7413662843255, 'p': 0.6000000000000001}
+2026-09-23 08:51:04,426 INFO All fits complete in 57.4s
+2026-09-23 08:51:04,427 INFO MORNING_REPORT.md written
+2026-09-23 08:51:04,427 INFO Wrote MORNING_REPORT.md and reports/

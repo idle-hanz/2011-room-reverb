@@ -1,0 +1,52 @@
+{
+  "schema": "mic_fitter.preset.v2",
+  "mic_id": "proxy_omni_sdc",
+  "display_name": "ASSUMED Omni SDC (measurement-ish)",
+  "honesty": "ASSUMED",
+  "family": "omni",
+  "source": "synthetic_proxy_curves_mimicking_published_off_axis_shapes",
+  "model": "dual_shelf_plus_soft_one_pole",
+  "angle_law": "0.5*(1-cos(theta))^p",
+  "params": {
+    "f0": 4813.534566186179,
+    "depth_max_db": -8.558743238573982,
+    "shelf_slope": 2.1221079218018932,
+    "f_lo": 220.32504763232865,
+    "depth_lo_db": 0.05223179293143216,
+    "res_hz": 6803.973997992565,
+    "lp_mix": 0.25174079469805555,
+    "fc_floor": 5052.918022258847,
+    "p": 0.9177980304012775
+  },
+  "metrics": {
+    "train_rmse_db": 0.1596334269347539,
+    "holdout_rmse_db": 0.17460056002916935,
+    "train_mse_db": 0.02548283099493341,
+    "holdout_mse_db": 0.030485355562499566,
+    "n_train_angles": 8,
+    "n_holdout_angles": 2,
+    "train_angles_deg": [
+      0.0,
+      15.0,
+      30.0,
+      60.0,
+      90.0,
+      120.0,
+      150.0,
+      180.0
+    ],
+    "holdout_angles_deg": [
+      45.0,
+      135.0
+    ],
+    "freq_range_hz": [
+      20.0,
+      16000.0
+    ]
+  },
+  "notes": "Structure LP / room engine path is SEPARATE \u2014 these presets are off-axis magnitude colour only. Fits are ASSUMED when honesty=ASSUMED. v2: dual shelf (high + mild low) + soft one-pole; shelves preferred over LP.",
+  "fit": {
+    "success": true,
+    "message": "DE success=False nit=40 fun=0.097364; LS success=True cost=24.538192"
+  }
+}

@@ -1,0 +1,41 @@
+{
+  "id": "absorber_panel_2in",
+  "display_name": "Absorber panel (2 in fiberglass)",
+  "candidate": "A",
+  "model": "dual_high_shelf",
+  "rmse_r_db": 0.2712888801446066,
+  "absorb_l1": 0.024407368221129704,
+  "candidate_rmse": {
+    "A": 0.2712888801446066,
+    "B": 0.4522619418623795
+  },
+  "params": {
+    "r0_db": -1.2525801037758997,
+    "f0": 328.7805061085933,
+    "depth_db": -10.313100082085118,
+    "shelf_slope": 5.966252587335083,
+    "f0_hi": 6912.017413172723,
+    "depth_hi_db": -1.601788963810436,
+    "shelf_slope_hi": 11.999999999999998
+  },
+  "roles": [
+    "wall"
+  ],
+  "banned_on": [
+    "floor",
+    "ceiling"
+  ],
+  "absorb": [
+    0.28,
+    0.7,
+    0.88,
+    0.92,
+    0.94,
+    0.92,
+    0.9500000000000001
+  ],
+  "extras": {
+    "notes": "High \u03b1 mid\u2013HF; wall treatment.",
+    "prefer_lf_candidate": true
+  }
+}

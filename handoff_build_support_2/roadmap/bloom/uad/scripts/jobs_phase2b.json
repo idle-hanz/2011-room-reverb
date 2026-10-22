@@ -1,0 +1,2359 @@
+[
+ {
+  "id": "b_fc1_1",
+  "plugin": "uaudio_fairchild_670",
+  "params": {
+   "l_input": 0.0,
+   "r_input": 0.0,
+   "l_thresh": 5.0,
+   "r_thresh": 5.0,
+   "l_timecnst": 1.0,
+   "r_timecnst": 1.0
+  },
+  "sig": {
+   "kind": "burst",
+   "probe_db": -29,
+   "burst_db": -9,
+   "pre_s": 1.0,
+   "burst_s": 1.0,
+   "tail_s": 3
+  }
+ },
+ {
+  "id": "b_fc2_1",
+  "plugin": "uaudio_fairchild_670",
+  "params": {
+   "l_input": 0.0,
+   "r_input": 0.0,
+   "l_thresh": 5.0,
+   "r_thresh": 5.0,
+   "l_timecnst": 2.0,
+   "r_timecnst": 2.0
+  },
+  "sig": {
+   "kind": "burst",
+   "probe_db": -29,
+   "burst_db": -9,
+   "pre_s": 1.0,
+   "burst_s": 1.0,
+   "tail_s": 5
+  }
+ },
+ {
+  "id": "b_fc3_1",
+  "plugin": "uaudio_fairchild_670",
+  "params": {
+   "l_input": 0.0,
+   "r_input": 0.0,
+   "l_thresh": 5.0,
+   "r_thresh": 5.0,
+   "l_timecnst": 3.0,
+   "r_timecnst": 3.0
+  },
+  "sig": {
+   "kind": "burst",
+   "probe_db": -29,
+   "burst_db": -9,
+   "pre_s": 1.0,
+   "burst_s": 1.0,
+   "tail_s": 10
+  }
+ },
+ {
+  "id": "b_fc4_1",
+  "plugin": "uaudio_fairchild_670",
+  "params": {
+   "l_input": 0.0,
+   "r_input": 0.0,
+   "l_thresh": 5.0,
+   "r_thresh": 5.0,
+   "l_timecnst": 4.0,
+   "r_timecnst": 4.0
+  },
+  "sig": {
+   "kind": "burst",
+   "probe_db": -29,
+   "burst_db": -9,
+   "pre_s": 1.0,
+   "burst_s": 1.0,
+   "tail_s": 16
+  }
+ },
+ {
+  "id": "b_fc5_0.01",
+  "plugin": "uaudio_fairchild_670",
+  "params": {
+   "l_input": 0.0,
+   "r_input": 0.0,
+   "l_thresh": 5.0,
+   "r_thresh": 5.0,
+   "l_timecnst": 5.0,
+   "r_timecnst": 5.0
+  },
+  "sig": {
+   "kind": "burst",
+   "probe_db": -29,
+   "burst_db": -9,
+   "pre_s": 1.0,
+   "burst_s": 0.01,
+   "tail_s": 22
+  }
+ },
+ {
+  "id": "b_fc5_0.05",
+  "plugin": "uaudio_fairchild_670",
+  "params": {
+   "l_input": 0.0,
+   "r_input": 0.0,
+   "l_thresh": 5.0,
+   "r_thresh": 5.0,
+   "l_timecnst": 5.0,
+   "r_timecnst": 5.0
+  },
+  "sig": {
+   "kind": "burst",
+   "probe_db": -29,
+   "burst_db": -9,
+   "pre_s": 1.0,
+   "burst_s": 0.05,
+   "tail_s": 22
+  }
+ },
+ {
+  "id": "b_fc5_0.3",
+  "plugin": "uaudio_fairchild_670",
+  "params": {
+   "l_input": 0.0,
+   "r_input": 0.0,
+   "l_thresh": 5.0,
+   "r_thresh": 5.0,
+   "l_timecnst": 5.0,
+   "r_timecnst": 5.0
+  },
+  "sig": {
+   "kind": "burst",
+   "probe_db": -29,
+   "burst_db": -9,
+   "pre_s": 1.0,
+   "burst_s": 0.3,
+   "tail_s": 22
+  }
+ },
+ {
+  "id": "b_fc5_1",
+  "plugin": "uaudio_fairchild_670",
+  "params": {
+   "l_input": 0.0,
+   "r_input": 0.0,
+   "l_thresh": 5.0,
+   "r_thresh": 5.0,
+   "l_timecnst": 5.0,
+   "r_timecnst": 5.0
+  },
+  "sig": {
+   "kind": "burst",
+   "probe_db": -29,
+   "burst_db": -9,
+   "pre_s": 1.0,
+   "burst_s": 1,
+   "tail_s": 22
+  }
+ },
+ {
+  "id": "b_fc5_3",
+  "plugin": "uaudio_fairchild_670",
+  "params": {
+   "l_input": 0.0,
+   "r_input": 0.0,
+   "l_thresh": 5.0,
+   "r_thresh": 5.0,
+   "l_timecnst": 5.0,
+   "r_timecnst": 5.0
+  },
+  "sig": {
+   "kind": "burst",
+   "probe_db": -29,
+   "burst_db": -9,
+   "pre_s": 1.0,
+   "burst_s": 3,
+   "tail_s": 22
+  }
+ },
+ {
+  "id": "b_fc5_10",
+  "plugin": "uaudio_fairchild_670",
+  "params": {
+   "l_input": 0.0,
+   "r_input": 0.0,
+   "l_thresh": 5.0,
+   "r_thresh": 5.0,
+   "l_timecnst": 5.0,
+   "r_timecnst": 5.0
+  },
+  "sig": {
+   "kind": "burst",
+   "probe_db": -29,
+   "burst_db": -9,
+   "pre_s": 1.0,
+   "burst_s": 10,
+   "tail_s": 22
+  }
+ },
+ {
+  "id": "b_fc6_0.01",
+  "plugin": "uaudio_fairchild_670",
+  "params": {
+   "l_input": 0.0,
+   "r_input": 0.0,
+   "l_thresh": 5.0,
+   "r_thresh": 5.0,
+   "l_timecnst": 6.0,
+   "r_timecnst": 6.0
+  },
+  "sig": {
+   "kind": "burst",
+   "probe_db": -29,
+   "burst_db": -9,
+   "pre_s": 1.0,
+   "burst_s": 0.01,
+   "tail_s": 45
+  }
+ },
+ {
+  "id": "b_fc6_0.3",
+  "plugin": "uaudio_fairchild_670",
+  "params": {
+   "l_input": 0.0,
+   "r_input": 0.0,
+   "l_thresh": 5.0,
+   "r_thresh": 5.0,
+   "l_timecnst": 6.0,
+   "r_timecnst": 6.0
+  },
+  "sig": {
+   "kind": "burst",
+   "probe_db": -29,
+   "burst_db": -9,
+   "pre_s": 1.0,
+   "burst_s": 0.3,
+   "tail_s": 45
+  }
+ },
+ {
+  "id": "b_fc6_1",
+  "plugin": "uaudio_fairchild_670",
+  "params": {
+   "l_input": 0.0,
+   "r_input": 0.0,
+   "l_thresh": 5.0,
+   "r_thresh": 5.0,
+   "l_timecnst": 6.0,
+   "r_timecnst": 6.0
+  },
+  "sig": {
+   "kind": "burst",
+   "probe_db": -29,
+   "burst_db": -9,
+   "pre_s": 1.0,
+   "burst_s": 1,
+   "tail_s": 45
+  }
+ },
+ {
+  "id": "b_fc6_3",
+  "plugin": "uaudio_fairchild_670",
+  "params": {
+   "l_input": 0.0,
+   "r_input": 0.0,
+   "l_thresh": 5.0,
+   "r_thresh": 5.0,
+   "l_timecnst": 6.0,
+   "r_timecnst": 6.0
+  },
+  "sig": {
+   "kind": "burst",
+   "probe_db": -29,
+   "burst_db": -9,
+   "pre_s": 1.0,
+   "burst_s": 3,
+   "tail_s": 45
+  }
+ },
+ {
+  "id": "b_fc6_10",
+  "plugin": "uaudio_fairchild_670",
+  "params": {
+   "l_input": 0.0,
+   "r_input": 0.0,
+   "l_thresh": 5.0,
+   "r_thresh": 5.0,
+   "l_timecnst": 6.0,
+   "r_timecnst": 6.0
+  },
+  "sig": {
+   "kind": "burst",
+   "probe_db": -29,
+   "burst_db": -9,
+   "pre_s": 1.0,
+   "burst_s": 10,
+   "tail_s": 45
+  }
+ },
+ {
+  "id": "b_fc6_20",
+  "plugin": "uaudio_fairchild_670",
+  "params": {
+   "l_input": 0.0,
+   "r_input": 0.0,
+   "l_thresh": 5.0,
+   "r_thresh": 5.0,
+   "l_timecnst": 6.0,
+   "r_timecnst": 6.0
+  },
+  "sig": {
+   "kind": "burst",
+   "probe_db": -29,
+   "burst_db": -9,
+   "pre_s": 1.0,
+   "burst_s": 20,
+   "tail_s": 45
+  }
+ },
+ {
+  "id": "b_sgA_0.05",
+  "plugin": "uaudio_ssl_g_bus_compressor",
+  "params": {
+   "thresh": 0.0,
+   "make_up": 0.0,
+   "ratio": "4:1",
+   "attack": 10.0,
+   "release": "Auto"
+  },
+  "sig": {
+   "kind": "burst",
+   "probe_db": -31,
+   "burst_db": -11,
+   "pre_s": 1.0,
+   "burst_s": 0.05,
+   "tail_s": 30
+  }
+ },
+ {
+  "id": "b_sgA_0.3",
+  "plugin": "uaudio_ssl_g_bus_compressor",
+  "params": {
+   "thresh": 0.0,
+   "make_up": 0.0,
+   "ratio": "4:1",
+   "attack": 10.0,
+   "release": "Auto"
+  },
+  "sig": {
+   "kind": "burst",
+   "probe_db": -31,
+   "burst_db": -11,
+   "pre_s": 1.0,
+   "burst_s": 0.3,
+   "tail_s": 30
+  }
+ },
+ {
+  "id": "b_sgA_1",
+  "plugin": "uaudio_ssl_g_bus_compressor",
+  "params": {
+   "thresh": 0.0,
+   "make_up": 0.0,
+   "ratio": "4:1",
+   "attack": 10.0,
+   "release": "Auto"
+  },
+  "sig": {
+   "kind": "burst",
+   "probe_db": -31,
+   "burst_db": -11,
+   "pre_s": 1.0,
+   "burst_s": 1,
+   "tail_s": 30
+  }
+ },
+ {
+  "id": "b_sgA_3",
+  "plugin": "uaudio_ssl_g_bus_compressor",
+  "params": {
+   "thresh": 0.0,
+   "make_up": 0.0,
+   "ratio": "4:1",
+   "attack": 10.0,
+   "release": "Auto"
+  },
+  "sig": {
+   "kind": "burst",
+   "probe_db": -31,
+   "burst_db": -11,
+   "pre_s": 1.0,
+   "burst_s": 3,
+   "tail_s": 30
+  }
+ },
+ {
+  "id": "b_sgA_8",
+  "plugin": "uaudio_ssl_g_bus_compressor",
+  "params": {
+   "thresh": 0.0,
+   "make_up": 0.0,
+   "ratio": "4:1",
+   "attack": 10.0,
+   "release": "Auto"
+  },
+  "sig": {
+   "kind": "burst",
+   "probe_db": -31,
+   "burst_db": -11,
+   "pre_s": 1.0,
+   "burst_s": 8,
+   "tail_s": 30
+  }
+ },
+ {
+  "id": "b_sgA_20",
+  "plugin": "uaudio_ssl_g_bus_compressor",
+  "params": {
+   "thresh": 0.0,
+   "make_up": 0.0,
+   "ratio": "4:1",
+   "attack": 10.0,
+   "release": "Auto"
+  },
+  "sig": {
+   "kind": "burst",
+   "probe_db": -31,
+   "burst_db": -11,
+   "pre_s": 1.0,
+   "burst_s": 20,
+   "tail_s": 30
+  }
+ },
+ {
+  "id": "b_sgF_0.1",
+  "plugin": "uaudio_ssl_g_bus_compressor",
+  "params": {
+   "thresh": 0.0,
+   "make_up": 0.0,
+   "ratio": "4:1",
+   "attack": 10.0,
+   "release": "0.1 s"
+  },
+  "sig": {
+   "kind": "burst",
+   "probe_db": -31,
+   "burst_db": -11,
+   "pre_s": 1.0,
+   "burst_s": 1.0,
+   "tail_s": 6
+  }
+ },
+ {
+  "id": "b_sgF_0.3",
+  "plugin": "uaudio_ssl_g_bus_compressor",
+  "params": {
+   "thresh": 0.0,
+   "make_up": 0.0,
+   "ratio": "4:1",
+   "attack": 10.0,
+   "release": "0.3 s"
+  },
+  "sig": {
+   "kind": "burst",
+   "probe_db": -31,
+   "burst_db": -11,
+   "pre_s": 1.0,
+   "burst_s": 1.0,
+   "tail_s": 6
+  }
+ },
+ {
+  "id": "b_sgF_0.6",
+  "plugin": "uaudio_ssl_g_bus_compressor",
+  "params": {
+   "thresh": 0.0,
+   "make_up": 0.0,
+   "ratio": "4:1",
+   "attack": 10.0,
+   "release": "0.6 s"
+  },
+  "sig": {
+   "kind": "burst",
+   "probe_db": -31,
+   "burst_db": -11,
+   "pre_s": 1.0,
+   "burst_s": 1.0,
+   "tail_s": 6
+  }
+ },
+ {
+  "id": "b_sgF_1.2",
+  "plugin": "uaudio_ssl_g_bus_compressor",
+  "params": {
+   "thresh": 0.0,
+   "make_up": 0.0,
+   "ratio": "4:1",
+   "attack": 10.0,
+   "release": "1.2 s"
+  },
+  "sig": {
+   "kind": "burst",
+   "probe_db": -31,
+   "burst_db": -11,
+   "pre_s": 1.0,
+   "burst_s": 1.0,
+   "tail_s": 6
+  }
+ },
+ {
+  "id": "a_sg10_-21",
+  "plugin": "uaudio_ssl_g_bus_compressor",
+  "params": {
+   "thresh": 0.0,
+   "make_up": 0.0,
+   "ratio": "4:1",
+   "attack": 10.0,
+   "release": "0.1 s"
+  },
+  "sig": {
+   "kind": "burst",
+   "probe_db": -41,
+   "burst_db": -21,
+   "pre_s": 1.0,
+   "burst_s": 0.3,
+   "tail_s": 1.0
+  }
+ },
+ {
+  "id": "a_sg10_-14",
+  "plugin": "uaudio_ssl_g_bus_compressor",
+  "params": {
+   "thresh": 0.0,
+   "make_up": 0.0,
+   "ratio": "4:1",
+   "attack": 10.0,
+   "release": "0.1 s"
+  },
+  "sig": {
+   "kind": "burst",
+   "probe_db": -41,
+   "burst_db": -14,
+   "pre_s": 1.0,
+   "burst_s": 0.3,
+   "tail_s": 1.0
+  }
+ },
+ {
+  "id": "a_sg10_-6",
+  "plugin": "uaudio_ssl_g_bus_compressor",
+  "params": {
+   "thresh": 0.0,
+   "make_up": 0.0,
+   "ratio": "4:1",
+   "attack": 10.0,
+   "release": "0.1 s"
+  },
+  "sig": {
+   "kind": "burst",
+   "probe_db": -41,
+   "burst_db": -6,
+   "pre_s": 1.0,
+   "burst_s": 0.3,
+   "tail_s": 1.0
+  }
+ },
+ {
+  "id": "a_sg30_-21",
+  "plugin": "uaudio_ssl_g_bus_compressor",
+  "params": {
+   "thresh": 0.0,
+   "make_up": 0.0,
+   "ratio": "4:1",
+   "attack": 30.0,
+   "release": "0.1 s"
+  },
+  "sig": {
+   "kind": "burst",
+   "probe_db": -41,
+   "burst_db": -21,
+   "pre_s": 1.0,
+   "burst_s": 0.4,
+   "tail_s": 1.0
+  }
+ },
+ {
+  "id": "a_sg30_-14",
+  "plugin": "uaudio_ssl_g_bus_compressor",
+  "params": {
+   "thresh": 0.0,
+   "make_up": 0.0,
+   "ratio": "4:1",
+   "attack": 30.0,
+   "release": "0.1 s"
+  },
+  "sig": {
+   "kind": "burst",
+   "probe_db": -41,
+   "burst_db": -14,
+   "pre_s": 1.0,
+   "burst_s": 0.4,
+   "tail_s": 1.0
+  }
+ },
+ {
+  "id": "a_sg30_-6",
+  "plugin": "uaudio_ssl_g_bus_compressor",
+  "params": {
+   "thresh": 0.0,
+   "make_up": 0.0,
+   "ratio": "4:1",
+   "attack": 30.0,
+   "release": "0.1 s"
+  },
+  "sig": {
+   "kind": "burst",
+   "probe_db": -41,
+   "burst_db": -6,
+   "pre_s": 1.0,
+   "burst_s": 0.4,
+   "tail_s": 1.0
+  }
+ },
+ {
+  "id": "b_la2as_0.05",
+  "plugin": "uaudio_teletronix_la-2a_silver",
+  "params": {
+   "peak_reduct": "50",
+   "gain": "30",
+   "comp_limit": "Comp"
+  },
+  "sig": {
+   "kind": "burst",
+   "probe_db": -32,
+   "burst_db": -12,
+   "pre_s": 1.0,
+   "burst_s": 0.05,
+   "tail_s": 25
+  }
+ },
+ {
+  "id": "b_la2as_0.3",
+  "plugin": "uaudio_teletronix_la-2a_silver",
+  "params": {
+   "peak_reduct": "50",
+   "gain": "30",
+   "comp_limit": "Comp"
+  },
+  "sig": {
+   "kind": "burst",
+   "probe_db": -32,
+   "burst_db": -12,
+   "pre_s": 1.0,
+   "burst_s": 0.3,
+   "tail_s": 25
+  }
+ },
+ {
+  "id": "b_la2as_1",
+  "plugin": "uaudio_teletronix_la-2a_silver",
+  "params": {
+   "peak_reduct": "50",
+   "gain": "30",
+   "comp_limit": "Comp"
+  },
+  "sig": {
+   "kind": "burst",
+   "probe_db": -32,
+   "burst_db": -12,
+   "pre_s": 1.0,
+   "burst_s": 1,
+   "tail_s": 25
+  }
+ },
+ {
+  "id": "b_la2as_5",
+  "plugin": "uaudio_teletronix_la-2a_silver",
+  "params": {
+   "peak_reduct": "50",
+   "gain": "30",
+   "comp_limit": "Comp"
+  },
+  "sig": {
+   "kind": "burst",
+   "probe_db": -32,
+   "burst_db": -12,
+   "pre_s": 1.0,
+   "burst_s": 5,
+   "tail_s": 25
+  }
+ },
+ {
+  "id": "b_la2as_20",
+  "plugin": "uaudio_teletronix_la-2a_silver",
+  "params": {
+   "peak_reduct": "50",
+   "gain": "30",
+   "comp_limit": "Comp"
+  },
+  "sig": {
+   "kind": "burst",
+   "probe_db": -32,
+   "burst_db": -12,
+   "pre_s": 1.0,
+   "burst_s": 20,
+   "tail_s": 25
+  }
+ },
+ {
+  "id": "b_la2ag_0.05",
+  "plugin": "uaudio_teletronix_la-2a_gray",
+  "params": {
+   "peak_reduct": "50",
+   "gain": "30",
+   "comp_limit": "Comp"
+  },
+  "sig": {
+   "kind": "burst",
+   "probe_db": -37,
+   "burst_db": -17,
+   "pre_s": 1.0,
+   "burst_s": 0.05,
+   "tail_s": 25
+  }
+ },
+ {
+  "id": "b_la2ag_0.3",
+  "plugin": "uaudio_teletronix_la-2a_gray",
+  "params": {
+   "peak_reduct": "50",
+   "gain": "30",
+   "comp_limit": "Comp"
+  },
+  "sig": {
+   "kind": "burst",
+   "probe_db": -37,
+   "burst_db": -17,
+   "pre_s": 1.0,
+   "burst_s": 0.3,
+   "tail_s": 25
+  }
+ },
+ {
+  "id": "b_la2ag_1",
+  "plugin": "uaudio_teletronix_la-2a_gray",
+  "params": {
+   "peak_reduct": "50",
+   "gain": "30",
+   "comp_limit": "Comp"
+  },
+  "sig": {
+   "kind": "burst",
+   "probe_db": -37,
+   "burst_db": -17,
+   "pre_s": 1.0,
+   "burst_s": 1,
+   "tail_s": 25
+  }
+ },
+ {
+  "id": "b_la2ag_5",
+  "plugin": "uaudio_teletronix_la-2a_gray",
+  "params": {
+   "peak_reduct": "50",
+   "gain": "30",
+   "comp_limit": "Comp"
+  },
+  "sig": {
+   "kind": "burst",
+   "probe_db": -37,
+   "burst_db": -17,
+   "pre_s": 1.0,
+   "burst_s": 5,
+   "tail_s": 25
+  }
+ },
+ {
+  "id": "b_la2ag_20",
+  "plugin": "uaudio_teletronix_la-2a_gray",
+  "params": {
+   "peak_reduct": "50",
+   "gain": "30",
+   "comp_limit": "Comp"
+  },
+  "sig": {
+   "kind": "burst",
+   "probe_db": -37,
+   "burst_db": -17,
+   "pre_s": 1.0,
+   "burst_s": 20,
+   "tail_s": 25
+  }
+ },
+ {
+  "id": "b_la2_0.05",
+  "plugin": "uaudio_teletronix_la-2",
+  "params": {
+   "peak_reduct": "50",
+   "gain": "30"
+  },
+  "sig": {
+   "kind": "burst",
+   "probe_db": -27,
+   "burst_db": -7,
+   "pre_s": 1.0,
+   "burst_s": 0.05,
+   "tail_s": 25
+  }
+ },
+ {
+  "id": "b_la2_0.3",
+  "plugin": "uaudio_teletronix_la-2",
+  "params": {
+   "peak_reduct": "50",
+   "gain": "30"
+  },
+  "sig": {
+   "kind": "burst",
+   "probe_db": -27,
+   "burst_db": -7,
+   "pre_s": 1.0,
+   "burst_s": 0.3,
+   "tail_s": 25
+  }
+ },
+ {
+  "id": "b_la2_1",
+  "plugin": "uaudio_teletronix_la-2",
+  "params": {
+   "peak_reduct": "50",
+   "gain": "30"
+  },
+  "sig": {
+   "kind": "burst",
+   "probe_db": -27,
+   "burst_db": -7,
+   "pre_s": 1.0,
+   "burst_s": 1,
+   "tail_s": 25
+  }
+ },
+ {
+  "id": "b_la2_5",
+  "plugin": "uaudio_teletronix_la-2",
+  "params": {
+   "peak_reduct": "50",
+   "gain": "30"
+  },
+  "sig": {
+   "kind": "burst",
+   "probe_db": -27,
+   "burst_db": -7,
+   "pre_s": 1.0,
+   "burst_s": 5,
+   "tail_s": 25
+  }
+ },
+ {
+  "id": "b_la2_20",
+  "plugin": "uaudio_teletronix_la-2",
+  "params": {
+   "peak_reduct": "50",
+   "gain": "30"
+  },
+  "sig": {
+   "kind": "burst",
+   "probe_db": -27,
+   "burst_db": -7,
+   "pre_s": 1.0,
+   "burst_s": 20,
+   "tail_s": 25
+  }
+ },
+ {
+  "id": "b_la3a_0.05",
+  "plugin": "uaudio_la3a",
+  "params": {
+   "peak_reduction": 5.0,
+   "gain": 5.0
+  },
+  "sig": {
+   "kind": "burst",
+   "probe_db": -29,
+   "burst_db": -9,
+   "pre_s": 1.0,
+   "burst_s": 0.05,
+   "tail_s": 25
+  }
+ },
+ {
+  "id": "b_la3a_0.3",
+  "plugin": "uaudio_la3a",
+  "params": {
+   "peak_reduction": 5.0,
+   "gain": 5.0
+  },
+  "sig": {
+   "kind": "burst",
+   "probe_db": -29,
+   "burst_db": -9,
+   "pre_s": 1.0,
+   "burst_s": 0.3,
+   "tail_s": 25
+  }
+ },
+ {
+  "id": "b_la3a_1",
+  "plugin": "uaudio_la3a",
+  "params": {
+   "peak_reduction": 5.0,
+   "gain": 5.0
+  },
+  "sig": {
+   "kind": "burst",
+   "probe_db": -29,
+   "burst_db": -9,
+   "pre_s": 1.0,
+   "burst_s": 1,
+   "tail_s": 25
+  }
+ },
+ {
+  "id": "b_la3a_5",
+  "plugin": "uaudio_la3a",
+  "params": {
+   "peak_reduction": 5.0,
+   "gain": 5.0
+  },
+  "sig": {
+   "kind": "burst",
+   "probe_db": -29,
+   "burst_db": -9,
+   "pre_s": 1.0,
+   "burst_s": 5,
+   "tail_s": 25
+  }
+ },
+ {
+  "id": "b_la3a_20",
+  "plugin": "uaudio_la3a",
+  "params": {
+   "peak_reduction": 5.0,
+   "gain": 5.0
+  },
+  "sig": {
+   "kind": "burst",
+   "probe_db": -29,
+   "burst_db": -9,
+   "pre_s": 1.0,
+   "burst_s": 20,
+   "tail_s": 25
+  }
+ },
+ {
+  "id": "st_ln_in40",
+  "plugin": "uaudio_ua_1176ln_rev_e",
+  "params": {
+   "input": -40.0,
+   "output": -20.0,
+   "ratio": "4:1",
+   "attack": "4.00",
+   "release": 7.0
+  },
+  "sig": {
+   "kind": "stair",
+   "levels": [
+    -60,
+    -58,
+    -56,
+    -54,
+    -52,
+    -50,
+    -48,
+    -46,
+    -44,
+    -42,
+    -40,
+    -38,
+    -36,
+    -34,
+    -32,
+    -30,
+    -28,
+    -26,
+    -24,
+    -22,
+    -20,
+    -18,
+    -16,
+    -14,
+    -12,
+    -10,
+    -8,
+    -6,
+    -4,
+    -2,
+    0,
+    2,
+    4,
+    6,
+    8,
+    10
+   ],
+   "step_s": 1.0
+  }
+ },
+ {
+  "id": "b_ln_r1",
+  "plugin": "uaudio_ua_1176ln_rev_e",
+  "params": {
+   "input": -40.0,
+   "output": -20.0,
+   "ratio": "4:1",
+   "attack": "4.00",
+   "release": 1.0
+  },
+  "sig": {
+   "kind": "burst",
+   "probe_db": -27,
+   "burst_db": -7,
+   "pre_s": 1.0,
+   "burst_s": 0.5,
+   "tail_s": 5
+  }
+ },
+ {
+  "id": "b_ln_r2",
+  "plugin": "uaudio_ua_1176ln_rev_e",
+  "params": {
+   "input": -40.0,
+   "output": -20.0,
+   "ratio": "4:1",
+   "attack": "4.00",
+   "release": 2.0
+  },
+  "sig": {
+   "kind": "burst",
+   "probe_db": -27,
+   "burst_db": -7,
+   "pre_s": 1.0,
+   "burst_s": 0.5,
+   "tail_s": 5
+  }
+ },
+ {
+  "id": "b_ln_r3",
+  "plugin": "uaudio_ua_1176ln_rev_e",
+  "params": {
+   "input": -40.0,
+   "output": -20.0,
+   "ratio": "4:1",
+   "attack": "4.00",
+   "release": 3.0
+  },
+  "sig": {
+   "kind": "burst",
+   "probe_db": -27,
+   "burst_db": -7,
+   "pre_s": 1.0,
+   "burst_s": 0.5,
+   "tail_s": 5
+  }
+ },
+ {
+  "id": "b_ln_r4",
+  "plugin": "uaudio_ua_1176ln_rev_e",
+  "params": {
+   "input": -40.0,
+   "output": -20.0,
+   "ratio": "4:1",
+   "attack": "4.00",
+   "release": 4.0
+  },
+  "sig": {
+   "kind": "burst",
+   "probe_db": -27,
+   "burst_db": -7,
+   "pre_s": 1.0,
+   "burst_s": 0.5,
+   "tail_s": 5
+  }
+ },
+ {
+  "id": "b_ln_r5",
+  "plugin": "uaudio_ua_1176ln_rev_e",
+  "params": {
+   "input": -40.0,
+   "output": -20.0,
+   "ratio": "4:1",
+   "attack": "4.00",
+   "release": 5.0
+  },
+  "sig": {
+   "kind": "burst",
+   "probe_db": -27,
+   "burst_db": -7,
+   "pre_s": 1.0,
+   "burst_s": 0.5,
+   "tail_s": 5
+  }
+ },
+ {
+  "id": "b_ln_r6",
+  "plugin": "uaudio_ua_1176ln_rev_e",
+  "params": {
+   "input": -40.0,
+   "output": -20.0,
+   "ratio": "4:1",
+   "attack": "4.00",
+   "release": 6.0
+  },
+  "sig": {
+   "kind": "burst",
+   "probe_db": -27,
+   "burst_db": -7,
+   "pre_s": 1.0,
+   "burst_s": 0.5,
+   "tail_s": 5
+  }
+ },
+ {
+  "id": "b_ln_r7",
+  "plugin": "uaudio_ua_1176ln_rev_e",
+  "params": {
+   "input": -40.0,
+   "output": -20.0,
+   "ratio": "4:1",
+   "attack": "4.00",
+   "release": 7.0
+  },
+  "sig": {
+   "kind": "burst",
+   "probe_db": -27,
+   "burst_db": -7,
+   "pre_s": 1.0,
+   "burst_s": 0.5,
+   "tail_s": 5
+  }
+ },
+ {
+  "id": "b_ln_r4_0.05",
+  "plugin": "uaudio_ua_1176ln_rev_e",
+  "params": {
+   "input": -40.0,
+   "output": -20.0,
+   "ratio": "4:1",
+   "attack": "4.00",
+   "release": 4.0
+  },
+  "sig": {
+   "kind": "burst",
+   "probe_db": -27,
+   "burst_db": -7,
+   "pre_s": 1.0,
+   "burst_s": 0.05,
+   "tail_s": 5
+  }
+ },
+ {
+  "id": "b_ln_r4_3",
+  "plugin": "uaudio_ua_1176ln_rev_e",
+  "params": {
+   "input": -40.0,
+   "output": -20.0,
+   "ratio": "4:1",
+   "attack": "4.00",
+   "release": 4.0
+  },
+  "sig": {
+   "kind": "burst",
+   "probe_db": -27,
+   "burst_db": -7,
+   "pre_s": 1.0,
+   "burst_s": 3,
+   "tail_s": 5
+  }
+ },
+ {
+  "id": "st_ra_in40",
+  "plugin": "uaudio_ua_1176_rev_a",
+  "params": {
+   "input": -40.0,
+   "output": -20.0,
+   "ratio": "4:1",
+   "attack": "4.00",
+   "release": 7.0
+  },
+  "sig": {
+   "kind": "stair",
+   "levels": [
+    -60,
+    -58,
+    -56,
+    -54,
+    -52,
+    -50,
+    -48,
+    -46,
+    -44,
+    -42,
+    -40,
+    -38,
+    -36,
+    -34,
+    -32,
+    -30,
+    -28,
+    -26,
+    -24,
+    -22,
+    -20,
+    -18,
+    -16,
+    -14,
+    -12,
+    -10,
+    -8,
+    -6,
+    -4,
+    -2,
+    0,
+    2,
+    4,
+    6,
+    8,
+    10
+   ],
+   "step_s": 1.0
+  }
+ },
+ {
+  "id": "b_ra_r1",
+  "plugin": "uaudio_ua_1176_rev_a",
+  "params": {
+   "input": -40.0,
+   "output": -20.0,
+   "ratio": "4:1",
+   "attack": "4.00",
+   "release": 1.0
+  },
+  "sig": {
+   "kind": "burst",
+   "probe_db": -27,
+   "burst_db": -7,
+   "pre_s": 1.0,
+   "burst_s": 0.5,
+   "tail_s": 5
+  }
+ },
+ {
+  "id": "b_ra_r2",
+  "plugin": "uaudio_ua_1176_rev_a",
+  "params": {
+   "input": -40.0,
+   "output": -20.0,
+   "ratio": "4:1",
+   "attack": "4.00",
+   "release": 2.0
+  },
+  "sig": {
+   "kind": "burst",
+   "probe_db": -27,
+   "burst_db": -7,
+   "pre_s": 1.0,
+   "burst_s": 0.5,
+   "tail_s": 5
+  }
+ },
+ {
+  "id": "b_ra_r3",
+  "plugin": "uaudio_ua_1176_rev_a",
+  "params": {
+   "input": -40.0,
+   "output": -20.0,
+   "ratio": "4:1",
+   "attack": "4.00",
+   "release": 3.0
+  },
+  "sig": {
+   "kind": "burst",
+   "probe_db": -27,
+   "burst_db": -7,
+   "pre_s": 1.0,
+   "burst_s": 0.5,
+   "tail_s": 5
+  }
+ },
+ {
+  "id": "b_ra_r4",
+  "plugin": "uaudio_ua_1176_rev_a",
+  "params": {
+   "input": -40.0,
+   "output": -20.0,
+   "ratio": "4:1",
+   "attack": "4.00",
+   "release": 4.0
+  },
+  "sig": {
+   "kind": "burst",
+   "probe_db": -27,
+   "burst_db": -7,
+   "pre_s": 1.0,
+   "burst_s": 0.5,
+   "tail_s": 5
+  }
+ },
+ {
+  "id": "b_ra_r5",
+  "plugin": "uaudio_ua_1176_rev_a",
+  "params": {
+   "input": -40.0,
+   "output": -20.0,
+   "ratio": "4:1",
+   "attack": "4.00",
+   "release": 5.0
+  },
+  "sig": {
+   "kind": "burst",
+   "probe_db": -27,
+   "burst_db": -7,
+   "pre_s": 1.0,
+   "burst_s": 0.5,
+   "tail_s": 5
+  }
+ },
+ {
+  "id": "b_ra_r6",
+  "plugin": "uaudio_ua_1176_rev_a",
+  "params": {
+   "input": -40.0,
+   "output": -20.0,
+   "ratio": "4:1",
+   "attack": "4.00",
+   "release": 6.0
+  },
+  "sig": {
+   "kind": "burst",
+   "probe_db": -27,
+   "burst_db": -7,
+   "pre_s": 1.0,
+   "burst_s": 0.5,
+   "tail_s": 5
+  }
+ },
+ {
+  "id": "b_ra_r7",
+  "plugin": "uaudio_ua_1176_rev_a",
+  "params": {
+   "input": -40.0,
+   "output": -20.0,
+   "ratio": "4:1",
+   "attack": "4.00",
+   "release": 7.0
+  },
+  "sig": {
+   "kind": "burst",
+   "probe_db": -27,
+   "burst_db": -7,
+   "pre_s": 1.0,
+   "burst_s": 0.5,
+   "tail_s": 5
+  }
+ },
+ {
+  "id": "b_ra_r4_0.05",
+  "plugin": "uaudio_ua_1176_rev_a",
+  "params": {
+   "input": -40.0,
+   "output": -20.0,
+   "ratio": "4:1",
+   "attack": "4.00",
+   "release": 4.0
+  },
+  "sig": {
+   "kind": "burst",
+   "probe_db": -27,
+   "burst_db": -7,
+   "pre_s": 1.0,
+   "burst_s": 0.05,
+   "tail_s": 5
+  }
+ },
+ {
+  "id": "b_ra_r4_3",
+  "plugin": "uaudio_ua_1176_rev_a",
+  "params": {
+   "input": -40.0,
+   "output": -20.0,
+   "ratio": "4:1",
+   "attack": "4.00",
+   "release": 4.0
+  },
+  "sig": {
+   "kind": "burst",
+   "probe_db": -27,
+   "burst_db": -7,
+   "pre_s": 1.0,
+   "burst_s": 3,
+   "tail_s": 5
+  }
+ },
+ {
+  "id": "b_u1176all_r1",
+  "plugin": "uaudio_ua_1176",
+  "params": {
+   "input": -40.0,
+   "output": -20.0,
+   "ratio": "ALL",
+   "attack": 4.0,
+   "release": 1.0
+  },
+  "sig": {
+   "kind": "burst",
+   "probe_db": -27,
+   "burst_db": -7,
+   "pre_s": 1.0,
+   "burst_s": 0.5,
+   "tail_s": 5
+  }
+ },
+ {
+  "id": "b_u1176all_r4",
+  "plugin": "uaudio_ua_1176",
+  "params": {
+   "input": -40.0,
+   "output": -20.0,
+   "ratio": "ALL",
+   "attack": 4.0,
+   "release": 4.0
+  },
+  "sig": {
+   "kind": "burst",
+   "probe_db": -27,
+   "burst_db": -7,
+   "pre_s": 1.0,
+   "burst_s": 0.5,
+   "tail_s": 5
+  }
+ },
+ {
+  "id": "b_u1176all_r7",
+  "plugin": "uaudio_ua_1176",
+  "params": {
+   "input": -40.0,
+   "output": -20.0,
+   "ratio": "ALL",
+   "attack": 4.0,
+   "release": 7.0
+  },
+  "sig": {
+   "kind": "burst",
+   "probe_db": -27,
+   "burst_db": -7,
+   "pre_s": 1.0,
+   "burst_s": 0.5,
+   "tail_s": 5
+  }
+ },
+ {
+  "id": "b_dsR_0",
+  "plugin": "uaudio_distressor",
+  "params": {
+   "input": 5.0,
+   "ratio": "6:1",
+   "attack": 5.0,
+   "release": 0.0,
+   "output": 5.0
+  },
+  "sig": {
+   "kind": "burst",
+   "probe_db": -26,
+   "burst_db": -6,
+   "pre_s": 1.0,
+   "burst_s": 0.5,
+   "tail_s": 9
+  }
+ },
+ {
+  "id": "b_dsR_1",
+  "plugin": "uaudio_distressor",
+  "params": {
+   "input": 5.0,
+   "ratio": "6:1",
+   "attack": 5.0,
+   "release": 1.0,
+   "output": 5.0
+  },
+  "sig": {
+   "kind": "burst",
+   "probe_db": -26,
+   "burst_db": -6,
+   "pre_s": 1.0,
+   "burst_s": 0.5,
+   "tail_s": 9
+  }
+ },
+ {
+  "id": "b_dsR_2",
+  "plugin": "uaudio_distressor",
+  "params": {
+   "input": 5.0,
+   "ratio": "6:1",
+   "attack": 5.0,
+   "release": 2.0,
+   "output": 5.0
+  },
+  "sig": {
+   "kind": "burst",
+   "probe_db": -26,
+   "burst_db": -6,
+   "pre_s": 1.0,
+   "burst_s": 0.5,
+   "tail_s": 9
+  }
+ },
+ {
+  "id": "b_dsR_3",
+  "plugin": "uaudio_distressor",
+  "params": {
+   "input": 5.0,
+   "ratio": "6:1",
+   "attack": 5.0,
+   "release": 3.0,
+   "output": 5.0
+  },
+  "sig": {
+   "kind": "burst",
+   "probe_db": -26,
+   "burst_db": -6,
+   "pre_s": 1.0,
+   "burst_s": 0.5,
+   "tail_s": 9
+  }
+ },
+ {
+  "id": "b_dsR_4",
+  "plugin": "uaudio_distressor",
+  "params": {
+   "input": 5.0,
+   "ratio": "6:1",
+   "attack": 5.0,
+   "release": 4.0,
+   "output": 5.0
+  },
+  "sig": {
+   "kind": "burst",
+   "probe_db": -26,
+   "burst_db": -6,
+   "pre_s": 1.0,
+   "burst_s": 0.5,
+   "tail_s": 9
+  }
+ },
+ {
+  "id": "b_dsR_5",
+  "plugin": "uaudio_distressor",
+  "params": {
+   "input": 5.0,
+   "ratio": "6:1",
+   "attack": 5.0,
+   "release": 5.0,
+   "output": 5.0
+  },
+  "sig": {
+   "kind": "burst",
+   "probe_db": -26,
+   "burst_db": -6,
+   "pre_s": 1.0,
+   "burst_s": 0.5,
+   "tail_s": 9
+  }
+ },
+ {
+  "id": "b_dsR_6",
+  "plugin": "uaudio_distressor",
+  "params": {
+   "input": 5.0,
+   "ratio": "6:1",
+   "attack": 5.0,
+   "release": 6.0,
+   "output": 5.0
+  },
+  "sig": {
+   "kind": "burst",
+   "probe_db": -26,
+   "burst_db": -6,
+   "pre_s": 1.0,
+   "burst_s": 0.5,
+   "tail_s": 9
+  }
+ },
+ {
+  "id": "b_dsR_7",
+  "plugin": "uaudio_distressor",
+  "params": {
+   "input": 5.0,
+   "ratio": "6:1",
+   "attack": 5.0,
+   "release": 7.0,
+   "output": 5.0
+  },
+  "sig": {
+   "kind": "burst",
+   "probe_db": -26,
+   "burst_db": -6,
+   "pre_s": 1.0,
+   "burst_s": 0.5,
+   "tail_s": 9
+  }
+ },
+ {
+  "id": "b_dsR_8",
+  "plugin": "uaudio_distressor",
+  "params": {
+   "input": 5.0,
+   "ratio": "6:1",
+   "attack": 5.0,
+   "release": 8.0,
+   "output": 5.0
+  },
+  "sig": {
+   "kind": "burst",
+   "probe_db": -26,
+   "burst_db": -6,
+   "pre_s": 1.0,
+   "burst_s": 0.5,
+   "tail_s": 9
+  }
+ },
+ {
+  "id": "b_dsR_9",
+  "plugin": "uaudio_distressor",
+  "params": {
+   "input": 5.0,
+   "ratio": "6:1",
+   "attack": 5.0,
+   "release": 9.0,
+   "output": 5.0
+  },
+  "sig": {
+   "kind": "burst",
+   "probe_db": -26,
+   "burst_db": -6,
+   "pre_s": 1.0,
+   "burst_s": 0.5,
+   "tail_s": 9
+  }
+ },
+ {
+  "id": "b_dsR_10",
+  "plugin": "uaudio_distressor",
+  "params": {
+   "input": 5.0,
+   "ratio": "6:1",
+   "attack": 5.0,
+   "release": 10.0,
+   "output": 5.0
+  },
+  "sig": {
+   "kind": "burst",
+   "probe_db": -26,
+   "burst_db": -6,
+   "pre_s": 1.0,
+   "burst_s": 0.5,
+   "tail_s": 9
+  }
+ },
+ {
+  "id": "b_dsR_10.5",
+  "plugin": "uaudio_distressor",
+  "params": {
+   "input": 5.0,
+   "ratio": "6:1",
+   "attack": 5.0,
+   "release": 10.5,
+   "output": 5.0
+  },
+  "sig": {
+   "kind": "burst",
+   "probe_db": -26,
+   "burst_db": -6,
+   "pre_s": 1.0,
+   "burst_s": 0.5,
+   "tail_s": 9
+  }
+ },
+ {
+  "id": "a_dsA_0",
+  "plugin": "uaudio_distressor",
+  "params": {
+   "input": 5.0,
+   "ratio": "6:1",
+   "attack": 0.0,
+   "release": 5.0,
+   "output": 5.0
+  },
+  "sig": {
+   "kind": "burst",
+   "probe_db": -26,
+   "burst_db": -6,
+   "pre_s": 1.0,
+   "burst_s": 0.3,
+   "tail_s": 2
+  }
+ },
+ {
+  "id": "a_dsA_1",
+  "plugin": "uaudio_distressor",
+  "params": {
+   "input": 5.0,
+   "ratio": "6:1",
+   "attack": 1.0,
+   "release": 5.0,
+   "output": 5.0
+  },
+  "sig": {
+   "kind": "burst",
+   "probe_db": -26,
+   "burst_db": -6,
+   "pre_s": 1.0,
+   "burst_s": 0.3,
+   "tail_s": 2
+  }
+ },
+ {
+  "id": "a_dsA_2",
+  "plugin": "uaudio_distressor",
+  "params": {
+   "input": 5.0,
+   "ratio": "6:1",
+   "attack": 2.0,
+   "release": 5.0,
+   "output": 5.0
+  },
+  "sig": {
+   "kind": "burst",
+   "probe_db": -26,
+   "burst_db": -6,
+   "pre_s": 1.0,
+   "burst_s": 0.3,
+   "tail_s": 2
+  }
+ },
+ {
+  "id": "a_dsA_3",
+  "plugin": "uaudio_distressor",
+  "params": {
+   "input": 5.0,
+   "ratio": "6:1",
+   "attack": 3.0,
+   "release": 5.0,
+   "output": 5.0
+  },
+  "sig": {
+   "kind": "burst",
+   "probe_db": -26,
+   "burst_db": -6,
+   "pre_s": 1.0,
+   "burst_s": 0.3,
+   "tail_s": 2
+  }
+ },
+ {
+  "id": "a_dsA_3.5",
+  "plugin": "uaudio_distressor",
+  "params": {
+   "input": 5.0,
+   "ratio": "6:1",
+   "attack": 3.5,
+   "release": 5.0,
+   "output": 5.0
+  },
+  "sig": {
+   "kind": "burst",
+   "probe_db": -26,
+   "burst_db": -6,
+   "pre_s": 1.0,
+   "burst_s": 0.3,
+   "tail_s": 2
+  }
+ },
+ {
+  "id": "a_dsA_4",
+  "plugin": "uaudio_distressor",
+  "params": {
+   "input": 5.0,
+   "ratio": "6:1",
+   "attack": 4.0,
+   "release": 5.0,
+   "output": 5.0
+  },
+  "sig": {
+   "kind": "burst",
+   "probe_db": -26,
+   "burst_db": -6,
+   "pre_s": 1.0,
+   "burst_s": 0.3,
+   "tail_s": 2
+  }
+ },
+ {
+  "id": "a_dsA_5",
+  "plugin": "uaudio_distressor",
+  "params": {
+   "input": 5.0,
+   "ratio": "6:1",
+   "attack": 5.0,
+   "release": 5.0,
+   "output": 5.0
+  },
+  "sig": {
+   "kind": "burst",
+   "probe_db": -26,
+   "burst_db": -6,
+   "pre_s": 1.0,
+   "burst_s": 0.3,
+   "tail_s": 2
+  }
+ },
+ {
+  "id": "a_dsA_6",
+  "plugin": "uaudio_distressor",
+  "params": {
+   "input": 5.0,
+   "ratio": "6:1",
+   "attack": 6.0,
+   "release": 5.0,
+   "output": 5.0
+  },
+  "sig": {
+   "kind": "burst",
+   "probe_db": -26,
+   "burst_db": -6,
+   "pre_s": 1.0,
+   "burst_s": 0.3,
+   "tail_s": 2
+  }
+ },
+ {
+  "id": "a_dsA_7",
+  "plugin": "uaudio_distressor",
+  "params": {
+   "input": 5.0,
+   "ratio": "6:1",
+   "attack": 7.0,
+   "release": 5.0,
+   "output": 5.0
+  },
+  "sig": {
+   "kind": "burst",
+   "probe_db": -26,
+   "burst_db": -6,
+   "pre_s": 1.0,
+   "burst_s": 0.3,
+   "tail_s": 2
+  }
+ },
+ {
+  "id": "a_dsA_8",
+  "plugin": "uaudio_distressor",
+  "params": {
+   "input": 5.0,
+   "ratio": "6:1",
+   "attack": 8.0,
+   "release": 5.0,
+   "output": 5.0
+  },
+  "sig": {
+   "kind": "burst",
+   "probe_db": -26,
+   "burst_db": -6,
+   "pre_s": 1.0,
+   "burst_s": 0.3,
+   "tail_s": 2
+  }
+ },
+ {
+  "id": "a_dsA_9",
+  "plugin": "uaudio_distressor",
+  "params": {
+   "input": 5.0,
+   "ratio": "6:1",
+   "attack": 9.0,
+   "release": 5.0,
+   "output": 5.0
+  },
+  "sig": {
+   "kind": "burst",
+   "probe_db": -26,
+   "burst_db": -6,
+   "pre_s": 1.0,
+   "burst_s": 0.3,
+   "tail_s": 2
+  }
+ },
+ {
+  "id": "a_dsA_10",
+  "plugin": "uaudio_distressor",
+  "params": {
+   "input": 5.0,
+   "ratio": "6:1",
+   "attack": 10.0,
+   "release": 5.0,
+   "output": 5.0
+  },
+  "sig": {
+   "kind": "burst",
+   "probe_db": -26,
+   "burst_db": -6,
+   "pre_s": 1.0,
+   "burst_s": 0.3,
+   "tail_s": 2
+  }
+ },
+ {
+  "id": "b_dsN_r2_0.05",
+  "plugin": "uaudio_distressor",
+  "params": {
+   "input": 5.0,
+   "ratio": "NUKE",
+   "attack": 5.0,
+   "release": 2.0,
+   "output": 5.0
+  },
+  "sig": {
+   "kind": "burst",
+   "probe_db": -30,
+   "burst_db": -10,
+   "pre_s": 1.0,
+   "burst_s": 0.05,
+   "tail_s": 8
+  }
+ },
+ {
+  "id": "b_dsN_r2_1",
+  "plugin": "uaudio_distressor",
+  "params": {
+   "input": 5.0,
+   "ratio": "NUKE",
+   "attack": 5.0,
+   "release": 2.0,
+   "output": 5.0
+  },
+  "sig": {
+   "kind": "burst",
+   "probe_db": -30,
+   "burst_db": -10,
+   "pre_s": 1.0,
+   "burst_s": 1,
+   "tail_s": 8
+  }
+ },
+ {
+  "id": "b_dsN_r3_0.05",
+  "plugin": "uaudio_distressor",
+  "params": {
+   "input": 5.0,
+   "ratio": "NUKE",
+   "attack": 5.0,
+   "release": 3.0,
+   "output": 5.0
+  },
+  "sig": {
+   "kind": "burst",
+   "probe_db": -30,
+   "burst_db": -10,
+   "pre_s": 1.0,
+   "burst_s": 0.05,
+   "tail_s": 8
+  }
+ },
+ {
+  "id": "b_dsN_r3_1",
+  "plugin": "uaudio_distressor",
+  "params": {
+   "input": 5.0,
+   "ratio": "NUKE",
+   "attack": 5.0,
+   "release": 3.0,
+   "output": 5.0
+  },
+  "sig": {
+   "kind": "burst",
+   "probe_db": -30,
+   "burst_db": -10,
+   "pre_s": 1.0,
+   "burst_s": 1,
+   "tail_s": 8
+  }
+ },
+ {
+  "id": "b_dsN_r5_0.05",
+  "plugin": "uaudio_distressor",
+  "params": {
+   "input": 5.0,
+   "ratio": "NUKE",
+   "attack": 5.0,
+   "release": 5.0,
+   "output": 5.0
+  },
+  "sig": {
+   "kind": "burst",
+   "probe_db": -30,
+   "burst_db": -10,
+   "pre_s": 1.0,
+   "burst_s": 0.05,
+   "tail_s": 8
+  }
+ },
+ {
+  "id": "b_dsN_r5_1",
+  "plugin": "uaudio_distressor",
+  "params": {
+   "input": 5.0,
+   "ratio": "NUKE",
+   "attack": 5.0,
+   "release": 5.0,
+   "output": 5.0
+  },
+  "sig": {
+   "kind": "burst",
+   "probe_db": -30,
+   "burst_db": -10,
+   "pre_s": 1.0,
+   "burst_s": 1,
+   "tail_s": 8
+  }
+ },
+ {
+  "id": "b_dsO_0.05",
+  "plugin": "uaudio_distressor",
+  "params": {
+   "input": 5.0,
+   "ratio": "10:1",
+   "attack": 5.0,
+   "release": 5.0,
+   "output": 5.0
+  },
+  "sig": {
+   "kind": "burst",
+   "probe_db": -30,
+   "burst_db": -10,
+   "pre_s": 1.0,
+   "burst_s": 0.05,
+   "tail_s": 25
+  }
+ },
+ {
+  "id": "b_dsO_0.5",
+  "plugin": "uaudio_distressor",
+  "params": {
+   "input": 5.0,
+   "ratio": "10:1",
+   "attack": 5.0,
+   "release": 5.0,
+   "output": 5.0
+  },
+  "sig": {
+   "kind": "burst",
+   "probe_db": -30,
+   "burst_db": -10,
+   "pre_s": 1.0,
+   "burst_s": 0.5,
+   "tail_s": 25
+  }
+ },
+ {
+  "id": "b_dsO_3",
+  "plugin": "uaudio_distressor",
+  "params": {
+   "input": 5.0,
+   "ratio": "10:1",
+   "attack": 5.0,
+   "release": 5.0,
+   "output": 5.0
+  },
+  "sig": {
+   "kind": "burst",
+   "probe_db": -30,
+   "burst_db": -10,
+   "pre_s": 1.0,
+   "burst_s": 3,
+   "tail_s": 25
+  }
+ },
+ {
+  "id": "b_dsO_10",
+  "plugin": "uaudio_distressor",
+  "params": {
+   "input": 5.0,
+   "ratio": "10:1",
+   "attack": 5.0,
+   "release": 5.0,
+   "output": 5.0
+  },
+  "sig": {
+   "kind": "burst",
+   "probe_db": -30,
+   "burst_db": -10,
+   "pre_s": 1.0,
+   "burst_s": 10,
+   "tail_s": 25
+  }
+ },
+ {
+  "id": "a_dbx_-20",
+  "plugin": "uaudio_dbx_160",
+  "params": {
+   "thresh": -30.0,
+   "compress": " 4.0:1",
+   "gain": 0.0
+  },
+  "sig": {
+   "kind": "burst",
+   "probe_db": -40,
+   "burst_db": -20,
+   "pre_s": 1.0,
+   "burst_s": 0.5,
+   "tail_s": 1.5
+  }
+ },
+ {
+  "id": "a_dbx_-10",
+  "plugin": "uaudio_dbx_160",
+  "params": {
+   "thresh": -30.0,
+   "compress": " 4.0:1",
+   "gain": 0.0
+  },
+  "sig": {
+   "kind": "burst",
+   "probe_db": -40,
+   "burst_db": -10,
+   "pre_s": 1.0,
+   "burst_s": 0.5,
+   "tail_s": 1.5
+  }
+ },
+ {
+  "id": "a_dbx_0",
+  "plugin": "uaudio_dbx_160",
+  "params": {
+   "thresh": -30.0,
+   "compress": " 4.0:1",
+   "gain": 0.0
+  },
+  "sig": {
+   "kind": "burst",
+   "probe_db": -40,
+   "burst_db": 0,
+   "pre_s": 1.0,
+   "burst_s": 0.5,
+   "tail_s": 1.5
+  }
+ },
+ {
+  "id": "b_dbx_rel",
+  "plugin": "uaudio_dbx_160",
+  "params": {
+   "thresh": -30.0,
+   "compress": " 4.0:1",
+   "gain": 0.0
+  },
+  "sig": {
+   "kind": "burst",
+   "probe_db": -33,
+   "burst_db": -3,
+   "pre_s": 1.0,
+   "burst_s": 1.0,
+   "tail_s": 3
+  }
+ },
+ {
+  "id": "b_mv_Slo",
+  "plugin": "uaudio_manley_variable_mu",
+  "params": {
+   "dual_input": 5.0,
+   "l_thresh": 5.0,
+   "r_thresh": 5.0,
+   "l_recovery": "Slo",
+   "r_recovery": "Slo",
+   "l_attack": 5.0,
+   "r_attack": 5.0,
+   "l_comp_lim": "Comp",
+   "r_comp_lim": "Comp"
+  },
+  "sig": {
+   "kind": "burst",
+   "probe_db": -20,
+   "burst_db": 0,
+   "pre_s": 1.0,
+   "burst_s": 1.0,
+   "tail_s": 18
+  }
+ },
+ {
+  "id": "b_mv_MedSlo",
+  "plugin": "uaudio_manley_variable_mu",
+  "params": {
+   "dual_input": 5.0,
+   "l_thresh": 5.0,
+   "r_thresh": 5.0,
+   "l_recovery": "Med Slo",
+   "r_recovery": "Med Slo",
+   "l_attack": 5.0,
+   "r_attack": 5.0,
+   "l_comp_lim": "Comp",
+   "r_comp_lim": "Comp"
+  },
+  "sig": {
+   "kind": "burst",
+   "probe_db": -20,
+   "burst_db": 0,
+   "pre_s": 1.0,
+   "burst_s": 1.0,
+   "tail_s": 18
+  }
+ },
+ {
+  "id": "b_mv_Med",
+  "plugin": "uaudio_manley_variable_mu",
+  "params": {
+   "dual_input": 5.0,
+   "l_thresh": 5.0,
+   "r_thresh": 5.0,
+   "l_recovery": "Med",
+   "r_recovery": "Med",
+   "l_attack": 5.0,
+   "r_attack": 5.0,
+   "l_comp_lim": "Comp",
+   "r_comp_lim": "Comp"
+  },
+  "sig": {
+   "kind": "burst",
+   "probe_db": -20,
+   "burst_db": 0,
+   "pre_s": 1.0,
+   "burst_s": 1.0,
+   "tail_s": 18
+  }
+ },
+ {
+  "id": "b_mv_MedFast",
+  "plugin": "uaudio_manley_variable_mu",
+  "params": {
+   "dual_input": 5.0,
+   "l_thresh": 5.0,
+   "r_thresh": 5.0,
+   "l_recovery": "Med Fast",
+   "r_recovery": "Med Fast",
+   "l_attack": 5.0,
+   "r_attack": 5.0,
+   "l_comp_lim": "Comp",
+   "r_comp_lim": "Comp"
+  },
+  "sig": {
+   "kind": "burst",
+   "probe_db": -20,
+   "burst_db": 0,
+   "pre_s": 1.0,
+   "burst_s": 1.0,
+   "tail_s": 18
+  }
+ },
+ {
+  "id": "b_mv_Fast",
+  "plugin": "uaudio_manley_variable_mu",
+  "params": {
+   "dual_input": 5.0,
+   "l_thresh": 5.0,
+   "r_thresh": 5.0,
+   "l_recovery": "Fast",
+   "r_recovery": "Fast",
+   "l_attack": 5.0,
+   "r_attack": 5.0,
+   "l_comp_lim": "Comp",
+   "r_comp_lim": "Comp"
+  },
+  "sig": {
+   "kind": "burst",
+   "probe_db": -20,
+   "burst_db": 0,
+   "pre_s": 1.0,
+   "burst_s": 1.0,
+   "tail_s": 18
+  }
+ },
+ {
+  "id": "a_mv_0.0",
+  "plugin": "uaudio_manley_variable_mu",
+  "params": {
+   "dual_input": 5.0,
+   "l_thresh": 5.0,
+   "r_thresh": 5.0,
+   "l_recovery": "Fast",
+   "r_recovery": "Fast",
+   "l_attack": 0.0,
+   "r_attack": 0.0,
+   "l_comp_lim": "Comp",
+   "r_comp_lim": "Comp"
+  },
+  "sig": {
+   "kind": "burst",
+   "probe_db": -20,
+   "burst_db": 0,
+   "pre_s": 1.0,
+   "burst_s": 0.6,
+   "tail_s": 2
+  }
+ },
+ {
+  "id": "a_mv_5.0",
+  "plugin": "uaudio_manley_variable_mu",
+  "params": {
+   "dual_input": 5.0,
+   "l_thresh": 5.0,
+   "r_thresh": 5.0,
+   "l_recovery": "Fast",
+   "r_recovery": "Fast",
+   "l_attack": 5.0,
+   "r_attack": 5.0,
+   "l_comp_lim": "Comp",
+   "r_comp_lim": "Comp"
+  },
+  "sig": {
+   "kind": "burst",
+   "probe_db": -20,
+   "burst_db": 0,
+   "pre_s": 1.0,
+   "burst_s": 0.6,
+   "tail_s": 2
+  }
+ },
+ {
+  "id": "a_mv_10.0",
+  "plugin": "uaudio_manley_variable_mu",
+  "params": {
+   "dual_input": 5.0,
+   "l_thresh": 5.0,
+   "r_thresh": 5.0,
+   "l_recovery": "Fast",
+   "r_recovery": "Fast",
+   "l_attack": 10.0,
+   "r_attack": 10.0,
+   "l_comp_lim": "Comp",
+   "r_comp_lim": "Comp"
+  },
+  "sig": {
+   "kind": "burst",
+   "probe_db": -20,
+   "burst_db": 0,
+   "pre_s": 1.0,
+   "burst_s": 0.6,
+   "tail_s": 2
+  }
+ }
+]

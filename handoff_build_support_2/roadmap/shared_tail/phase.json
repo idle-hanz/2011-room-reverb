@@ -1,0 +1,90 @@
+{
+ "sw": "C:\\Users\\IdleHanz\\Desktop\\2011 Room Reverb\\software",
+ "summary": {
+  "PASS": 11,
+  "FAIL": 2,
+  "XFAIL": 0,
+  "SKIP": 0
+ },
+ "results": [
+  {
+   "test": "test_binaural_play_and_gaps::test_binaural_play_tail_coherence_matches_head",
+   "status": "PASS",
+   "secs": 2.5,
+   "detail": ""
+  },
+  {
+   "test": "test_binaural_play_and_gaps::test_binaural_play_tail_coherence_ensemble",
+   "status": "PASS",
+   "secs": 11.5,
+   "detail": ""
+  },
+  {
+   "test": "test_locks::test_lock_unscaled_pm1_hadamard_play",
+   "status": "PASS",
+   "secs": 0.0,
+   "detail": ""
+  },
+  {
+   "test": "test_s4b_tail_solo_runaway::test_s4b_shared_on_solo_a_leaves_tail",
+   "status": "PASS",
+   "secs": 2.4,
+   "detail": ""
+  },
+  {
+   "test": "test_shared_tail::test_sh_p1_off_bit_exact",
+   "status": "PASS",
+   "secs": 15.7,
+   "detail": ""
+  },
+  {
+   "test": "test_shared_tail::test_sh_p2_skip_centre_still_the_s4b_path",
+   "status": "PASS",
+   "secs": 1.8,
+   "detail": ""
+  },
+  {
+   "test": "test_shared_tail::test_sh_p3_cpu_and_t19",
+   "status": "PASS",
+   "secs": 42.1,
+   "detail": ""
+  },
+  {
+   "test": "test_shared_tail::test_sh_p4_t30",
+   "status": "PASS",
+   "secs": 44.6,
+   "detail": ""
+  },
+  {
+   "test": "test_shared_tail::test_sh_p5_p6_coherence_and_level",
+   "status": "FAIL",
+   "secs": 1.9,
+   "detail": "AssertionError: P5 default rms 0.09864718253954767 max 0.15798306324214295 assert (0.09864718253954767 <= 0.09)"
+  },
+  {
+   "test": "test_shared_tail::test_sh_p7_mirror",
+   "status": "PASS",
+   "secs": 4.4,
+   "detail": ""
+  },
+  {
+   "test": "test_shared_tail::test_sh_p8_binaural_ignores_the_flag",
+   "status": "PASS",
+   "secs": 2.2,
+   "detail": ""
+  },
+  {
+   "test": "test_shared_tail::test_sh_p9_long_decay_falls",
+   "status": "FAIL",
+   "secs": 0.0,
+   "detail": "TypeError: dict() got multiple values for keyword argument 'decay_s'"
+  },
+  {
+   "test": "test_shared_tail::test_sh_p10_toggle_no_spike",
+   "status": "PASS",
+   "secs": 3.3,
+   "detail": ""
+  }
+ ],
+ "pytest_tail": "........F..F.                                                            [100%]\n================================== FAILURES ===================================\n______________________ test_sh_p5_p6_coherence_and_level ______________________\n\nctx = <run_all.Ctx object at 0x000002426F6230E0>\n\n    @pytest.mark.slow\n    @pytest.mark.phase(\"SHARED\")\n    def test_sh_p5_p6_coherence_and_level(ctx):\n        \"\"\"P5 coherence and P6 level, tail, shared on versus off.\"\"\"\n        scenes = {\n            \"default\": (dict(BASE, **TAIL), 0.08, 1.0, 3.0),\n            \"big\": (dict(BASE, **BIG, **TAIL), 0.25, 2.5, 7.0),\n            \"small\": (dict(BASE, **TAIL, W=6.0, H=3.0, L=8.0, sx=3.4, sz=5.6, mcx=2.8, mcz=2.4, decay_s=0.8), 0.04, 0.5, 2.0),\n            \"mid\": (dict(BASE, **TAIL, W=15.0, H=8.0, L=22.0, sx=6.0, sz=15.0, mcx=8.5, mcz=6.0, decay_s=2.2), 0.1, 1.2, 4.0),\n            \"ortf_wide\": (dict(BASE, **TAIL, toe_half_deg=45, space=0.30), 0.08, 1.0, 3.0),\n        }\n        coh_rows, lvl_rows = {}, {}\n        for name, (body, t0, t1, secs) in scenes.items():\n            off = ctx.play_ir(body, {\"shared_tail\": False}, secs)\n            on = ctx.play_ir(body, {\"shared_tail\": True}, secs)\n            c0 = _coh(off[:, 0], off[:, 1], t0, t1)\n            c1 = _coh(on[:, 0], on[:, 1], t0, t1)\n            e = [c1[fc] - c0[fc] for fc in OCT]\n            rms = float(np.sqrt(np.mean(np.square(e))))\n            mx = float(np.max(np.abs(e)))\n            coh_rows[name] = {\"rms\": rms, \"max\": mx, \"dev\": e}\n>           assert rms <= 0.09 and mx <= 0.15, f\"P5 {name} rms {rms} max {mx}\"\nE           AssertionError: P5 default rms 0.09864718253954767 max 0.15798306324214295\nE           assert (0.09864718253954767 <= 0.09)\n\nhandoff_build_support_2\\3_phase_acceptance_tests\\tests\\test_shared_tail.py:192: AssertionError\n_________________________ test_sh_p9_long_decay_falls _________________________\n\nctx = <run_all.Ctx object at 0x000002426F6230E0>\n\n    @pytest.mark.slow\n    @pytest.mark.phase(\"SHARED\")\n    def test_sh_p9_long_decay_falls(ctx):\n        \"\"\"P9. 30 s at decay 8 s, default room and big room, shared on and off: finite and still falling.\"\"\"\n        rooms = {\n            \"default\": dict(BASE, **TAIL, decay_s=8.0),\n>           \"big\": dict(BASE, **BIG, **TAIL, decay_s=8.0),\n                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n        }\nE       TypeError: dict() got multiple values for keyword argument 'decay_s'\n\nhandoff_build_support_2\\3_phase_acceptance_tests\\tests\\test_shared_tail.py:238: TypeError\n2 failed, 11 passed, 123 deselected in 132.74s (0:02:12)\n"
+}

@@ -1,0 +1,135 @@
+{
+  "port": 59113,
+  "idle_7860_before": false,
+  "page_errors": [],
+  "info": {
+    "stage": 1,
+    "hasPanel": true,
+    "afterNet": true,
+    "surfDisabled": true,
+    "surfTitle": "coming (SL2)",
+    "natDisabled": true,
+    "flatPressed": "true",
+    "treatHidden": true,
+    "autoHidden": true,
+    "readout": "T(500\u20131k) 1.79 s (dial) \u00b7 absolute 1.41 s \u00b7 Schroeder 223 Hz \u00b7 EBU Tm 0.28 s \u00b7 2/25 within \u00b110 % \u00b7 mode flat",
+    "scroll": 1280,
+    "client": 1280,
+    "worstRight": 872.453125,
+    "boxes": {
+      "materialPaintAll": {
+        "x": 32,
+        "y": 1071.546875,
+        "w": 105.109375,
+        "h": 26,
+        "right": 137.109375,
+        "display": "block",
+        "hidden": false
+      },
+      "surfacesSoloOff": {
+        "x": 32,
+        "y": 1138.640625,
+        "w": 69.25,
+        "h": 32,
+        "right": 101.25,
+        "display": "block",
+        "hidden": false
+      },
+      "jitterSlider": {
+        "x": 45,
+        "y": 1885.390625,
+        "w": 393.21875,
+        "h": 19.1875,
+        "right": 438.21875,
+        "display": "block",
+        "hidden": false
+      },
+      "absorbCanvas": {
+        "x": 42,
+        "y": 1493.640625,
+        "w": 395.71875,
+        "h": 121.75,
+        "right": 437.71875,
+        "display": "block",
+        "hidden": false
+      },
+      "eqCanvas": {
+        "x": 466.71875,
+        "y": 1493.640625,
+        "w": 395.734375,
+        "h": 121.75,
+        "right": 862.453125,
+        "display": "block",
+        "hidden": false
+      },
+      "slMode_flat": {
+        "x": 99.984375,
+        "y": 605.015625,
+        "w": 83.484375,
+        "h": 26,
+        "right": 183.46875,
+        "display": "block",
+        "hidden": false
+      },
+      "slTogBand": {
+        "x": 46,
+        "y": 873.015625,
+        "w": 90.828125,
+        "h": 26,
+        "right": 136.828125,
+        "display": "block",
+        "hidden": false
+      },
+      "slTogEbu": {
+        "x": 142.828125,
+        "y": 873.015625,
+        "w": 186.15625,
+        "h": 26,
+        "right": 328.984375,
+        "display": "block",
+        "hidden": false
+      },
+      "roomNet": {
+        "x": 32,
+        "y": 225.484375,
+        "w": 840.453125,
+        "h": 323,
+        "right": 872.453125,
+        "display": "grid",
+        "hidden": false
+      },
+      "surfaceDetail": {
+        "x": 32,
+        "y": 1439.640625,
+        "w": 840.453125,
+        "h": 382.75,
+        "right": 872.453125,
+        "display": "block",
+        "hidden": false
+      }
+    },
+    "material": null
+  },
+  "room_results": 3,
+  "notes": [
+    "stage 1",
+    "panel follows .room-net-wrap",
+    "Surfaces chip greyed ('coming (SL2)')",
+    "Natural stays disabled",
+    "Flat is the pressed mode",
+    "Treatment hidden",
+    "Auto-treat hidden",
+    "scrollWidth 1280 at 1280",
+    "controls inside the viewport (right 872.5, client 1280)",
+    "room_result arrived",
+    "decay_mode 'flat'",
+    "room_result ok",
+    "one brick chip",
+    "material click posted room_result (1)",
+    "absolute mid 1.4079 -> 1.5472",
+    "readout still drawn"
+  ],
+  "errors": [],
+  "idle_7860_after": false,
+  "ok": true
+}

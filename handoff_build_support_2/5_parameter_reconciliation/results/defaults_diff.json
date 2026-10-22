@@ -1,0 +1,461 @@
+{
+ "tree": "/workspace/build_support_2/work/latest/software",
+ "n_diff": 62,
+ "diffs": [
+  {
+   "key": "align_horizontal",
+   "server_params_from_body": "<absent>",
+   "server_DEFAULTS": "<absent>",
+   "client_state": true,
+   "client_sends": true
+  },
+  {
+   "key": "colour_rev",
+   "server_params_from_body": "",
+   "server_DEFAULTS": "<absent>",
+   "client_state": "<absent>",
+   "client_sends": "<absent>"
+  },
+  {
+   "key": "decay_lock",
+   "server_params_from_body": false,
+   "server_DEFAULTS": "<absent>",
+   "client_state": true,
+   "client_sends": true
+  },
+  {
+   "key": "decay_s",
+   "server_params_from_body": 0.0,
+   "server_DEFAULTS": "<absent>",
+   "client_state": 1.8,
+   "client_sends": 1.8
+  },
+  {
+   "key": "fader_c",
+   "server_params_from_body": "<absent>",
+   "server_DEFAULTS": "<absent>",
+   "client_state": 0.5,
+   "client_sends": 0.5
+  },
+  {
+   "key": "fader_direct",
+   "server_params_from_body": "<absent>",
+   "server_DEFAULTS": "<absent>",
+   "client_state": 0.5,
+   "client_sends": 0.5
+  },
+  {
+   "key": "fader_dry",
+   "server_params_from_body": "<absent>",
+   "server_DEFAULTS": "<absent>",
+   "client_state": 0,
+   "client_sends": 0
+  },
+  {
+   "key": "fader_early",
+   "server_params_from_body": "<absent>",
+   "server_DEFAULTS": "<absent>",
+   "client_state": 0,
+   "client_sends": 0
+  },
+  {
+   "key": "fader_fdn",
+   "server_params_from_body": "<absent>",
+   "server_DEFAULTS": "<absent>",
+   "client_state": 0.5,
+   "client_sends": 0.5
+  },
+  {
+   "key": "fader_l",
+   "server_params_from_body": "<absent>",
+   "server_DEFAULTS": "<absent>",
+   "client_state": 0.5,
+   "client_sends": 0.5
+  },
+  {
+   "key": "fader_r",
+   "server_params_from_body": "<absent>",
+   "server_DEFAULTS": "<absent>",
+   "client_state": 0.5,
+   "client_sends": 0.5
+  },
+  {
+   "key": "humidity",
+   "server_params_from_body": 0.0,
+   "server_DEFAULTS": "<absent>",
+   "client_state": 0.35,
+   "client_sends": 0.35
+  },
+  {
+   "key": "link_heights",
+   "server_params_from_body": "<absent>",
+   "server_DEFAULTS": false,
+   "client_state": false,
+   "client_sends": false
+  },
+  {
+   "key": "link_lr_yaw",
+   "server_params_from_body": "<absent>",
+   "server_DEFAULTS": "<absent>",
+   "client_state": true,
+   "client_sends": true
+  },
+  {
+   "key": "live_drag_render",
+   "server_params_from_body": "<absent>",
+   "server_DEFAULTS": "<absent>",
+   "client_state": false,
+   "client_sends": false
+  },
+  {
+   "key": "mic_gain_c",
+   "server_params_from_body": 1.0,
+   "server_DEFAULTS": "<absent>",
+   "client_state": "<absent>",
+   "client_sends": "<absent>"
+  },
+  {
+   "key": "mic_gain_l",
+   "server_params_from_body": 1.0,
+   "server_DEFAULTS": "<absent>",
+   "client_state": "<absent>",
+   "client_sends": "<absent>"
+  },
+  {
+   "key": "mic_gain_r",
+   "server_params_from_body": 1.0,
+   "server_DEFAULTS": "<absent>",
+   "client_state": "<absent>",
+   "client_sends": "<absent>"
+  },
+  {
+   "key": "mic_pan_c",
+   "server_params_from_body": 0.0,
+   "server_DEFAULTS": "<absent>",
+   "client_state": "<absent>",
+   "client_sends": "<absent>"
+  },
+  {
+   "key": "mic_pan_l",
+   "server_params_from_body": -1.0,
+   "server_DEFAULTS": "<absent>",
+   "client_state": "<absent>",
+   "client_sends": "<absent>"
+  },
+  {
+   "key": "mic_pan_r",
+   "server_params_from_body": 1.0,
+   "server_DEFAULTS": "<absent>",
+   "client_state": "<absent>",
+   "client_sends": "<absent>"
+  },
+  {
+   "key": "mic_phase_c",
+   "server_params_from_body": 1.0,
+   "server_DEFAULTS": "<absent>",
+   "client_state": "<absent>",
+   "client_sends": "<absent>"
+  },
+  {
+   "key": "mic_phase_l",
+   "server_params_from_body": 1.0,
+   "server_DEFAULTS": "<absent>",
+   "client_state": "<absent>",
+   "client_sends": "<absent>"
+  },
+  {
+   "key": "mic_phase_r",
+   "server_params_from_body": 1.0,
+   "server_DEFAULTS": "<absent>",
+   "client_state": "<absent>",
+   "client_sends": "<absent>"
+  },
+  {
+   "key": "mic_proximity",
+   "server_params_from_body": 0.0,
+   "server_DEFAULTS": "<absent>",
+   "client_state": 0.25,
+   "client_sends": 0.25
+  },
+  {
+   "key": "mic_setup",
+   "server_params_from_body": "<absent>",
+   "server_DEFAULTS": "<absent>",
+   "client_state": "ortf",
+   "client_sends": "ortf"
+  },
+  {
+   "key": "mirror_b",
+   "server_params_from_body": false,
+   "server_DEFAULTS": "<absent>",
+   "client_state": true,
+   "client_sends": true
+  },
+  {
+   "key": "mute_c",
+   "server_params_from_body": "<absent>",
+   "server_DEFAULTS": "<absent>",
+   "client_state": false,
+   "client_sends": false
+  },
+  {
+   "key": "mute_direct",
+   "server_params_from_body": "<absent>",
+   "server_DEFAULTS": "<absent>",
+   "client_state": false,
+   "client_sends": false
+  },
+  {
+   "key": "mute_dry",
+   "server_params_from_body": "<absent>",
+   "server_DEFAULTS": "<absent>",
+   "client_state": false,
+   "client_sends": false
+  },
+  {
+   "key": "mute_early",
+   "server_params_from_body": "<absent>",
+   "server_DEFAULTS": "<absent>",
+   "client_state": false,
+   "client_sends": false
+  },
+  {
+   "key": "mute_fdn",
+   "server_params_from_body": "<absent>",
+   "server_DEFAULTS": "<absent>",
+   "client_state": false,
+   "client_sends": false
+  },
+  {
+   "key": "mute_l",
+   "server_params_from_body": "<absent>",
+   "server_DEFAULTS": "<absent>",
+   "client_state": false,
+   "client_sends": false
+  },
+  {
+   "key": "mute_r",
+   "server_params_from_body": "<absent>",
+   "server_DEFAULTS": "<absent>",
+   "client_state": false,
+   "client_sends": false
+  },
+  {
+   "key": "mz",
+   "server_params_from_body": 6.5,
+   "server_DEFAULTS": "<absent>",
+   "client_state": "<absent>",
+   "client_sends": "<absent>"
+  },
+  {
+   "key": "natural_bus",
+   "server_params_from_body": "<absent>",
+   "server_DEFAULTS": "<absent>",
+   "client_state": false,
+   "client_sends": false
+  },
+  {
+   "key": "pan_c",
+   "server_params_from_body": "<absent>",
+   "server_DEFAULTS": "<absent>",
+   "client_state": 0,
+   "client_sends": 0
+  },
+  {
+   "key": "pan_l",
+   "server_params_from_body": "<absent>",
+   "server_DEFAULTS": "<absent>",
+   "client_state": -1,
+   "client_sends": -1
+  },
+  {
+   "key": "pan_r",
+   "server_params_from_body": "<absent>",
+   "server_DEFAULTS": "<absent>",
+   "client_state": 1,
+   "client_sends": 1
+  },
+  {
+   "key": "phase_c",
+   "server_params_from_body": "<absent>",
+   "server_DEFAULTS": "<absent>",
+   "client_state": 1,
+   "client_sends": 1
+  },
+  {
+   "key": "phase_l",
+   "server_params_from_body": "<absent>",
+   "server_DEFAULTS": "<absent>",
+   "client_state": 1,
+   "client_sends": 1
+  },
+  {
+   "key": "phase_r",
+   "server_params_from_body": "<absent>",
+   "server_DEFAULTS": "<absent>",
+   "client_state": 1,
+   "client_sends": 1
+  },
+  {
+   "key": "preset_owns_pattern",
+   "server_params_from_body": "<absent>",
+   "server_DEFAULTS": "<absent>",
+   "client_state": true,
+   "client_sends": true
+  },
+  {
+   "key": "sample_rate",
+   "server_params_from_body": null,
+   "server_DEFAULTS": "<absent>",
+   "client_state": "<absent>",
+   "client_sends": "<absent>"
+  },
+  {
+   "key": "solo_direct",
+   "server_params_from_body": "<absent>",
+   "server_DEFAULTS": "<absent>",
+   "client_state": false,
+   "client_sends": false
+  },
+  {
+   "key": "solo_dry",
+   "server_params_from_body": "<absent>",
+   "server_DEFAULTS": "<absent>",
+   "client_state": false,
+   "client_sends": false
+  },
+  {
+   "key": "solo_early",
+   "server_params_from_body": "<absent>",
+   "server_DEFAULTS": "<absent>",
+   "client_state": false,
+   "client_sends": false
+  },
+  {
+   "key": "solo_fdn",
+   "server_params_from_body": "<absent>",
+   "server_DEFAULTS": "<absent>",
+   "client_state": false,
+   "client_sends": false
+  },
+  {
+   "key": "sox",
+   "server_params_from_body": 0.5,
+   "server_DEFAULTS": "<absent>",
+   "client_state": "<absent>",
+   "client_sends": "<absent>"
+  },
+  {
+   "key": "soz",
+   "server_params_from_body": 0.5,
+   "server_DEFAULTS": "<absent>",
+   "client_state": "<absent>",
+   "client_sends": "<absent>"
+  },
+  {
+   "key": "space",
+   "server_params_from_body": 0.25,
+   "server_DEFAULTS": 0.25,
+   "client_state": 0.17,
+   "client_sends": 0.17
+  },
+  {
+   "key": "stereo_mic",
+   "server_params_from_body": "<absent>",
+   "server_DEFAULTS": "<absent>",
+   "client_state": false,
+   "client_sends": false
+  },
+  {
+   "key": "toe_half_deg",
+   "server_params_from_body": null,
+   "server_DEFAULTS": "<absent>",
+   "client_state": 55,
+   "client_sends": 55
+  },
+  {
+   "key": "trim_c",
+   "server_params_from_body": "<absent>",
+   "server_DEFAULTS": "<absent>",
+   "client_state": 0,
+   "client_sends": 0
+  },
+  {
+   "key": "trim_direct",
+   "server_params_from_body": "<absent>",
+   "server_DEFAULTS": "<absent>",
+   "client_state": 0,
+   "client_sends": 0
+  },
+  {
+   "key": "trim_dry",
+   "server_params_from_body": "<absent>",
+   "server_DEFAULTS": "<absent>",
+   "client_state": 0,
+   "client_sends": 0
+  },
+  {
+   "key": "trim_early",
+   "server_params_from_body": "<absent>",
+   "server_DEFAULTS": "<absent>",
+   "client_state": 0,
+   "client_sends": 0
+  },
+  {
+   "key": "trim_fdn",
+   "server_params_from_body": "<absent>",
+   "server_DEFAULTS": "<absent>",
+   "client_state": 0,
+   "client_sends": 0
+  },
+  {
+   "key": "trim_l",
+   "server_params_from_body": "<absent>",
+   "server_DEFAULTS": "<absent>",
+   "client_state": 0,
+   "client_sends": 0
+  },
+  {
+   "key": "trim_r",
+   "server_params_from_body": "<absent>",
+   "server_DEFAULTS": "<absent>",
+   "client_state": 0,
+   "client_sends": 0
+  },
+  {
+   "key": "yaw_l_deg",
+   "server_params_from_body": null,
+   "server_DEFAULTS": null,
+   "client_state": -55,
+   "client_sends": -55
+  },
+  {
+   "key": "yaw_r_deg",
+   "server_params_from_body": null,
+   "server_DEFAULTS": null,
+   "client_state": 55,
+   "client_sends": 55
+  }
+ ],
+ "routes": [
+  "/",
+  "/api/colour",
+  "/api/defaults",
+  "/api/geometry",
+  "/api/images",
+  "/api/live_params",
+  "/api/mic_presets",
+  "/api/mic_presets/{mic_id}",
+  "/api/polar",
+  "/api/preview",
+  "/api/render",
+  "/api/surfaces"
+ ],
+ "routes_not_referenced_by_client": [
+  "/api/colour",
+  "/api/defaults",
+  "/api/geometry",
+  "/api/preview",
+  "/api/surfaces"
+ ]
+}

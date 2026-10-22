@@ -1,0 +1,72 @@
+{
+  "schema": "surfaces_fitter.material.v1",
+  "id": "carpet_on_foam",
+  "display_name": "Carpet on foam",
+  "honesty": "ASSUMED_TEXTBOOK",
+  "roles": [
+    "floor"
+  ],
+  "banned_on": [
+    "wall",
+    "ceiling"
+  ],
+  "absorb_hz": [
+    125.0,
+    250.0,
+    500.0,
+    1000.0,
+    2000.0,
+    4000.0,
+    8000.0
+  ],
+  "absorb": [
+    0.08,
+    0.24,
+    0.57,
+    0.69,
+    0.71,
+    0.73,
+    0.76
+  ],
+  "alpha_octave": [
+    0.08,
+    0.24,
+    0.57,
+    0.69,
+    0.71,
+    0.73,
+    0.76
+  ],
+  "model": "dual_high_shelf",
+  "candidate": "A",
+  "params": {
+    "r0_db": -0.33071835211074346,
+    "f0": 416.66733175327096,
+    "depth_db": -5.013739833157151,
+    "shelf_slope": 6.643352935485745,
+    "f0_hi": 4468.208217738681,
+    "depth_hi_db": -0.9122447485757454,
+    "shelf_slope_hi": 6.989562049587113
+  },
+  "rmse_r_db": 0.04711941661815814,
+  "absorb_l1": 0.010069743137844424,
+  "candidate_rmse_r_db": {
+    "A": 0.04711941661815814,
+    "B": 0.16174434873178176
+  },
+  "freq_range_hz": [
+    20.0,
+    16000.0
+  ],
+  "source_note": "Carpet on foam underlay / pad \u2014 typical published",
+  "usage": "One bounce: apply R(f); multi-bounce: cascade product along hit list. Do not put curtain/carpet roles on illegal faces.",
+  "fit": {
+    "success": true,
+    "message": "DE success=False; LS success=True cost=0.2131"
+  },
+  "locks": {
+    "live_software": "do not import into live software/ engine in this pack",
+    "honesty": "ASSUMED_TEXTBOOK \u2014 not Structure VERIFIED",
+    "depth": "absolute per bounce (not per metre)"
+  }
+}

@@ -1,0 +1,26 @@
+{
+ "play_one": {
+  "null_db": -2984.1888798576,
+  "band_db": 0.0,
+  "ild_db": 0.0,
+  "ic": 0.0,
+  "early_db": 0.0,
+  "t30_pct": 0.0
+ },
+ "play_two_fdn": {
+  "null_db": -2978.1682799443206,
+  "band_db": 0.0,
+  "ild_db": 0.0,
+  "ic": 0.0,
+  "early_db": 0.0,
+  "t30_pct": 0.0
+ },
+ "play_two_early": {
+  "null_db": -2993.440659519369,
+  "band_db": 0.0,
+  "ild_db": 0.0,
+  "ic": 0.0,
+  "early_db": 0.0,
+  "t30_pct": 0.0
+ }
+}

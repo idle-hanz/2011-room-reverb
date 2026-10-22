@@ -1,0 +1,996 @@
+{
+ "bands_hz": [
+  63,
+  125,
+  250,
+  500,
+  1000,
+  2000,
+  4000
+ ],
+ "guitar": "C:\\Users\\IdleHanz\\Desktop\\2011 Room Reverb\\handoff_build_support_2\\roadmap\\robotic_1240\\test_guitar_dualmono.wav",
+ "guitar_s": 8,
+ "note": "IR is render() of a unit impulse, 50 ms tail fade left in the file and left out of T60. Guitar is the first 8 s convolved with that IR, then the soft knee. T60 is T20 on the stereo magnitude (hypot ruler). Correction 2026-10-19 (F9 NOTES): those T60 numbers are biased, high bands long and low bands short.",
+ "clamp": {
+  "absorb_hz_starts": 125,
+  "faces_63_clamped_to_125": {
+   "A": {
+    "alpha_63": 0.05,
+    "alpha_125": 0.05,
+    "same": true
+   },
+   "B": {
+    "alpha_63": 0.05,
+    "alpha_125": 0.05,
+    "same": true
+   },
+   "C": {
+    "alpha_63": 0.05,
+    "alpha_125": 0.05,
+    "same": true
+   },
+   "D": {
+    "alpha_63": 0.05,
+    "alpha_125": 0.05,
+    "same": true
+   },
+   "E": {
+    "alpha_63": 0.05,
+    "alpha_125": 0.05,
+    "same": true
+   },
+   "F": {
+    "alpha_63": 0.05,
+    "alpha_125": 0.05,
+    "same": true
+   }
+  },
+  "boot_room_target_63_125_4000": [
+   2.5714,
+   2.5594,
+   0.6381
+  ],
+  "boot_teff": [
+   1.8,
+   1.8,
+   1.8,
+   1.5705,
+   1.2452,
+   0.8745,
+   0.6381
+  ],
+  "loss_at_20_63_4000_20000": [
+   33.3333,
+   33.3333,
+   94.0334,
+   94.0334
+  ],
+  "note": "np.interp clamps loss below 63 Hz to the 63 Hz T_eff and above 4 kHz to the 4 kHz T_eff. 63 Hz absorption is the 125 Hz coefficient."
+ },
+ "rows": [
+  {
+   "room": "boot_6x3x8",
+   "phys_ceiling": false,
+   "decay_mode": "flat",
+   "placed": {
+    "sx": 2.6,
+    "sy": 1.2,
+    "sz": 4.75,
+    "mcx": 3.0,
+    "my": 1.5,
+    "mcz": 1.5,
+    "space": 0.25
+   },
+   "room_WHL": [
+    6.0,
+    3.0,
+    8.0
+   ],
+   "fdn_ms": 2790.0,
+   "t60_s": [
+    1.552,
+    1.8125,
+    1.4877,
+    1.619,
+    1.6273,
+    1.7231,
+    1.8395
+   ],
+   "t60_bands_hz": [
+    63,
+    125,
+    250,
+    500,
+    1000,
+    2000,
+    4000
+   ],
+   "model_teff_s": [
+    1.8,
+    1.8,
+    1.8,
+    1.5705,
+    1.2452,
+    0.8745,
+    0.6381
+   ],
+   "ceiling_t": null,
+   "identity_n": null,
+   "tall_peaks_800_4k": [
+    {
+     "hz": 2578.12,
+     "over_median_db": 13.29,
+     "t60_s": 2.081
+    },
+    {
+     "hz": 3099.61,
+     "over_median_db": 11.88,
+     "t60_s": 0.285
+    },
+    {
+     "hz": 1740.23,
+     "over_median_db": 11.47,
+     "t60_s": 0.445
+    },
+    {
+     "hz": 2472.66,
+     "over_median_db": 10.74,
+     "t60_s": null
+    },
+    {
+     "hz": 3304.69,
+     "over_median_db": 10.45,
+     "t60_s": 0.975
+    }
+   ],
+   "ir_peak_db": -16.819,
+   "ir_limiter_db": 0.0,
+   "ir_limiter_samples": 0,
+   "guitar_peak_db": -5.001,
+   "guitar_limiter_db": 0.0,
+   "guitar_limiter_samples": 0,
+   "guitar_peak_in": 0.562265,
+   "wav": "C:\\Users\\IdleHanz\\Desktop\\2011 Room Reverb\\handoff_build_support_2\\roadmap\\smalldecay\\listen\\boot_6x3x8_off.wav",
+   "secs": 41.4,
+   "line_t60": 1.8,
+   "g_decay": 0.15802191792070114,
+   "g_loop": 0.17677669529663687,
+   "makeup": 1.0591793324608707,
+   "makeup_db": 0.499,
+   "decay_s": 1.8,
+   "phys_key_in_live": false
+  },
+  {
+   "room": "boot_6x3x8",
+   "phys_ceiling": true,
+   "decay_mode": "flat",
+   "placed": {
+    "sx": 2.6,
+    "sy": 1.2,
+    "sz": 4.75,
+    "mcx": 3.0,
+    "my": 1.5,
+    "mcz": 1.5,
+    "space": 0.25
+   },
+   "room_WHL": [
+    6.0,
+    3.0,
+    8.0
+   ],
+   "fdn_ms": 2790.0,
+   "t60_s": [
+    2.0789,
+    2.3425,
+    2.1612,
+    1.9027,
+    1.4995,
+    1.0515,
+    0.7636
+   ],
+   "t60_bands_hz": [
+    63,
+    125,
+    250,
+    500,
+    1000,
+    2000,
+    4000
+   ],
+   "model_teff_s": [
+    1.8,
+    1.8,
+    1.8,
+    1.5705,
+    1.2452,
+    0.8745,
+    0.6381
+   ],
+   "ceiling_t": [
+    1.8,
+    1.8,
+    1.8,
+    1.5705,
+    1.2452,
+    0.8745,
+    0.6381
+   ],
+   "identity_n": 1,
+   "tall_peaks_800_4k": [
+    {
+     "hz": 2578.12,
+     "over_median_db": 13.44,
+     "t60_s": 0.313
+    },
+    {
+     "hz": 1740.23,
+     "over_median_db": 11.68,
+     "t60_s": 0.144
+    },
+    {
+     "hz": 2472.66,
+     "over_median_db": 10.52,
+     "t60_s": 1.225
+    },
+    {
+     "hz": 3099.61,
+     "over_median_db": 10.41,
+     "t60_s": 0.348
+    },
+    {
+     "hz": 3304.69,
+     "over_median_db": 10.1,
+     "t60_s": null
+    }
+   ],
+   "ir_peak_db": -17.357,
+   "ir_limiter_db": 0.0,
+   "ir_limiter_samples": 0,
+   "guitar_peak_db": -4.227,
+   "guitar_limiter_db": 0.0,
+   "guitar_limiter_samples": 0,
+   "guitar_peak_in": 0.614681,
+   "wav": "C:\\Users\\IdleHanz\\Desktop\\2011 Room Reverb\\handoff_build_support_2\\roadmap\\smalldecay\\listen\\boot_6x3x8_on.wav",
+   "secs": 48.3,
+   "line_t60": 1.8,
+   "g_decay": 0.15802191792070114,
+   "g_loop": 0.17677669529663687,
+   "makeup": 1.0591793324608707,
+   "makeup_db": 0.499,
+   "decay_s": 1.8,
+   "phys_key_in_live": false
+  },
+  {
+   "room": "4.5x6x2.8",
+   "phys_ceiling": false,
+   "decay_mode": "flat",
+   "placed": {
+    "sx": 1.9500000000000002,
+    "sy": 1.1199999999999999,
+    "sz": 3.5625,
+    "mcx": 2.25,
+    "my": 1.4,
+    "mcz": 1.125,
+    "space": 0.17
+   },
+   "room_WHL": [
+    4.5,
+    2.8,
+    6.0
+   ],
+   "fdn_ms": 2790.0,
+   "t60_s": [
+    0.8129,
+    1.3714,
+    1.7459,
+    1.7096,
+    1.7504,
+    1.8221,
+    1.8265
+   ],
+   "t60_bands_hz": [
+    63,
+    125,
+    250,
+    500,
+    1000,
+    2000,
+    4000
+   ],
+   "model_teff_s": [
+    1.8,
+    1.8,
+    1.7745,
+    1.321,
+    1.0488,
+    0.7385,
+    0.5441
+   ],
+   "ceiling_t": null,
+   "identity_n": null,
+   "tall_peaks_800_4k": [
+    {
+     "hz": 1623.05,
+     "over_median_db": 12.96,
+     "t60_s": 1.045
+    },
+    {
+     "hz": 1160.16,
+     "over_median_db": 11.91,
+     "t60_s": 0.239
+    },
+    {
+     "hz": 2601.56,
+     "over_median_db": 9.71,
+     "t60_s": 0.262
+    },
+    {
+     "hz": 2138.67,
+     "over_median_db": 9.34,
+     "t60_s": 0.562
+    },
+    {
+     "hz": 2777.34,
+     "over_median_db": 9.02,
+     "t60_s": 0.741
+    }
+   ],
+   "ir_peak_db": -15.069,
+   "ir_limiter_db": 0.0,
+   "ir_limiter_samples": 0,
+   "guitar_peak_db": -1.199,
+   "guitar_limiter_db": 0.0,
+   "guitar_limiter_samples": 0,
+   "guitar_peak_in": 0.871108,
+   "wav": "C:\\Users\\IdleHanz\\Desktop\\2011 Room Reverb\\handoff_build_support_2\\roadmap\\smalldecay\\listen\\4.5x6x2.8_off.wav",
+   "secs": 41.7,
+   "line_t60": 1.8,
+   "g_decay": 0.16189473921219047,
+   "g_loop": 0.17677669529663687,
+   "makeup": 0.9519753095159091,
+   "makeup_db": -0.427,
+   "decay_s": 1.8,
+   "phys_key_in_live": false
+  },
+  {
+   "room": "4.5x6x2.8",
+   "phys_ceiling": true,
+   "decay_mode": "flat",
+   "placed": {
+    "sx": 1.9500000000000002,
+    "sy": 1.1199999999999999,
+    "sz": 3.5625,
+    "mcx": 2.25,
+    "my": 1.4,
+    "mcz": 1.125,
+    "space": 0.17
+   },
+   "room_WHL": [
+    4.5,
+    2.8,
+    6.0
+   ],
+   "fdn_ms": 2790.0,
+   "t60_s": [
+    1.8615,
+    2.6577,
+    2.178,
+    1.5667,
+    1.2328,
+    0.9024,
+    0.6495
+   ],
+   "t60_bands_hz": [
+    63,
+    125,
+    250,
+    500,
+    1000,
+    2000,
+    4000
+   ],
+   "model_teff_s": [
+    1.8,
+    1.8,
+    1.7745,
+    1.321,
+    1.0488,
+    0.7385,
+    0.5441
+   ],
+   "ceiling_t": [
+    1.8,
+    1.8,
+    1.7745,
+    1.321,
+    1.0488,
+    0.7385,
+    0.5441
+   ],
+   "identity_n": 0,
+   "tall_peaks_800_4k": [
+    {
+     "hz": 1160.16,
+     "over_median_db": 12.27,
+     "t60_s": 0.589
+    },
+    {
+     "hz": 1623.05,
+     "over_median_db": 11.91,
+     "t60_s": 2.55
+    },
+    {
+     "hz": 925.78,
+     "over_median_db": 11.19,
+     "t60_s": 3.783
+    },
+    {
+     "hz": 814.45,
+     "over_median_db": 10.07,
+     "t60_s": 0.782
+    },
+    {
+     "hz": 1388.67,
+     "over_median_db": 10.04,
+     "t60_s": 0.812
+    }
+   ],
+   "ir_peak_db": -15.585,
+   "ir_limiter_db": 0.0,
+   "ir_limiter_samples": 0,
+   "guitar_peak_db": -0.055,
+   "guitar_limiter_db": 0.075,
+   "guitar_limiter_samples": 3,
+   "guitar_peak_in": 0.993735,
+   "wav": "C:\\Users\\IdleHanz\\Desktop\\2011 Room Reverb\\handoff_build_support_2\\roadmap\\smalldecay\\listen\\4.5x6x2.8_on.wav",
+   "secs": 54.3,
+   "line_t60": 1.8,
+   "g_decay": 0.16189473921219047,
+   "g_loop": 0.17677669529663687,
+   "makeup": 0.9519753095159091,
+   "makeup_db": -0.427,
+   "decay_s": 1.8,
+   "phys_key_in_live": false
+  },
+  {
+   "room": "3x4x2.5",
+   "phys_ceiling": false,
+   "decay_mode": "flat",
+   "placed": {
+    "sx": 1.3,
+    "sy": 1.0,
+    "sz": 2.375,
+    "mcx": 1.5,
+    "my": 1.25,
+    "mcz": 0.75,
+    "space": 0.17
+   },
+   "room_WHL": [
+    3.0,
+    2.5,
+    4.0
+   ],
+   "fdn_ms": 2790.0,
+   "t60_s": [
+    1.5063,
+    1.1988,
+    1.7924,
+    1.6933,
+    1.7937,
+    1.7265,
+    1.8065
+   ],
+   "t60_bands_hz": [
+    63,
+    125,
+    250,
+    500,
+    1000,
+    2000,
+    4000
+   ],
+   "model_teff_s": [
+    1.6354,
+    1.6306,
+    1.3506,
+    1.0072,
+    0.8011,
+    0.566,
+    0.4222
+   ],
+   "ceiling_t": null,
+   "identity_n": null,
+   "tall_peaks_800_4k": [
+    {
+     "hz": 2296.88,
+     "over_median_db": 10.31,
+     "t60_s": 3.309
+    },
+    {
+     "hz": 1089.84,
+     "over_median_db": 9.15,
+     "t60_s": 2.267
+    },
+    {
+     "hz": 1822.27,
+     "over_median_db": 8.88,
+     "t60_s": 1.562
+    },
+    {
+     "hz": 2238.28,
+     "over_median_db": 8.74,
+     "t60_s": null
+    },
+    {
+     "hz": 2361.33,
+     "over_median_db": 8.46,
+     "t60_s": 1.473
+    }
+   ],
+   "ir_peak_db": -12.602,
+   "ir_limiter_db": 0.0,
+   "ir_limiter_samples": 0,
+   "guitar_peak_db": 3.754,
+   "guitar_limiter_db": 3.754,
+   "guitar_limiter_samples": 20831,
+   "guitar_peak_in": 1.540622,
+   "wav": "C:\\Users\\IdleHanz\\Desktop\\2011 Room Reverb\\handoff_build_support_2\\roadmap\\smalldecay\\listen\\3x4x2.5_off.wav",
+   "secs": 137.9,
+   "line_t60": 1.8,
+   "g_decay": 0.16587200761059095,
+   "g_loop": 0.17677669529663687,
+   "makeup": 0.8196671943786153,
+   "makeup_db": -1.727,
+   "decay_s": 1.8,
+   "phys_key_in_live": false
+  },
+  {
+   "room": "3x4x2.5",
+   "phys_ceiling": true,
+   "decay_mode": "flat",
+   "placed": {
+    "sx": 1.3,
+    "sy": 1.0,
+    "sz": 2.375,
+    "mcx": 1.5,
+    "my": 1.25,
+    "mcz": 0.75,
+    "space": 0.17
+   },
+   "room_WHL": [
+    3.0,
+    2.5,
+    4.0
+   ],
+   "fdn_ms": 2790.0,
+   "t60_s": [
+    1.2049,
+    1.5693,
+    1.5229,
+    1.1374,
+    0.933,
+    0.6744,
+    0.4978
+   ],
+   "t60_bands_hz": [
+    63,
+    125,
+    250,
+    500,
+    1000,
+    2000,
+    4000
+   ],
+   "model_teff_s": [
+    1.6354,
+    1.6306,
+    1.3506,
+    1.0072,
+    0.8011,
+    0.566,
+    0.4222
+   ],
+   "ceiling_t": [
+    1.6354,
+    1.6306,
+    1.3506,
+    1.0072,
+    0.8011,
+    0.566,
+    0.4222
+   ],
+   "identity_n": 0,
+   "tall_peaks_800_4k": [
+    {
+     "hz": 1089.84,
+     "over_median_db": 13.2,
+     "t60_s": 0.266
+    },
+    {
+     "hz": 890.62,
+     "over_median_db": 12.17,
+     "t60_s": 1.226
+    },
+    {
+     "hz": 1019.53,
+     "over_median_db": 11.37,
+     "t60_s": 0.74
+    },
+    {
+     "hz": 955.08,
+     "over_median_db": 10.17,
+     "t60_s": 1.303
+    },
+    {
+     "hz": 1687.5,
+     "over_median_db": 9.8,
+     "t60_s": 2.194
+    }
+   ],
+   "ir_peak_db": -13.084,
+   "ir_limiter_db": 0.0,
+   "ir_limiter_samples": 0,
+   "guitar_peak_db": 3.891,
+   "guitar_limiter_db": 3.891,
+   "guitar_limiter_samples": 107093,
+   "guitar_peak_in": 1.565052,
+   "wav": "C:\\Users\\IdleHanz\\Desktop\\2011 Room Reverb\\handoff_build_support_2\\roadmap\\smalldecay\\listen\\3x4x2.5_on.wav",
+   "secs": 153.0,
+   "line_t60": 1.8,
+   "g_decay": 0.16587200761059095,
+   "g_loop": 0.17677669529663687,
+   "makeup": 0.8196671943786153,
+   "makeup_db": -1.727,
+   "decay_s": 1.8,
+   "phys_key_in_live": false
+  },
+  {
+   "room": "2x2.5x2.2",
+   "phys_ceiling": false,
+   "decay_mode": "flat",
+   "placed": {
+    "sx": 0.8666666666666667,
+    "sy": 0.88,
+    "sz": 1.484375,
+    "mcx": 1.0,
+    "my": 1.1,
+    "mcz": 0.46875,
+    "space": 0.17
+   },
+   "room_WHL": [
+    2.0,
+    2.2,
+    2.5
+   ],
+   "fdn_ms": 2790.0,
+   "t60_s": [
+    0.3094,
+    0.9804,
+    1.6639,
+    1.8168,
+    1.8382,
+    1.7961,
+    1.7953
+   ],
+   "t60_bands_hz": [
+    63,
+    125,
+    250,
+    500,
+    1000,
+    2000,
+    4000
+   ],
+   "model_teff_s": [
+    1.1876,
+    1.185,
+    0.9832,
+    0.7344,
+    0.585,
+    0.4145,
+    0.3126
+   ],
+   "ceiling_t": null,
+   "identity_n": null,
+   "tall_peaks_800_4k": [
+    {
+     "hz": 1804.69,
+     "over_median_db": 7.84,
+     "t60_s": 7.22
+    },
+    {
+     "hz": 2970.7,
+     "over_median_db": 6.94,
+     "t60_s": 1.569
+    },
+    {
+     "hz": 2285.16,
+     "over_median_db": 6.89,
+     "t60_s": 0.788
+    },
+    {
+     "hz": 3304.69,
+     "over_median_db": 6.27,
+     "t60_s": 0.334
+    },
+    {
+     "hz": 2425.78,
+     "over_median_db": 6.24,
+     "t60_s": 1.655
+    }
+   ],
+   "ir_peak_db": -19.501,
+   "ir_limiter_db": 0.0,
+   "ir_limiter_samples": 0,
+   "guitar_peak_db": -3.578,
+   "guitar_limiter_db": 0.0,
+   "guitar_limiter_samples": 0,
+   "guitar_peak_in": 0.662376,
+   "wav": "C:\\Users\\IdleHanz\\Desktop\\2011 Room Reverb\\handoff_build_support_2\\roadmap\\smalldecay\\listen\\2x2.5x2.2_off.wav",
+   "secs": 107.6,
+   "line_t60": 1.8,
+   "g_decay": 0.1688166373052554,
+   "g_loop": 0.17677669529663687,
+   "makeup": 0.23041893217198456,
+   "makeup_db": -12.75,
+   "decay_s": 1.8,
+   "phys_key_in_live": false
+  },
+  {
+   "room": "2x2.5x2.2",
+   "phys_ceiling": true,
+   "decay_mode": "flat",
+   "placed": {
+    "sx": 0.8666666666666667,
+    "sy": 0.88,
+    "sz": 1.484375,
+    "mcx": 1.0,
+    "my": 1.1,
+    "mcz": 0.46875,
+    "space": 0.17
+   },
+   "room_WHL": [
+    2.0,
+    2.2,
+    2.5
+   ],
+   "fdn_ms": 2790.0,
+   "t60_s": [
+    0.1639,
+    0.5857,
+    0.9646,
+    0.8619,
+    0.7233,
+    0.494,
+    0.3522
+   ],
+   "t60_bands_hz": [
+    63,
+    125,
+    250,
+    500,
+    1000,
+    2000,
+    4000
+   ],
+   "model_teff_s": [
+    1.1876,
+    1.185,
+    0.9832,
+    0.7344,
+    0.585,
+    0.4145,
+    0.3126
+   ],
+   "ceiling_t": [
+    1.1876,
+    1.185,
+    0.9832,
+    0.7344,
+    0.585,
+    0.4145,
+    0.3126
+   ],
+   "identity_n": 0,
+   "tall_peaks_800_4k": [
+    {
+     "hz": 943.36,
+     "over_median_db": 14.07,
+     "t60_s": 0.278
+    },
+    {
+     "hz": 861.33,
+     "over_median_db": 13.03,
+     "t60_s": 0.866
+    },
+    {
+     "hz": 1148.44,
+     "over_median_db": 12.95,
+     "t60_s": 0.518
+    },
+    {
+     "hz": 1318.36,
+     "over_median_db": 12.47,
+     "t60_s": 0.546
+    },
+    {
+     "hz": 1734.38,
+     "over_median_db": 12.29,
+     "t60_s": null
+    }
+   ],
+   "ir_peak_db": -19.945,
+   "ir_limiter_db": 0.0,
+   "ir_limiter_samples": 0,
+   "guitar_peak_db": -6.632,
+   "guitar_limiter_db": 0.0,
+   "guitar_limiter_samples": 0,
+   "guitar_peak_in": 0.466034,
+   "wav": "C:\\Users\\IdleHanz\\Desktop\\2011 Room Reverb\\handoff_build_support_2\\roadmap\\smalldecay\\listen\\2x2.5x2.2_on.wav",
+   "secs": 118.5,
+   "line_t60": 1.8,
+   "g_decay": 0.1688166373052554,
+   "g_loop": 0.17677669529663687,
+   "makeup": 0.23041893217198456,
+   "makeup_db": -12.75,
+   "decay_s": 1.8,
+   "phys_key_in_live": false
+  },
+  {
+   "room": "3x4x2.5",
+   "phys_ceiling": true,
+   "decay_mode": "surfaces",
+   "placed": {
+    "sx": 1.3,
+    "sy": 1.0,
+    "sz": 2.375,
+    "mcx": 1.5,
+    "my": 1.25,
+    "mcz": 0.75,
+    "space": 0.17
+   },
+   "room_WHL": [
+    3.0,
+    2.5,
+    4.0
+   ],
+   "fdn_ms": 2790.0,
+   "t60_s": [
+    2.4964,
+    1.4201,
+    1.3916,
+    1.1269,
+    0.9499,
+    0.6888,
+    0.4922
+   ],
+   "t60_bands_hz": [
+    63,
+    125,
+    250,
+    500,
+    1000,
+    2000,
+    4000
+   ],
+   "model_teff_s": [
+    1.6354,
+    1.6306,
+    1.3506,
+    1.0072,
+    0.8011,
+    0.566,
+    0.4222
+   ],
+   "ceiling_t": [
+    1.6354,
+    1.6306,
+    1.3506,
+    1.0072,
+    0.8011,
+    0.566,
+    0.4222
+   ],
+   "identity_n": 0,
+   "tall_peaks_800_4k": [
+    {
+     "hz": 1089.84,
+     "over_median_db": 12.77,
+     "t60_s": 0.37
+    },
+    {
+     "hz": 890.62,
+     "over_median_db": 12.31,
+     "t60_s": 1.121
+    },
+    {
+     "hz": 1746.09,
+     "over_median_db": 10.67,
+     "t60_s": 0.618
+    },
+    {
+     "hz": 1687.5,
+     "over_median_db": 10.23,
+     "t60_s": 3.336
+    },
+    {
+     "hz": 1019.53,
+     "over_median_db": 10.13,
+     "t60_s": 0.77
+    }
+   ],
+   "ir_peak_db": -13.136,
+   "ir_limiter_db": 0.0,
+   "ir_limiter_samples": 0,
+   "guitar_peak_db": 1.962,
+   "guitar_limiter_db": 1.962,
+   "guitar_limiter_samples": 6289,
+   "guitar_peak_in": 1.253409,
+   "wav": "C:\\Users\\IdleHanz\\Desktop\\2011 Room Reverb\\handoff_build_support_2\\roadmap\\smalldecay\\listen\\3x4x2.5_surfaces_on.wav",
+   "secs": 138.2,
+   "line_t60": 1.8,
+   "g_decay": 0.16587200761059095,
+   "g_loop": 0.17677669529663687,
+   "makeup": 0.8196671943786153,
+   "makeup_db": -1.727,
+   "decay_s": 1.8,
+   "phys_key_in_live": false
+  }
+ ],
+ "boot_dial_unchanged": {
+  "off": {
+   "line_t60": 1.8,
+   "g_decay": 0.15802191792070114,
+   "g_loop": 0.17677669529663687,
+   "makeup": 1.0591793324608707,
+   "makeup_db": 0.499,
+   "decay_s": 1.8,
+   "phys_key_in_live": false
+  },
+  "on_line_t60": 1.8,
+  "on_g_decay": 0.15802191792070114,
+  "on_makeup": 1.0591793324608707,
+  "on_decay_s": 1.8,
+  "on_has_phys_key": false,
+  "match": true
+ },
+ "play_vs_render": {
+  "room": "2x2.5x2.2",
+  "phys_ceiling": true,
+  "render_t60": [
+   0.1639,
+   0.5857,
+   0.9646,
+   0.8619,
+   0.7233,
+   0.494,
+   0.3522
+  ],
+  "play_t60": [
+   0.1639,
+   0.5857,
+   0.9646,
+   0.8619,
+   0.7233,
+   0.494,
+   0.3522
+  ],
+  "bands_hz": [
+   63,
+   125,
+   250,
+   500,
+   1000,
+   2000,
+   4000
+  ],
+  "null_db_L": -78.76,
+  "null_db_R": -78.91,
+  "play_line_t60": 1.8,
+  "play_g_decay": 0.1688166373052554,
+  "play_makeup": 0.23041893217198456,
+  "play_surf_on": 1,
+  "play_surf_sos": 1440,
+  "play_has_phys_key": false
+ }
+}

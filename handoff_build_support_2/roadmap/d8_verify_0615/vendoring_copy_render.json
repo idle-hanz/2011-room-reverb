@@ -1,0 +1,41 @@
+{
+ "air_roots": [
+  "/tmp/vend0615/software/engine/presets/air"
+ ],
+ "ortf_h0.0": {
+  "ok": true,
+  "render_peak": 0.8720528507027714,
+  "mic_setup": "ortf",
+  "live": "NoneType"
+ },
+ "ortf_h0.35": {
+  "ok": true,
+  "render_peak": 0.8674083556083303,
+  "mic_setup": "ortf",
+  "live": "NoneType"
+ },
+ "ortf_h1.0": {
+  "ok": true,
+  "render_peak": 0.8679040096184907,
+  "mic_setup": "ortf",
+  "live": "NoneType"
+ },
+ "binaural_h0.0": {
+  "ok": true,
+  "render_peak": 0.8720530162705054,
+  "mic_setup": "binaural",
+  "live": "NoneType"
+ },
+ "binaural_h0.35": {
+  "ok": true,
+  "render_peak": 0.8674085212631506,
+  "mic_setup": "binaural",
+  "live": "NoneType"
+ },
+ "binaural_h1.0": {
+  "ok": true,
+  "render_peak": 0.8679041753778126,
+  "mic_setup": "binaural",
+  "live": "NoneType"
+ }
+}

@@ -1,0 +1,52 @@
+<!doctype html><html><head><meta charset="utf-8"><link rel="stylesheet" href="base.css"><style>
+.lay{display:grid;grid-template-columns:minmax(0,1.72fr) minmax(268px,.72fr);gap:12px;align-items:start}
+.img{display:block;width:100%;border:1px solid var(--border);border-radius:10px;background:#08090c}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:11px}.lab{font-size:12px;font-weight:700;margin:10px 0 4px}.lab em{color:var(--muted);font-weight:400;font-style:normal}
+.gone{text-decoration:line-through;color:var(--faint)}.pill{font-size:10px;color:var(--muted);border:1px solid var(--border);border-radius:999px;padding:1px 6px;margin-left:4px}
+.frame{border:1px solid var(--border);border-radius:14px;padding:12px;margin:0 0 26px;background:#0d0e13}.frame>h2{color:var(--text);font-size:13px}
+.strip{background:var(--panel2);border:1px solid var(--border);border-radius:10px;padding:10px;text-align:center;font-size:12px}
+.desk{display:grid;grid-template-columns:repeat(3,90px) 24px repeat(4,90px) 24px 360px;gap:8px;align-items:stretch}
+.fader{height:120px;width:6px;background:var(--border);margin:8px auto;border-radius:3px;position:relative}.fader b{position:absolute;left:-7px;top:50%;width:20px;height:10px;background:var(--accent);border-radius:3px}
+.knobs{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:6px}.knob{border:1px solid var(--border);border-radius:8px;padding:6px 4px;font-size:11px;color:var(--muted)}.knob b{display:block;color:var(--accent);font-family:monospace}
+</style></head><body>
+<h1>Item 7 · Colour merges into Surfaces (7 tabs) · post-EQ moves to the Mix tab · D-UI23 yes, D-UI24 = A (locked 09:06)</h1>
+<div class="sub">Idle, 3 Oct: “colour should be tied in with surfaces as it is an EQ tied to the surface”. Today (S-UI2, VERIFIED) the Colour tab is one panel: the wet-IR 1/3-octave analyser (0 dB ref, Hold A, Hold B, Clear), a face badge and a read-only “This face · absorb×EQ” strip. The face EQ itself (low shelf, peak, high shelf) is already on Surfaces. So Colour has no controls of its own. Merge = move that panel onto Surfaces, under the face it describes. UI only: no sound change. Pictures are today’s S-UI2 canvases.</div>
+<div class="frame"><h2>Surfaces tab, merged · viewport 1600×1000</h2>
+<div class="tabs"><span class="tab">Room</span><span class="tab">Source</span><span class="tab">Mic</span><span class="tab">Mix</span><span class="tab">Space</span><span class="tab on">Surfaces</span><span class="tab">Polar</span><span class="tab gone">Colour</span></div>
+<div class="lay"><div class="grid">
+ <div class="panel"><h2>Surfaces <span class="pill">unchanged top half</span></h2>
+  <div class="hint" style="margin-bottom:8px">Pick a material for the selected face. Solo and Mute are on this tab only. The direct sound does not change.</div>
+  <img class="img" src="img_sui2/roomnet.png">
+  <div style="margin-top:8px"><span class="lbl">Material</span> <span class="chip">Plaster</span><span class="chip on">Gypsum board</span><span class="chip">Brick</span><span class="chip">Concrete</span><span class="chip">Wood parquet</span><span class="chip">…16</span></div>
+  <div class="hint">Face cards A–F with Solo / Mute (unchanged)</div>
+  <div class="lab">Surface A · Left <em>selected face</em></div>
+  <div class="two"><div><div class="lab">Absorption vs frequency <em>ASSUMED</em></div><img class="img" src="img_sui2/absorb.png"></div>
+   <div><div class="lab">Surface EQ <em>low shelf · peak · high shelf</em></div><img class="img" src="img_sui2/eq.png"><div class="hint">7 sliders: Low shelf dB/Hz, Peak dB/Hz/Q, High shelf dB/Hz</div></div></div>
+  <div class="hint" style="margin-top:4px">Absorb and EQ side by side (today stacked, 1046×322 each) so the analyser sits close under them.</div>
+ </div>
+ <div class="panel moved"><h2>Room colour · analyser of the wet sound <span class="movetag">was the Colour tab</span> <span class="pill">a measurement, not an EQ · 1/3 octave · updates after Render</span></h2>
+  <div class="row"><span class="legend">● Now ● Last ● Hold A ● Hold B</span><span style="flex:1"></span><span class="chip">0 dB: Peak band ▾</span><span class="chip">Hold A</span><span class="chip">Hold B</span><span class="chip">Clear</span></div>
+  <div class="hint">← A · Left · faces −X (follows the selected face)</div>
+  <img class="img" src="img_sui2/analyser.png" style="margin-top:6px"><div class="hint">(picture = today’s analyser before any Render in this session; it fills with the Now/Last/Hold curves after Render)</div>
+  <div class="lab">This face · absorb×EQ <em>same strip as today, now right under the face controls</em></div>
+  <div class="hint">Workflow: Hold A → change the face EQ or material → Render → compare Now with Hold A.</div>
+ </div>
+ <div class="panel"><h2>Air <span class="pill">unchanged</span></h2><div class="hint">Air amount · Climate · ISO depth</div></div>
+ <div class="panel" style="padding:10px 14px"><h2 style="margin:0">▸ Advanced (Smear · Structure: Tail diffusion · seed · λ_ref)</h2></div>
+</div>
+<div class="grid"><div class="panel"><h2>Room size</h2><div class="hint">unchanged sidebar (Room size, Preview, Advanced)</div></div><div class="panel"><h2>Preview</h2><div class="hint">unchanged</div></div></div></div>
+<div class="hint" style="margin-top:8px">After Render: today the app jumps to the Colour tab unless Colour or Surfaces is open (app.js:2353). Merged: <b>D-UI23b</b>, recommend no tab jump. The analyser updates in place and shows the new curve when you open Surfaces.</div>
+</div>
+<div class="frame"><h2>D-UI17 new home (D-UI24 = A, locked 09:06): post-mixer EQ on the Mix tab Output strip, built in S-OUT</h2>
+<div class="desk">
+ <div class="strip">Left<div class="fader"><b></b></div>0.0</div><div class="strip">Centre<div class="fader"><b></b></div>0.0</div><div class="strip">Right<div class="fader"><b></b></div>0.0</div><div></div>
+ <div class="strip">Direct<div class="fader"><b></b></div>0.0</div><div class="strip">FDN<div class="fader"><b></b></div>0.0</div><div class="strip">Early<div class="fader"><b></b></div>−∞</div><div class="strip">Host<div class="fader"><b></b></div>−∞</div><div></div>
+ <div class="strip new" style="text-align:left"><b>Output</b> <span class="newtag">S-OUT</span>
+  <div class="row"><span class="chip on">Auto level</span><span class="chip">Off</span><span class="hint">Applied +x dB</span></div>
+  <div class="lab" style="margin-top:4px">Post-EQ <em>after the mixer · flat = bit-exact bypass</em></div>
+  <svg width="336" height="70" viewBox="0 0 336 70"><rect width="336" height="70" rx="8" fill="#08090c" stroke="#2a2f3d"/><path d="M8 35 H328" stroke="#2dd4bf" stroke-width="2"/><text x="10" y="64" fill="#5c6478" font-size="10">flat</text></svg>
+  <div class="knobs"><div class="knob">Low shelf<b>0.0 dB</b>200 Hz</div><div class="knob">Peak<b>0.0 dB</b>1 kHz · Q 1</div><div class="knob">High shelf<b>0.0 dB</b>5 kHz</div></div>
+ </div></div>
+<div class="hint" style="margin-top:8px">Why here: the post-EQ shapes the whole mix, not one face, so it belongs with the faders. The Surfaces analyser can later overlay the post-EQ curve. Options for Idle: <b>A</b> Mix tab Output strip (recommended) · <b>B</b> a “Master EQ” card under the analyser on Surfaces (mixes per-face and whole-mix EQ on one page) · <b>C</b> drop D-UI17 (the per-face EQ may be enough).</div>
+</div>
+</body></html>

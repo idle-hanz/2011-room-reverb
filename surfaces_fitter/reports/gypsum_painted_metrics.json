@@ -1,0 +1,41 @@
+{
+  "id": "gypsum_painted",
+  "display_name": "Gypsum board (painted)",
+  "candidate": "B",
+  "model": "low_shelf_high_shelf",
+  "rmse_r_db": 0.004163698751085373,
+  "absorb_l1": 0.0014235615520906536,
+  "candidate_rmse": {
+    "A": 0.09996322985675377,
+    "B": 0.004163698751085373
+  },
+  "params": {
+    "r0_db": -0.15488159395835563,
+    "f_lo": 320.3539235619464,
+    "depth_lo_db": -0.30582918149161087,
+    "shelf_slope_lo": 6.693785650563932,
+    "f0": 2652.6685513092348,
+    "depth_db": -0.17066642102165058,
+    "shelf_slope": 4.405145262180095
+  },
+  "roles": [
+    "wall",
+    "ceiling"
+  ],
+  "banned_on": [
+    "floor"
+  ],
+  "absorb": [
+    0.1,
+    0.08,
+    0.05,
+    0.04,
+    0.05,
+    0.06,
+    0.06999999999999999
+  ],
+  "extras": {
+    "notes": "Slight LF absorb from panel resonance; mid reflective.",
+    "prefer_lf_candidate": true
+  }
+}

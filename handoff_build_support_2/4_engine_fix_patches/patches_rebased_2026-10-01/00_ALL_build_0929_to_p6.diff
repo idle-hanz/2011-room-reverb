@@ -1,0 +1,829 @@
+diff -ruN -x __pycache__ -x '*.wasm' -x .pytest_cache -x mic_fitter s0/app_server.py s6/app_server.py
+--- a/app_server.py	2026-10-01 07:46:53.018339172 +0100
++++ b/app_server.py	2026-10-01 07:47:03.494306942 +0100
+@@ -33,6 +33,7 @@
+ )
+ 
+ from polar_field import compute_polar_field
++from fdn import DIFFUSION_MASTER_DEFAULT, DIFFUSION_MASTER_MIN  # locked 28 Sep 2026
+ from surface_colour import (
+     DEFAULT_DIFFUSION_SEED,
+     DEFAULT_LAMBDA_REF_M,
+@@ -55,12 +56,12 @@
+     "W": 6.0,
+     "H": 3.0,
+     "L": 8.0,
+-    "sx": 3.0,
++    "sx": 2.6,  # K3 locked 28 Sep 2026
+     "sz": 4.75,
+     "mcx": 3.0,
+     "mcz": 1.5,
+     "my": 1.5,
+-    "sy": 1.5,
++    "sy": 1.2,  # K3 locked 28 Sep 2026
+     "link_heights": False,
+     "space": 0.25,
+     "diverg": 1.0,
+@@ -267,6 +268,10 @@
+                 sy_arg = float(raw_sy)
+             except (TypeError, ValueError):
+                 sy_arg = None
++    elif body.get("my") is None:
++        # K3 (locked 28 Sep 2026): a body with neither sy nor my gets the default source
++        # height. A body that sends my but not sy keeps the legacy "sy follows my".
++        sy_arg = DEFAULTS["sy"]
+     sx, sz, my, mcz, space, mcx, sy = clamp_inside_room(
+         W, H, L,
+         sx=_f(body.get("sx"), DEFAULTS["sx"]),
+@@ -337,9 +342,9 @@
+         "diffusion_seed": parse_diffusion_seed(body.get("diffusion_seed"), DEFAULT_DIFFUSION_SEED),
+         "lambda_ref": parse_lambda_ref(body.get("lambda_ref"), DEFAULT_LAMBDA_REF_M),
+         "humidity": _f(body.get("humidity"), 0.0),
+-        "air_lp": _f(body.get("air_lp"), 0.25),
++        "air_lp": _f(body.get("air_lp"), 0.0),  # K2 locked: 1-pole kept, default mix 0
+         "air_shelf": _f(body.get("air_shelf"), 1.0),
+-        "diffusion_master": _f(body.get("diffusion_master"), -0.5),
++        "diffusion_master": _span(body.get("diffusion_master"), DIFFUSION_MASTER_DEFAULT, DIFFUSION_MASTER_MIN, 0.0),
+         "decay_s": _f(body.get("decay_s"), 0.0),
+         "decay_lock": _b(body.get("decay_lock"), False),
+         "mic_gain_l": _span(body.get("mic_gain_l"), 1.0, 0.0, 16.0),
+@@ -625,9 +630,9 @@
+             diffusion_seed=p["diffusion_seed"],
+             lambda_ref=p["lambda_ref"],
+             humidity=p.get("humidity") or 0.0,
+-            air_lp=p.get("air_lp") if p.get("air_lp") is not None else 0.25,
++            air_lp=p.get("air_lp") if p.get("air_lp") is not None else 0.0,
+             air_shelf=p.get("air_shelf") if p.get("air_shelf") is not None else 1.0,
+-            diffusion_master=p.get("diffusion_master") if p.get("diffusion_master") is not None else -0.5,
++            diffusion_master=p.get("diffusion_master") if p.get("diffusion_master") is not None else DIFFUSION_MASTER_DEFAULT,
+             decay_s=p.get("decay_s") or 0.0,
+             decay_lock=bool(p.get("decay_lock")),
+             mic_gain_l=p.get("mic_gain_l", 1.0),
+diff -ruN -x __pycache__ -x '*.wasm' -x .pytest_cache -x mic_fitter s0/engine/early_field.py s6/engine/early_field.py
+--- a/engine/early_field.py	2026-10-01 07:46:53.018339172 +0100
++++ b/engine/early_field.py	2026-10-01 07:47:03.494306942 +0100
+@@ -714,11 +714,17 @@
+ # --- Per-capsule pattern + yaw (modern UI) ------------------------------------
+ # Yaw convention (document + keep consistent everywhere):
+ #   yaw = 0 → look toward +Z (room forward / +look).
+-#   look_xz = (-sin(yaw), cos(yaw)).
+-#   Positive yaw rotates look toward −X.
+-#   L capsule (smaller X): inward toward mid (+X) ⇒ negative yaw (e.g. −90° MS).
+-#   R capsule (larger X): inward toward mid (−X) ⇒ positive yaw (e.g. +90° MS).
+-# Idle Hanz “facing each other” / MS inward = L −90°, R +90°, C forward.
++#   look_xz = (YAW_X_SIGN·sin(yaw), cos(yaw)) with YAW_X_SIGN = +1:
++#   positive yaw rotates look toward +X (the UI's right).
++#   L capsule (smaller X): outward toward −X ⇒ negative yaw (e.g. ORTF −55°, MS −90°).
++#   R capsule (larger X): outward toward +X ⇒ positive yaw (e.g. ORTF +55°, MS +90°).
++#   K1 fix (Idle, 28 Sep 2026): the old convention was YAW_X_SIGN = −1, which aimed
++#   every L-negative/R-positive preset INWARD (crossed capsules). Stored yaw numbers
++#   (presets, saves) are unchanged; only this one sign flipped. JS mirror:
++#   RoomMath.YAW_X_SIGN (static/js/room_math.js). Keep both equal.
++YAW_X_SIGN = 1.0
++# (Superseded note, kept for history: "Idle Hanz 'facing each other' / MS inward =
++#  L −90°, R +90°" described the old −1 convention. Locked decision K1 = outward.)
+ PATTERN_OMNI = "omni"
+ PATTERN_CARDIOID = "cardioid"
+ PATTERN_SUPER = "supercardioid"
+@@ -1015,7 +1021,7 @@
+     dx = to_image[0] - from_mic[0]
+     dy = to_image[1] - from_mic[1]
+     dz = to_image[2] - from_mic[2]
+-    c, s = math.cos(-yaw_rad), math.sin(-yaw_rad)
++    c, s = math.cos(yaw_rad), YAW_X_SIGN * math.sin(yaw_rad)
+     rx = c * dx - s * dz
+     rz = s * dx + c * dz
+     ry = dy
+@@ -1037,14 +1043,14 @@
+     hyp = math.hypot(dx, dz)
+     if hyp <= 1e-12:
+         return 1.0
+-    c, s = math.cos(-yaw_rad), math.sin(-yaw_rad)
++    c, s = math.cos(yaw_rad), YAW_X_SIGN * math.sin(yaw_rad)
+     rz = s * dx + c * dz
+     return max(-1.0, min(1.0, rz / hyp))
+ 
+ 
+ def look_vector(yaw_rad: float) -> Vec3:
+-    """Horizontal aim. Yaw 0 looks toward +Z: (−sin yaw, 0, cos yaw). No tilt."""
+-    return (-math.sin(yaw_rad), 0.0, math.cos(yaw_rad))
++    """Horizontal aim. Yaw 0 looks toward +Z: (YAW_X_SIGN·sin yaw, 0, cos yaw). No tilt."""
++    return (YAW_X_SIGN * math.sin(yaw_rad), 0.0, math.cos(yaw_rad))
+ 
+ 
+ def arrival_cos_ray(from_mic: Vec3, to_image: Vec3, yaw_rad: float) -> float:
+diff -ruN -x __pycache__ -x '*.wasm' -x .pytest_cache -x mic_fitter s0/engine/fdn.py s6/engine/fdn.py
+--- a/engine/fdn.py	2026-10-01 07:46:53.018339172 +0100
++++ b/engine/fdn.py	2026-10-01 07:47:03.494306942 +0100
+@@ -194,8 +194,13 @@
+ DFFS_KNOB_DEFAULT = 0.0333
+ # Diffusion Master (485): Min 0, Max −0.5, Default −0.25. Live dump at Max.
+ # 202: sum(ADif…) × MDif → Clipper. MDif = this master (359 DMix).
++# Locked 28 Sep 2026 (Idle): app default is the Structure Default −0.25 and the
++# accepted range is clamped to the Structure span [−0.5, 0]. LIVE is kept as a
++# name for callers; it now equals the default (the −0.5 live dump is still
++# reachable as the clamp end-stop).
+ DIFFUSION_MASTER_DEFAULT = -0.25
+-DIFFUSION_MASTER_LIVE = -0.5
++DIFFUSION_MASTER_MIN = -0.5
++DIFFUSION_MASTER_LIVE = DIFFUSION_MASTER_DEFAULT
+ 
+ 
+ def dff_after_master(sum_dif: float, master: float = DIFFUSION_MASTER_LIVE) -> float:
+@@ -208,6 +213,48 @@
+     return v
+ 
+ 
++# ---------------------------------------------------------------------------
++# Loop level trim (headroom decision 6, locked 28 Sep 2026).
++# Fixed makeup trims, one row per loop change, so the same FDN fader gives the
++# same loudness as before that change. dB, applied to the FDN bus only (the send
++# `fdn_wet`), never to direct/early. The engine is float inside; the risk is
++# clipping at 0 dBFS on the output, so trims only ever reduce level.
++#   "play":   Play path (live_stereo.c via live_fdn_params)
++#   "render": Render path (render_fdn_ir)
++#   "when":   "lock" = only while line absorption carries the decay (F2 active,
++#             decay_lock on); "always" = every loop.
++# Values measured at the reference scene (page default room 6x3x8, decay lock
++# 1.8 s, humidity 0.5, source pinned at the old default x 3.0 / y 1.5,
++# diffusion_master at the locked default -0.25, air_lp held at the old 0.25 so
++# the K2 change is not absorbed): FDN-only impulse-response energy, latest
++# snapshot vs F2+F3 tree (build_support_2/4_engine_fix_patches/results/levels/
++# levels_{latest,p4}_dm025). F3 alone = -1.70 dB on Play (unlocked scene);
++# F2 = -2.81 dB on both paths. Not re-derived at diffusion -0.5: with F2 the
++# loop level depends on diffusion_master (Render -0.5 -> -0.25: -9 dB). A fixed
++# trim is exact only at that scene; residuals at other scenes are in the
++# package-4 README. F5 (same-sample loop) will make Play about +5.8 dB hotter at
++# the reference scene: measure it the same way and fill its row.
++LOOP_LEVEL_TRIM_DB = {
++    "f2_line_absorption": {"play": -2.81, "render": -2.81, "when": "lock"},
++    "f3_play_rate_delays": {"play": -1.70, "render": 0.0, "when": "always"},
++    "f5_same_sample": {"play": 0.0, "render": 0.0, "when": "always"},  # not landed
++}
++
++
++def loop_level_trim_db(path: str = "play", lock_active: bool = True) -> float:
++    """Summed loop trim in dB for `path` ("play" / "render")."""
++    tot = 0.0
++    for row in LOOP_LEVEL_TRIM_DB.values():
++        if row.get("when") == "lock" and not lock_active:
++            continue
++        tot += float(row.get(path, 0.0))
++    return tot
++
++
++def loop_level_trim_lin(path: str = "play", lock_active: bool = True) -> float:
++    return float(10.0 ** (loop_level_trim_db(path, lock_active) / 20.0))
++
++
+ def diffusion_scale_from_room(room: Vec3, knob: float = DFFS_KNOB_DEFAULT) -> float:
+     """Room Dim Diffusion out (276): max(W,H,L) × mean(W,H,L) × knob.
+ 
+@@ -726,6 +773,7 @@
+         n: Optional[int] = None,
+         dffs: Optional[Sequence[float]] = None,
+         mic_g: Optional[Sequence[float]] = None,
++        line_t60: float = 0.0,
+     ) -> None:
+         n_lines = int(n) if n is not None else len(delays)
+         if n_lines < 1 or (n_lines & (n_lines - 1)) != 0:
+@@ -734,9 +782,19 @@
+             raise ValueError(f"need {n_lines} delays, got {len(delays)}")
+         self.n = n_lines
+         # Unscaled Hadamard: stable only if g < 1/√N. Structure is Gain/N.
+-        lim = 0.99 / math.sqrt(float(self.n))
++        # With line absorption (decay lock) every line loses gain < 1 per
++        # trip, so the loop may run at the lossless g = 1/√N.
++        self.line_t60 = float(line_t60 or 0.0)
++        lim = (1.0 if self.line_t60 > 0.05 else 0.99) / math.sqrt(float(self.n))
+         self.g = float(max(0.0, min(lim, g)))
+         self.delays = [int(d) for d in delays]
++        # lg_i = 10^(-3 d_i / (sr T60)): delay-proportional absorption (Jot).
++        self._lg = None
++        if self.line_t60 > 0.05:
++            self._lg = np.asarray(
++                [10.0 ** (-3.0 * float(d) / (float(sr) * self.line_t60)) for d in self.delays],
++                dtype=np.float64,
++            )
+         self.max_d = max(self.delays) if self.delays else 0
+         self.bufs = [np.zeros(d, dtype=np.float64) for d in self.delays]
+         self.idx = [0] * self.n
+@@ -814,7 +872,7 @@
+         Prefers fdn_core.so (C) when N==32; otherwise Python+numpy.
+         """
+         assert inject.shape[1] == self.n
+-        if _FDN_CORE is not None and self.n == 32 and not self._any_dffs and not self._any_mic:
++        if _FDN_CORE is not None and self.n == 32 and not self._any_dffs and not self._any_mic and self._lg is None:
+             return self._process_block_c(inject)
+         return self._process_block_py(inject)
+ 
+@@ -846,9 +904,12 @@
+         any_mic = self._any_mic
+         mg = self.mic_g
+         mz = self._mic_z
++        lg = self._lg
+         for t in range(n_samp):
+             for i in range(n):
+                 reads[i] = bufs[i][idx[i]]
++            if lg is not None:
++                reads *= lg
+             if peaking:
+                 for i in range(n):
+                     if use_peak[i]:
+diff -ruN -x __pycache__ -x '*.wasm' -x .pytest_cache -x mic_fitter s0/engine/live_stereo.c s6/engine/live_stereo.c
+--- a/engine/live_stereo.c	2026-10-01 07:46:53.018339172 +0100
++++ b/engine/live_stereo.c	2026-10-01 07:47:03.494306942 +0100
+@@ -87,6 +87,8 @@
+     double sb0b, sb1b, sb2b, sa1b, sa2b;
+     double sz1, sz2, sz1e, sz2e, sz1b, sz2b, sz1f, sz2f;
+     double pz1, pz2, pz1b, pz2b;
++    /* Per-line absorption for the decay lock: lg = 10^(-3 d / (sr T60)). 1 = off. */
++    double lg, lgB;
+     int w;
+ } Line;
+ 
+@@ -124,6 +126,7 @@
+     int n_irs;
+     int direct_index;
+     double g, fdn_wet, direct_wet, early_wet, dry_gain, makeup, gain_a, gain_b;
++    double lineT60;
+     double micG[3], micPan[3], micPh[3];
+     int peakOn[3];
+     double pb0[3], pb1[3], pb2[3], pa1[3], pa2[3];
+@@ -480,6 +483,8 @@
+             st->bus[b].line[i].delayBT = 64.0;
+             st->bus[b].line[i].sb0 = 1.0;
+             st->bus[b].line[i].sb0b = 1.0;
++            st->bus[b].line[i].lg = 1.0;
++            st->bus[b].line[i].lgB = 1.0;
+         }
+     }
+ }
+@@ -714,6 +719,24 @@
+         bus->dirGainB = clampf(rf(&r), -2.0, 2.0);
+         bus->anyDffsB = anyB;
+     }
++    /* Optional trailing float (blob length 1982): line T60 in seconds.
++     * > 0.05 turns on delay-proportional line absorption so every path through
++     * the loop (Hadamard or the Dffs allpass self-loop) loses 60 dB per T60.
++     * lg uses the TARGET delay (delayT); delay glides to it within ~10 ms. */
++    st->lineT60 = rf(&r);
++    for (b = 0; b < 3; b++) {
++        for (i = 0; i < N; i++) {
++            Line *line = &st->bus[b].line[i];
++            if (st->lineT60 > 0.05) {
++                double k = -6.907755278982137 / ((double)st->sr * st->lineT60);
++                line->lg = ls_exp(k * line->delayT);
++                line->lgB = ls_exp(k * line->delayBT);
++            } else {
++                line->lg = 1.0;
++                line->lgB = 1.0;
++            }
++        }
++    }
+ }
+ 
+ static void zero_filts(LiveStereo *st) {
+@@ -971,7 +994,7 @@
+     double v, yi, nz1, nz2;
+     int ax = i % 3;
+     double *z1, *z2;
+-    v = read_lane(ring, lane, line->w, delay, st->cap);
++    v = (bankB ? line->lgB : line->lg) * read_lane(ring, lane, line->w, delay, st->cap);
+     if (!st->peakOn[ax]) return v;
+     z1 = bankB ? &line->pz1b : &line->pz1;
+     z2 = bankB ? &line->pz2b : &line->pz2;
+diff -ruN -x __pycache__ -x '*.wasm' -x .pytest_cache -x mic_fitter s0/engine/selfcheck.py s6/engine/selfcheck.py
+--- a/engine/selfcheck.py	2026-10-01 07:46:53.018339172 +0100
++++ b/engine/selfcheck.py	2026-10-01 07:47:03.494306942 +0100
+@@ -1012,23 +1012,24 @@
+     t_a = int(np.argmax(np.abs(hard_a_l)))
+     t_b = int(np.argmax(np.abs(left_b)))
+     assert t_a != t_b
+-    # ORTF toe-in: the source on the visual left is hotter in the right capsule.
++    # K1 locked 28 Sep 2026 (YAW_X_SIGN = +1): ORTF capsules aim OUTWARD, so the source on the
++    # visual left is hotter in the LEFT capsule (was: right capsule, crossed).
+     a_l_e = float(np.dot(hard_a_l, hard_a_l))
+     a_r_e = float(np.dot(hard_a_r, hard_a_r))
+     b_l_e = float(np.dot(left_b, left_b))
+     b_r_e = float(np.dot(_right_b, _right_b))
+-    assert a_r_e > a_l_e * 1.05
+-    assert b_l_e > b_r_e * 1.05
++    assert a_l_e > a_r_e * 1.05
++    assert b_r_e > b_l_e * 1.05
+     assert "direct_gain" not in off["buses"]["l"]
+-    assert on["buses"]["r"]["direct_gain"] > on["buses"]["l"]["direct_gain"]
+-    assert on["buses"]["l"]["b"]["direct_gain"] > on["buses"]["r"]["b"]["direct_gain"]
++    assert on["buses"]["l"]["direct_gain"] > on["buses"]["r"]["direct_gain"]
++    assert on["buses"]["r"]["b"]["direct_gain"] > on["buses"]["l"]["b"]["direct_gain"]
+     assert len(on["buses"]["l"]["b"]["dffs"]) == 32
+     aimed = live_fdn_params(dict(
+         p, two_sources=True, mirror_b=True, source_balance=0.0,
+         yaw_l_deg=-55.0, yaw_c_deg=0.0, yaw_r_deg=55.0,
+     ))
+-    assert aimed["buses"]["r"]["direct_gain"] > aimed["buses"]["l"]["direct_gain"] * 1.5
+-    assert aimed["buses"]["l"]["b"]["direct_gain"] > aimed["buses"]["r"]["b"]["direct_gain"] * 1.5
++    assert aimed["buses"]["l"]["direct_gain"] > aimed["buses"]["r"]["direct_gain"] * 1.5
++    assert aimed["buses"]["r"]["b"]["direct_gain"] > aimed["buses"]["l"]["b"]["direct_gain"] * 1.5  # K1: mirrored B (right) hotter in R
+     tail = dict(common, direct_wet=0.0, fdn_wet=1.0, ir_length_ms=60.0)
+     ta_l, ta_r, _info = render(
+         impulse, sr, dry_l=impulse, dry_r=silence, source_balance=-1.0, **tail,
+@@ -1041,8 +1042,9 @@
+     )
+     assert float(np.max(np.abs(quiet_l))) < 1e-8
+     assert float(np.max(np.abs(quiet_r))) < 1e-8
+-    assert float(np.dot(ta_r, ta_r)) > float(np.dot(ta_l, ta_l))
+-    assert float(np.dot(tb_l, tb_l)) > float(np.dot(tb_r, tb_r))
++    # K1 (28 Sep 2026): FDN tail follows the outward-aimed capsules too (was crossed).
++    assert float(np.dot(ta_l, ta_l)) > float(np.dot(ta_r, ta_r))
++    assert float(np.dot(tb_r, tb_r)) > float(np.dot(tb_l, tb_l))
+ 
+ 
+ def _mic_colour_tests():
+diff -ruN -x __pycache__ -x '*.wasm' -x .pytest_cache -x mic_fitter s0/mic_display.py s6/mic_display.py
+--- a/mic_display.py	2026-10-01 07:46:53.022339160 +0100
++++ b/mic_display.py	2026-10-01 07:47:03.494306942 +0100
+@@ -22,8 +22,12 @@
+ 
+ 
+ def look_xz(yaw_rad: float) -> Tuple[float, float]:
+-    """Mic look in XZ for Prepare yaw. yaw=0 faces +Z."""
+-    return (-math.sin(yaw_rad), math.cos(yaw_rad))
++    """Mic look in XZ for Prepare yaw. yaw=0 faces +Z. One convention: early_field.YAW_X_SIGN (K1)."""
++    try:
++        from early_field import YAW_X_SIGN
++    except ImportError:  # pragma: no cover
++        YAW_X_SIGN = 1.0
++    return (YAW_X_SIGN * math.sin(yaw_rad), math.cos(yaw_rad))
+ 
+ 
+ def dist3(a: Vec3, b: Vec3) -> float:
+diff -ruN -x __pycache__ -x '*.wasm' -x .pytest_cache -x mic_fitter s0/polar_field.py s6/polar_field.py
+--- a/polar_field.py	2026-10-01 07:46:53.022339160 +0100
++++ b/polar_field.py	2026-10-01 07:47:03.494306942 +0100
+@@ -31,6 +31,7 @@
+ if str(_ENGINE) not in sys.path:
+     sys.path.insert(0, str(_ENGINE))
+ 
++from early_field import look_vector as _look_vector  # noqa: E402  (K1: single yaw convention)
+ from early_field import (  # noqa: E402
+     MicStand,
+     PATTERN_CARDIOID,
+@@ -345,8 +346,8 @@
+ 
+ def _basis_from_yaw(yaw_rad: float, normal: Vec3) -> Tuple[Vec3, Vec3]:
+     """e_fwd = capsule look (yaw 0 = +Z) projected into plane; e_right = n × e_fwd."""
+-    # look_xz = (-sin(yaw), cos(yaw)) → 3D look (x, 0, z)
+-    look = (-math.sin(yaw_rad), 0.0, math.cos(yaw_rad))
++    # look_xz = (YAW_X_SIGN·sin(yaw), cos(yaw)) → 3D look (x, 0, z); one convention (early_field)
++    look = _look_vector(yaw_rad)
+     look = _vsub(look, _vmul(normal, _vdot(look, normal)))
+     e_fwd = _vunit(look, (0.0, 0.0, 1.0))
+     e_right = _vunit(_vcross(normal, e_fwd), (1.0, 0.0, 0.0))
+diff -ruN -x __pycache__ -x '*.wasm' -x .pytest_cache -x mic_fitter s0/render_pipeline.py s6/render_pipeline.py
+--- a/render_pipeline.py	2026-10-01 07:46:53.022339160 +0100
++++ b/render_pipeline.py	2026-10-01 07:47:03.494306942 +0100
+@@ -64,6 +64,8 @@
+     diffusion_scale_from_room,
+     dff_after_master,
+     DIFFUSION_MASTER_LIVE,
++    loop_level_trim_db,
++    loop_level_trim_lin,
+     mixer_lcr_fold,
+     apply_capsule_weights,
+     capsule_speaker_weights,
+@@ -578,6 +580,7 @@
+     apply_mic=False,
+     weights=None,
+     colour=None,
++    line_t60=0.0,
+ ):
+     """2011 wet: L / C / R Diffuser Delay loops + Hadamard feedback + Mixer fold.
+ 
+@@ -627,8 +630,11 @@
+             n=n_lines,
+             dffs=dffs,
+             mic_g=mic_g,
++            line_t60=line_t60,
+         )
+         poly = fdn.process_block_poly(inj)
++        # Headroom decision 6: fixed Render loop trim (F2 row only while line absorption is on).
++        poly *= loop_level_trim_lin("render", float(line_t60) > 0.05)
+         if colour is not None and colour.measured and n_t:
+             for i in range(n_lines):
+                 col = poly[:, i]
+@@ -750,6 +756,8 @@
+     mic_phase_c: float = 1.0,
+     mic_phase_r: float = 1.0,
+     colour=None,
++    line_t60: float = 0.0,
++    loop_g=None,
+ ):
+     weights = capsule_speaker_weights(
+         mic_gain_l, mic_gain_c, mic_gain_r,
+@@ -776,7 +784,7 @@
+         taps, sr, fdn_ms, n_lines=hadamard_n, weights=weights, colour=colour,
+     )
+     Lf, Rf = render_fdn_ir(
+-        taps, room, sr, c, fdn_ms, fdn_g, DEFAULT_DEPTH, delays,
++        taps, room, sr, c, fdn_ms, fdn_g if loop_g is None else loop_g, DEFAULT_DEPTH, delays,
+         n_lines=hadamard_n, surfaces=surfaces, humidity=humidity,
+         air_lp=air_lp, air_shelf=air_shelf,
+         diffusion_master=diffusion_master,
+@@ -785,6 +793,7 @@
+         apply_mic=False,
+         weights=weights,
+         colour=colour,
++        line_t60=line_t60,
+     )
+     n = max(len(Le), len(Lf), len(Ld))
+     def _pad(a):
+@@ -867,7 +876,7 @@
+     humidity: float = 0.0,
+     air_lp: float = 0.25,
+     air_shelf: float = 1.0,
+-    diffusion_master: float = -0.5,
++    diffusion_master: float = DIFFUSION_MASTER_LIVE,
+     decay_s: float = 0.0,
+     decay_lock: bool = False,
+     mic_gain_l: float = 1.0,
+@@ -1012,10 +1021,14 @@
+             taps_b, prep_b = taps_for(bx, by, bz)
+             delays = fdn_delays_from_taps(taps, sr=sr, c=c, n=n_had)
+             g_split = g
++            line_t60 = 0.0
+             if decay_lock and float(decay_s) > 0.05:
+                 g_split = structure_gain_for_rt60(delays, float(decay_s), sr, n_had) / float(n_had)
+                 lim = 0.99 / math.sqrt(float(n_had))
+                 g_split = float(max(0.0, min(lim, g_split)))
++                line_t60 = float(decay_s)
++            # Loop runs lossless when line absorption carries the decay; makeup keeps g_split.
++            g_loop = (1.0 / math.sqrt(float(n_had))) if line_t60 > 0.05 else g_split
+             weights = capsule_speaker_weights(
+                 mic_gain_l, mic_gain_c, mic_gain_r,
+                 mic_pan_l, mic_pan_c, mic_pan_r,
+@@ -1070,7 +1083,7 @@
+ 
+             def _fdn_stereo(taps_src):
+                 left, right = render_fdn_ir(
+-                    taps_src, room, sr, c, fdn_ms, g_split, DEFAULT_DEPTH, delays,
++                    taps_src, room, sr, c, fdn_ms, g_loop, DEFAULT_DEPTH, delays,
+                     n_lines=n_had, surfaces=surfaces, humidity=humidity,
+                     air_lp=air_lp, air_shelf=air_shelf,
+                     diffusion_master=diffusion_master,
+@@ -1079,6 +1092,7 @@
+                     apply_mic=False,
+                     weights=weights,
+                     colour=mic_colour,
++                    line_t60=line_t60,
+                 )
+                 return float(fdn_wet) * mk * left, float(fdn_wet) * mk * right
+ 
+@@ -1146,10 +1160,12 @@
+         else:
+             taps, prep = taps_at(sox, soz)
+         delays = fdn_delays_from_taps(taps, sr=sr, c=c, n=n_had)
++        line_t60 = 0.0
+         if decay_lock and float(decay_s) > 0.05:
+             g = structure_gain_for_rt60(delays, float(decay_s), sr, n_had) / float(n_had)
+             lim = 0.99 / math.sqrt(float(n_had))
+             g = float(max(0.0, min(lim, g)))
++            line_t60 = float(decay_s)
+         ir_L, ir_R = combined_ir(
+             taps,
+             room,
+@@ -1180,6 +1196,8 @@
+             mic_pan_l=mic_pan_l, mic_pan_c=mic_pan_c, mic_pan_r=mic_pan_r,
+             mic_phase_l=mic_phase_l, mic_phase_c=mic_phase_c, mic_phase_r=mic_phase_r,
+             colour=mic_colour,
++            line_t60=line_t60,
++            loop_g=(1.0 / math.sqrt(float(n_had))) if line_t60 > 0.05 else None,
+         )
+         yL = fft_convolve(dry, ir_L)
+         yR = fft_convolve(dry, ir_R)
+@@ -1243,10 +1261,12 @@
+         )
+         taps, last_prep = taps_at(sox_v, soz_v)
+         delays = fdn_delays_from_taps(taps, sr=sr, c=c, n=n_had)
++        line_t60 = 0.0
+         if decay_lock and float(decay_s) > 0.05:
+             g = structure_gain_for_rt60(delays, float(decay_s), sr, n_had) / float(n_had)
+             lim = 0.99 / math.sqrt(float(n_had))
+             g = float(max(0.0, min(lim, g)))
++            line_t60 = float(decay_s)
+         ir_L, ir_R = combined_ir(
+             taps,
+             room,
+@@ -1276,6 +1296,8 @@
+             mic_pan_l=mic_pan_l, mic_pan_c=mic_pan_c, mic_pan_r=mic_pan_r,
+             mic_phase_l=mic_phase_l, mic_phase_c=mic_phase_c, mic_phase_r=mic_phase_r,
+             colour=mic_colour,
++            line_t60=line_t60,
++            loop_g=(1.0 / math.sqrt(float(n_had))) if line_t60 > 0.05 else None,
+         )
+         end = min(start + frame, n_dry)
+         block = np.zeros(frame, dtype=np.float64)
+@@ -1372,9 +1394,9 @@
+     decay_s = float(p.get("decay_s") or 0.0)
+     grid = grid_bias_for_hadamard_n(n_had)
+     humidity = float(p.get("humidity") or 0.0)
+-    air_lp = float(p.get("air_lp") if p.get("air_lp") is not None else 0.25)
++    air_lp = float(p.get("air_lp") if p.get("air_lp") is not None else 0.0)
+     air_shelf = float(p.get("air_shelf") if p.get("air_shelf") is not None else 1.0)
+-    diffusion_master = float(p.get("diffusion_master") if p.get("diffusion_master") is not None else -0.5)
++    diffusion_master = float(p.get("diffusion_master") if p.get("diffusion_master") is not None else DIFFUSION_MASTER_LIVE)
+     mic_response_hz = float(p.get("mic_response_hz") or 10000.0)
+     ir_length_ms = float(p.get("ir_length_ms") if p.get("ir_length_ms") is not None else 1500.0)
+     colour_sr = p.get("sample_rate")
+@@ -1458,6 +1480,10 @@
+         g = structure_gain_for_rt60(dly_mean, decay_s, rate, n_had) / float(n_had)
+     lim = 0.99 / math.sqrt(float(n_had))
+     g = float(max(0.0, min(lim, g)))
++    # Decay lock: the loop runs lossless (g = 1/√N) and each line carries
++    # 10^(-3 d/(sr T60)) (live_stereo.c line_t60). makeup/decay_out keep g.
++    line_t60 = float(decay_s) if (decay_lock and decay_s > 0.05) else 0.0
++    g_loop = (1.0 / math.sqrt(float(n_had))) if line_t60 > 0.0 else g
+     di = direct_line_index(taps, n_had)
+     makeup = ir_rms_makeup_from_inject(
+         buses["l"]["inject"], buses["c"]["inject"], buses["r"]["inject"],
+@@ -1558,15 +1584,19 @@
+         p.get("sample_rate"), p.get("colour_rev") or "",
+     )
+     for _ch in ("l", "c", "r"):
+-        _attach_loop_mix(buses[_ch], g)
++        _attach_loop_mix(buses[_ch], g_loop)
+         _bb = buses[_ch].get("b")
+         if isinstance(_bb, dict):
+-            _attach_loop_mix(_bb, g)
++            _attach_loop_mix(_bb, g_loop)
+     return {
+         "ok": True,
+         "n": n_had,
+-        "g": g,
+-        "fdn_wet": float(p.get("fdn_wet", 1.0)),
++        "g": g_loop,
++        "g_decay": g,
++        "line_t60": line_t60,
++        # Headroom decision 6: fixed Play loop trim folded into the FDN send.
++        "fdn_wet": float(p.get("fdn_wet", 1.0)) * loop_level_trim_lin("play", line_t60 > 0.0),
++        "loop_trim_db": loop_level_trim_db("play", line_t60 > 0.0),
+         "direct_wet": float(p.get("direct_wet", 1.0)),
+         "early_wet": float(p.get("early_wet", 0.0)),
+         "dry_gain": float(p.get("dry_gain", 0.0)),
+diff -ruN -x __pycache__ -x '*.wasm' -x .pytest_cache -x mic_fitter s0/static/index.html s6/static/index.html
+--- a/static/index.html	2026-10-01 07:46:53.022339160 +0100
++++ b/static/index.html	2026-10-01 07:47:03.494306942 +0100
+@@ -261,7 +261,7 @@
+                   <div class="desk-name">Direct</div>
+                   <div class="desk-knob"><span>Trim</span><label class="knob"><input type="range" id="trim_direct" min="-12" max="12" step="0.5" value="0" aria-label="Direct trim" /></label></div>
+                   <button type="button" class="solo-btn" data-solo="direct" aria-pressed="false">Solo</button>
+-                  <div class="desk-slot"><span class="desk-zero"></span><input type="range" class="desk-fader" id="fader_direct" min="0" max="1" step="0.001" value="0.5" aria-label="Direct fader" /></div>
++                  <div class="desk-slot"><span class="desk-zero"></span><input type="range" class="desk-fader" id="fader_direct" min="0" max="1" step="0.001" value="0" aria-label="Direct fader" /></div>
+                   <button type="button" class="desk-read" id="read_direct">0.0</button>
+                   <button type="button" class="desk-mini mute-btn" id="mute_direct" aria-pressed="false">Mute</button>
+                 </div>
+@@ -490,7 +490,7 @@
+           <label class="ctrl"><span>Stand X <em>m</em></span><input type="range" id="mcx" min="0" max="40" step="0.01" value="3" /><output id="mcx_out">3.00</output></label>
+           <label class="ctrl"><span>Stand Z <em>m</em></span><input type="range" id="mcz" min="0" max="60" step="0.01" value="1.5" /><output id="mcz_out">1.50</output></label>
+           <label class="ctrl"><span>Mic height <em>m</em></span><input type="range" id="my" min="0" max="20" step="0.01" value="1.5" /><output id="my_out">1.50</output></label>
+-          <label class="ctrl"><span>Src height <em>m</em></span><input type="range" id="sy" min="0" max="20" step="0.01" value="1.5" /><output id="sy_out">1.50</output></label>
++          <label class="ctrl"><span>Src height <em>m</em></span><input type="range" id="sy" min="0" max="20" step="0.01" value="1.2" /><output id="sy_out">1.20</output></label>
+           <div class="capsule-stack" id="capsuleStackListen">
+             <div class="capsule-row" data-cap="L">
+               <span class="cap-id cap-l">Left</span>
+@@ -548,7 +548,7 @@
+           </div>
+           <label class="ctrl"><span>IR length <em>ms</em></span><input type="range" id="ir_length_ms" min="50" max="2000" step="10" value="1500" /><output id="ir_length_ms_out">1500</output></label>
+           <label class="ctrl"><span>Humidity</span><input type="range" id="humidity" min="0" max="1" step="0.01" value="0.35" /><output id="humidity_out">0.35</output></label>
+-          <label class="ctrl"><span>Air 1-pole mix</span><input type="range" id="air_lp" min="0" max="1" step="0.01" value="0.25" /><output id="air_lp_out">0.25</output></label>
++          <label class="ctrl"><span>Air 1-pole mix</span><input type="range" id="air_lp" min="0" max="1" step="0.01" value="0" /><output id="air_lp_out">0.00</output></label>
+           <label class="ctrl"><span>Air shelf mix</span><input type="range" id="air_shelf" min="0" max="1" step="0.01" value="1" /><output id="air_shelf_out">1.00</output></label>
+           <p class="hint">Humidity 0 = off. 0.5 = Structure Wet 400. 1-pole can be dark; mix it down with Air 1-pole.</p>
+           <button type="button" class="btn" id="reaktorSnapshotBtn">2011 Reaktor snapshot</button>
+@@ -614,14 +614,14 @@
+     </main>
+   </div>
+   <script src="/static/js/vendor/three.min.js"></script>
+-  <script src="/static/js/room_math.js?v=13"></script>
++  <script src="/static/js/room_math.js?v=14"></script>
+   <script src="/static/js/room_3d.js?v=16"></script>
+   <script src="/static/js/room_editor.js?v=12"></script>
+   <script src="/static/js/image_views.js?v=12"></script>
+   <script src="/static/js/colour_surfaces.js"></script>
+   <script src="/static/js/polar_field.js?v=4"></script>
+-  <script src="/static/js/mic_desk.js?v=7"></script>
+-  <script src="/static/js/live_fdn.js?v=33"></script>
+-  <script src="/static/js/app.js?v=21"></script>
++  <script src="/static/js/mic_desk.js?v=8"></script>
++  <script src="/static/js/live_fdn.js?v=34"></script>
++  <script src="/static/js/app.js?v=22"></script>
+ </body>
+ </html>
+diff -ruN -x __pycache__ -x '*.wasm' -x .pytest_cache -x mic_fitter s0/static/js/app.js s6/static/js/app.js
+--- a/static/js/app.js	2026-10-01 07:46:53.022339160 +0100
++++ b/static/js/app.js	2026-10-01 07:47:03.494306942 +0100
+@@ -64,7 +64,8 @@
+ 
+   var state = {
+     W: 6, H: 3, L: 8,
+-    sx: 3, sz: 4.75, mcx: 3, mcz: 1.5, my: 1.5, sy: 1.5,
++    /* K3 (locked 28 Sep 2026): source x 2.6 m, height 1.2 m → 29 distinct delays per bus. */
++    sx: 2.6, sz: 4.75, mcx: 3, mcz: 1.5, my: 1.5, sy: 1.2,
+     link_heights: false,
+     space: 0.17, diverg: 1, toe_half_deg: 55, car_omni: 1,
+     pattern_l: "cardioid", pattern_c: "cardioid", pattern_r: "cardioid",
+@@ -82,22 +83,25 @@
+     mic_hpf_centre: false,
+     preset_owns_pattern: true,
+     mic_setup: "ortf",
+-    early_wet: 0, fdn_wet: 1, direct_wet: 1, dry_gain: 0, fdn_g: 1, ir_length_ms: 1500,
++    /* K4 (locked): early_wet is the early-bus enable (×fader). 1.0 so raising the early fader works at once. */
++    early_wet: 1.0, fdn_wet: 1, direct_wet: 1, dry_gain: 0, fdn_g: 1, ir_length_ms: 1500,
+     decay_s: 1.8, decay_lock: true,
+     solo_direct: false, solo_fdn: false, solo_early: false, solo_dry: false,
+     stereo_mic: false, natural_bus: false,
+     fader_l: 0.5, fader_c: 0.5, fader_r: 0.5,
+-    fader_direct: 0.5, fader_fdn: 0.5, fader_early: 0, fader_dry: 0,
++    /* K4 (locked): FDN-first mixing. FDN fader on (0 dB), direct and early faders down. */
++    fader_direct: 0, fader_fdn: 0.5, fader_early: 0, fader_dry: 0,
+     trim_l: 0, trim_c: 0, trim_r: 0,
+     trim_direct: 0, trim_fdn: 0, trim_early: 0, trim_dry: 0,
+     pan_l: -1, pan_c: 0, pan_r: 1,
+     mute_l: false, mute_c: false, mute_r: false,
+     mute_direct: false, mute_fdn: false, mute_early: false, mute_dry: false,
+     phase_l: 1, phase_c: 1, phase_r: 1,
+-    humidity: 0.35, air_lp: 0.25, air_shelf: 1, diffusion_master: -0.5,
++    /* K2 (locked): air 1-pole mix default 0 (shelf still gives HF loss). diffusion_master −0.25 (Structure), clamp [−0.5, 0]. */
++    humidity: 0.35, air_lp: 0, air_shelf: 1, diffusion_master: -0.25,
+     reaktor_parity: false, live_drag_render: false,
+     two_sources: false, mirror_b: true, source_balance: 0,
+-    sx_b: 3, sy_b: 1.5, sz_b: 4.75,
++    sx_b: 3.4, sy_b: 1.2, sz_b: 4.75, /* K3: mirror of the default source (W − 2.6, 1.2) */
+     path_on: false, path_preset: "still",
+     ellipse_rate: 1, ellipse_rx: 0.42, ellipse_rz: 0.35,
+     hadamard_n: 32,
+@@ -176,7 +180,7 @@
+     state.mute_fdn = false;
+     state.mute_early = false;
+     state.mute_dry = false;
+-    state.early_wet = 0;
++    state.early_wet = 1.0; /* K4: bus enable; early fader (0) keeps it silent */
+     state.fdn_wet = 1;
+     state.direct_wet = 1;
+     state.dry_gain = 0;
+@@ -293,7 +297,9 @@
+     var i;
+     o.direct_wet = stripLinear(src, "direct");
+     o.fdn_wet = stripLinear(src, "fdn");
+-    o.early_wet = stripLinear(src, "early");
++    /* K4: early send = bus enable (early_wet, default 1) × early fader. */
++    var ewEnable = (src.early_wet == null || !isFinite(Number(src.early_wet))) ? 1 : Math.max(0, Math.min(1, Number(src.early_wet)));
++    o.early_wet = ewEnable * stripLinear(src, "early");
+     o.dry_gain = stripLinear(src, "dry");
+     var any = false;
+     for (i = 0; i < SOLO_BUSES.length; i++) {
+diff -ruN -x __pycache__ -x '*.wasm' -x .pytest_cache -x mic_fitter s0/static/js/fdn_worklet.js s6/static/js/fdn_worklet.js
+--- a/static/js/fdn_worklet.js	2026-10-01 07:46:53.022339160 +0100
++++ b/static/js/fdn_worklet.js	2026-10-01 07:47:03.494306942 +0100
+@@ -6,7 +6,7 @@
+  * This thread has no fetch.
+  */
+ 
+-var BLOB_LEN = 1981;
++var BLOB_LEN = 1982;
+ var ROUTE_LEN = 230;
+ var MAX_AUDIO = 2048;
+ var MAX_IRS = 128;
+@@ -77,6 +77,7 @@
+     pushSide(a, bus, di);
+     pushSide(a, bus && bus.b, di);
+   }
++  a.push(num(data.line_t60, 0));
+   return a;
+ }
+ 
+diff -ruN -x __pycache__ -x '*.wasm' -x .pytest_cache -x mic_fitter s0/static/js/live_fdn.js s6/static/js/live_fdn.js
+--- a/static/js/live_fdn.js	2026-10-01 07:46:53.022339160 +0100
++++ b/static/js/live_fdn.js	2026-10-01 07:47:03.494306942 +0100
+@@ -16,7 +16,7 @@
+   var colourRev = "";
+   var bank = null;
+   var lastCapLine = "";
+-  var WORKLET_VER = 33;
++  var WORKLET_VER = 34;
+   var COLOUR_CAP = 128;
+   var ROUTE_LEN = 230;
+ 
+@@ -280,6 +280,7 @@
+       makeup: params.makeup,
+       direct_index: params.direct_index,
+       max_delay_ms: params.max_delay_ms,
++      line_t60: params.line_t60 || 0,
+       peaking: params.peaking,
+       two_sources: !!params.two_sources && !monoFile,
+       gain_a: params.gain_a,
+diff -ruN -x __pycache__ -x '*.wasm' -x .pytest_cache -x mic_fitter s0/static/js/mic_desk.js s6/static/js/mic_desk.js
+--- a/static/js/mic_desk.js	2026-10-01 07:46:53.022339160 +0100
++++ b/static/js/mic_desk.js	2026-10-01 07:47:03.494306942 +0100
+@@ -555,9 +555,10 @@
+     function polarFrontPx(canvas, yawDeg) {
+       var lay = polarLayout(canvas);
+       var yaw = ((Number(yawDeg) || 0) * Math.PI) / 180;
+-      /* Match lookFromYaw: screen ( −sin yaw, −cos yaw ) so +Z is up. */
++      /* Match lookFromYaw: screen ( S·sin yaw, −cos yaw ) so +Z is up, S = RoomMath.YAW_X_SIGN. */
++      var S = (typeof RoomMath !== "undefined" && RoomMath.YAW_X_SIGN) ? RoomMath.YAW_X_SIGN : 1;
+       return {
+-        px: lay.cx - lay.R * Math.sin(yaw),
++        px: lay.cx + S * lay.R * Math.sin(yaw),
+         py: lay.cy - lay.R * Math.cos(yaw),
+         cx: lay.cx, cy: lay.cy, R: lay.R
+       };
+@@ -862,12 +863,13 @@
+     }
+ 
+     function applyYawFromPointer(kind, px, py, originPx) {
+-      /* Aim on screen is (−sin yaw, −cos yaw), so +Z is up.
+-         atan2(−dx, −dy) keeps the handle under the pointer.
++      /* Aim on screen is (S·sin yaw, −cos yaw), so +Z is up (S = RoomMath.YAW_X_SIGN).
++         atan2(S·dx, −dy) keeps the handle under the pointer.
+          Dragging right moves the handle right. */
++      var S = (typeof RoomMath !== "undefined" && RoomMath.YAW_X_SIGN) ? RoomMath.YAW_X_SIGN : 1;
+       var dx = px - originPx.px;
+       var dy = py - originPx.py;
+-      var deg = Math.atan2(-dx, -dy) * 180 / Math.PI;
++      var deg = Math.atan2(S * dx, -dy) * 180 / Math.PI;
+       var st = Object.assign({}, getState());
+       var link = !!st.link_lr_yaw;
+       if (kind === "yawL" || kind === "polarL") {
+diff -ruN -x __pycache__ -x '*.wasm' -x .pytest_cache -x mic_fitter s0/static/js/room_math.js s6/static/js/room_math.js
+--- a/static/js/room_math.js	2026-10-01 07:46:53.022339160 +0100
++++ b/static/js/room_math.js	2026-10-01 07:47:03.494306942 +0100
+@@ -96,8 +96,12 @@
+     return side === "l" ? mid - 0.25 : mid + 0.25;
+   }
+ 
++  /* K1 (28 Sep 2026): one yaw convention. +yaw aims toward +X (screen right).
++     Must equal early_field.YAW_X_SIGN in Python. Was -1 (crossed capsules). */
++  const YAW_X_SIGN = 1;
++
+   function lookFromYaw(yawRad) {
+-    return { x: -Math.sin(yawRad), z: Math.cos(yawRad) };
++    return { x: YAW_X_SIGN * Math.sin(yawRad), z: Math.cos(yawRad) };
+   }
+ 
+   function compute(state) {
+@@ -142,7 +146,7 @@
+ 
+   return {
+     clamp, maxSpace, clampRoom, prepareFromMetres, compute,
+-    lookFromYaw, polarA, polarGain, polarLabel, derivePattern,
++    lookFromYaw, YAW_X_SIGN, polarA, polarGain, polarLabel, derivePattern,
+     polarFromPattern, familyFromPattern, CENTRE_DZ_MAX
+   };
+ })();
+diff -ruN -x __pycache__ -x '*.wasm' -x .pytest_cache -x mic_fitter s0/tests/test_live_stereo.py s6/tests/test_live_stereo.py
+--- a/tests/test_live_stereo.py	2026-10-01 07:46:53.022339160 +0100
++++ b/tests/test_live_stereo.py	2026-10-01 07:47:03.498306930 +0100
+@@ -552,9 +552,9 @@
+     work = (ROOT / "static" / "js" / "fdn_worklet.js").read_text(encoding="utf-8")
+     page = (ROOT / "static" / "index.html").read_text(encoding="utf-8")
+     assert "createConvolver" not in live
+-    assert "WORKLET_VER = 33" in live
++    assert "WORKLET_VER = 34" in live
+     assert "LANES = 4" in text
+-    assert "live_fdn.js?v=33" in page
++    assert "live_fdn.js?v=34" in page
+     assert "MAX_SOS" in text
+     assert "design_sos" in text
+     assert "LS_DC" in text
+diff -ruN -x __pycache__ -x '*.wasm' -x .pytest_cache -x mic_fitter s0/tests/test_mic_colour_relative.py s6/tests/test_mic_colour_relative.py
+--- a/tests/test_mic_colour_relative.py	2026-10-01 07:46:53.022339160 +0100
++++ b/tests/test_mic_colour_relative.py	2026-10-01 07:47:03.498306930 +0100
+@@ -439,11 +439,12 @@
+     ordered = sorted(taps, key=lambda t: t.theta_l)
+     pair = [ordered[0], ordered[-1]]
+     assert abs(pair[0].theta_l - pair[1].theta_l) > 0.05
+-    both = rp.render_early_ir(pair, room, sr, c, 15.0, 0.0, 0.0, wall, ap, early_toys=False, colour=colour)
+-    a = rp.render_early_ir([pair[0]], room, sr, c, 15.0, 0.0, 0.0, wall, ap, early_toys=False, colour=colour)
+-    b = rp.render_early_ir([pair[1]], room, sr, c, 15.0, 0.0, 0.0, wall, ap, early_toys=False, colour=colour)
++    # K1 (28 Sep 2026): with the yaw flip the extreme-theta taps arrive at 24-30 ms, so 40 ms window (was 15).
++    both = rp.render_early_ir(pair, room, sr, c, 40.0, 0.0, 0.0, wall, ap, early_toys=False, colour=colour)
++    a = rp.render_early_ir([pair[0]], room, sr, c, 40.0, 0.0, 0.0, wall, ap, early_toys=False, colour=colour)
++    b = rp.render_early_ir([pair[1]], room, sr, c, 40.0, 0.0, 0.0, wall, ap, early_toys=False, colour=colour)
+     assert np.allclose(both[0], a[0] + b[0])
+-    raw = rp.render_early_ir(pair, room, sr, c, 15.0, 0.0, 0.0, wall, ap, early_toys=False)
++    raw = rp.render_early_ir(pair, room, sr, c, 40.0, 0.0, 0.0, wall, ap, early_toys=False)
+     wrong = colour.apply(raw[0], pair[0].theta_l, "l")
+     assert not np.allclose(both[0], wrong, atol=1e-8)
+     src = inspect.getsource(rp.render_early_ir)
+@@ -936,8 +937,8 @@
+     assert "apply_mic=True" not in pipe
+     assert "mic_one_pole_coeff" not in pipe
+     stereo = (SOFTWARE / "engine" / "live_stereo.c").read_text(encoding="utf-8")
+-    assert "WORKLET_VER = 33" in live_js
+-    assert "live_fdn.js?v=33" in page
++    assert "WORKLET_VER = 34" in live_js
++    assert "live_fdn.js?v=34" in page
+     assert "MAX_IRS = 128" in stereo
+     assert "var MAX_IRS = 128" in work
+     assert "Mic colour is OFF:" in live_js

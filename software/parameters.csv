@@ -1,0 +1,18 @@
+key,group,status,what_it_does,range,default_server,default_client,units,provenance,current_ui_location,recommended_tabs,play,render,flags
+mic_setup,Mic colour,current,Array preset name (adds binaural),ortf|…|binaural,ortf,ortf,,VERIFIED-code,Mic tab,Mic,Y,Y,binaural locks space/yaw/pattern/C
+binaural_preset,Binaural,proposed,Dummy-head HRTF preset,SADIE2_KU100|SADIE2_KEMAR|THK_KU100_FF,SADIE2_KU100,SADIE2_KU100,,MEASURED (SADIE II Apache-2.0 / THK CC BY-SA 3.0 flagged),Mic tab Head selector,Mic,Y,Y,LOCKED 2026-09-30 default; THK shows licence flag
+head_yaw_deg,Binaural,proposed,Head yaw (whole head rotates; ears move with it),±180,0,0,deg,proposed,Mic tab + Floor rotate handle,Floor; Mic,Y,Y,0 = facing +Z; + toward +X (K1 convention)
+ear_spacing_m,Binaural,proposed,Ear spacing (read-only; from preset SOFA ReceiverPosition),preset,0.18,0.18,m,VERIFIED-file,Mic tab (read-only),Mic,Y,Y,locked; replaces space in binaural
+binaural_itd_mode,Binaural,proposed,ITD correction on top of ear geometry,table|woodworth|geometry,table,table,,MEASURED (LF x-corr table),Advanced,Advanced,Y,Y,
+binaural_level_ref,Binaural,proposed,1/r² reference point (both ears),head_centre,head_centre,head_centre,,LOCKED 2026-09-30,hidden,—,Y,Y,read-only; level_l == level_r
+binaural_tail_mode,Binaural,proposed,FDN tail handling,diffuse_ic,diffuse_ic,diffuse_ic,,LOCKED 2026-09-30 (target MEASURED per head),hidden,—,Y,Y,even/odd split + IC mixer; lines uncoloured
+binaural_ic_mixer_taps,Binaural,proposed,IC mixer FIR length,513|257,513,513,taps,VERIFIED (design sweep),hidden,Advanced,Y,Y,latency (N-1)/2 on the tail only
+binaural_image_set,Binaural,proposed,Image table in binaural mode (rear images),binaural_rear32,binaural_rear32,binaural_rear32,,LOCKED 2026-09-30 (selection ASSUMED),hidden,—,Y,Y,N=32 kept; 5 rear images n_z=-1
+binaural_K,Binaural,proposed,Biquads per HRTF entry,6,6,6,,LOCKED 2026-09-30 (fit sweep VERIFIED),hidden,—,Y,Y,K=3 tables kept in the pack for comparison only
+binaural_symmetric,Binaural,proposed,One L/R mirror-averaged table (60 records) for both ears,true,true,true,,LOCKED 2026-09-30,hidden,—,Y,Y,R ear at node n = L record of mirror(n)
+binaural_eq,Binaural,proposed,HRTF equalisation,diffuse_field,diffuse_field,diffuse_field,,as shipped (not changed),hidden,—,Y,Y,
+binaural_headphones_note,Binaural,proposed,Show listen on headphones note,bool,—,true,,UI,Mic tab,Mic,n/a,n/a,client-only
+air_climate,Air,current,ISO 9613-1 climate preset (dual high shelf),studio_20C_50RH|dry_20C_20RH|humid_20C_80RH|warm_22C_40RH,studio_20C_50RH,studio_20C_50RH,,FITTED_TO_ISO_9613_1,panelMix,Colour,Y,Y,temperature stays with the preset; humidity above 0 sets RH and right is drier
+air_iso,Air,current,Use the ISO climate shelf when humidity is above 0,bool,true,true,,FITTED_TO_ISO_9613_1,panelMix,Colour,Y,Y,D8: right is drier down to the treble-loss peak; 0.35 is the climate RH unless that RH is past the peak
+source_radiation,Source,current,Source radiation preset,omni|talking_head|trumpet_byu|violin_byu|cab_1x12_closed|cab_4x12_closed|piano_grand_lid_open,omni,omni,,MEASURED-FIT or ASSUMED per preset file,Advanced,Source,Y,Y,omni skips the stage; TU Berlin presets are not shipped
+source_yaw,Source,current,Source yaw (0 faces +Z; + toward +X),±180,0,0,deg,ASSUMED,Advanced,Source,Y,Y,FDN inject uses the diffuse filter so the tail does not follow yaw

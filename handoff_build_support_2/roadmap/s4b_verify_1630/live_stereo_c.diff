@@ -1,0 +1,263 @@
+--- snapshot_2026-10-02_1140/software/engine/live_stereo.c	2026-10-02 11:11:24.000000000 +0100
++++ snapshot_2026-10-02_1630/software/engine/live_stereo.c	2026-10-02 16:29:58.309364098 +0100
+@@ -36,13 +36,15 @@
+  *     Reserve 0 is hadamard_n. 8, 16, and 32 size the FWHT. Anything else
+  *     stays 32, so a 32-line blob is unchanged. fwht8/16/32 and the matching
+  *     diffuse copy are picked once per block. One-sample feedback, unity.
+- *     Reserve 1 is loop_semantics (unused). Reserves 2..7 are solo_mute[6],
+- *     one float per face A–F. 1 = that face still reflects. 0 = muted, or
+- *     not the soloed face. The server folds those six gates into inject and
+- *     Dffs before packing, and Play early uses that same inject. This loop
+- *     only consumes the floats. Render early keeps the tap and skips the filter.
++ *     Reserve 1 is loop_semantics. 1 = plain Hadamard (reaktor_parity).
++ *     0 = column signs H·D inside fwht32. Reserves 2..7 are solo_mute[6], one float
++ *     per face A–F. Those six floats are not an audio gate. FDN inject and
++ *     Dffs stay un-gated. Solo/Mute is the SURF early gate.
+  *   2 AIR = second shelf, 1152 floats, or length 0 (bypass).
+- *   3 SURF, 4 SCATTER length 0 until a later phase.
++ *   3 SURF length 0 (no Solo/Mute: the early read is unscaled, bit-exact)
++ *     or 192 floats: early_gate for L, C, R, each 32 bank A then 32 bank B.
++ *     0 silences that line's early read. xin and the FDN lane stay open.
++ *   4 SCATTER length 0 until a later phase.
+  *   5 SRC_RAD length 0 (omni, the current sound) or 716 floats:
+  *     rad_on_A, rad_on_B, then per source the diffuse shelf (7),
+  *     direct L/C/R (3×10) and 32 image filters (32×10).
+@@ -235,6 +237,14 @@
+     int hn;
+     /* 1 after a block that ran the FDN. The off→on edge clears the tail. */
+     int fdnWas;
++    /* SURF early gate. Off when the section length is 0. */
++    int earlyGateOn;
++    double earlyGate[3][N];
++    double earlyGateB[3][N];
++    /* Centre bus gain is 0 and every centre inject is 0. Skip that bus. */
++    int cEmpty;
++    /* 1 = reaktor_parity, plain Hadamard. 0 = column signs on fwht32. */
++    int plainH;
+ };
+ 
+ static LS_ALIGN16 float g_wre[FFTN];
+@@ -526,6 +536,9 @@
+     st->g = 0.03;
+     st->hn = 32;
+     st->fdnWas = 0;
++    st->earlyGateOn = 0;
++    st->cEmpty = 0;
++    st->plainH = 0;
+     st->fdn_wet = 1.0;
+     st->direct_wet = 1.0;
+     st->gain_a = 1.0;
+@@ -756,6 +769,9 @@
+         st->peakOn[b] = on;
+         st->pb0[b] = rf(&r); st->pb1[b] = rf(&r); st->pb2[b] = rf(&r);
+         st->pa1[b] = rf(&r); st->pa2[b] = rf(&r);
++        /* Cut-only peaking is unity at DC. Float32 storage of b2 loses that.
++           Restore it in double. Render stays float64 and does not need this. */
++        if (on) st->pb2[b] = 1.0 + st->pa1[b] + st->pa2[b] - st->pb0[b] - st->pb1[b];
+         if (!on) {
+             int bb, j;
+             for (bb = 0; bb < 3; bb++) {
+@@ -832,17 +848,20 @@
+         }
+     }
+     /* Eight reserved CORE floats. hadamard_n, loop_semantics, solo_mute[6].
+-     * The six gates are already in inject and Dffs. Defaults are all 1. */
++     * solo_mute is not an audio gate. Early Solo/Mute is the SURF section. */
+     {
+         int prevHn = st->hn;
+         int nowFdn;
+         if (prevHn != 8 && prevHn != 16 && prevHn != 32) prevHn = 32;
+         st->hn = 32;
++        st->plainH = 0;
+         if (r.n - r.i >= 8) {
+             int hn = (int)(rf(&r) + 0.5);
+-            int k;
++            int sem, k;
+             if (hn == 8 || hn == 16 || hn == 32) st->hn = hn;
+-            for (k = 1; k < 8; k++) (void)rf(&r);
++            sem = (int)(rf(&r) + 0.5);
++            st->plainH = sem == 1;
++            for (k = 2; k < 8; k++) (void)rf(&r);
+         }
+         nowFdn = st->fdn_wet > 1.0e-4;
+         /* Rising FDN edge drops the frozen tail. An order change drops every lane. */
+@@ -949,6 +968,20 @@
+     }
+ }
+ 
++/* SURF v0: 3 buses × (32 bank A + 32 bank B). Any other length leaves the gate off. */
++static void load_surf_section(LiveStereo *st, int off, int n) {
++    Rd r;
++    int b, i;
++    if (n != 3 * 64) return;
++    if (off < 0 || off + n > MAX_BLOB) return;
++    r.p = st->blob; r.i = off; r.n = off + n;
++    for (b = 0; b < 3; b++) {
++        for (i = 0; i < N; i++) st->earlyGate[b][i] = rf(&r);
++        for (i = 0; i < N; i++) st->earlyGateB[b][i] = rf(&r);
++    }
++    st->earlyGateOn = 1;
++}
++
+ /* AIR section: 3 buses × (32 A + 32 B) × 6 floats. Any other length is a bypass. */
+ static void load_sh2_section(LiveStereo *st, int off, int n) {
+     Rd r;
+@@ -975,6 +1008,7 @@
+         clear_sh2_on(st);
+         st->radA = 0;
+         st->radB = 0;
++        st->earlyGateOn = 0;
+         load_core_body(st, &r);
+         st->icOn = 0;
+         return;
+@@ -999,6 +1033,7 @@
+     clear_sh2_on(st);
+     st->radA = 0;
+     st->radB = 0;
++    st->earlyGateOn = 0;
+     r.p = st->blob;
+     r.i = off[core];
+     r.n = off[core] + ln[core];
+@@ -1013,6 +1048,11 @@
+         if (ln[s] < 1 || off[s] < 0 || off[s] + ln[s] > n) continue;
+         load_src_section(st, off[s], ln[s]);
+     }
++    for (s = 0; s < nsec; s++) {
++        if (id[s] != 3) continue;
++        if (ln[s] < 1 || off[s] < 0 || off[s] + ln[s] > n) continue;
++        load_surf_section(st, off[s], ln[s]);
++    }
+     st->icOn = 0;
+ }
+ 
+@@ -1258,7 +1298,22 @@
+ 
+ static void fwht8(double *a) { FWHT_BODY(8); }
+ static void fwht16(double *a) { FWHT_BODY(16); }
+-static void fwht32(double *a) { FWHT_BODY(32); }
++/* H·D. d is not a Walsh row, so no row of H·D is parallel to the all-ones sum.
++   The output tap and the first pass stay +1. Plain H when loop_semantics is 1. */
++static const double CSIGN_D[32] = {
++    1.0, -1.0, -1.0, -1.0, -1.0, -1.0, 1.0, -1.0,
++    -1.0, 1.0, -1.0, 1.0, 1.0, 1.0, 1.0, 1.0,
++    -1.0, 1.0, 1.0, 1.0, -1.0, 1.0, 1.0, 1.0,
++    -1.0, 1.0, 1.0, 1.0, -1.0, 1.0, 1.0, 1.0
++};
++static int g_csign = 1;
++static void fwht32(double *a) {
++    if (g_csign) {
++        int k;
++        for (k = 0; k < 32; k++) a[k] *= CSIGN_D[k];
++    }
++    FWHT_BODY(32);
++}
+ 
+ typedef void (*FwhtFn)(double *a);
+ typedef void (*DiffuseFn)(LiveStereo *st, int b, int bankB, const double *xin, double *fb, double *yOut);
+@@ -1383,6 +1438,11 @@
+ DIFFUSE_FN(diffuse16, 16, fwht16)
+ DIFFUSE_FN(diffuse32, 32, fwht32)
+ 
++static double early_mul(LiveStereo *st, int b, int i, int bankB, double ev) {
++    if (!st->earlyGateOn) return ev;
++    return ev * (bankB ? st->earlyGateB[b][i] : st->earlyGate[b][i]);
++}
++
+ static void bus_sample(LiveStereo *st, int b, double x, double xA, double xB, int two, int t,
+     int hn, FwhtFn doFwht, DiffuseFn doDiff) {
+     Bus *bus = &st->bus[b];
+@@ -1439,7 +1499,7 @@
+                 double earlyIn = tint(line, st->srcSmp[i] * line->inj, 1);
+                 xin = tint(line, st->diffSmp * line->inj, 0);
+                 if (runEarly) {
+-                    double ev = read_lane(st->ring[b][i], LANE_EARLY, line->w, line->delay, cap);
++                    double ev = early_mul(st, b, i, 0, read_lane(st->ring[b][i], LANE_EARLY, line->w, line->delay, cap));
+                     st->eaBlk[b][i][t] = ev;
+                     early += ev;
+                 }
+@@ -1447,7 +1507,7 @@
+             } else {
+                 xin = tint(line, x * line->inj, 0);
+                 if (runEarly) {
+-                    double ev = read_lane(st->ring[b][i], LANE_EARLY, line->w, line->delay, cap);
++                    double ev = early_mul(st, b, i, 0, read_lane(st->ring[b][i], LANE_EARLY, line->w, line->delay, cap));
+                     st->eaBlk[b][i][t] = ev;
+                     early += ev;
+                 }
+@@ -1483,8 +1543,8 @@
+         double eA = tint(line, (st->radA ? st->srcSmp[i] : xA) * line->inj, 1);
+         double eB = tint(line, (st->radB ? st->srcSmpB[i] : xB) * line->injB, 2);
+         if (runEarly) {
+-            double ev = read_lane(st->ring[b][i], LANE_EARLY, line->w, line->delay, cap);
+-            double evB = read_lane(st->ring[b][i], LANE_EARLYB, line->w, line->delayB, cap);
++            double ev = early_mul(st, b, i, 0, read_lane(st->ring[b][i], LANE_EARLY, line->w, line->delay, cap));
++            double evB = early_mul(st, b, i, 1, read_lane(st->ring[b][i], LANE_EARLYB, line->w, line->delayB, cap));
+             st->eaBlk[b][i][t] = ev;
+             st->ebBlk[b][i][t] = evB;
+             early += ev + evB;
+@@ -1873,6 +1933,7 @@
+ 
+     for (b = 0; b < 3; b++) {
+         double sl, sr;
++        if (b == BUS_C && st->cEmpty) continue;
+         side(st, b, &sl, &sr);
+         if (!st->colour_on) {
+             if (st->icOn) ic_collect(st, b, icA, icB);
+@@ -1985,10 +2046,45 @@
+     }
+ }
+ 
++static void zero_centre_bus(LiveStereo *st) {
++    int i, f;
++    Bus *bus = &st->bus[BUS_C];
++    for (i = 0; i < N; i++) {
++        Line *line = &bus->line[i];
++        ls_zero(st->ring[BUS_C][i], st->cap * LANES * (int)sizeof(float));
++        line->pz1 = line->pz2 = line->pz1b = line->pz2b = 0;
++        line->airZ = line->airZe = line->airZb = line->airZf = 0;
++        line->sz1 = line->sz2 = line->sz1e = line->sz2e = 0;
++        line->sz1b = line->sz2b = line->sz1f = line->sz2f = 0;
++        line->h2z1 = line->h2z2 = line->h2z1e = line->h2z2e = 0;
++        line->h2z1b = line->h2z2b = line->h2z1f = line->h2z2f = 0;
++        bus->fb[i] = 0;
++        bus->fbB[i] = 0;
++    }
++    if (st->dir[BUS_C]) ls_zero(st->dir[BUS_C], st->cap * (int)sizeof(float));
++    if (st->dirB[BUS_C]) ls_zero(st->dirB[BUS_C], st->cap * (int)sizeof(float));
++    for (f = 0; f < MAX_FILT; f++) {
++        if (st->filt[f].bus != BUS_C) continue;
++        ls_zero(st->filt[f].prev, PART * (int)sizeof(float));
++        ls_zero(st->filt[f].sz, (int)sizeof(st->filt[f].sz));
++        st->filt[f].pos = 0;
++        st->filt[f].cold = MAX_PART;
++    }
++}
++
+ static void run_partition(LiveStereo *st, const float *inL, const float *inR, float *outL, float *outR) {
+     int t, b, i, hn;
+     FwhtFn doFwht;
+     DiffuseFn doDiff;
++    {
++        int e = st->micG[BUS_C] == 0.0;
++        for (i = 0; e && i < N; i++) {
++            if (st->bus[BUS_C].line[i].inj != 0.0 || st->bus[BUS_C].line[i].injB != 0.0) e = 0;
++        }
++        if (st->cEmpty && !e) zero_centre_bus(st);
++        st->cEmpty = e;
++    }
++    g_csign = st->plainH ? 0 : 1;
+     hn = st->hn;
+     if (hn == 8) { doFwht = fwht8; doDiff = diffuse8; }
+     else if (hn == 16) { doFwht = fwht16; doDiff = diffuse16; }
+@@ -2051,7 +2147,10 @@
+                     st->dirSmpB[b] = yin;
+             }
+         }
+-        for (b = 0; b < 3; b++) bus_sample(st, b, x, xA, xB, split, t, hn, doFwht, doDiff);
++        for (b = 0; b < 3; b++) {
++            if (b == BUS_C && st->cEmpty) continue;
++            bus_sample(st, b, x, xA, xB, split, t, hn, doFwht, doDiff);
++        }
+         if (st->colour_on && st->mono) dry = st->dry_gain * xL;
+         else if (st->two) dry = st->dry_gain * 0.5 * (st->gain_a * xL + st->gain_b * xR);
+         else dry = st->dry_gain * x;

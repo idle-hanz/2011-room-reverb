@@ -1,0 +1,12 @@
+{
+ "lattice": {
+  "orbit_changed": true,
+  "orbit_kept_6s_idle": true,
+  "state_change_resets_camera_to_fit": true
+ },
+ "paths": {
+  "orbit_changed": true,
+  "orbit_kept_6s_idle": true,
+  "state_change_resets_camera_to_fit": true
+ }
+}

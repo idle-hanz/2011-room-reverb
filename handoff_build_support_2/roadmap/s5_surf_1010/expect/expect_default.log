@@ -1,0 +1,13 @@
+default_tail|fdn|RA_vs_R0 {'80ms+': (-0.37, 0.53), '80-300ms': (-0.37, 0.56), '300ms+': (-0.35, 0.64), '0-80ms': (-0.45, 0.69)} -24.0
+default_tail|mix|RA_vs_R0 {'80ms+': (-0.37, 0.53), '80-300ms': (-0.37, 0.56), '300ms+': (-0.35, 0.64), '0-80ms': (-0.15, 0.2)} -31.2
+early RA-R0 maxabs 0.0
+default_play_early_expected|early|R0_vs_R0flat {'0-80ms': (-0.4, 0.37)} -24.7
+proxy|early|Play_vs_R0flat {'0-80ms': (1.31, 10.42)} -1.6
+proxy|early|Play_vs_R0 {'0-80ms': (1.05, 10.32)} -1.7
+hs6_A|fdn|RA {'80ms+': (-0.05, 0.53)} -15.4
+hs6_A|fdn|R0 {'80ms+': (0.0, 0.0)} -2991.6
+tilt_A|fdn|RA {'80ms+': (-0.2, 0.09)} -32.2
+tilt_A|fdn|R0 {'80ms+': (0.0, 0.0)} -2991.6
+hs6_all|fdn|RA {'80ms+': (-0.35, 6.03)} -3.2
+hs6_all|fdn|R0 {'80ms+': (0.0, 0.0)} -2991.6
+flat fdn maxabs 0.0

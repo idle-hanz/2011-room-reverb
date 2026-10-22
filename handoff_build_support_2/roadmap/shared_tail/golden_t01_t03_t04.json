@@ -1,0 +1,66 @@
+{
+ "meta": {
+  "sw": "C:\\Users\\IdleHanz\\Desktop\\2011 Room Reverb\\software",
+  "when": "2026-10-02 18:15:40",
+  "node": "C:\\Users\\IdleHanz\\AppData\\Local\\Microsoft\\WinGet\\Packages\\OpenJS.NodeJS_Microsoft.Winget.Source_8wekyb3d8bbwe\\node-v26.7.0-win-x64\\node.EXE",
+  "python": "C:\\Users\\IdleHanz\\Desktop\\2011 Room Reverb\\software\\.venv\\Scripts\\python.exe",
+  "sha1": {
+   "engine/live_stereo.c": "127c8f89e8d1",
+   "static/wasm/live_stereo.wasm": "69eb8b3bca4c",
+   "static/js/fdn_worklet.js": "e7b9b53eb8c6",
+   "render_pipeline.py": "63a010b0f3c2",
+   "engine/fdn.py": "f58138b73645"
+  }
+ },
+ "results": [
+  {
+   "test": "t01_pack_matches_worklet",
+   "status": "PASS",
+   "secs": 0.8,
+   "detail": {
+    "blob_len": 3166,
+    "max_diff": 0.0
+   },
+   "doc": "Harness sanity: the Python packer (lib/pack.py) and the real fdn_worklet.js packRoom agree."
+  },
+  {
+   "test": "t03_golden_play_features_off",
+   "status": "PASS",
+   "secs": 3.0,
+   "detail": {
+    "std_unlocked_byp": {
+     "null_db": -3005.8,
+     "max_abs_diff": 0.0,
+     "tol_db": -100.0
+    },
+    "std_unlocked_col": {
+     "null_db": -3004.3,
+     "max_abs_diff": 0.0,
+     "tol_db": -100.0
+    },
+    "std_lock18_byp": {
+     "null_db": -3003.3,
+     "max_abs_diff": 0.0,
+     "tol_db": -100.0
+    },
+    "std_lock18_col": {
+     "null_db": -3001.1,
+     "max_abs_diff": 0.0,
+     "tol_db": -100.0
+    }
+   },
+   "doc": "Play IR with new features off equals the golden baseline (null <= -100 dB)."
+  },
+  {
+   "test": "t04_golden_render_features_off",
+   "status": "PASS",
+   "secs": 9.8,
+   "detail": {
+    "null_db": -3005.9,
+    "max_abs_diff": 0.0,
+    "tol_db": -100.0
+   },
+   "doc": "Render IR (BYPASS colour, 0.5 s) equals the golden baseline (null <= -100 dB)."
+  }
+ ]
+}

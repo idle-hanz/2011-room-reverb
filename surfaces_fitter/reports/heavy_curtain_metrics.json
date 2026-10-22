@@ -1,0 +1,41 @@
+{
+  "id": "heavy_curtain",
+  "display_name": "Heavy curtain",
+  "candidate": "B",
+  "model": "low_shelf_high_shelf",
+  "rmse_r_db": 0.2059868464329228,
+  "absorb_l1": 0.026827902268686348,
+  "candidate_rmse": {
+    "A": 0.2309446012649545,
+    "B": 0.2059868464329228
+  },
+  "params": {
+    "r0_db": -1.4066303551531108e-46,
+    "f_lo": 799.9999932746065,
+    "depth_lo_db": -0.7049827022009573,
+    "shelf_slope_lo": 3.334855938074777,
+    "f0": 400.00000008352333,
+    "depth_db": -4.940230145082744,
+    "shelf_slope": 6.520567213070784
+  },
+  "roles": [
+    "wall"
+  ],
+  "banned_on": [
+    "floor",
+    "ceiling"
+  ],
+  "absorb": [
+    0.14,
+    0.35,
+    0.55,
+    0.72,
+    0.7,
+    0.65,
+    0.68
+  ],
+  "extras": {
+    "notes": "WALL ONLY \u2014 ban floor (E) and ceiling (F). NOT a floor finish.",
+    "prefer_lf_candidate": true
+  }
+}

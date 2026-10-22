@@ -1,0 +1,213 @@
+# BLOOM RUN 2026-10-19 (D-BLOOM + UAD round 2): Predelay, the tail compressor with UAD-matched timing, a colour stage, and a mic-pre colour stage
+
+This prompt replaces `BLOOM_RUN_2026-10-18.md`. That file is kept for its history only. Where they disagree, this file wins. It stands alone: you do not need the 18 Oct file, but you may read it for background.
+
+## Baseline (re-check at Step 0)
+Read `HANDOVER.md` first. The newest **Current pin** block is the baseline. It wins over every number in this prompt.
+- When this prompt was written (2026-10-19 18:10 BST), the newest written pin was **PHYSDEFAULT (2026-10-19)**. F13 (`F13_SECOND_PACK_RUN_2026-10-19.md`, a second physics pack for source B) was **mid-build**. The live tree already had `WORKLET_VER = 59` (`software/static/js/live_fdn.js:20`), `index.html` 964 `live_fdn.js?v=59`, 963 `pack_room.js?v=52`, 969 `app.js?v=62`, `slCB` in `live_stereo.c:213`, and the stopgap removed from `app_server.py:641`. `test_quick_pins.py` 73-75 and `test_b2_render_length.py` 56 pin `59` / `app.js?v=62`.
+- **Expected after F13 lands:** a "Current pin (2026-10-19) - F13" block with WORKLET_VER 59, `app.js?v=62` unchanged, new wasm / `live_stereo.c` / Temp DLL sha1s, and possibly new two-source MD5s and CPU figures. BLOOM therefore takes **WORKLET_VER 59 -> 60**, **`app.js?v=62 -> 63`**, and **`pack_room.js?v=52 -> 53`** only if that file changes.
+- **Step 0 must read every pin from the live HANDOVER and tree**: goldens, GOLDEN_META, empty and stored-centre MD5s, the two-source MD5, `d18`/`d4` sha1s, WORKLET_VER, every `?v=`, wasm sha1, and the decay-8 cube CPU. If F13 has not landed, or it landed with different numbers, report that, and use the live values. If F13 is still mid-run when Step 1 starts, that is a STOP: do not build on a half-landed tree.
+- `phys_ceiling` defaults on. After F13 it is on for two sources too. "Bloom off is bit-exact" is measured against that pin with the keys absent.
+- Every line number in this prompt was checked on the live tree on 2026-10-19 at about 18:05 BST, unless it says "re-find". F13 will move some of them, so re-find each one by search before you rely on it.
+
+## Read, in this order
+1. `handoff_build_support_2\roadmap\DECISION_BLOOM_2026-10-18.md`: the binding D-BLOOM rules.
+2. `handoff_build_support_2\roadmap\bloom\COMPRESSOR_RESEARCH.md` sections 2, 3, 4A, 4B, 4C and 5, plus `bloom\compressor_presets.json` (`generic_model`, `bloom_presets`, `units`, `confidence_labels`). This is the 19 Oct 13:08 version with the round 1 UAD values. The `*_preUAD_*` copies are for reference only.
+3. **`handoff_build_support_2\roadmap\bloom\UAD_ROUND2_2026-10-19.md`**: all of it. It holds the round 2 targets this run builds to. Data: `bloom\uad\round2\data\`. The ones you need are `static_fit.json`, `burst_uad_vs_models.csv`, `comp_burst_depth.csv`, `comp_subms_attack.csv`, `prog_vs_models.csv`, `comp_colour_summary.csv` and `.txt`, `comp_colour_vs_gr.csv`, `comp_fr_vs_gr.csv`, `comp_imd_steps.csv`, `comp_sidechain.csv`, `ripple_vs_uad.csv`, `vt_pres_all.csv`, `pre_lf_steps.csv`, `pre_burst_recovery.csv`, `pre_phase_gd.csv`, `hk_neve.npz` and `hk_u610a.npz` (the round 2 Hammerstein fits). Scripts: `bloom\uad\round2\scripts\`. `models.py` `run_preset` (lines 119-145) is the scratch "BLOOM current" that round 2 measured. `prog.py` makes the programs. `mk_listen.py` makes the A/B clips. `an_prog.py`, `an_bd_models.py`, `an_static.py`, `an_pres.py` and `vt_pres.py` hold the null and fit methods.
+4. `bloom\UAD_COMPARISON_2026-10-19.md` (round 1, method and trust caveats) and `roadmap\mic_character\UAD_PRE_COMPARISON_2026-10-19.md` (the pres: THD vs output, dominant harmonic, frequency response).
+5. `roadmap\mic_character\MIC_CHARACTER_RESEARCH.md` A6/A7 and `IDEAS_BACKLOG_2026-10-19.md` Q4 and item 98 (the Colour module this run partly seeds).
+6. `handoff_build_support_2\roadmap\ambience\make_listens.py` and `ambience\listen\listen_report.json` (the guitar listen method).
+7. `handoff_build_support_2\roadmap\BUILD_RUN_LOG.md`, the last three rows.
+
+## Why (plain language)
+A room mic through a compressor sounds bigger. The compressor turns the room down while you play, then lets it swell back up between notes. Idle wants that effect done cleanly inside the reverb. **Bloom** is a level follower that listens to the dry input and steers only how loud the reverb tail comes back. Direct and early sound are never touched. The presets copy real compressors: LA-2A, SSL bus, 1176, Distressor and Fairchild.
+
+On 19 Oct, a second round of measurements against Idle's UAD plug-ins showed three things. First, four presets were too slow, Room Crush, Nuke and Swell above all. Second, real units add a little fixed harmonic colour and a fixed EQ, and the colour does not come from the compressing itself. Third, Volterra or "dynamic convolution" models lose badly to a compressor model with a small colour block (round 2 section 4). Idle listened to the A/B clips. He heard the UAD 610-A and Neve pres saturate more than our clean versions, and a big difference on one Nuke clip. The rest sounded clean. **Idle decided (2026-10-19 18:04 BST, binding):** apply every proposed timing fix, add the hybrid colour stage, and add a mic-pre colour stage for the 610-A and the Neve.
+
+## Hard rules (binding)
+1. **Tail only.** A follower on the DRY input steers only the tail return, plus Predelay on the tank inject. Everything, including the colour stages, happens **before the limiter**: `soft_limit` (`live_stereo.c:520`, called in `mix_partition`, re-find) and `apply_soft_limit` (`render_pipeline.py:434`, re-find its call sites). No gain or colour after the limiter.
+2. **Direct, early and dry are untouched**, in both their bits and their FIR/colour paths. Any change in direct, early or dry bits with Bloom or Pre colour on is a STOP.
+3. **The tank is unchanged.** The Hadamard tank and mix, the decay lock, `g_decay`, line absorption, the Surfaces cascade, both physics packs (A and F13's B), ROOMTONE harmonics, `sub_hp` and `phys_ceiling` are not edited. No coefficient inside the loop changes. **The colour stages are never inside the feedback loop.** Sustain is not part of this run.
+4. **Off is bit-exact, proven first.** These defaults must be byte-identical to the Current pin: Bloom Amount 0, Predelay 0, Bloom colour off, Pre colour off, keys absent or explicitly at their off values. That covers the five goldens, GOLDEN_META, both live MD5s, the two-source MD5, the `d18`/`d4` prefixes and harness t03/t04. While off, the live dict grows no key, the new blob sections are absent, and the C off path never touches the new state (the `subHpOn` pattern). Run this proof before any on-path work. Any move is a STOP.
+5. **Play and Render match.** One shared Python function designs every coefficient: the envelope, gain computer, waveshaper polynomials, EQ biquads and pre filters. The values are packed and never re-derived in the worklet. The maths runs in double, in the same order, with the same freestanding functions in Python and C. `ls_exp` exists at `render_pipeline.py:391` and `live_stereo.c:483`. Add an `ls_log` or `ls_tanh` the same way if needed, mirrored exactly. Polynomial waveshapers are preferred because they need no transcendental function.
+6. **CPU.** Decay-8 cube (shared off, two sources, colour on, Surfaces on, first axial 30 Hz, both AMBIENCE keys on, physics default): median at or under **2.40 ms**. That holds with Bloom off, and with everything on at its most expensive: the costliest preset at Amount 100, Bloom colour on, Pre colour on with the costliest type at max Drive, and Predelay at max. Over is a STOP. Do not raise the ceiling or `BUDGET_MS`.
+7. **No whole-signal makeup.** The tail gain is never above `+Amount_dB`, and `Amount_dB` is never above 12 dB (the global cap) or a preset's `amount_cap_db`. The duck is never deeper than the preset's `max_duck_db`. **The colour stages are level-matched:** at the calibration level, each stage's small-signal gain is unity (0 dB ±0.05 dB on a −30 dBFS 1 kHz sine). Do not retune `makeup`, `fdn_wet`, desk faders, 1/r, SRCDIST, D-PROX, Smooth, 0.7, the 0.55 fold, Surfaces, PLACE or the limiter.
+8. **Every number keeps a label.** Put the status label and source next to each value in a code comment: `published`, `derived`, `circuit-derived`, `SPICE-derived`, `behavioural-fit`, `measured-third-party`, `UAD-measured`, `UAD-round2-fit` (new: fitted in this run to round 2 data) or `estimate`. Never tune by ear. A value this prompt does not give, which the data cannot fix, is a STOP item for Idle.
+9. **No Volterra kernels, no dynamic or level-switched convolution, no per-level IR sets** (Idle 2026-10-19; round 2 section 4).
+10. Do not start Sustain, SL4, Phase 4, Movement, the off-axis tail colour, the full Colour module (return EQ, item 98) or Talkback / Swell Long beyond the optional rule below. Do not re-pin goldens.
+
+## What changes from the 18 Oct design (Idle 2026-10-19 18:04, binding)
+
+### A. Timing and static fixes, all five presets
+Start from `compressor_presets.json` (19 Oct, 13:08) for every value not listed here. Where a value here differs, **this list wins**. Fit each one to the round 2 measurement named, not to the headline. Every fitted value is labelled `UAD-round2-fit` with its file and row. Fit with the same tools as round 2: run the shipped Python envelope through the round 2 test signals (`siglib.py` / `siglib2.py`, `an_bd_models.py`, `an_static.py`), at the thresholds in `static_fit.json` (`T` per preset). The fits are measured with the exact Python envelope that ships, not with `models.py`.
+
+| Preset (UAD reference) | Change | Targets to hit (UAD), file | Tolerance |
+|---|---|---|---|
+| **Glue** (SSL G, 4:1, att 10, Auto) | Soft knee 12 -> **6 dB**. Attack constant 10 ms -> about **6.5 ms**, fitted. | Static curve `static_fit.json` `glue.gr_uad`: 0.04 dB GR or less at −30 dBFS, 0.78 at −27, 2.40 at −24. Step attack t63 **7.9 ms** (`comp_subms_attack.csv`, SSL att 10). Burst attack t63 4.75-6.5 ms at 20 dB (`burst_uad_vs_models.csv`). | Static rms ≤ 0.25 dB, max ≤ 0.5 dB. t63 within ±15 %. The release must not get worse than today's 0-30 % slow. |
+| **Natural** (LA-2A Silver, PR 50) | Keep the static curve (rms 0.16 dB). Make the **release after heavy GR about 2.5-3x faster** with an LA-2A two-stage shape: a fast stage plus a slow stage whose weight and time depend on how long and how hard the cell was lit. Light, long GR stays **slower**. Attack: fit to t63 0.81 ms. | `burst_uad_vs_models.csv` natural rows. After 1 s at 20 dB: rel63 **138.5 ms**, rel90 **666 ms**, rel-to-1 dB 1345 ms. After 0.05 s at 20 dB: 96 / 442 ms. After 0.3 s at 20 dB: 137 / 661 ms. After 5 dB for 1 s: 191 / 1412 ms. After 5 dB for 5 s: 223 / 1516 ms. After 5 dB for 0.05 s: 38 / 243 ms. Step attack t63 **0.81 ms**, t90 10.5 ms (`comp_subms_attack.csv` `la2as_pr50_def`). | rel63 and rel90 within ±20 % on each of the 8 rows. Static rms ≤ 0.25 dB. |
+| **Room Crush** (1176 ALL, att 4, rel 5) | Release one-pole 0.300 s -> about **0.025 s**, fitted. Refit the ratio and knee to the ALL-mode curve (`static_fit.json` `room_crush.gr_uad`: 1.14 dB at −36, then about 2.9-3.0 dB GR per 3 dB, flat at 42.95 above +9). Attack: fit to t63 1.58 ms. Build the slow ALL "creep" (GR building over hundreds of ms at light levels: 5 dB burst gives 3.2 dB GR with att63 117 ms) only if one extra one-pole does it. Otherwise report and leave it out. | `burst_uad_vs_models.csv` room_crush: rel63 **13.5 / 20.8 / 31.0 ms** and rel90 23.5 / 36.5 / 54.8 ms at 5 / 10 / 20 dB targets. `comp_subms_attack.csv` `fet_all_att4.0`: t63 **1.58 ms**, t90 5.25 ms. On music (`prog_vs_models.csv`) the bias of +0.5 to +4.0 dB must shrink. | rel63 within ±25 %. Static rms ≤ 0.6 dB from −36 to +6 dBFS. Music GR bias inside ±1 dB. |
+| **Nuke** (Distressor NUKE, att 4.5, rel 2.5, HP) | Slow-branch attack 0.350 -> **0.001 s**. That gives both branches about 1 ms attack. Keep the dual release (60 ms / 0.55 s with the growing slow share from the JSON). Refit the fast attack (2.5 ms) to t63 0.90 ms. | `comp_subms_attack.csv` `dis_nuke_att4.5`: t63 **0.896 ms**, t90 **1.67 ms**. `burst_uad_vs_models.csv` nuke: att90 2.25-3.25 ms. rel63 106 / 118 / 128 ms and rel90 591 / 551 / 566 ms at 5 / 10 / 20 dB. Music bass bias of −0.4 to −7.4 dB must close. | t90 ≤ 3.5 ms. rel63 within ±20 %. Music GR bias inside ±1 dB on every program, bass included. |
+| **Swell** (Fairchild 670, TC 5) | **Remove the 10 dB GR cap** in the gain computer and in the 6386 law clamp (`models.py:142,145`). Attack 0.025 -> about **0.0035 s**, fitted. Static target: the UAD 670 curve **past 20 dB** (`static_fit.json` `swell.gr_uad`: 0.52 at −24 … 17.88 at 0, 23.73 at +6, 29.24 at +12). If the 6386 feedback law cannot reach it (round 1 says it tops out near 3.1:1), drive the timing network from the static curve instead and report. Check the 1 s release ("recheck the 1 s release"). | `comp_subms_attack.csv` `fc_t2_l_t5.0`: t63 **3.42 ms**, t90 10.8 ms. `burst_uad_vs_models.csv` swell: rel63 380 / 454 / 756 / 2167 ms after 0.05 / 0.3 / 1 / 5 s at 20 dB (today: 423 / 816 / 2202 / 3012). At 10 dB for 1 s: 809 ms. | Static rms ≤ 0.6 dB from −30 to +12 dBFS. t63 within ±20 %. rel63 within ±30 % on every row. Report any row it cannot reach. |
+
+**What changes in the D-BLOOM caps** (decided by this list, not a new choice):
+- Swell's cap of 10 dB of GR is removed from the gain computer. The Bloom safety caps still apply on the tail: `max_duck_db` (Swell 0.19 JSON value, re-find) and `Amount_dB` ≤ min(12, `amount_cap_db`). If removing the GR cap means Swell needs a deeper `max_duck_db` to sound like the Fairchild, report it. That is a STOP item for Idle; do not change it yourself.
+- Sidechain filters stay as in the JSON. Round 2 confirms Nuke's 100 Hz first-order HPF matches the Distressor HP (`comp_sidechain.csv`).
+- Stereo: linked, one follower (as 18 Oct). Distressor Norm is unlinked on the real unit, but Nuke keeps the linked follower (round 2 section 3.7, not a decision change).
+- Natural's sidechain emphasis (R37) is not built.
+
+**Meaning for Bloom (say it to Idle at the end):** Bloom uses these curves inverted, so the tail ducks while you play and blooms back after. Faster release means the room comes back sooner after each note. Faster attack means it ducks right on the hit. Room Crush at 25 ms will "pump" the room much faster than the old 300 ms. That is Idle's chosen 1176 behaviour; the listens must make it audible.
+
+### B. Bloom colour stage (hybrid: static waveshaper + fixed EQ), per preset
+The round 2 verdict is a hybrid: the compressor model for movement, plus a small memoryless waveshaper and 2-3 fixed biquads. It applies to the **tail return only**: the same signal Bloom's return gain multiplies. Order per preset, from round 2 section 4:
+- **Input-side** colour (tube or transformer before the gain cell: Fairchild, Vari-Mu, Distressor Dist): `EQ_pre -> shaper -> × gB -> EQ_post`.
+- **Output-side** colour (LA-2A H2, FET ALL): `× gB -> shaper -> EQ`.
+Step 0 picks the exact point in each mix path (the same point as the gain, item 1 below) and says whether the shaper runs per line before `paint_lines`, or on the summed FDN return per output bus. The bus version is cheaper but must exist in all three mix paths and in Render. Pick the cheaper one that lets Play and Render match.
+
+**Key `bloom_colour`**, default **off** (absent = off), a single on/off in the Bloom panel labelled "Colour". It only does anything while Bloom Amount > 0. It never runs with Bloom off.
+
+| Preset | Shaper (fit to `comp_colour_summary.csv` / `comp_colour_vs_gr.csv`, 1 kHz and 100 Hz) | What drives it | Fixed EQ (`comp_fr_vs_gr.csv`) |
+|---|---|---|---|
+| Natural (LA-2A Silver) | Output-side **H2** (even, x + b·x²), plus a small H3. Targets with GR: about **−54 dBc H2**, **−57 to −60 dBc H3** at 1 kHz; THD 0.04 % idle -> **0.23 %** compressing; 100 Hz 0.69-1.47 %. | The UAD jumps from twin to compressing, so scale b with GR: colour depth = f(GR), a clamp or one-pole on the already-computed GR. Not a new detector. | HP shelf / 2nd-order HP to **−3.4 dB at 20 Hz**. High shelf **+0.6 dB at 15 kHz**. |
+| Glue (SSL G) | **None.** Round 2: its colour is ripple, and the detector already makes it (0.43 % vs 0.51 % at 100 Hz). | — | −3.4 dB at 20 Hz. |
+| Room Crush (1176 ALL) | Output-side **H2 and H3 both about −50 dBc**; THD **0.2-0.5 %** at 1 kHz (0.194 idle, 0.335 / 0.395 / 0.45 / 0.508 at 3 / 6 / 10 / 15 dB GR). The 100 Hz part (2.8-4.3 %) comes from release ripple. The 25 ms release should restore most of it, so measure it before adding any LF shaping. | GR-scaled (as Natural). | −4.5 dB at 20 Hz. |
+| Nuke (Distressor NUKE, Norm) | Mild **Norm** colour only: 0.07-0.29 % at 1 kHz, H2 −71 to −57, H3 −65 to −53 dBc across 3-15 dB GR (`dis_nuke`). Dist 2 / Dist 3 are **not** built. | GR-scaled. | −3.4 dB at 20 Hz. |
+| Swell (Fairchild TC 5) | Input-side, **level-driven H3** (tube stage; twin ≈ compressing, so drive it from the detector **level**, not GR). 0.004 % -> 0.032 / 0.088 / 0.284 / **1.17 %** at 3 / 6 / 10 / 15 dB GR. H3 −71 / −62 / −51 / **−39 dBc**. H2 −78 to −55 dBc. | The input level the follower already computes (the same `|x|`-derived dB, smoothed by one one-pole). | **−6.8 dB at 20 Hz**. |
+
+- **Vari-Mu HF IMD** (a pre-emphasised even-order shaper, CCIF −36 to −15 dBc) applies to no current preset. **Do not build it.** Note it for later, in a code comment and in the report, as Idle's "where relevant" item. If Step 0 finds a preset it should apply to, ask Idle.
+- **Do not copy** the plug-ins' ~−42 dB at 20 kHz. That is UAD oversampling, not hardware.
+- **Calibration.** Bloom is tail-only, so the colour sees the tail level, not the dry level. The drive reference is: the shaper's THD at a given GR equals the UAD figure at that GR, when the tail return is at the level of the **dry detector** for that GR. Write the mapping in one place, labelled `estimate (dBFS reference: UAD Headroom 16 → −16 dBFS = +4 dBu, inferred)`. If Step 0 finds the tail is so much quieter than the dry that the colour can never be heard, report it. Do not add drive gain to make it audible.
+- **DC.** An even shaper makes DC. Remove it with one first-order DC blocker after the shaper (designed in Python, packed). It must not touch the off path.
+- Shaper form: a polynomial of order 2 or 3 (`a1·x + a2·x² + a3·x³`, coefficients scaled by the drive). If a tanh mix is clearly better for the Fairchild near 15 dB GR, use the mirrored `ls_tanh` and report the gain.
+
+**Fit and check (Python, before any C):** for each preset, run the round 2 compressor programs (`prog.py`, the six programs × 2 levels) through "new BLOOM as a compressor" (the shipped envelope with the colour block and EQ, and gain on the whole signal, exactly as round 2's "BLOOM current"). Then repeat round 2's analyses:
+- THD / H2 / H3 vs GR at 1 kHz and 100 Hz against `comp_colour_summary.csv`: within ±3 dB on H2 and H3 wherever the UAD is above −80 dBc.
+- Music GR error and bias (`an_prog.py` method) against `prog_vs_models.csv`.
+- Whole-output null against the UAD, same alignment and EQ as round 2. **Rule: per preset, the null must be no worse than "BLOOM current + UAD EQ" on any program at either level.** A preset where the colour block makes any null worse ships with its colour off, and the run reports it. Glue must stay at −35 to −43 dB.
+
+### C. Mic-pre colour stage (610-A and Neve 1073)
+Idle asked for this in BLOOM. It is the first piece of the queued **Colour module** (backlog Q4): optional, off by default, wet returns only, one level-matched Drive knob and a Type picker. It is **not** part of Bloom's gain law. It works whether Bloom is on or off.
+
+- **Keys:** `pre_colour` (type: `off` default, `u610a`, `neve1073`) and `pre_drive_db` (default 0, range −12 to +12 dB relative to the type's calibrated drive point). Absent = off = bit-exact.
+- **Where:** on the FDN tail return, before the limiter, after any Bloom gain/colour, at the same point Step 0 picks for B. Direct, early and dry are untouched (D-OFFAXIS Colour-module rule "wet returns only"). If Idle wants it on the whole wet incl. early, that is a later decision; report it, do not build it.
+- **Form, Wiener–Hammerstein:** `filter H1 -> static waveshaper (order ≤ 3, or 5 for the 610-A only if it beats order 3 on held-out) -> filter H2`. Everything is designed in Python and packed. The filters are low-order IIR (2-4 biquads total) fitted to the round 2 linear response. FIR is fine only if Step 0 shows the CPU fits.
+- **Level matching:** the Drive knob is gain-compensated (output small-signal gain unity at every Drive). UAD THD follows output level, not the gain switch (UAD_PRE_COMPARISON section 2).
+
+**610-A (UAD-measured):**
+- H2-dominant (H3 close behind near clip). 1 % THD at about −16.3 to −18.5 dBFS out (stock trims). 0.54-0.69 % at −18 dBFS.
+- FR −3 dB at 20 Hz, −2.7 dB at 20 kHz (−0.8 at 10 k). The hot run shows −4.6 dB at 20 Hz.
+- **Bass drives it about 6 dB earlier** (1 % THD at 20 Hz is about 6 dB below the 200 Hz point, `pre_lf_steps.csv`). Build this as a bass pre-emphasis into the shaper (H1 boosts the lows into the shaper, H2 de-emphasises), fitted to `pre_lf_steps.csv`.
+- Round 2 target: the 5th-order Hammerstein reached **−23.7 dB (vocal, 0 dB rel. clip)** and **−31.4 dB (wet mix)** against linear −12.5 / −24.0 (`vt_pres_all.csv`, `vt_pres_u610a.csv`). The built model must beat linear by **at least 6 dB** on held-out vocal and wet mix, or it ships off and you report.
+
+**Neve 1073 (UAD-measured; round 2 says the simple chain made it WORSE):**
+- H3-dominant at every level, with a **fixed absolute odd floor of about −82 dBFS** that does not scale with signal (transformer hysteresis / crossover fingerprint). H2 matches H3 only in the last dB before clip. 1 % at +10.7 to +11.7 dBFS out.
+- At 100 Hz near clip it is 0.07 % at +6 dBFS against 0.008 % at 1 kHz: frequency-dependent.
+- FR −1.5 dB at 20 Hz (round 2 table says about −7 dB at 20 Hz on its LF test; reconcile the two in Step 0), +0.9 dB at 18 kHz.
+- Round 2 nulls (`vt_pres_all.csv` neve rows): linear −40.4 (vocal 0), −53.6 (vocal −6), −37.6/−37.8 (mix), −42.8/−43.4 (wet mix), −27.7 (drums). Ham3 −36.0, Ham5 −26.3 on vocal 0: worse.
+- **Required fitting step (Step 1 Part 4a, Python only, before any C):** try, in this order, and keep the best on the held-out rows:
+  1. A **frequency-dependent / transformer-style** shaper: split the band (one crossover around 150-300 Hz, fitted), apply a low-order odd shaper to the low band only, or a level-and-frequency-dependent drive (bass pre-emphasis into an H3 shaper, de-emphasis after), so LF distorts more near clip.
+  2. The above plus the **fixed odd floor** term, optional and labelled `UAD-measured, maybe later` (UAD_PRE_COMPARISON section 4). Build it only if it improves the null; it is about −60 dB relative on a tail.
+  3. A plain order-3 odd shaper fitted to the THD tables (not to program), as round 2 section 4 suggested ("fit from THD tables").
+- **Ship rule (binding, Idle):** the Neve stage ships **only if** it beats linear-only on the round 2 null tests: held-out vocal 0 dB, vocal −6, mix 0 / −6, wet mix 0 / −6, drums 0 / −6, by ≥ 0.5 dB on the median and never worse by more than 0.5 dB on any row. Otherwise the `neve1073` type stays hidden (key accepted, treated as off), and you report the best numbers and what each option sounded like on the listens. This is not a STOP; it is a reported outcome.
+- The drum null floor at −22 to −27 dB is a known open measuring issue (round 2 section 8), affecting linear too. Judge drums against linear only, never in absolute terms.
+
+**Optional (do not build unless free and asked later; note in the report):** the Manley (bass drives it 9 dB earlier, H2, and a **0.7 dB level sag for 20-50 ms** after a loud bass hit, `pre_burst_recovery.csv`), the 610-B, the API, the SSL E. The Manley sag is the only pre with memory; it would need one envelope follower.
+
+## Step 0: REVIEW ONLY (plan mode, high effort, no edits)
+Answer against the real code with file:line. No edits, builds or tree-writing renders. Python scratch fits under `%TEMP%` are allowed if they read only.
+0. **Baseline.** Report the live pins (see Baseline). Has F13 landed? What WORKLET_VER, `app.js?v=`, `pack_room.js?v=` and sha1s does BLOOM start from and bump to? List every file with a version pin that moves: `live_fdn.js:20`, `index.html` 963/964/969, `test_quick_pins.py` 73-75, `test_b2_render_length.py` 56, `test_live_stereo.py` and `test_mic_colour_relative.py` (re-find the `59` pins F13 set), `3_phase_acceptance_tests/tests/test_p1_blob.py` (the WORKLET_VER agreement check), and any new F13 pin.
+1. **Tail return point (live).** The tank output is `yBlk` / `yBlkB` (written in `bus_sample`, re-find). Mixed in `mix_partition` (re-find; `soft_limit` at `live_stereo.c:520`): the no-colour `sumY` path, the colour path through `paint_lines` into per-line FIRs that also carry early lanes, and the binaural `icOn` path. Find the one place where a per-sample Bloom gain `gB[t]`, the Bloom colour (B) and the Pre colour (C) can act on the FDN term only, in all three paths, without touching early and without scaling `yBlk` in place (the shared-tail path writes `yBlk[BUS_C]` back into the L ring, so an in-place scale changes the loop). Show the lines. Say whether B and C fit per line or per output bus, and their cost.
+2. **Tail input point (live).** The inject copy: one source after `sub_apply`, two sources through `fdn_excite` / `tint()+LS_DC`, after F13's B-bank changes (re-find). Predelay goes on the tank copy only, after the high-pass, before `LS_DC`. Early keeps the unscaled, undelayed value.
+3. **Return vs input.** Default for Step 1: the whole Bloom gain on the return, the inject carries only Predelay. Say if this misreads D-BLOOM.
+4. **Render structure.** Render convolves a precomputed IR (`fft_convolve`, the `combined_ir` and `_conv3` paths, re-find). A signal-dependent gain or a waveshaper cannot live in an IR. Confirm the `render_fdn_ir` (`render_pipeline.py:1117`) `drive` path (used by Movement, re-find) can, with Bloom or Pre colour on: (a) take the tail out of the combined IR (`include_fdn=False`), (b) drive the tank with the real excitation at Movement 0, (c) apply `gB[n]`, the Bloom colour and the Pre colour at the same point as the live engine (per line pre-`paint_lines`, or per bus, matching item 1), for one source, two sources (A and B tanks, F13's B pack) and binaural. Confirm the detector input is identical in both engines. With everything off, Render stays on today's IR path (bit-exact).
+5. **Predelay sites and memory.** As 18 Oct item 5: plain one source, `surfOn`, `radA`/`radB`, two sources, shared tail. Options: (a) a new ring lane next to `LANE_FDN` (`LANES` re-find), (b) a per-line predelay ring after `fdn_excite`, (c) delay the scalar input and run a second tint. Give memory and CPU at 48 kHz and at `CAP_MAX` 192000 (`live_stereo.c:103`). Integer samples only, range 0-100 ms. Render shifts the driven excitation by the same count.
+6. **Detector.** Feedforward on the dry, one linked follower per engine. Two sources: `max(|xA|,|xB|)` linked (recommended) unless Step 0 finds a reason. Sidechain HPFs: Nuke and Swell 100 Hz 6 dB/oct. Control-rate gain computer (8 or 16 samples) only if both engines do it identically. **Note: Nuke's t63 target is 0.9 ms and Room Crush 1.58 ms**, so an 8- or 16-sample control rate (0.17-0.33 ms at 48 kHz) must be shown not to shift t63/t90 by more than 5 %. Otherwise run per sample.
+7. **Per-preset discrete equations, new targets.** Write each preset's exact per-sample update (state, coefficients, combine rule, clamps) **after** the A-list changes. Then run the A-list fits in a Temp scratch copy and report each target vs achieved, with every fitted number (label `UAD-round2-fit`). Natural: propose the two-stage release structure (which state drives the fast/slow split and the weight) and show it meets all 8 burst rows. If no structure in the existing model family (opto memory, two one-poles with a memory-driven weight) meets them within tolerance, say so: that is a STOP item for Idle.
+8. **Colour stage (B) fits.** Run the B fits in scratch: per preset, shaper coefficients, drive law, EQ biquads, THD vs GR achieved, and the null before/after (the "no worse" rule). Say which presets' colour would ship.
+9. **Pre colour (C) fits.** Run the 610-A fit and **the full Neve fitting step** (C, options 1-3) in scratch. Report held-out nulls vs linear per row (`vt_pres_all.csv` layout) and whether each type passes its ship rule. Reconcile the Neve 20 Hz figure (−1.5 vs about −7 dB).
+10. **Parameter plumbing.** `params_from_body` (`app_server.py:484`), `DEFAULTS` (`app_server.py:80`), the Render kwargs and `render()` wrapper (`render_pipeline.py:2548`, the `sub_hp` contextvar pattern), `live_fdn_params` (`render_pipeline.py:2759`), `pack_blob_v2` (`render_pipeline.py:3275`), `packRoom` (`static/js/pack_room.js`, re-find), harness `lib/pack.py` `pack_room` and `lib/wasm_run.js` `msgFrom`, the `live_fdn.js` message build, the `fdn_worklet.js` handler, `live_load_room` (`live_stereo.c:1706`). Propose section ids for BLOOM (envelope + colour coefficients), PREDELAY (samples) and PRE_COLOUR (filters + shaper), present only when on, inside the `nsec` max of 16, after F13's sections. Harness t01 must still compare the Python packer and `packRoom` byte for byte.
+11. **State and clicks.** Follower, shaper DC-blocker and pre-filter state live in `LiveStereo`, zeroed in `scrub` (re-find, next to `harmZ`/`subZ`). A room reload must not reset them (that clicks). Ramp the colour wet/dry (or drive) on/off with the existing `arm_ramps` / `rampBlk` (~15 ms). Bloom off->on starts at 0 dB. On->off ramps to 0 dB and colour depth 0 before the section drops. Pre colour on/off crossfades linear↔coloured over the ramp.
+12. **UI (Mix window).** `#mixViews` (`index.html:191`), the FDN strip, the check rows, `#mixHint` (`index.html:315`). Bloom panel: Preset, Amount, Threshold, Attack, Release, Predelay, **Colour** (on/off). A separate small **Pre colour** row: Type (Off / 610-A / Neve 1073; Neve hidden if it fails its ship rule) and Drive. Avoid a clash with `#naturalBtn` (`index.html:262`, `app.js` 978/1218, `state.natural_bus` `app.js:132`), e.g. "Bloom: Natural". New state defaults in `app.js` (re-find, near 128-132) equal the server defaults (`test_p0_5_server_defaults_equal_client_state`, `3_phase_acceptance_tests/tests/test_p0_engine.py`, re-find).
+13. **Tests to touch.** Every version pin that moves (item 0). Confirm no golden or MD5 pin moves.
+14. **Conflicts with locked decisions.** List any (D-BLOOM, D-OFFAXIS queue order, the Colour-module design in backlog Q4, the makeup freeze, 1/r). A conflict is a STOP. **Known, for Idle to confirm, not a stop:** Pre colour lands before the off-axis tail colour, which the queue (`IDEAS_BACKLOG_2026-10-19.md` section 10) put first. Idle asked for it on 2026-10-19.
+
+## Step 1: BUILD (after the Step 0 corrections are accepted and appended here)
+
+### Backup
+`software_backup_2026-10-19_preBLOOM.zip` next to the earlier backups, excluding `.venv` and `__pycache__`. Report its size.
+
+### Part 0: off path, proven bit-exact first
+Add the keys (`bloom_preset`, `bloom_amount`, `bloom_threshold_db`, `bloom_attack_scale`, `bloom_release_scale`, `predelay_ms`, `bloom_colour`, `pre_colour`, `pre_drive_db`, or Step 0's names), the plumbing, empty sections and C fields, all off. Re-hash everything in rule 4. Bodies with explicit off values (any preset id, `bloom_colour: true` at Amount 0, `pre_colour: "off"`, `pre_drive_db` non-zero with type off) hash the same as a body without them. Any move is a STOP.
+
+### Part 1: Predelay
+Key `predelay_ms`, default 0, 0-100 ms, `round(ms*sr/1000)` samples. Tank copy only, at Step 0's site, in every path. Measure: FDN-stem onset moves by exactly N samples. Direct and early stems max-abs 0. Play vs Render null on the tail stem. CPU.
+
+### Part 2: Bloom with the round 2 presets
+- **Signal law** (`generic_model.bloom_law`): `GR_dB(t) ≤ 0` from the preset model on the dry detector. `wet_gain_dB = clamp(Amount_dB + GR_dB, −max_duck_db, +Amount_dB)`. The tail return × `10^(wet_gain_dB/20)`. Amount 0 = off (bit-exact path, not a 0 dB multiply).
+- **Controls:** Preset (Natural default, Glue, Room Crush, Nuke, Swell). Amount 0-100 % → `Amount/100 × 12 dB`, clamped to the preset cap. Picking a preset sets Amount to `bloom_defaults.amount_db` only when Amount > 0. Threshold per preset calibrated on the clean guitar in the boot room to land the median GR in `gr_target_db` (label `estimate (calibrated on test_guitar_dualmono_clean.wav, boot room)`). Attack / Release scale ×0.25 to ×4 around the **new** preset times. Multi-stage releases scale together. Attack ≥ 0.1 ms, except that Nuke at ×1 must hit its 0.9 ms target. Predelay in the same panel. Presets do not set Predelay.
+- **Preset models:** the 19 Oct JSON **plus the A-list changes, at the fitted values Step 0 / Round 1 accepted**. Re-run every A-list target on the shipped Python and on the wasm (`wasm_run.js` `pcm` mode, step and burst signals) and report each one in a table: target, Python, wasm, tolerance, pass.
+- **Optional** Swell Long and Talkback: build only if they fit the CPU gate. Swell Long takes Swell's new attack and uncapped curve. Otherwise skip and report.
+- **Binaural:** if the `icOn` path cannot take the same gain/colour point cleanly, force Bloom and Pre colour off for binaural (key ignored, row greyed, reason in the hint) and report.
+
+### Part 3: Bloom colour (B)
+Build the per-preset shapers and EQ that passed the Step 0 / Round 1 "no worse" rule, at the accepted coefficients. Presets that failed keep colour off for that preset (the Colour toggle does nothing there; the hint says so). Re-run the THD-vs-GR and null checks on the shipped Python and the wasm.
+
+### Part 4: Pre colour (C)
+4a. Neve fitting step (C) final run on the shipped Python: report and apply the ship rule.
+4b. Build `u610a` (if it passed) and `neve1073` (if it passed). Measure on the shipped Python and the wasm: THD at 1 kHz / 100 Hz / 20 Hz vs output (against `UAD_PRE_COMPARISON` section 2 and `pre_lf_steps.csv`), the linear response against round 2, held-out nulls vs linear (`vt_pres_all.csv` rows), and gain matching (unity small-signal at every Drive, ±0.05 dB).
+
+### Part 5: Sustain is NOT built
+No keys, UI or state.
+
+### UI (Mix window)
+As Step 0 item 12. Bloom starts at Natural, Amount 0, Predelay 0, Colour off. Pre colour starts Off, Drive 0. Hints in plain words, for example: "Bloom lifts the room between notes. Direct and early are untouched." and "Pre colour adds the 610-A or Neve preamp's saturation to the room only." At 1280 px and 390 px: no horizontal scroll, no page errors.
+
+### Version bumps (only for files that change)
+- `live_stereo.c` changes: rebuild the wasm (zig, as F13 did) **and every compiled copy F13 found** (the Temp DLL and any second engine copy a test uses). WORKLET_VER **59 -> 60** (`live_fdn.js:20`), `index.html` `live_fdn.js?v=60`. Update every WORKLET pin from item 0.
+- `app.js` changes: `app.js?v=63` (`index.html:969`, `test_quick_pins.py:75`, `test_b2_render_length.py:56`). `pack_room.js` changes: `?v=53`.
+- If Step 0 found F13 landed with other numbers, use live + 1, and say so.
+- Do NOT touch `TLAW_SHA1` / `GOLDEN_META_SHA1` / `EMPTY_MD5` / `CENTRE_MD5`, `test_smix_desk.py` `GOLDEN_SHA1`, `test_s_audit_api.py`, `test_b6_heights.py`, the `d18`/`d4` prefixes, `T60_TOL` 0.08, `small_lock08`, or any F13 pin. A failure there is a STOP, not a re-pin.
+- Record the new wasm sha1 and size, the `live_stereo.c` sha1 and the Temp DLL sha1 in the Current pin.
+
+### Listens
+**Set 1: round 2 A/B, re-rendered with new BLOOM (for Idle, the main deliverable).** Write and keep `handoff_build_support_2\roadmap\bloom\uad\round2\scripts\mk_listen_b2.py`, reusing `mk_listen.py`, `prog.py` and the round 2 alignment. Into the **same folder** `roadmap\bloom\uad\round2\listen\`, for every existing set:
+- Compressors: `comp_<preset>_<program>_hot__B2_bloom_new.wav`. This is new BLOOM run as a compressor (gain on the whole signal, exactly like `B_bloom_current`), with the shipped envelope **and** Bloom colour + EQ (for presets where colour shipped), from the shipped Python function. Sets: natural mix and vocal, glue mix, room_crush mix / drums / bass, nuke mix / drums / bass, swell mix (11 files).
+- Pres: `pre_<pre>_<program>_drive__B2_bloom_new.wav` for `u610a` and `neve` × vocal and drums, from the shipped Pre colour at the drive matching round 2's 1 %-THD point (4 files). If the Neve type failed its ship rule, still render it from the best fit and add `_NOTSHIPPED` to the name.
+- Loudness-matched exactly as `mk_listen.py` does (RMS-matched to the set, shared peak −1 dBFS, 4 s, 24-bit 48 kHz). Do not overwrite A, B or C files. Prove A/B/C sha1s are unchanged.
+- Write `listen\B2_report.json` and a short `listen\B2_README.md` (plain words, listening order: Nuke bass, Room Crush drums, Swell mix, Natural vocal, the 610-A and Neve vocals, Glue mix). Per set: whole-output null vs UAD **before (B) and after (B2)**, round 2 method and alignment, dB; music GR error rms and bias before and after (compressors); held-out null vs linear-only before and after (pres).
+
+**Set 2: in the app (guitar, boot room).** Write and keep `handoff_build_support_2\roadmap\bloom\make_listens.py`, reusing the AMBIENCE helpers. Guitar: `handoff_build_support_2\roadmap\robotic_1240\test_guitar_dualmono_clean.wav`, first 8 s, never overwritten. Render the guitar through `render()` with the page-default desk (boot room 6×3×8, decay 1.8, `sub_hp` on, physics default). Output to `roadmap\bloom\listen\`:
+- `boot_bloom_off`: prove it equals a body without Bloom keys (max-abs 0), and that Amount 0 with every preset id is identical.
+- Per preset: `boot_<preset>_a50`, `boot_<preset>_a100`, and `boot_<preset>_a100_colour`.
+- `boot_natural_a100_fast` (×0.25, ×0.25), `boot_natural_a100_slow` (×4, ×4), `boot_natural_a50_pre30`.
+- `boot_pre_u610a_d0`, `boot_pre_u610a_d+6`, `boot_pre_neve_d0`, `boot_pre_neve_d+6` (Bloom off), and `boot_natural_a50_colour_pre_u610a`.
+- Small room 3×4×2.5 at its PLACE pose: `_bloom_off`, `_natural_a50`, `_room_crush_a50`, `_nuke_a50`.
+- Tail-only stems (direct 0, early 0) of each into `listen\_stems\`.
+- `listen\listen_report.json`: per file the settings, sample peak, true peak (4×), limiter dB and limited-sample count, DC, energy under 20 Hz; from the stem: tail level vs time (10 ms RMS), GR trace, median / max GR, tail level 0.5 s and 1 s after the last note vs `bloom_off`, and tail THD estimate where colour is on. Octave T60 only for `bloom_off`.
+- Play vs Render, guitar (`wasm_run.js` `pcm` mode): boot Natural a100 colour on, Nuke a100, Room Crush a100, boot Pre 610-A d+6, and 3×4×2.5 Natural a100.
+
+### Gates
+- pytest full (`software\tests`), node, selfcheck, harness `run_all.py` (t01-t19; t01 covers the new sections), the acceptance pytest (`3_phase_acceptance_tests\tests`; report against the known failures in the Current pin, 6 at PHYSDEFAULT, or F13's count), quick pins. Re-run node, selfcheck and the harness after the last edit.
+- Off path: everything in rule 4 identical to the Current pin.
+- CPU (rule 6), off and fully on: median / mean / p90 / silence-late / spikes, plus per-block cost of the follower, the Bloom colour and the Pre colour separately.
+- A-list target table (Part 2): every row passes its tolerance on both the shipped Python and the wasm, or is reported as a STOP item.
+- Play vs Render: off byte-identical. Bloom on (with colour and Pre colour) null ≤ **−60 dB** on the guitar tail stem. GR traces equal within 0.01 dB.
+- Clicks: toggling Bloom, Colour and Pre colour, switching preset and Type, and sweeping Amount and Drive during Play (`wasm_run.js` `switch` mode) gives no sample step larger than the same schedule with everything off.
+- Direct and early stems with everything on: max-abs 0 against off.
+- Gain matching of every colour stage: ±0.05 dB small-signal.
+- Write the landing into HANDOVER as a new "Current pin (2026-10-xx) - BLOOM" block (keep the previous pins below it), add a BUILD_RUN_LOG row, and delete your Temp scratch.
+
+## STOP rules (stop, change nothing more, report with options)
+1. Anything with everything off moves a golden, GOLDEN_META, a live MD5, the two-source MD5, `d18`/`d4`, t03/t04, `T60_TOL` or `small_lock08`.
+2. Bloom, its colour or the Pre colour changes direct, early or dry bits, or needs a change inside the tank / loop.
+3. CPU over 2.40 ms on the decay-8 cube, off or fully on.
+4. Play vs Render with anything on worse than −60 dB, GR traces off by more than 0.01 dB, or no shared point exists for a mix path.
+5. The limiter engages on any Amount 50 listen (Set 2). Amount 100 limiting is reported, not a stop.
+6. A value the build needs that this prompt does not give and the round 2 data cannot fix: a sound decision. Examples: a deeper Swell `max_duck_db`, a Natural release structure outside the model family, Room Crush creep needing more than one pole, colour drive gain to make it audible, Pre colour on early sound. Report the choice and what each option would sound like.
+7. An A-list target that misses its tolerance after a fair fit. Report the best achieved and why.
+8. F13 still mid-run, or it landed with pins this prompt cannot reconcile.
+9. Any conflict with a locked decision.
+
+Not stops, reported outcomes: a preset whose colour fails the "no worse" null rule (ships colour-off), the Neve failing its ship rule (type hidden), the Room Crush creep not built.
+
+## Next
+Run Step 0 (review only, plan mode, high effort) in a fresh Build session. Build runs only after the Round 1 review is accepted and appended at the bottom of this file.

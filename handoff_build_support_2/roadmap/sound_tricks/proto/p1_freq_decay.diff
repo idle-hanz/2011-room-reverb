@@ -1,0 +1,96 @@
+--- /workspace/build_support_2/ui_audit_1004/app/software/engine/fdn.py	2026-10-04 08:58:20.000000000 +0100
++++ /workspace/st_work/software/engine/fdn.py	2026-10-04 17:01:24.342857766 +0100
+@@ -819,6 +819,61 @@
+     return ("X", "Y", "Z")[i % 3]
+ 
+ 
++# ---- sound_tricks P1 (BOX PROTOTYPE ONLY, not the engine): per-line in-loop attenuation
++# filter (Jot & Chaigne 1991). One biquad per line = first-order low shelf x first-order
++# high shelf, fitted so each line loses -60*tau_i*(1/T(f) - 1/T_dial) dB per pass on top of
++# the broadband lg. FREQ_DECAY = None keeps today's engine bit-exact.
++FREQ_DECAY = None   # dict(ratio=callable(np.ndarray f) -> T(f)/T_mid, report=list)
++
++def _shelf1(G_db, fc, sr, kind):
++    """First-order shelf (bilinear, prewarped at fc). kind 'lo': DC gain G; 'hi': Nyquist gain G."""
++    G = 10.0 ** (G_db / 20.0); r = math.sqrt(G)
++    w = 2.0 * sr * math.tan(math.pi * min(fc, 0.49 * sr) / sr); K = 2.0 * sr
++    if kind == 'lo':   # (s + r w)/(s + w/r)
++        b0, b1, a0, a1 = 1.0, r * w, 1.0, w / r
++    else:              # (r s + w)/(s/r + w)
++        b0, b1, a0, a1 = r, w, 1.0 / r, w
++    B0, B1, A0, A1 = b0 * K + b1, b1 - b0 * K, a0 * K + a1, a1 - a0 * K
++    return B0 / A0, B1 / A0, A1 / A0
++
++def _shelf_pair_biquad(p, sr):
++    lb0, lb1, la1 = _shelf1(p[0], math.exp(p[1]), sr, 'lo')
++    hb0, hb1, ha1 = _shelf1(p[2], math.exp(p[3]), sr, 'hi')
++    return (lb0 * hb0, lb0 * hb1 + lb1 * hb0, lb1 * hb1, la1 + ha1, la1 * ha1)
++
++def _biquad_db(c, f, sr):
++    z = np.exp(-1j * 2 * np.pi * f / sr)
++    h = (c[0] + c[1] * z + c[2] * z * z) / (1 + c[3] * z + c[4] * z * z)
++    return 20 * np.log10(np.abs(h) + 1e-300)
++
++FD_FIT_F = np.geomspace(50.0, 16000.0, 40)
++
++def design_line_absorb(delays, sr, t_dial, ratio_fn):
++    """Per-line (b0,b1,b2,a1,a2) plus accuracy report (T60 error % at octave centres)."""
++    from scipy.optimize import least_squares
++    f = FD_FIT_F
++    T = t_dial * np.asarray(ratio_fn(f), float)
++    coefs, worst = [], 0.0
++    octs = np.array([125, 250, 500, 1000, 2000, 4000, 8000], float)
++    Toct = t_dial * np.asarray(ratio_fn(octs), float)
++    for d in delays:
++        tau = float(d) / float(sr)
++        tgt = -60.0 * tau * (1.0 / T - 1.0 / t_dial)
++        x0 = [float(tgt[0]), math.log(250.0), float(tgt[-1]), math.log(4000.0)]
++        lo = [-40.0, math.log(30.0), -40.0, math.log(800.0)]; hi = [40.0, math.log(2000.0), 40.0, math.log(0.45 * sr)]
++        x0 = [min(max(v, l + 1e-6), h - 1e-6) for v, l, h in zip(x0, lo, hi)]
++        # weight by T error sensitivity: dB error of e gives T error ~ e*T/(60 tau)
++        res = least_squares(lambda p: (_biquad_db(_shelf_pair_biquad(p, sr), f, sr) - tgt) * (T / t_dial),
++                            x0, bounds=(lo, hi))
++        c = _shelf_pair_biquad(res.x, sr)
++        lg_db = -60.0 * tau / t_dial
++        tot = lg_db + _biquad_db(c, octs, sr)
++        Tgot = -60.0 * tau / np.minimum(tot, -1e-9)
++        worst = max(worst, float(np.max(np.abs(Tgot / Toct - 1.0))))
++        coefs.append(c)
++    return np.asarray(coefs, float), worst
++
++
+ class FDN:
+     """
+     Square N-line FDN (N = power of 2, Sylvester Hadamard).
+@@ -870,6 +925,11 @@
+                 [10.0 ** (-3.0 * float(d) / (float(sr) * self.line_t60)) for d in self.delays],
+                 dtype=np.float64,
+             )
++        self._ab = None
++        if FREQ_DECAY is not None and self.line_t60 > 0.05:
++            self._ab, worst = design_line_absorb(self.delays, sr, self.line_t60, FREQ_DECAY["ratio"])
++            self._az1 = np.zeros(self.n); self._az2 = np.zeros(self.n)
++            FREQ_DECAY.setdefault("report", []).append(worst)
+         self.max_d = max(self.delays) if self.delays else 0
+         self.bufs = [np.zeros(d, dtype=np.float64) for d in self.delays]
+         self.idx = [0] * self.n
+@@ -981,11 +1041,19 @@
+         lg = self._lg
+         any_dffs = self._any_dffs
+         hy = self._hy
++        ab = self._ab
++        az1 = getattr(self, '_az1', None); az2 = getattr(self, '_az2', None)
+         for t in range(n_samp):
+             for i in range(n):
+                 reads[i] = bufs[i][idx[i]]
+             if lg is not None:
+                 reads *= lg
++            if ab is not None:
++                xa = reads.copy()
++                ya = ab[:, 0] * xa + az1
++                az1[:] = ab[:, 1] * xa - ab[:, 3] * ya + az2
++                az2[:] = ab[:, 2] * xa - ab[:, 4] * ya
++                reads[:] = ya
+             if peaking:
+                 for i in range(n):
+                     if use_peak[i]:

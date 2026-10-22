@@ -1,0 +1,250 @@
+{
+ "setup": {
+  "room": "default (app DEFAULTS), FDN only (early_wet 0, direct_wet 0, colour BYPASS), 48 kHz, Render path, box scratch copy of the 18:29 audit tree",
+  "mod": "Frenette: sine, peak depth 0.10 ms (4.8 samples) or 0.15 ms (7.2 samples), base 0.7 Hz x 0.6..1.4 per line (golden-ratio spread), phase k*112.5 deg, 16 of 32 lines (every other line by sorted length, per bus), 1st-order allpass interpolation (N=floor(D-0.5), eta=(1-d)/(1+d)), coefficient update every sample, mean delay unchanged",
+  "dcap": "|Dffs| clipped to 0.7 on every line (default room: 5 of 32 lines were at 0.98)",
+  "variants": {
+   "before": "today",
+   "mod10": "mod 0.10 ms",
+   "mod15": "mod 0.15 ms",
+   "dcap": "Dffs cap 0.7 only",
+   "mod10dcap": "mod 0.10 ms + Dffs cap 0.7"
+  },
+  "zero_depth_check": "MOD_MS=1e-9 vs off: max abs diff 3.7e-9 (float32 rounding)",
+  "tail_metrics": "IR, L+R mean, 1.8 s decay removed, 1 s Hann windows at 0.3/0.8/1.3/2.0 s, 1 Hz bins, 100 Hz-8 kHz, residual vs 301-bin running median; values are the mean over the 4 windows",
+  "wobble": "440 Hz sine (3.5 s) run through the loop; wet output band-passed 380-500 Hz, Hilbert instantaneous frequency, 20 ms smoothing, 1.5-3.4 s; cents vs 440",
+  "guitar": "test_guitar_dualmono.wav run THROUGH the loop; equal RMS, then one shared gain to -1 dBFS peak, 24-bit"
+ },
+ "before": {
+  "peakiness_db": 7.21,
+  "peakiness_range": [
+   7.18,
+   7.24
+  ],
+  "peaks_db_over_median": {
+   "157": 18.7,
+   "261": 19.9,
+   "724": 18.5,
+   "781": 19.4,
+   "1285": 16.0,
+   "2008": 16.5
+  },
+  "T30_s": {
+   "63": 1.202,
+   "125": 1.672,
+   "250": 1.602,
+   "500": 1.746,
+   "1000": 1.777,
+   "2000": 1.806,
+   "4000": 1.811,
+   "8000": 1.798
+  },
+  "wobble_cents": {
+   "rms": 0.01,
+   "p95_abs": 0.01,
+   "max_abs": 0.03
+  }
+ },
+ "mod10": {
+  "peakiness_db": 6.51,
+  "peakiness_range": [
+   6.44,
+   6.58
+  ],
+  "peaks_db_over_median": {
+   "157": 17.4,
+   "261": 19.8,
+   "724": 15.9,
+   "781": 14.9,
+   "1285": 14.6,
+   "2008": 12.4
+  },
+  "T30_s": {
+   "63": 1.216,
+   "125": 1.701,
+   "250": 1.58,
+   "500": 1.822,
+   "1000": 1.768,
+   "2000": 1.762,
+   "4000": 1.764,
+   "8000": 1.752
+  },
+  "wobble_cents": {
+   "rms": 0.2,
+   "p95_abs": 0.43,
+   "max_abs": 0.54
+  },
+  "peak_reduction_db": {
+   "157": 1.3,
+   "261": 0.1,
+   "724": 2.6,
+   "781": 4.5,
+   "1285": 1.4,
+   "2008": 4.1
+  },
+  "T30_change_pct": {
+   "63": 1.2,
+   "125": 1.7,
+   "250": -1.4,
+   "500": 4.4,
+   "1000": -0.5,
+   "2000": -2.4,
+   "4000": -2.6,
+   "8000": -2.6
+  }
+ },
+ "mod15": {
+  "peakiness_db": 6.28,
+  "peakiness_range": [
+   6.2,
+   6.4
+  ],
+  "peaks_db_over_median": {
+   "157": 16.5,
+   "261": 18.8,
+   "724": 14.3,
+   "781": 10.6,
+   "1285": 11.1,
+   "2008": 7.3
+  },
+  "T30_s": {
+   "63": 1.231,
+   "125": 1.692,
+   "250": 1.598,
+   "500": 1.825,
+   "1000": 1.762,
+   "2000": 1.783,
+   "4000": 1.75,
+   "8000": 1.753
+  },
+  "wobble_cents": {
+   "rms": 0.28,
+   "p95_abs": 0.55,
+   "max_abs": 0.84
+  },
+  "peak_reduction_db": {
+   "157": 2.2,
+   "261": 1.1,
+   "724": 4.2,
+   "781": 8.8,
+   "1285": 4.9,
+   "2008": 9.2
+  },
+  "T30_change_pct": {
+   "63": 2.4,
+   "125": 1.2,
+   "250": -0.2,
+   "500": 4.5,
+   "1000": -0.8,
+   "2000": -1.3,
+   "4000": -3.4,
+   "8000": -2.5
+  }
+ },
+ "dcap": {
+  "peakiness_db": 6.57,
+  "peakiness_range": [
+   6.52,
+   6.64
+  ],
+  "peaks_db_over_median": {
+   "157": 15.6,
+   "261": 16.8,
+   "724": 13.2,
+   "781": 14.7,
+   "1285": 7.1,
+   "2008": 10.8
+  },
+  "T30_s": {
+   "63": 1.265,
+   "125": 1.745,
+   "250": 1.732,
+   "500": 1.815,
+   "1000": 1.787,
+   "2000": 1.818,
+   "4000": 1.811,
+   "8000": 1.8
+  },
+  "wobble_cents": {
+   "rms": 0.0,
+   "p95_abs": 0.01,
+   "max_abs": 0.03
+  },
+  "peak_reduction_db": {
+   "157": 3.1,
+   "261": 3.1,
+   "724": 5.3,
+   "781": 4.7,
+   "1285": 8.9,
+   "2008": 5.7
+  },
+  "T30_change_pct": {
+   "63": 5.2,
+   "125": 4.4,
+   "250": 8.1,
+   "500": 4.0,
+   "1000": 0.6,
+   "2000": 0.7,
+   "4000": 0.0,
+   "8000": 0.1
+  }
+ },
+ "mod10dcap": {
+  "peakiness_db": 6.07,
+  "peakiness_range": [
+   6.02,
+   6.12
+  ],
+  "peaks_db_over_median": {
+   "157": 15.4,
+   "261": 17.1,
+   "724": 13.0,
+   "781": 12.6,
+   "1285": 12.2,
+   "2008": 9.8
+  },
+  "T30_s": {
+   "63": 1.267,
+   "125": 1.789,
+   "250": 1.727,
+   "500": 1.815,
+   "1000": 1.803,
+   "2000": 1.824,
+   "4000": 1.779,
+   "8000": 1.791
+  },
+  "wobble_cents": {
+   "rms": 0.17,
+   "p95_abs": 0.33,
+   "max_abs": 0.35
+  },
+  "peak_reduction_db": {
+   "157": 3.3,
+   "261": 2.8,
+   "724": 5.5,
+   "781": 6.8,
+   "1285": 3.8,
+   "2008": 6.7
+  },
+  "T30_change_pct": {
+   "63": 5.4,
+   "125": 7.0,
+   "250": 7.8,
+   "500": 4.0,
+   "1000": 1.5,
+   "2000": 1.0,
+   "4000": -1.8,
+   "8000": -0.4
+  }
+ },
+ "guitar_level_match": {
+  "match_gain_db": {
+   "before": 0.0,
+   "mod10": -0.04,
+   "mod15": 0.18,
+   "dcap": 1.1,
+   "mod10dcap": 1.13
+  },
+  "shared_gain_db": 7.58
+ }
+}

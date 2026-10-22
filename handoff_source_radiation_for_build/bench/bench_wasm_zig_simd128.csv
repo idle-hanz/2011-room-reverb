@@ -1,0 +1,10 @@
+(Use `node --trace-warnings ...` to show where the warning was created)
+C box benchmark (per 128-sample block, 3 buses => lines = 3*N)
+chk 0.00542369
+N_images,lines,static_us,ramp_us,coef_recompute_us(all lines),x4_multipoint_static_us
+#lines_outer_us=66.48 simd8_us=19.50
+32,96,38.85,76.46,10.02,261.03
+#lines_outer_us=130.88 simd8_us=36.47
+64,192,77.02,155.81,17.77,557.51
+#lines_outer_us=264.80 simd8_us=71.61
+128,384,176.90,347.06,37.83,1324.90

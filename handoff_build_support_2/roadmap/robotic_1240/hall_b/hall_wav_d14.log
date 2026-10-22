@@ -1,0 +1,7 @@
+bigroom_default_surfaces A_today {'path': '/workspace/build_support_2/roadmap/robotic_1240/hall_b/ab_wav_d14/bigroom_default_surfaces__A_today.wav', 'raw_minus_A_db': 0.0}
+bigroom_default_surfaces D_column_signs {'path': '/workspace/build_support_2/roadmap/robotic_1240/hall_b/ab_wav_d14/bigroom_default_surfaces__D_column_signs.wav', 'raw_minus_A_db': -0.83}
+bigroom_default_surfaces H_cap18_column_signs_med049 {'path': '/workspace/build_support_2/roadmap/robotic_1240/hall_b/ab_wav_d14/bigroom_default_surfaces__H_cap18_column_signs_med049.wav', 'raw_minus_A_db': 8.49}
+hall_preset_parity A_today {'path': '/workspace/build_support_2/roadmap/robotic_1240/hall_b/ab_wav_d14/hall_preset_parity__A_today.wav', 'raw_minus_A_db': 0.0}
+hall_preset_parity D_column_signs {'path': '/workspace/build_support_2/roadmap/robotic_1240/hall_b/ab_wav_d14/hall_preset_parity__D_column_signs.wav', 'raw_minus_A_db': -0.74}
+hall_preset_parity F_cap130_column_signs_med036 {'path': '/workspace/build_support_2/roadmap/robotic_1240/hall_b/ab_wav_d14/hall_preset_parity__F_cap130_column_signs_med036.wav', 'raw_minus_A_db': -0.65}
+hall_preset_parity G_cap90_column_signs_med052 {'path': '/workspace/build_support_2/roadmap/robotic_1240/hall_b/ab_wav_d14/hall_preset_parity__G_cap90_column_signs_med052.wav', 'raw_minus_A_db': -0.72}

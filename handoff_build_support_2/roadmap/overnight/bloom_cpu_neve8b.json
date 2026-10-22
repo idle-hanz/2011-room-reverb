@@ -1,0 +1,12 @@
+{
+ "play_mean_ms": 2.365,
+ "play_median_ms": 2.196,
+ "play_p90_ms": 2.216,
+ "silence_late_mean_ms": 2.372,
+ "silence_late_median_ms": 2.369,
+ "play_spikes": 38,
+ "limit_ms": 2.4,
+ "tag": "full_neve8",
+ "os": 8.0,
+ "predelay_n": 4799.0
+}

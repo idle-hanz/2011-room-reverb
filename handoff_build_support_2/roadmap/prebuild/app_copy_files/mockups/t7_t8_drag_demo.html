@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><title>T7/T8 prebuild · wall and mic drag</title>
+<link rel="stylesheet" href="/static/css/app.css">
+<style>
+body{padding:16px}
+.row{display:flex;gap:14px;align-items:flex-start}
+canvas{background:#0e1016;border:1px solid var(--border);border-radius:var(--radius-sm);touch-action:none}
+.chip{font:600 .72rem var(--font);border:1px solid var(--border);background:#10131a;color:var(--muted);border-radius:999px;padding:4px 12px;cursor:pointer}
+.chip[aria-pressed=true]{border-color:var(--accent);color:var(--text);background:var(--accent-dim)}
+#readout{font:.74rem var(--mono);color:var(--muted);white-space:pre;background:var(--panel);border:1px solid var(--border);border-radius:var(--radius-sm);padding:8px;min-width:260px}
+</style></head><body>
+<h2 style="margin:0 0 4px">T7/T8 prebuild · drag walls, ceiling and mics</h2>
+<p style="color:var(--muted);margin:0 0 8px;font-size:.8rem">Drag a wall or corner (opposite wall stays put; Shift = 0.1 m snap; a wall stops 10 cm short of any object). Drag the ceiling on the side view. Mic mode:
+<button class="chip" data-mode="mirror" aria-pressed="true">Mirror</button> <button class="chip" data-mode="linked" aria-pressed="false">Linked</button> <button class="chip" data-mode="split" aria-pressed="false">Split (R free)</button></p>
+<div class="row"><canvas id="floor" width="520" height="560"></canvas><canvas id="elev" width="520" height="260"></canvas><div id="readout"></div></div>
+<script src="/static/js/room_math.js"></script>
+<script src="/static/prebuild/drag_model.js"></script>
+<script>
+var S={W:6,H:3,L:8,sx:2.6,sz:4.75,sy:1.2,mcx:3,mcz:1.5,my:1.5,space:0.17,two_sources:false,place_l:"array",place_c:"array",place_r:"array",room_x:1,room_z:6,room_y:2,room_yaw:0,centre_dz:0};
+var mode="mirror", drag=null, frozen=null, frozenE=null, labelTxt="", hover=null;
+var fc=document.getElementById("floor"), ec=document.getElementById("elev");
+function css(v){return getComputedStyle(document.documentElement).getPropertyValue(v).trim();}
+function lay(){var pad=46,s=Math.min((fc.width-2*pad)/S.W,(fc.height-2*pad)/S.L);return{ox:(fc.width-S.W*s)/2,oy:(fc.height-S.L*s)/2,scale:s,W:S.W,L:S.L};}
+function elay(){var pad=40,s=Math.min((ec.width-2*pad)/S.L,(ec.height-2*pad)/S.H);return{ox:(ec.width-S.L*s)/2,oy:(ec.height-S.H*s)/2,scale:s,L:S.L,H:S.H};}
+function P(x,z,l){return{x:l.ox+x*l.scale,y:l.oy+(l.L-z)*l.scale};}
+function E(z,y,l){return{x:l.ox+z*l.scale,y:l.oy+(l.H-y)*l.scale};}
+function dot(c,p,r,col,txt){c.fillStyle=col;c.beginPath();c.arc(p.x,p.y,r,0,7);c.fill();if(txt){c.fillStyle=css("--text");c.font="11px sans-serif";c.fillText(txt,p.x+8,p.y-6);}}
+function paint(){
+  var l=frozen||lay(), c=fc.getContext("2d"); c.clearRect(0,0,fc.width,fc.height);
+  var a=P(0,S.L,l), w=S.W*l.scale, h=S.L*l.scale;
+  c.fillStyle="#13161f"; c.fillRect(a.x,a.y,w,h);
+  c.lineWidth=2; c.strokeStyle=css("--border"); c.strokeRect(a.x,a.y,w,h);
+  if(hover&&hover.walls){c.strokeStyle=css("--accent");c.lineWidth=4;c.beginPath();hover.walls.forEach(function(wl){
+    if(wl==="x0"){c.moveTo(a.x,a.y);c.lineTo(a.x,a.y+h);} if(wl==="x1"){c.moveTo(a.x+w,a.y);c.lineTo(a.x+w,a.y+h);}
+    if(wl==="z1"){c.moveTo(a.x,a.y);c.lineTo(a.x+w,a.y);} if(wl==="z0"){c.moveTo(a.x,a.y+h);c.lineTo(a.x+w,a.y+h);} });c.stroke();}
+  c.fillStyle=css("--faint");c.font="11px sans-serif";c.fillText("Front",a.x+w/2-14,a.y-8);c.fillText("Back",a.x+w/2-12,a.y+h+16);
+  c.fillText(S.W.toFixed(2)+" m",a.x+w/2-18,a.y+h+30); c.save();c.translate(a.x-14,a.y+h/2+18);c.rotate(-Math.PI/2);c.fillText(S.L.toFixed(2)+" m",0,0);c.restore();
+  dot(c,P(S.sx,S.sz,l),7,css("--source"),"Source");
+  var m=RRDrag.micPositions(S); var cols={l:css("--left"),c:css("--accent"),r:css("--right")};
+  c.strokeStyle=css("--mic");c.lineWidth=1;var pl=P(m.l.x,m.l.z,l),pr=P(m.r.x,m.r.z,l);if(!m.r.room&&!m.l.room){c.beginPath();c.moveTo(pl.x,pl.y);c.lineTo(pr.x,pr.y);c.stroke();}
+  ["l","c","r"].forEach(function(k){dot(c,P(m[k].x,m[k].z,l),5,cols[k],k.toUpperCase()+(m[k].room?" (room)":""));});
+  if(labelTxt){c.font="600 13px sans-serif";var tw=c.measureText(labelTxt).width;c.fillStyle="rgba(11,12,16,.9)";c.fillRect(fc.width/2-tw/2-8,8,tw+16,24);c.fillStyle=css("--accent");c.fillText(labelTxt,fc.width/2-tw/2,25);}
+  var el=frozenE||elay(), e=ec.getContext("2d"); e.clearRect(0,0,ec.width,ec.height);
+  var b=E(0,S.H,el); e.fillStyle="#13161f";e.fillRect(b.x,b.y,S.L*el.scale,S.H*el.scale); e.strokeStyle=css("--border");e.lineWidth=2;e.strokeRect(b.x,b.y,S.L*el.scale,S.H*el.scale);
+  if(hover&&hover.kind==="ceiling"){e.strokeStyle=css("--accent");e.lineWidth=4;e.beginPath();e.moveTo(b.x,b.y);e.lineTo(b.x+S.L*el.scale,b.y);e.stroke();}
+  e.fillStyle=css("--faint");e.font="11px sans-serif";e.fillText("Ceiling "+S.H.toFixed(2)+" m",b.x+4,b.y-6);e.fillText("Back",b.x-4,b.y+S.H*el.scale+14);e.fillText("Front",b.x+S.L*el.scale-24,b.y+S.H*el.scale+14);
+  dot(e,E(S.sz,S.sy,el),6,css("--source"),"Source"); dot(e,E(S.mcz,S.my,el),5,css("--mic"),"Mics");
+  document.getElementById("readout").textContent=["W "+S.W.toFixed(2)+"  L "+S.L.toFixed(2)+"  H "+S.H.toFixed(2),"source x "+S.sx.toFixed(2)+" z "+S.sz.toFixed(2),"stand x "+S.mcx.toFixed(2)+" z "+S.mcz.toFixed(2)+" space "+S.space.toFixed(2),
+    "R: "+(S.place_r==="room"?"room spot x "+(S.room_r_x).toFixed(2)+" z "+(S.room_r_z).toFixed(2):"on the stand"),"mode "+mode].join("\n");
+}
+function pos(cv,ev){var r=cv.getBoundingClientRect();return{x:(ev.clientX-r.left)*cv.width/r.width,y:(ev.clientY-r.top)*cv.height/r.height};}
+function micHit(p,l){var m=RRDrag.micPositions(S),best=null,bd=10;["r","l","c"].forEach(function(k){var q=P(m[k].x,m[k].z,l),d=Math.hypot(q.x-p.x,q.y-p.y);if(d<=bd){bd=d;best=k;}});return best;}
+fc.addEventListener("pointerdown",function(ev){var l=lay(),p=pos(fc,ev),k=micHit(p,l);fc.setPointerCapture(ev.pointerId);frozen=l;
+  if(k){var m0=RRDrag.micPositions(S)[k];drag={type:"mic",cap:k,start:{x:m0.x,z:m0.z},p0:p};return;} var h=RRDrag.hitWall(p.x,p.y,l); if(h){drag={type:"wall",ctx:RRDrag.beginWallDrag(S,h,l,p.x,p.y)};hover=h;} else frozen=null;});
+fc.addEventListener("pointermove",function(ev){var p=pos(fc,ev);
+  if(!drag){hover=RRDrag.hitWall(p.x,p.y,lay());fc.style.cursor=RRDrag.cursorFor(hover)||(micHit(p,lay())?"grab":"");paint();return;}
+  if(drag.type==="wall"){var r=RRDrag.wallDragTo(drag.ctx,p.x,p.y,{shift:ev.shiftKey});Object.assign(S,drag.ctx.s0,r.patch);labelTxt=r.label+(r.held?"  (stopped at an object)":"");}
+  else{var l=frozen;Object.assign(S,RRDrag.micDragBy(S,drag.cap,drag.start,(p.x-drag.p0.x)/l.scale,-(p.y-drag.p0.y)/l.scale,mode));labelTxt=drag.cap.toUpperCase()+" mic";}
+  paint();});
+function end(){drag=null;frozen=null;frozenE=null;window.__lastLabel=labelTxt;labelTxt="";paint();}
+fc.addEventListener("pointerup",end);
+ec.addEventListener("pointerdown",function(ev){var l=elay(),p=pos(ec,ev),h=RRDrag.hitCeiling(p.x,p.y,l);if(h){ec.setPointerCapture(ev.pointerId);frozenE=l;drag={type:"ceil",ctx:RRDrag.beginWallDrag(S,h,l,p.x,p.y)};hover=h;}});
+ec.addEventListener("pointermove",function(ev){var p=pos(ec,ev);if(!drag){hover=RRDrag.hitCeiling(p.x,p.y,elay());ec.style.cursor=RRDrag.cursorFor(hover);paint();return;}
+  if(drag.type==="ceil"){var r=RRDrag.ceilingDragTo(drag.ctx,p.x,p.y,frozenE,{shift:ev.shiftKey});Object.assign(S,r.patch);labelTxt=r.label+(r.held?"  (stopped above the mic)":"");paint();}});
+ec.addEventListener("pointerup",end);
+document.querySelectorAll("[data-mode]").forEach(function(b){b.onclick=function(){mode=b.dataset.mode;document.querySelectorAll("[data-mode]").forEach(function(x){x.setAttribute("aria-pressed",x===b?"true":"false");});paint();};});
+window.__S=S; window.__setLabelHold=function(v){window.__hold=v;}; paint();
+</script></body></html>

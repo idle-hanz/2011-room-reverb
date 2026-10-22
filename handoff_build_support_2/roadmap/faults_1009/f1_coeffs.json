@@ -1,0 +1,905 @@
+[
+  {
+    "label": "soloC 0.5m fdn",
+    "dist_c_m": 0.5,
+    "mic_gain_c": 1.0,
+    "mic_gain_l": 0.0,
+    "play_makeup": 0.22814349812363904,
+    "play_makeup_db": -12.84,
+    "direct_makeup_computed_not_applied": 0.35,
+    "g_decay": 0.13405997769037617,
+    "g_loop": 0.17677669529663687,
+    "fdn_wet_after_trim": 0.5949767567589802,
+    "loop_trim_db": -4.51,
+    "direct_wet": 0.0,
+    "early_wet": 0.0,
+    "inject_peak": {
+      "l": 0.01222394084534877,
+      "c": 4.0,
+      "r": 0.01222394084534877
+    },
+    "inject_peak_db": {
+      "l": -38.26,
+      "c": 12.04,
+      "r": -38.26
+    },
+    "fold_peak": 2.0,
+    "fold_peak_db": 6.02,
+    "direct_line_fold": 2.0,
+    "direct_line_fold_db": 6.02,
+    "direct_out_db": 0.83,
+    "fdn_first_db": -11.33,
+    "geo_1_r2": 4.0,
+    "geo_db": 12.04,
+    "source": {
+      "x": 12.0,
+      "y": 1.5,
+      "z": 16.0
+    },
+    "mic_used": {
+      "x": 12.0,
+      "y": 1.5,
+      "z": 15.5
+    }
+  },
+  {
+    "label": "soloC 0.5m allup",
+    "dist_c_m": 0.5,
+    "mic_gain_c": 1.0,
+    "mic_gain_l": 0.0,
+    "play_makeup": 0.22814349812363904,
+    "play_makeup_db": -12.84,
+    "direct_makeup_computed_not_applied": 0.35,
+    "g_decay": 0.13405997769037617,
+    "g_loop": 0.17677669529663687,
+    "fdn_wet_after_trim": 0.5949767567589802,
+    "loop_trim_db": -4.51,
+    "direct_wet": 1.0,
+    "early_wet": 1.0,
+    "inject_peak": {
+      "l": 0.01222394084534877,
+      "c": 4.0,
+      "r": 0.01222394084534877
+    },
+    "inject_peak_db": {
+      "l": -38.26,
+      "c": 12.04,
+      "r": -38.26
+    },
+    "fold_peak": 2.0,
+    "fold_peak_db": 6.02,
+    "direct_line_fold": 2.0,
+    "direct_line_fold_db": 6.02,
+    "direct_out_db": 0.83,
+    "fdn_first_db": -11.33,
+    "geo_1_r2": 4.0,
+    "geo_db": 12.04,
+    "source": {
+      "x": 12.0,
+      "y": 1.5,
+      "z": 16.0
+    },
+    "mic_used": {
+      "x": 12.0,
+      "y": 1.5,
+      "z": 15.5
+    }
+  },
+  {
+    "label": "soloC 1.0m fdn",
+    "dist_c_m": 1.0,
+    "mic_gain_c": 1.0,
+    "mic_gain_l": 0.0,
+    "play_makeup": 0.9155676371129697,
+    "play_makeup_db": -0.77,
+    "direct_makeup_computed_not_applied": 1.4,
+    "g_decay": 0.13373413873809714,
+    "g_loop": 0.17677669529663687,
+    "fdn_wet_after_trim": 0.5949767567589802,
+    "loop_trim_db": -4.51,
+    "direct_wet": 0.0,
+    "early_wet": 0.0,
+    "inject_peak": {
+      "l": 0.01222394084534877,
+      "c": 1.0,
+      "r": 0.01222394084534877
+    },
+    "inject_peak_db": {
+      "l": -38.26,
+      "c": 0.0,
+      "r": -38.26
+    },
+    "fold_peak": 0.5,
+    "fold_peak_db": -6.02,
+    "direct_line_fold": 0.5,
+    "direct_line_fold_db": -6.02,
+    "direct_out_db": -11.21,
+    "fdn_first_db": -11.3,
+    "geo_1_r2": 1.0,
+    "geo_db": 0.0,
+    "source": {
+      "x": 12.0,
+      "y": 1.5,
+      "z": 16.0
+    },
+    "mic_used": {
+      "x": 12.0,
+      "y": 1.5,
+      "z": 15.0
+    }
+  },
+  {
+    "label": "soloC 1.0m allup",
+    "dist_c_m": 1.0,
+    "mic_gain_c": 1.0,
+    "mic_gain_l": 0.0,
+    "play_makeup": 0.9155676371129697,
+    "play_makeup_db": -0.77,
+    "direct_makeup_computed_not_applied": 1.4,
+    "g_decay": 0.13373413873809714,
+    "g_loop": 0.17677669529663687,
+    "fdn_wet_after_trim": 0.5949767567589802,
+    "loop_trim_db": -4.51,
+    "direct_wet": 1.0,
+    "early_wet": 1.0,
+    "inject_peak": {
+      "l": 0.01222394084534877,
+      "c": 1.0,
+      "r": 0.01222394084534877
+    },
+    "inject_peak_db": {
+      "l": -38.26,
+      "c": 0.0,
+      "r": -38.26
+    },
+    "fold_peak": 0.5,
+    "fold_peak_db": -6.02,
+    "direct_line_fold": 0.5,
+    "direct_line_fold_db": -6.02,
+    "direct_out_db": -11.21,
+    "fdn_first_db": -11.3,
+    "geo_1_r2": 1.0,
+    "geo_db": 0.0,
+    "source": {
+      "x": 12.0,
+      "y": 1.5,
+      "z": 16.0
+    },
+    "mic_used": {
+      "x": 12.0,
+      "y": 1.5,
+      "z": 15.0
+    }
+  },
+  {
+    "label": "soloC 2.0m fdn",
+    "dist_c_m": 2.0,
+    "mic_gain_c": 1.0,
+    "mic_gain_l": 0.0,
+    "play_makeup": 3.687471585402091,
+    "play_makeup_db": 11.33,
+    "direct_makeup_computed_not_applied": 5.6,
+    "g_decay": 0.13304228061924617,
+    "g_loop": 0.17677669529663687,
+    "fdn_wet_after_trim": 0.5949767567589802,
+    "loop_trim_db": -4.51,
+    "direct_wet": 0.0,
+    "early_wet": 0.0,
+    "inject_peak": {
+      "l": 0.01222394084534877,
+      "c": 0.25,
+      "r": 0.01222394084534877
+    },
+    "inject_peak_db": {
+      "l": -38.26,
+      "c": -12.04,
+      "r": -38.26
+    },
+    "fold_peak": 0.125,
+    "fold_peak_db": -18.06,
+    "direct_line_fold": 0.125,
+    "direct_line_fold_db": -18.06,
+    "direct_out_db": -23.25,
+    "fdn_first_db": -11.24,
+    "geo_1_r2": 0.25,
+    "geo_db": -12.04,
+    "source": {
+      "x": 12.0,
+      "y": 1.5,
+      "z": 16.0
+    },
+    "mic_used": {
+      "x": 12.0,
+      "y": 1.5,
+      "z": 14.0
+    }
+  },
+  {
+    "label": "soloC 2.0m allup",
+    "dist_c_m": 2.0,
+    "mic_gain_c": 1.0,
+    "mic_gain_l": 0.0,
+    "play_makeup": 3.687471585402091,
+    "play_makeup_db": 11.33,
+    "direct_makeup_computed_not_applied": 5.6,
+    "g_decay": 0.13304228061924617,
+    "g_loop": 0.17677669529663687,
+    "fdn_wet_after_trim": 0.5949767567589802,
+    "loop_trim_db": -4.51,
+    "direct_wet": 1.0,
+    "early_wet": 1.0,
+    "inject_peak": {
+      "l": 0.01222394084534877,
+      "c": 0.25,
+      "r": 0.01222394084534877
+    },
+    "inject_peak_db": {
+      "l": -38.26,
+      "c": -12.04,
+      "r": -38.26
+    },
+    "fold_peak": 0.125,
+    "fold_peak_db": -18.06,
+    "direct_line_fold": 0.125,
+    "direct_line_fold_db": -18.06,
+    "direct_out_db": -23.25,
+    "fdn_first_db": -11.24,
+    "geo_1_r2": 0.25,
+    "geo_db": -12.04,
+    "source": {
+      "x": 12.0,
+      "y": 1.5,
+      "z": 16.0
+    },
+    "mic_used": {
+      "x": 12.0,
+      "y": 1.5,
+      "z": 14.0
+    }
+  },
+  {
+    "label": "soloC 4.0m fdn",
+    "dist_c_m": 4.0,
+    "mic_gain_c": 1.0,
+    "mic_gain_l": 0.0,
+    "play_makeup": 14.967066580648831,
+    "play_makeup_db": 23.5,
+    "direct_makeup_computed_not_applied": 8.0,
+    "g_decay": 0.13152297283729567,
+    "g_loop": 0.17677669529663687,
+    "fdn_wet_after_trim": 0.5949767567589802,
+    "loop_trim_db": -4.51,
+    "direct_wet": 0.0,
+    "early_wet": 0.0,
+    "inject_peak": {
+      "l": 0.01222394084534877,
+      "c": 0.0625,
+      "r": 0.01222394084534877
+    },
+    "inject_peak_db": {
+      "l": -38.26,
+      "c": -24.08,
+      "r": -38.26
+    },
+    "fold_peak": 0.03125,
+    "fold_peak_db": -30.1,
+    "direct_line_fold": 0.03125,
+    "direct_line_fold_db": -30.1,
+    "direct_out_db": -35.3,
+    "fdn_first_db": -11.11,
+    "geo_1_r2": 0.0625,
+    "geo_db": -24.08,
+    "source": {
+      "x": 12.0,
+      "y": 1.5,
+      "z": 16.0
+    },
+    "mic_used": {
+      "x": 12.0,
+      "y": 1.5,
+      "z": 12.0
+    }
+  },
+  {
+    "label": "soloC 4.0m allup",
+    "dist_c_m": 4.0,
+    "mic_gain_c": 1.0,
+    "mic_gain_l": 0.0,
+    "play_makeup": 14.967066580648831,
+    "play_makeup_db": 23.5,
+    "direct_makeup_computed_not_applied": 8.0,
+    "g_decay": 0.13152297283729567,
+    "g_loop": 0.17677669529663687,
+    "fdn_wet_after_trim": 0.5949767567589802,
+    "loop_trim_db": -4.51,
+    "direct_wet": 1.0,
+    "early_wet": 1.0,
+    "inject_peak": {
+      "l": 0.01222394084534877,
+      "c": 0.0625,
+      "r": 0.01222394084534877
+    },
+    "inject_peak_db": {
+      "l": -38.26,
+      "c": -24.08,
+      "r": -38.26
+    },
+    "fold_peak": 0.03125,
+    "fold_peak_db": -30.1,
+    "direct_line_fold": 0.03125,
+    "direct_line_fold_db": -30.1,
+    "direct_out_db": -35.3,
+    "fdn_first_db": -11.11,
+    "geo_1_r2": 0.0625,
+    "geo_db": -24.08,
+    "source": {
+      "x": 12.0,
+      "y": 1.5,
+      "z": 16.0
+    },
+    "mic_used": {
+      "x": 12.0,
+      "y": 1.5,
+      "z": 12.0
+    }
+  },
+  {
+    "label": "soloC 6.0m fdn",
+    "dist_c_m": 6.0,
+    "mic_gain_c": 1.0,
+    "mic_gain_l": 0.0,
+    "play_makeup": 34.19807745825249,
+    "play_makeup_db": 30.68,
+    "direct_makeup_computed_not_applied": 8.0,
+    "g_decay": 0.1298547967917505,
+    "g_loop": 0.17677669529663687,
+    "fdn_wet_after_trim": 0.5949767567589802,
+    "loop_trim_db": -4.51,
+    "direct_wet": 0.0,
+    "early_wet": 0.0,
+    "inject_peak": {
+      "l": 0.01222394084534877,
+      "c": 0.027777777777777776,
+      "r": 0.01222394084534877
+    },
+    "inject_peak_db": {
+      "l": -38.26,
+      "c": -31.13,
+      "r": -38.26
+    },
+    "fold_peak": 0.013888888888888888,
+    "fold_peak_db": -37.15,
+    "direct_line_fold": 0.013888888888888888,
+    "direct_line_fold_db": -37.15,
+    "direct_out_db": -42.34,
+    "fdn_first_db": -10.98,
+    "geo_1_r2": 0.027777777777777776,
+    "geo_db": -31.13,
+    "source": {
+      "x": 12.0,
+      "y": 1.5,
+      "z": 16.0
+    },
+    "mic_used": {
+      "x": 12.0,
+      "y": 1.5,
+      "z": 10.0
+    }
+  },
+  {
+    "label": "soloC 6.0m allup",
+    "dist_c_m": 6.0,
+    "mic_gain_c": 1.0,
+    "mic_gain_l": 0.0,
+    "play_makeup": 34.19807745825249,
+    "play_makeup_db": 30.68,
+    "direct_makeup_computed_not_applied": 8.0,
+    "g_decay": 0.1298547967917505,
+    "g_loop": 0.17677669529663687,
+    "fdn_wet_after_trim": 0.5949767567589802,
+    "loop_trim_db": -4.51,
+    "direct_wet": 1.0,
+    "early_wet": 1.0,
+    "inject_peak": {
+      "l": 0.01222394084534877,
+      "c": 0.027777777777777776,
+      "r": 0.01222394084534877
+    },
+    "inject_peak_db": {
+      "l": -38.26,
+      "c": -31.13,
+      "r": -38.26
+    },
+    "fold_peak": 0.013888888888888888,
+    "fold_peak_db": -37.15,
+    "direct_line_fold": 0.013888888888888888,
+    "direct_line_fold_db": -37.15,
+    "direct_out_db": -42.34,
+    "fdn_first_db": -10.98,
+    "geo_1_r2": 0.027777777777777776,
+    "geo_db": -31.13,
+    "source": {
+      "x": 12.0,
+      "y": 1.5,
+      "z": 16.0
+    },
+    "mic_used": {
+      "x": 12.0,
+      "y": 1.5,
+      "z": 10.0
+    }
+  },
+  {
+    "label": "soloC 8.0m fdn",
+    "dist_c_m": 8.0,
+    "mic_gain_c": 1.0,
+    "mic_gain_l": 0.0,
+    "play_makeup": 61.760962035230406,
+    "play_makeup_db": 35.81,
+    "direct_makeup_computed_not_applied": 8.0,
+    "g_decay": 0.1280710742913448,
+    "g_loop": 0.17677669529663687,
+    "fdn_wet_after_trim": 0.5949767567589802,
+    "loop_trim_db": -4.51,
+    "direct_wet": 0.0,
+    "early_wet": 0.0,
+    "inject_peak": {
+      "l": 0.01222394084534877,
+      "c": 0.015625,
+      "r": 0.01222394084534877
+    },
+    "inject_peak_db": {
+      "l": -38.26,
+      "c": -36.12,
+      "r": -38.26
+    },
+    "fold_peak": 0.0078125,
+    "fold_peak_db": -42.14,
+    "direct_line_fold": 0.0078125,
+    "direct_line_fold_db": -42.14,
+    "direct_out_db": -47.34,
+    "fdn_first_db": -10.84,
+    "geo_1_r2": 0.015625,
+    "geo_db": -36.12,
+    "source": {
+      "x": 12.0,
+      "y": 1.5,
+      "z": 16.0
+    },
+    "mic_used": {
+      "x": 12.0,
+      "y": 1.5,
+      "z": 8.0
+    }
+  },
+  {
+    "label": "soloC 8.0m allup",
+    "dist_c_m": 8.0,
+    "mic_gain_c": 1.0,
+    "mic_gain_l": 0.0,
+    "play_makeup": 61.760962035230406,
+    "play_makeup_db": 35.81,
+    "direct_makeup_computed_not_applied": 8.0,
+    "g_decay": 0.1280710742913448,
+    "g_loop": 0.17677669529663687,
+    "fdn_wet_after_trim": 0.5949767567589802,
+    "loop_trim_db": -4.51,
+    "direct_wet": 1.0,
+    "early_wet": 1.0,
+    "inject_peak": {
+      "l": 0.01222394084534877,
+      "c": 0.015625,
+      "r": 0.01222394084534877
+    },
+    "inject_peak_db": {
+      "l": -38.26,
+      "c": -36.12,
+      "r": -38.26
+    },
+    "fold_peak": 0.0078125,
+    "fold_peak_db": -42.14,
+    "direct_line_fold": 0.0078125,
+    "direct_line_fold_db": -42.14,
+    "direct_out_db": -47.34,
+    "fdn_first_db": -10.84,
+    "geo_1_r2": 0.015625,
+    "geo_db": -36.12,
+    "source": {
+      "x": 12.0,
+      "y": 1.5,
+      "z": 16.0
+    },
+    "mic_used": {
+      "x": 12.0,
+      "y": 1.5,
+      "z": 8.0
+    }
+  },
+  {
+    "label": "shot far C",
+    "dist_c_m": 5.4316,
+    "mic_gain_c": 1.0,
+    "mic_gain_l": 1.0,
+    "play_makeup": 4.218292280854461,
+    "play_makeup_db": 12.5,
+    "direct_makeup_computed_not_applied": 8.0,
+    "g_decay": 0.15595567499652435,
+    "g_loop": 0.17677669529663687,
+    "fdn_wet_after_trim": 0.5949767567589802,
+    "loop_trim_db": -4.51,
+    "direct_wet": 0.0,
+    "early_wet": 0.0,
+    "inject_peak": {
+      "l": 0.07660164684408384,
+      "c": 0.0034830445640796582,
+      "r": 0.06633809142827933
+    },
+    "inject_peak_db": {
+      "l": -22.32,
+      "c": -49.16,
+      "r": -23.56
+    },
+    "fold_peak": 0.07813307048995496,
+    "fold_peak_db": -22.14,
+    "direct_line_fold": 0.07813307048995496,
+    "direct_line_fold_db": -22.14,
+    "direct_out_db": -27.34,
+    "fdn_first_db": -14.15,
+    "geo_1_r2": 0.033895432590458435,
+    "geo_db": -29.4,
+    "source": {
+      "x": 2.6,
+      "y": 1.2,
+      "z": 4.75
+    },
+    "mic_used": {
+      "x": 5.7,
+      "y": 1.5,
+      "z": 0.3
+    }
+  },
+  {
+    "label": "shot near C",
+    "dist_c_m": 0.0,
+    "mic_gain_c": 1.0,
+    "mic_gain_l": 1.0,
+    "play_makeup": 3.570717171521235,
+    "play_makeup_db": 11.06,
+    "direct_makeup_computed_not_applied": 8.0,
+    "g_decay": 0.16138951432605175,
+    "g_loop": 0.17677669529663687,
+    "fdn_wet_after_trim": 0.5949767567589802,
+    "loop_trim_db": -4.51,
+    "direct_wet": 0.0,
+    "early_wet": 0.0,
+    "inject_peak": {
+      "l": 0.07660164684408384,
+      "c": 0.08149689881273688,
+      "r": 0.06633809142827933
+    },
+    "inject_peak_db": {
+      "l": -22.32,
+      "c": -21.78,
+      "r": -23.56
+    },
+    "fold_peak": 0.07999488396010657,
+    "fold_peak_db": -21.94,
+    "direct_line_fold": 0.07660164684408384,
+    "direct_line_fold_db": -22.32,
+    "direct_out_db": -27.51,
+    "fdn_first_db": -15.77,
+    "geo_1_r2": 0.0,
+    "geo_db": -300.0,
+    "source": {
+      "x": 2.6,
+      "y": 1.2,
+      "z": 4.75
+    },
+    "mic_used": {
+      "x": 2.6,
+      "y": 1.2,
+      "z": 4.75
+    }
+  },
+  {
+    "label": "studio stand",
+    "dist_c_m": 3.05,
+    "mic_gain_c": 0.0,
+    "mic_gain_l": 1.0,
+    "play_makeup": 3.58843825213717,
+    "play_makeup_db": 11.1,
+    "direct_makeup_computed_not_applied": 8.0,
+    "g_decay": 0.15985931396549755,
+    "g_loop": 0.17677669529663687,
+    "fdn_wet_after_trim": 0.5949767567589802,
+    "loop_trim_db": -4.51,
+    "direct_wet": 0.0,
+    "early_wet": 0.0,
+    "inject_peak": {
+      "l": 0.08327495484606237,
+      "c": 0.10749798441279228,
+      "r": 0.08327495484606237
+    },
+    "inject_peak_db": {
+      "l": -21.59,
+      "c": -19.37,
+      "r": -21.59
+    },
+    "fold_peak": 0.08327495484606237,
+    "fold_peak_db": -21.59,
+    "direct_line_fold": 0.08327495484606237,
+    "direct_line_fold_db": -21.59,
+    "direct_out_db": -26.78,
+    "fdn_first_db": -15.0,
+    "geo_1_r2": 0.10749798441279228,
+    "geo_db": -19.37,
+    "source": {
+      "x": 2.8,
+      "y": 1.2,
+      "z": 4.6
+    },
+    "mic_used": {
+      "x": 2.8,
+      "y": 1.2,
+      "z": 1.55
+    }
+  },
+  {
+    "label": "club stand",
+    "dist_c_m": 11.1,
+    "mic_gain_c": 0.0,
+    "mic_gain_l": 1.0,
+    "play_makeup": 72.75907123318618,
+    "play_makeup_db": 37.24,
+    "direct_makeup_computed_not_applied": 8.0,
+    "g_decay": 0.132844316786845,
+    "g_loop": 0.17677669529663687,
+    "fdn_wet_after_trim": 0.5949767567589802,
+    "loop_trim_db": -4.51,
+    "direct_wet": 0.0,
+    "early_wet": 0.0,
+    "inject_peak": {
+      "l": 0.0063473647228548275,
+      "c": 0.008116224332440549,
+      "r": 0.0063473647228548275
+    },
+    "inject_peak_db": {
+      "l": -43.95,
+      "c": -41.81,
+      "r": -43.95
+    },
+    "fold_peak": 0.0063473647228548275,
+    "fold_peak_db": -43.95,
+    "direct_line_fold": 0.0063473647228548275,
+    "direct_line_fold_db": -43.95,
+    "direct_out_db": -49.14,
+    "fdn_first_db": -11.22,
+    "geo_1_r2": 0.008116224332440549,
+    "geo_db": -41.81,
+    "source": {
+      "x": 7.0,
+      "y": 1.6,
+      "z": 14.5
+    },
+    "mic_used": {
+      "x": 7.0,
+      "y": 1.6,
+      "z": 3.4
+    }
+  },
+  {
+    "label": "hall button",
+    "dist_c_m": 47.9664,
+    "mic_gain_c": 0.0,
+    "mic_gain_l": 1.0,
+    "play_makeup": 256.0,
+    "play_makeup_db": 48.16,
+    "direct_makeup_computed_not_applied": 8.0,
+    "g_decay": 0.03125,
+    "g_loop": 0.03125,
+    "fdn_wet_after_trim": 0.8222426499470712,
+    "loop_trim_db": -1.7,
+    "direct_wet": 1.0,
+    "early_wet": 0.0,
+    "inject_peak": {
+      "l": 0.0003545850145877738,
+      "c": 0.0004340313426834468,
+      "r": 0.00032773653567401027
+    },
+    "inject_peak_db": {
+      "l": -69.01,
+      "c": -67.25,
+      "r": -69.69
+    },
+    "fold_peak": 0.0003545850145877738,
+    "fold_peak_db": -69.01,
+    "direct_line_fold": 0.0003545850145877738,
+    "direct_line_fold_db": -69.01,
+    "direct_out_db": -74.2,
+    "fdn_first_db": -22.54,
+    "geo_1_r2": 0.0004346357936378355,
+    "geo_db": -67.24,
+    "source": {
+      "x": 24.925,
+      "y": 1.88,
+      "z": 72.083
+    },
+    "mic_used": {
+      "x": 28.5,
+      "y": 1.9,
+      "z": 24.25
+    }
+  },
+  {
+    "label": "boot ORTF C off",
+    "dist_c_m": 3.2882,
+    "mic_gain_c": 0.0,
+    "mic_gain_l": 1.0,
+    "play_makeup": 4.096214631325781,
+    "play_makeup_db": 12.25,
+    "direct_makeup_computed_not_applied": 8.0,
+    "g_decay": 0.15802191792070114,
+    "g_loop": 0.17677669529663687,
+    "fdn_wet_after_trim": 0.5949767567589802,
+    "loop_trim_db": -4.51,
+    "direct_wet": 0.0,
+    "early_wet": 0.0,
+    "inject_peak": {
+      "l": 0.07660164684408384,
+      "c": 0.09194782416881467,
+      "r": 0.06633809142827933
+    },
+    "inject_peak_db": {
+      "l": -22.32,
+      "c": -20.73,
+      "r": -23.56
+    },
+    "fold_peak": 0.07660164684408384,
+    "fold_peak_db": -22.32,
+    "direct_line_fold": 0.07660164684408384,
+    "direct_line_fold_db": -22.32,
+    "direct_out_db": -27.51,
+    "fdn_first_db": -14.58,
+    "geo_1_r2": 0.09248554913294797,
+    "geo_db": -20.68,
+    "source": {
+      "x": 2.6,
+      "y": 1.2,
+      "z": 4.75
+    },
+    "mic_used": {
+      "x": 3.0,
+      "y": 1.5,
+      "z": 1.5
+    }
+  },
+  {
+    "label": "mix Room C",
+    "dist_c_m": 3.2882,
+    "mic_gain_c": 0.0,
+    "mic_gain_l": 1.0,
+    "play_makeup": 4.096214631325781,
+    "play_makeup_db": 12.25,
+    "direct_makeup_computed_not_applied": 8.0,
+    "g_decay": 0.15802191792070114,
+    "g_loop": 0.17677669529663687,
+    "fdn_wet_after_trim": 0.5949767567589802,
+    "loop_trim_db": -4.51,
+    "direct_wet": 0.0,
+    "early_wet": 0.0,
+    "inject_peak": {
+      "l": 0.07660164684408384,
+      "c": 0.09194782416881467,
+      "r": 0.06633809142827933
+    },
+    "inject_peak_db": {
+      "l": -22.32,
+      "c": -20.73,
+      "r": -23.56
+    },
+    "fold_peak": 0.07660164684408384,
+    "fold_peak_db": -22.32,
+    "direct_line_fold": 0.07660164684408384,
+    "direct_line_fold_db": -22.32,
+    "direct_out_db": -27.51,
+    "fdn_first_db": -14.58,
+    "geo_1_r2": 0.09248554913294797,
+    "geo_db": -20.68,
+    "source": {
+      "x": 2.6,
+      "y": 1.2,
+      "z": 4.75
+    },
+    "mic_used": {
+      "x": 3.0,
+      "y": 1.5,
+      "z": 1.5
+    }
+  },
+  {
+    "label": "mic Room C",
+    "dist_c_m": 3.2882,
+    "mic_gain_c": 1.0,
+    "mic_gain_l": 1.0,
+    "play_makeup": 2.5598642121586366,
+    "play_makeup_db": 8.16,
+    "direct_makeup_computed_not_applied": 5.710763272214569,
+    "g_decay": 0.15802191792070114,
+    "g_loop": 0.17677669529663687,
+    "fdn_wet_after_trim": 0.5949767567589802,
+    "loop_trim_db": -4.51,
+    "direct_wet": 0.0,
+    "early_wet": 0.0,
+    "inject_peak": {
+      "l": 0.07660164684408384,
+      "c": 0.09194782416881467,
+      "r": 0.06633809142827933
+    },
+    "inject_peak_db": {
+      "l": -22.32,
+      "c": -20.73,
+      "r": -23.56
+    },
+    "fold_peak": 0.12257555892849117,
+    "fold_peak_db": -18.23,
+    "direct_line_fold": 0.12257555892849117,
+    "direct_line_fold_db": -18.23,
+    "direct_out_db": -23.42,
+    "fdn_first_db": -14.58,
+    "geo_1_r2": 0.09248554913294797,
+    "geo_db": -20.68,
+    "source": {
+      "x": 2.6,
+      "y": 1.2,
+      "z": 4.75
+    },
+    "mic_used": {
+      "x": 3.0,
+      "y": 1.5,
+      "z": 1.5
+    }
+  },
+  {
+    "label": "mix Room L",
+    "dist_c_m": 3.2882,
+    "mic_gain_c": 0.0,
+    "mic_gain_l": 1.0,
+    "play_makeup": 4.096214631325781,
+    "play_makeup_db": 12.25,
+    "direct_makeup_computed_not_applied": 8.0,
+    "g_decay": 0.15802191792070114,
+    "g_loop": 0.17677669529663687,
+    "fdn_wet_after_trim": 0.5949767567589802,
+    "loop_trim_db": -4.51,
+    "direct_wet": 0.0,
+    "early_wet": 0.0,
+    "inject_peak": {
+      "l": 0.07660164684408384,
+      "c": 0.09194782416881467,
+      "r": 0.06633809142827933
+    },
+    "inject_peak_db": {
+      "l": -22.32,
+      "c": -20.73,
+      "r": -23.56
+    },
+    "fold_peak": 0.07660164684408384,
+    "fold_peak_db": -22.32,
+    "direct_line_fold": 0.07660164684408384,
+    "direct_line_fold_db": -22.32,
+    "direct_out_db": -27.51,
+    "fdn_first_db": -14.58,
+    "geo_1_r2": 0.09248554913294797,
+    "geo_db": -20.68,
+    "source": {
+      "x": 2.6,
+      "y": 1.2,
+      "z": 4.75
+    },
+    "mic_used": {
+      "x": 3.0,
+      "y": 1.5,
+      "z": 1.5
+    }
+  }
+]

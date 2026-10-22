@@ -1,0 +1,14 @@
+{
+ "sw": "C:\\Users\\IdleHanz\\Desktop\\2011 Room Reverb\\software",
+ "when": "2026-10-19 09:26:17",
+ "node": "C:\\Users\\IdleHanz\\AppData\\Local\\Microsoft\\WinGet\\Packages\\OpenJS.NodeJS_Microsoft.Winget.Source_8wekyb3d8bbwe\\node-v26.7.0-win-x64\\node.exe",
+ "python": "C:\\Users\\IdleHanz\\Desktop\\2011 Room Reverb\\software\\.venv\\Scripts\\python.exe",
+ "sha1": {
+  "engine/live_stereo.c": "5741ceba7e57",
+  "static/wasm/live_stereo.wasm": "a6dbef83527c",
+  "static/js/fdn_worklet.js": "ff39799a60fb",
+  "render_pipeline.py": "70fafd71081f",
+  "engine/fdn.py": "0cc01f6a10b6"
+ },
+ "reason": "PHYSDEFAULT phys_ceiling default on, 2026-10-19"
+}

@@ -1,0 +1,14 @@
+{
+ "left": {
+  "ILD_4k_L_minus_R_dB": 15.43,
+  "peak_t_L_s": 534,
+  "peak_t_R_s": 547,
+  "itd_us": 270.8
+ },
+ "right": {
+  "ILD_4k_L_minus_R_dB": -8.19,
+  "peak_t_L_s": 495,
+  "peak_t_R_s": 487,
+  "itd_us": -166.7
+ }
+}

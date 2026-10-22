@@ -1,0 +1,9 @@
+nclip                  train 16.8398 (lin 55.3697) | held-out gain vs linear: median -8.34 dB, worst -5.97 | 411s
+    {'vc_db': -16.5175, 'p0': 9.0367, 'p1': -0.0935, 'p2': -0.0079}
+    {'pnz_u610a_-6': (-11.42, -18.85), 'pprog_u610a_vocal_+0': (-12.52, -29.85), 'pprog_u610a_vocal_-6': (-47.29, -57.76), 'pprog_u610a_mix_+0': (-27.59, -35.91), 'pprog_u610a_mix_-6': (-55.38, -61.85), 'pprog_u610a_wetmix_+0': (-24.1, -36.02), 'pprog_u610a_wetmix_-6': (-54.77, -63.11), 'pprog_u610a_drums_+0': (-33.32, -44.72), 'pprog_u610a_drums_-6': (-57.87, -63.84)}
+poly3                  train 31.3189 (lin 55.3697) | held-out gain vs linear: median -0.85 dB, worst -0.54 | 427s
+    {'vc_db': -12.0, 'p0': -0.0139, 'p1': -0.0251}
+    {'pnz_u610a_-6': (-11.42, -12.22), 'pprog_u610a_vocal_+0': (-12.52, -13.06), 'pprog_u610a_vocal_-6': (-47.29, -60.12), 'pprog_u610a_mix_+0': (-27.59, -28.28), 'pprog_u610a_mix_-6': (-55.38, -68.46), 'pprog_u610a_wetmix_+0': (-24.1, -24.7), 'pprog_u610a_wetmix_-6': (-54.77, -66.85), 'pprog_u610a_drums_+0': (-33.32, -34.17), 'pprog_u610a_drums_-6': (-57.87, -64.2)}
+btanh                  train 30.6201 (lin 55.3697) | held-out gain vs linear: median -1.15 dB, worst -0.65 | 203s
+    {'vc_db': -5.9397, 'p0': -0.516, 'p1': -0.5}
+    {'pnz_u610a_-6': (-11.42, -12.47), 'pprog_u610a_vocal_+0': (-12.52, -13.17), 'pprog_u610a_vocal_-6': (-47.29, -64.11), 'pprog_u610a_mix_+0': (-27.59, -28.45), 'pprog_u610a_mix_-6': (-55.38, -68.67), 'pprog_u610a_wetmix_+0': (-24.1, -24.78), 'pprog_u610a_wetmix_-6': (-54.77, -67.03), 'pprog_u610a_drums_+0': (-33.32, -34.47), 'pprog_u610a_drums_-6': (-57.87, -64.08)}

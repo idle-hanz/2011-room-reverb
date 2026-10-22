@@ -1,0 +1,459 @@
+{
+  "note": "before is the pre-FIX-B render_pipeline, which imports the live geometric_level. Both columns are 1/r. after is this tree. peak_step_db is the limited peak. Pre-limiter steps are peak_before_db.",
+  "solo": [
+    {
+      "dist_m": 0.5,
+      "before": {
+        "makeup": 0.4562869962472781,
+        "makeup_db": -6.8152,
+        "g_decay": 0.13405997769037617,
+        "direct_index": 10
+      },
+      "after": {
+        "makeup": 7.300591939956449,
+        "makeup_db": 17.2672,
+        "g_decay": 0.13405997769037617,
+        "direct_index": 10
+      },
+      "render": {
+        "peak_db": -0.0,
+        "rms_db": -12.5058,
+        "limiter_db": 11.8369,
+        "limiter_samples": 7090,
+        "peak_before_db": 11.8282
+      },
+      "peak_step_db": null
+    },
+    {
+      "dist_m": 1.0,
+      "before": {
+        "makeup": 0.9155676371129697,
+        "makeup_db": -0.7662,
+        "g_decay": 0.13373413873809714,
+        "direct_index": 10
+      },
+      "after": {
+        "makeup": 7.324541096903758,
+        "makeup_db": 17.2956,
+        "g_decay": 0.13373413873809714,
+        "direct_index": 10
+      },
+      "render": {
+        "peak_db": -0.0,
+        "rms_db": -17.2343,
+        "limiter_db": 4.2798,
+        "limiter_samples": 548,
+        "peak_before_db": 4.2798
+      },
+      "peak_step_db": 0.0
+    },
+    {
+      "dist_m": 2.0,
+      "before": {
+        "makeup": 1.8437357927010456,
+        "makeup_db": 5.314,
+        "g_decay": 0.13304228061924617,
+        "direct_index": 10
+      },
+      "after": {
+        "makeup": 7.374943170804182,
+        "makeup_db": 17.3552,
+        "g_decay": 0.13304228061924617,
+        "direct_index": 10
+      },
+      "render": {
+        "peak_db": -0.8869,
+        "rms_db": -22.9406,
+        "limiter_db": 0.0,
+        "limiter_samples": 0,
+        "peak_before_db": -0.8869
+      },
+      "peak_step_db": -0.8869
+    },
+    {
+      "dist_m": 4.0,
+      "before": {
+        "makeup": 3.741766645162208,
+        "makeup_db": 11.4615,
+        "g_decay": 0.13152297283729567,
+        "direct_index": 10
+      },
+      "after": {
+        "makeup": 7.483533290324416,
+        "makeup_db": 17.4821,
+        "g_decay": 0.13152297283729567,
+        "direct_index": 10
+      },
+      "render": {
+        "peak_db": -6.9704,
+        "rms_db": -28.573,
+        "limiter_db": 0.0,
+        "limiter_samples": 0,
+        "peak_before_db": -6.9704
+      },
+      "peak_step_db": -6.0835
+    },
+    {
+      "dist_m": 8.0,
+      "before": {
+        "makeup": 7.720120254403801,
+        "makeup_db": 17.7525,
+        "g_decay": 0.1280710742913448,
+        "direct_index": 10
+      },
+      "after": {
+        "makeup": 7.720120254403801,
+        "makeup_db": 17.7525,
+        "g_decay": 0.1280710742913448,
+        "direct_index": 10
+      },
+      "render": {
+        "peak_db": -13.0085,
+        "rms_db": -34.0732,
+        "limiter_db": 0.0,
+        "limiter_samples": 0,
+        "peak_before_db": -13.0085
+      },
+      "peak_step_db": -6.0381
+    }
+  ],
+  "places": [
+    {
+      "name": "studio",
+      "before": {
+        "makeup": 1.1760805055429482,
+        "makeup_db": 1.4087,
+        "g_decay": 0.15985931396549755,
+        "direct_index": 10
+      },
+      "after": {
+        "makeup": 1.1760805055429482,
+        "makeup_db": 1.4087,
+        "g_decay": 0.15985931396549755,
+        "direct_index": 10
+      },
+      "impulse_max_abs": 0.0
+    },
+    {
+      "name": "club",
+      "before": {
+        "makeup": 6.554455690501084,
+        "makeup_db": 16.3307,
+        "g_decay": 0.132844316786845,
+        "direct_index": 10
+      },
+      "after": {
+        "makeup": 6.554455690501084,
+        "makeup_db": 16.3307,
+        "g_decay": 0.132844316786845,
+        "direct_index": 10
+      },
+      "impulse_max_abs": 0.0
+    },
+    {
+      "name": "hall",
+      "before": {
+        "makeup": 40.51624213483871,
+        "makeup_db": 32.1526,
+        "g_decay": 0.03125,
+        "direct_index": 2
+      },
+      "after": {
+        "makeup": 40.51624213483871,
+        "makeup_db": 32.1526,
+        "g_decay": 0.03125,
+        "direct_index": 2
+      },
+      "impulse_max_abs": 0.0
+    },
+    {
+      "name": "boot",
+      "before": {
+        "makeup": 1.2492335249244395,
+        "makeup_db": 1.9329,
+        "g_decay": 0.15802191792070114,
+        "direct_index": 10
+      },
+      "after": {
+        "makeup": 1.2492335249244395,
+        "makeup_db": 1.9329,
+        "g_decay": 0.15802191792070114,
+        "direct_index": 10
+      },
+      "impulse_max_abs": 0.0
+    }
+  ],
+  "shots": [
+    {
+      "name": "far",
+      "before_mk": {
+        "makeup": 1.2701206612574232,
+        "makeup_db": 2.0769,
+        "g_decay": 0.15595567499652435,
+        "direct_index": 10
+      },
+      "after_mk": {
+        "makeup": 1.307580515160166,
+        "makeup_db": 2.3294,
+        "g_decay": 0.15595567499652435,
+        "direct_index": 10
+      },
+      "before_render": {
+        "peak_db": -10.2643,
+        "rms_db": -32.744,
+        "limiter_db": 0.0,
+        "limiter_samples": 0,
+        "peak_before_db": -10.2643
+      },
+      "after_render": {
+        "peak_db": -10.0118,
+        "rms_db": -32.4915,
+        "limiter_db": 0.0,
+        "limiter_samples": 0,
+        "peak_before_db": -10.0118
+      }
+    },
+    {
+      "name": "on_source",
+      "before_mk": {
+        "makeup": 1.081632947964945,
+        "makeup_db": 0.6816,
+        "g_decay": 0.16138951432605175,
+        "direct_index": 10
+      },
+      "after_mk": {
+        "makeup": 0.7099295094829439,
+        "makeup_db": -2.9757,
+        "g_decay": 0.16138951432605175,
+        "direct_index": 10
+      },
+      "before_render": {
+        "peak_db": -7.5849,
+        "rms_db": -31.7738,
+        "limiter_db": 0.0,
+        "limiter_samples": 0,
+        "peak_before_db": -7.5849
+      },
+      "after_render": {
+        "peak_db": -11.2422,
+        "rms_db": -35.4311,
+        "limiter_db": 0.0,
+        "limiter_samples": 0,
+        "peak_before_db": -11.2422
+      }
+    },
+    {
+      "name": "above_0.30",
+      "before_mk": {
+        "makeup": 0.2632295080063458,
+        "makeup_db": -11.5933,
+        "g_decay": 0.16140806378838235,
+        "direct_index": 10
+      },
+      "after_mk": {
+        "makeup": 0.7095209243615238,
+        "makeup_db": -2.9807,
+        "g_decay": 0.16140806378838235,
+        "direct_index": 10
+      },
+      "before_render": {
+        "peak_db": -15.1102,
+        "rms_db": -37.0529,
+        "limiter_db": 0.0,
+        "limiter_samples": 0,
+        "peak_before_db": -15.1102
+      },
+      "after_render": {
+        "peak_db": -6.4976,
+        "rms_db": -28.4403,
+        "limiter_db": 0.0,
+        "limiter_samples": 0,
+        "peak_before_db": -6.4976
+      }
+    }
+  ],
+  "source": [
+    {
+      "dist_m": 0.5,
+      "after": {
+        "makeup": 0.37582748665679716,
+        "makeup_db": -8.5002,
+        "g_decay": 0.11572569166711236,
+        "direct_index": 10
+      },
+      "render": {
+        "peak_db": -14.9738,
+        "rms_db": -36.6329,
+        "limiter_db": 0.0,
+        "limiter_samples": 0,
+        "peak_before_db": -14.9738
+      }
+    },
+    {
+      "dist_m": 1.0,
+      "after": {
+        "makeup": 0.7061394875740936,
+        "makeup_db": -3.0222,
+        "g_decay": 0.11593029186530682,
+        "direct_index": 10
+      },
+      "render": {
+        "peak_db": -13.7609,
+        "rms_db": -36.55,
+        "limiter_db": 0.0,
+        "limiter_samples": 0,
+        "peak_before_db": -13.7609
+      }
+    },
+    {
+      "dist_m": 2.0,
+      "after": {
+        "makeup": 1.371975826671672,
+        "makeup_db": 2.7469,
+        "g_decay": 0.1163100614414888,
+        "direct_index": 10
+      },
+      "render": {
+        "peak_db": -13.598,
+        "rms_db": -36.2536,
+        "limiter_db": 0.0,
+        "limiter_samples": 0,
+        "peak_before_db": -13.598
+      }
+    },
+    {
+      "dist_m": 4.0,
+      "after": {
+        "makeup": 2.6990727314175715,
+        "makeup_db": 8.6243,
+        "g_decay": 0.11696516054265521,
+        "direct_index": 10
+      },
+      "render": {
+        "peak_db": -12.9922,
+        "rms_db": -35.6006,
+        "limiter_db": 0.0,
+        "limiter_samples": 0,
+        "peak_before_db": -12.9922
+      }
+    },
+    {
+      "dist_m": 8.0,
+      "after": {
+        "makeup": 5.3319489355394065,
+        "makeup_db": 14.5377,
+        "g_decay": 0.11793587430233753,
+        "direct_index": 10
+      },
+      "render": {
+        "peak_db": -12.6993,
+        "rms_db": -34.875,
+        "limiter_db": 0.0,
+        "limiter_samples": 0,
+        "peak_before_db": -12.6993
+      }
+    }
+  ],
+  "agree": [
+    {
+      "name": "boot",
+      "live": 1.2492335249244395,
+      "play_calls": [
+        1.2492335249244395
+      ],
+      "render_calls": [
+        1.2492459372370213
+      ],
+      "match": false
+    },
+    {
+      "name": "solo_0.5",
+      "live": 7.300591939956449,
+      "play_calls": [
+        7.300591939956449
+      ],
+      "render_calls": [
+        7.720120254403801
+      ],
+      "match": false
+    },
+    {
+      "name": "solo_8",
+      "live": 7.720120254403801,
+      "play_calls": [
+        7.720120254403801
+      ],
+      "render_calls": [
+        7.720120254403801
+      ],
+      "match": true
+    },
+    {
+      "name": "far",
+      "live": 1.307580515160166,
+      "play_calls": [
+        1.307580515160166
+      ],
+      "render_calls": [
+        1.2448642831384007
+      ],
+      "match": false
+    },
+    {
+      "name": "on_source",
+      "live": 0.7099295094829439,
+      "play_calls": [
+        0.7099295094829439
+      ],
+      "render_calls": [
+        0.7798708545062973
+      ],
+      "match": false
+    },
+    {
+      "name": "two",
+      "live": 1.2492335249244395,
+      "play_calls": [
+        1.2492335249244395
+      ],
+      "render_calls": [
+        1.2492459372370213
+      ],
+      "match": false
+    }
+  ],
+  "default_limiter": [
+    {
+      "name": "studio",
+      "peak_db": -7.5952,
+      "rms_db": -31.6502,
+      "limiter_db": 0.0,
+      "limiter_samples": 0,
+      "peak_before_db": -7.5952
+    },
+    {
+      "name": "club",
+      "peak_db": -10.6569,
+      "rms_db": -32.7278,
+      "limiter_db": 0.0,
+      "limiter_samples": 0,
+      "peak_before_db": -10.6569
+    },
+    {
+      "name": "hall",
+      "peak_db": -2.1904,
+      "rms_db": -25.5188,
+      "limiter_db": 0.0,
+      "limiter_samples": 0,
+      "peak_before_db": -2.1904
+    },
+    {
+      "name": "boot",
+      "peak_db": -10.0375,
+      "rms_db": -32.5247,
+      "limiter_db": 0.0,
+      "limiter_samples": 0,
+      "peak_before_db": -10.0375
+    }
+  ]
+}

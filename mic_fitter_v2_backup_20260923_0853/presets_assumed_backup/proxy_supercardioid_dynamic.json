@@ -1,0 +1,49 @@
+{
+  "schema": "mic_fitter.preset.v1",
+  "mic_id": "proxy_supercardioid_dynamic",
+  "display_name": "ASSUMED Supercardioid Dynamic (Beta58-ish)",
+  "honesty": "ASSUMED",
+  "family": "supercardioid",
+  "source": "synthetic_proxy_curves_mimicking_published_off_axis_shapes",
+  "model": "high_shelf_plus_soft_one_pole",
+  "angle_law": "0.5*(1-cos(theta))^p",
+  "params": {
+    "f0": 1449.5755591485974,
+    "depth_max_db": -23.999999999999996,
+    "res_hz": 9670.125933492895,
+    "lp_mix": 0.9999999999999999,
+    "fc_floor": 800.0000000000001,
+    "p": 0.8950432302976326
+  },
+  "metrics": {
+    "train_rmse_db": 1.1089443242777537,
+    "holdout_rmse_db": 1.5745381165332801,
+    "train_mse_db": 1.2297575143478439,
+    "holdout_mse_db": 2.4791702804161693,
+    "n_train_angles": 8,
+    "n_holdout_angles": 2,
+    "train_angles_deg": [
+      0.0,
+      15.0,
+      30.0,
+      60.0,
+      90.0,
+      120.0,
+      150.0,
+      180.0
+    ],
+    "holdout_angles_deg": [
+      45.0,
+      135.0
+    ],
+    "freq_range_hz": [
+      200.0,
+      16000.0
+    ]
+  },
+  "notes": "Structure LP / room engine path is SEPARATE \u2014 these presets are off-axis magnitude colour only. Fits are ASSUMED when honesty=ASSUMED.",
+  "fit": {
+    "success": true,
+    "message": "DE success=False nit=40 fun=1.249071; LS success=True cost=315.067225"
+  }
+}

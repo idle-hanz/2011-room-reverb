@@ -1,0 +1,44 @@
+{
+  "mic_id": "NeumannU87AiBidirect",
+  "display_name": "Neumann U87 Ai Bidirect \u2014 LDC fig-8",
+  "honesty": "MEASURED",
+  "family": "fig8",
+  "source": "Franco et al. Zenodo 10.5281/zenodo.4633508 (Raw_IRs, 5m, 24-bit, selected angles)",
+  "params": {
+    "f0": 3359.9029190977594,
+    "depth_max_db": -20.239629527365118,
+    "shelf_slope": 0.6000000000000001,
+    "f_lo": 239.2412999302356,
+    "depth_lo_db": -0.6873608850453116,
+    "res_hz": 1500.0000000003135,
+    "lp_mix": 0.3064159525692415,
+    "fc_floor": 4230.827546878981,
+    "p": 0.6000000000000001
+  },
+  "train_rmse_db": 5.7383944880415125,
+  "holdout_rmse_db": 2.626498799755544,
+  "train_mse_db": 32.929171300385214,
+  "holdout_mse_db": 6.898495945117311,
+  "holdout_angles_deg": [
+    45.0,
+    135.0
+  ],
+  "train_angles_deg": [
+    0.0,
+    15.0,
+    30.0,
+    60.0,
+    90.0,
+    120.0,
+    150.0,
+    180.0
+  ],
+  "fit_message": "DE success=False nit=70 fun=33.177439; LS success=True cost=8491.207391",
+  "preset": "NeumannU87AiBidirect.json",
+  "plots": {
+    "polar": "plots/polars/NeumannU87AiBidirect_polar.png",
+    "colour": "plots/colour/NeumannU87AiBidirect_colour.png",
+    "fit_train": "plots/fit/NeumannU87AiBidirect_train.png",
+    "fit_holdout": "plots/fit/NeumannU87AiBidirect_holdout.png"
+  }
+}

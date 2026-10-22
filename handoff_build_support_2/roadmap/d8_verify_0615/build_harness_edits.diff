@@ -1,0 +1,150 @@
+--- 3_phase_acceptance_tests/harness/lib/pack.py	2026-10-02 03:39:14.453353611 +0100
++++ _incoming/desk0615/handoff_build_support_2/3_phase_acceptance_tests/harness/lib/pack.py	2026-10-02 05:11:40.000000000 +0100
+@@ -101,8 +101,14 @@
+         a.append(num(sm[i] if i < len(sm) else 1, 1))
+     return a
+ 
++def pack_src(d):
++    src = d.get('src_rad')
++    if not isinstance(src, (list, tuple)) or len(src) != 716:
++        return []
++    return [num(v, 0) for v in src]
++
+ def pack_room(d):
+-    parts = [(1, pack_core(d)), (2, pack_air(d)), (3, []), (4, []), (5, [])]
++    parts = [(1, pack_core(d)), (2, pack_air(d)), (3, []), (4, []), (5, pack_src(d))]
+     nsec = len(parts)
+     off = 5 + 4 * nsec
+     directory = []
+--- 3_phase_acceptance_tests/harness/lib/render_ir.py	2026-10-02 03:39:14.413353611 +0100
++++ _incoming/desk0615/handoff_build_support_2/3_phase_acceptance_tests/harness/lib/render_ir.py	2026-10-02 05:11:40.000000000 +0100
+@@ -47,6 +47,13 @@
+     mic_preset_l=p.get("mic_preset_l") or "ShureSM57", mic_preset_c=p.get("mic_preset_c") or "ShureSM57",
+     mic_preset_r=p.get("mic_preset_r") or "ShureSM57", mic_hpf_engaged=bool(p.get("mic_hpf_engaged")),
+     mic_hpf_sides=p.get("mic_hpf_sides"), mic_hpf_centre=p.get("mic_hpf_centre"),
++    source_radiation=str(p.get("source_radiation") or "omni"),
++    source_yaw=float(p.get("source_yaw") or 0.0),
++    source_pitch=float(p.get("source_pitch") or 0.0),
++    source_radiation_b=p.get("source_radiation_b"),
++    source_yaw_b=p.get("source_yaw_b"),
++    source_pitch_b=p.get("source_pitch_b"),
++    source_size_m=p.get("source_size_m"),
+ )
+ L, R, info = render(dry, sr, **kw)
+ sc = float(info.get('norm_scale') or 1.0)
+--- 3_phase_acceptance_tests/harness/lib/wasm_run.js	2026-10-02 03:39:14.429353611 +0100
++++ _incoming/desk0615/handoff_build_support_2/3_phase_acceptance_tests/harness/lib/wasm_run.js	2026-10-02 05:16:11.000000000 +0100
+@@ -32,6 +32,7 @@
+     irs.forEach((a, i) => { packed.set(a, o); lens[i] = a.length; o += a.length; }); m.route = buildRoute(c); m.irs = packed; m.ir_len = lens; m.n_irs = irs.length; }
+   // Binaural (1 Oct): pass the diffuse-tail IC mixer FIRs like live_fdn.js; worklets without live_load_ic ignore them.
+   if (p.ic_hp && p.ic_hm) { m.ic_hp = Float32Array.from(p.ic_hp); m.ic_hm = Float32Array.from(p.ic_hm); }
++  if (p.src_rad && p.src_rad.length) m.src_rad = p.src_rad;
+   return Object.assign(m, over);
+ }
+ (async () => {
+--- 3_phase_acceptance_tests/tests/test_s1_followups.py	2026-10-02 03:39:20.069353611 +0100
++++ _incoming/desk0615/handoff_build_support_2/3_phase_acceptance_tests/tests/test_s1_followups.py	2026-10-02 06:04:57.000000000 +0100
+@@ -52,3 +52,103 @@
+     ok_csv = 'air_climate' in csv
+     if not (ok_def and ok_csv):
+         pytest.xfail(f'S1 gap: air_climate/air_iso missing from DEFAULTS ({ok_def}) or parameters.csv ({ok_csv})')
++
++
++def _pair_db(pair, f, sr):
++    z = np.exp(-2j * np.pi * f / sr)
++    r = np.zeros_like(f, dtype=float)
++    for c in pair:
++        if c is None:
++            continue
++        b0, b1, b2, a0, a1, a2 = c if len(c) == 6 else (c[0], c[1], c[2], 1.0, c[3], c[4])
++        r += 20.0 * np.log10(np.abs((b0 + b1 * z + b2 * z * z) / (a0 + a1 * z + a2 * z * z)))
++    return r
++
++
++@pytest.mark.phase('P2')
++def test_d8_humidity_sets_iso_rh(sw, app):
++    """D8: two humidities above 0 differ at 8–16 kHz; 0.35 stays on today's shelf.
++
++    Humidity 0 is the unchanged bypass. The default slider uses the stored
++    climate shelf (within 0.1 dB). Other humidities track ISO at 30 m.
++    Right of 0.35 is more 8–16 kHz loss.
++    """
++    sys.path[:0] = [str(sw), str(sw / 'engine')]
++    try:
++        import air_iso
++        import early_field as ef
++        import render_pipeline as rp
++    except ImportError:
++        pytest.xfail('P2 ISO air not in tree')
++    sr = 48000
++    f = np.geomspace(100.0, 16000.0, 200)
++    band = (f >= 8000.0) & (f <= 16000.0)
++    x = np.zeros(32, dtype=float)
++    x[0] = 1.0
++    y = ef.apply_air_absorption(x, 30.0, sr, 0.0, air_lp=1.0, air_shelf=1.0)
++    assert y is x and float(x[0]) == 1.0
++
++    for climate, preset_rh in (
++        ('studio_20C_50RH', 50.0),
++        ('dry_20C_20RH', 20.0),
++        ('humid_20C_80RH', 80.0),
++        ('warm_22C_40RH', 40.0),
++    ):
++        assert air_iso.rh_pct_from_slider(0.0, climate) is None
++        assert abs(air_iso.rh_pct_from_slider(0.35, climate) - preset_rh) < 1e-9
++        today = _pair_db(ef.iso_shelf_pair(30.0, sr, 1.0, climate), f, sr)
++        default = _pair_db(ef.iso_shelf_pair(30.0, sr, 1.0, climate, 0.35), f, sr)
++        assert np.max(np.abs(today - default)) <= 0.1, (climate, float(np.max(np.abs(today - default))))
++
++    assert air_iso.rh_pct_from_slider(1.0, 'studio_20C_50RH') > air_iso.rh_pct_from_slider(0.35, 'studio_20C_50RH')
++    assert air_iso.rh_pct_from_slider(0.2, 'studio_20C_50RH') < air_iso.rh_pct_from_slider(0.35, 'studio_20C_50RH')
++    low = _pair_db(ef.iso_shelf_pair(30.0, sr, 1.0, 'studio_20C_50RH', 0.2), f, sr)
++    high = _pair_db(ef.iso_shelf_pair(30.0, sr, 1.0, 'studio_20C_50RH', 0.8), f, sr)
++    delta = float(high[band].mean() - low[band].mean())
++    assert delta < -0.02, delta
++
++    for humidity, climate in ((0.2, 'studio_20C_50RH'), (1.0, 'studio_20C_50RH'), (0.8, 'warm_22C_40RH')):
++        rh = air_iso.rh_pct_from_slider(humidity, climate)
++        for d in (1.0, 5.0, 10.0, 30.0):
++            got = _pair_db(ef.iso_shelf_pair(d, sr, 1.0, climate, humidity), f, sr)
++            iso = air_iso.iso_path_loss_db(f, d, climate, rh)
++            err = got - iso
++            mx = float(np.max(np.abs(err)))
++            rmse = float(np.sqrt(np.mean(err ** 2)))
++            assert mx <= 0.5 and rmse <= 0.15, (climate, humidity, d, mx, rmse)
++        live = _live_shelf_db(rp, 30.0, sr, humidity, climate, f)
++        render = _pair_db(ef.iso_shelf_pair(30.0, sr, 1.0, climate, humidity), f, sr)
++        assert np.max(np.abs(live - render)) < 1e-4
++
++    off_g, _lp, off_a, off_b = rp._live_air_for_distance(30.0, sr, 0.0, 0.0, 1.0, 'studio_20C_50RH', True)
++    assert off_g == 0.0 and off_a['on'] is False and off_b['on'] is False
++
++    html = (sw / 'static' / 'index.html').read_text(encoding='utf-8')
++    js = (sw / 'static' / 'js' / 'app.js').read_text(encoding='utf-8')
++    assert 'Air amount (humidity)' in html
++    assert 'Relative humidity' in html
++    assert 'var AIR_RH_NOMINAL = 0.35' in js
++    assert 'var AIR_RH_QUIET = 10' in js
++    assert 'var AIR_RH_LOSSY = 90' in js
++    for climate, preset_rh in (
++        ('studio_20C_50RH', 50),
++        ('dry_20C_20RH', 20),
++        ('humid_20C_80RH', 80),
++        ('warm_22C_40RH', 40),
++    ):
++        assert f'{climate}: {preset_rh}' in js
++        assert int(air_iso.climate_record(climate)['conditions']['relative_humidity_pct']) == preset_rh
++    assert 'AIR_RH_QUIET + (h / AIR_RH_NOMINAL) * (preset - AIR_RH_QUIET)' in js
++    assert '((h - AIR_RH_NOMINAL) / (1 - AIR_RH_NOMINAL)) * (AIR_RH_LOSSY - preset)' in js
++
++
++def _live_shelf_db(rp, dist, sr, humidity, climate, f):
++    _g, _lp, shelf, shelf2 = rp._live_air_for_distance(dist, sr, humidity, 0.0, 1.0, climate, True)
++    z = np.exp(-2j * np.pi * f / sr)
++    r = np.zeros_like(f, dtype=float)
++    for sh in (shelf, shelf2):
++        if not sh.get('on'):
++            continue
++        b0, b1, b2, a1, a2 = sh['b0'], sh['b1'], sh['b2'], sh['a1'], sh['a2']
++        r += 20.0 * np.log10(np.abs((b0 + b1 * z + b2 * z * z) / (1.0 + a1 * z + a2 * z * z)))
++    return r

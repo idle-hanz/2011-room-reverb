@@ -1,0 +1,55 @@
+{
+  "schema": "scattering_fitter.material_scatter.v1",
+  "id": "plywood_panel",
+  "honesty": "VERIFIED_CITED_EST",
+  "scatter_hz": [
+    125.0,
+    250.0,
+    500.0,
+    1000.0,
+    2000.0,
+    4000.0,
+    8000.0
+  ],
+  "scatter": [
+    0.0245,
+    0.0251,
+    0.0318,
+    0.098,
+    0.3477,
+    0.4785,
+    0.4946
+  ],
+  "scatter_data_octave": [
+    0.0177,
+    0.027,
+    0.042,
+    0.1013,
+    0.3423,
+    0.4693,
+    0.4993
+  ],
+  "model": "logistic_log2f",
+  "params": {
+    "s_lo": 0.02449,
+    "s_hi": 0.49618,
+    "fc": 1607.41842,
+    "k": 2.46822
+  },
+  "rmse_s": 0.00712,
+  "n_points": 21,
+  "fit_range_hz": [
+    100.0,
+    10000.0
+  ],
+  "source": "Asp\u00f6ck, Brinkmann, Ackermann, Weinzierl, Vorl\u00e4nder: GRAS \u2013 Ground Truth for Room Acoustical Simulation, TU Berlin DepositOnce, 3_surface_descriptions.zip, https://depositonce.tu-berlin.de/items/19a794ad-0359-410e-bc9c-ad96df1434d5 ; CSV line 3 = scattering; material descr files: 'Estimated data for absorption and scattering coefficients'; documentation \u00a72.3: 'Scattering coefficients were estimated according to structural dimensions of the materials.'",
+  "source_key": "mat_scene11_woodPanels",
+  "odeon_anchor": null,
+  "note": "GRAS scene11 wood panels (estimated).",
+  "usage": "Per hit: E_spec *= (1 - s_b); E_scatter = 1 - prod(1 - s_b). Specular tap amplitude sqrt(prod(1-s)); scattered share -> short Lambert-envelope velvet cluster, feed-forward on the early tap only. Muted face contributes neither absorption nor scattering.",
+  "locks": {
+    "measured_by_us": false,
+    "honesty_note": "never promote to MEASURED; cite source",
+    "live_software": "do not import into live software/ until Idle says go"
+  }
+}

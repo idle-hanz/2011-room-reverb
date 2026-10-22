@@ -1,0 +1,74 @@
+{
+ "csign_j300": {
+  "mean_rms": {
+   "default": 0.138,
+   "big": 0.057,
+   "small": 0.086,
+   "mid": 0.097,
+   "ortf_wide": 0.188
+  },
+  "mean_max": {
+   "default": 0.194,
+   "big": 0.107,
+   "small": 0.131,
+   "mid": 0.147,
+   "ortf_wide": 0.264
+  },
+  "lf_bias_250_1k": 0.114,
+  "all5": "0/8"
+ },
+ "csign_j600": {
+  "mean_rms": {
+   "default": 0.096,
+   "big": 0.056,
+   "small": 0.058,
+   "mid": 0.085,
+   "ortf_wide": 0.128
+  },
+  "mean_max": {
+   "default": 0.145,
+   "big": 0.1,
+   "small": 0.106,
+   "mid": 0.144,
+   "ortf_wide": 0.197
+  },
+  "lf_bias_250_1k": 0.048,
+  "all5": "0/8"
+ },
+ "m1019_j450": {
+  "mean_rms": {
+   "default": 0.082,
+   "big": 0.062,
+   "small": 0.07,
+   "mid": 0.084,
+   "ortf_wide": 0.089
+  },
+  "mean_max": {
+   "default": 0.149,
+   "big": 0.111,
+   "small": 0.114,
+   "mid": 0.135,
+   "ortf_wide": 0.145
+  },
+  "lf_bias_250_1k": 0.003,
+  "all5": "2/8"
+ },
+ "m1021_j450": {
+  "mean_rms": {
+   "default": 0.087,
+   "big": 0.044,
+   "small": 0.077,
+   "mid": 0.091,
+   "ortf_wide": 0.099
+  },
+  "mean_max": {
+   "default": 0.149,
+   "big": 0.083,
+   "small": 0.132,
+   "mid": 0.157,
+   "ortf_wide": 0.178
+  },
+  "lf_bias_250_1k": 0.021,
+  "all5": "0/8"
+ }
+}

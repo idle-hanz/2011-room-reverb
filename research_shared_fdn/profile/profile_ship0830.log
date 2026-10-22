@@ -1,0 +1,37 @@
+round 0
+round 1
+round 2
+def_1src|full                    min 1.129 med 1.152
+def_1src|no_fdn                  min 0.836 med 0.916
+def_1src|no_early                min 1.059 med 1.083
+def_1src|no_colour               min 0.976 med 1.019
+def_1src|no_colour_no_fdn        min 0.709 med 0.725
+def_1src|no_fdn_no_early         min 0.577 med 0.596
+def_2src|full                    min 1.767 med 1.774
+def_2src|no_fdn                  min 1.025 med 1.041
+def_2src|no_early                min 1.815 med 1.861
+def_2src|no_colour               min 1.470 med 1.535
+def_2src|no_colour_no_fdn        min 0.761 med 0.764
+def_2src|no_fdn_no_early         min 0.675 med 0.680
+big_1src|full                    min 1.246 med 1.250
+big_1src|no_fdn                  min 1.003 med 1.011
+big_1src|no_early                min 1.161 med 1.239
+big_1src|no_colour               min 1.087 med 1.097
+big_1src|no_colour_no_fdn        min 0.849 med 0.879
+big_1src|no_fdn_no_early         min 0.594 med 0.600
+big_2src|full                    min 1.955 med 2.022
+big_2src|no_fdn                  min 1.147 med 1.215
+big_2src|no_early                min 2.044 med 2.067
+big_2src|no_colour               min 1.628 med 1.687
+big_2src|no_colour_no_fdn        min 0.905 med 0.917
+big_2src|no_fdn_no_early         min 0.672 med 0.693
+bin_def_2src|full                min 1.684 med 1.762
+bin_def_2src|no_fdn              min 0.947 med 0.965
+bin_def_2src|no_early            min 1.543 med 1.573
+bin_def_2src|no_colour           min 1.520 med 1.533
+bin_def_2src|no_colour_no_fdn    min 0.797 med 0.801
+bin_def_2src|no_fdn_no_early     min 0.722 med 0.741
+def_2src_omni|full               min 1.753 med 1.805
+def_2src_omni|no_fdn             min 0.938 med 0.941
+def_1src_omni|full               min 0.964 med 0.965
+def_1src_omni|no_fdn             min 0.654 med 0.657

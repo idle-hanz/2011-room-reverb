@@ -1,0 +1,44 @@
+{
+  "mic_id": "RodeNT2AOmni",
+  "display_name": "R\u00f8de NT2-A Omni",
+  "honesty": "MEASURED",
+  "family": "omni",
+  "source": "Franco et al. Zenodo 10.5281/zenodo.4633508 (Raw_IRs, 5m, 24-bit, selected angles)",
+  "params": {
+    "f0": 11411.227959401911,
+    "depth_max_db": -18.33874344258462,
+    "shelf_slope": 9.212254031972837,
+    "f_lo": 244.17001391356277,
+    "depth_lo_db": -0.2881913273098104,
+    "res_hz": 2741.880898086813,
+    "lp_mix": 0.2630349087599272,
+    "fc_floor": 6223.154164249277,
+    "p": 0.6000000000000001
+  },
+  "train_rmse_db": 1.9546261633084452,
+  "holdout_rmse_db": 1.3731352974067106,
+  "train_mse_db": 3.8205634382898923,
+  "holdout_mse_db": 1.8855005449842155,
+  "holdout_angles_deg": [
+    45.0,
+    135.0
+  ],
+  "train_angles_deg": [
+    0.0,
+    15.0,
+    30.0,
+    60.0,
+    90.0,
+    120.0,
+    150.0,
+    180.0
+  ],
+  "fit_message": "DE success=False nit=70 fun=3.964194; LS success=True cost=1014.801283",
+  "preset": "RodeNT2AOmni.json",
+  "plots": {
+    "polar": "plots/polars/RodeNT2AOmni_polar.png",
+    "colour": "plots/colour/RodeNT2AOmni_colour.png",
+    "fit_train": "plots/fit/RodeNT2AOmni_train.png",
+    "fit_holdout": "plots/fit/RodeNT2AOmni_holdout.png"
+  }
+}

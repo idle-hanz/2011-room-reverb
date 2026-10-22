@@ -1,0 +1,44 @@
+{
+  "mic_id": "NeumannU87AiOmni",
+  "display_name": "Neumann U87 Ai Omni \u2014 LDC",
+  "honesty": "MEASURED",
+  "family": "omni",
+  "source": "Franco et al. Zenodo 10.5281/zenodo.4633508 (Raw_IRs, 5m, 24-bit, selected angles)",
+  "params": {
+    "f0": 10041.421197747917,
+    "depth_max_db": -19.20312521033122,
+    "shelf_slope": 11.41540546441811,
+    "f_lo": 262.91546121188117,
+    "depth_lo_db": -0.42275458527701676,
+    "res_hz": 2481.7455851748564,
+    "lp_mix": 0.26919653478007444,
+    "fc_floor": 6429.432581077348,
+    "p": 0.6000000000000001
+  },
+  "train_rmse_db": 2.463835082758299,
+  "holdout_rmse_db": 2.3194825184366357,
+  "train_mse_db": 6.070483315030593,
+  "holdout_mse_db": 5.3799991533331575,
+  "holdout_angles_deg": [
+    45.0,
+    135.0
+  ],
+  "train_angles_deg": [
+    0.0,
+    15.0,
+    30.0,
+    60.0,
+    90.0,
+    120.0,
+    150.0,
+    180.0
+  ],
+  "fit_message": "DE success=False nit=70 fun=6.242127; LS success=True cost=1597.948485",
+  "preset": "NeumannU87AiOmni.json",
+  "plots": {
+    "polar": "plots/polars/NeumannU87AiOmni_polar.png",
+    "colour": "plots/colour/NeumannU87AiOmni_colour.png",
+    "fit_train": "plots/fit/NeumannU87AiOmni_train.png",
+    "fit_holdout": "plots/fit/NeumannU87AiOmni_holdout.png"
+  }
+}

@@ -1,0 +1,25 @@
+# Box app copy only: ui_audit_1004/app/software -> prebuild_app/software (both under /workspace/build_support_2). Never applied to PC software\. Updated 21:45 for SL1/SL5/SL6 (2 tags + 1 hook line).
+--- a/software/static/index.html
++++ b/software/static/index.html
+@@ -899,5 +899,10 @@
+   <script src="/static/js/pack_room.js?v=50"></script>
+   <script src="/static/js/live_fdn.js?v=51"></script>
+   <script src="/static/js/app.js?v=44"></script>
++  <link rel="stylesheet" href="/static/prebuild/rr_controls.css" />
++  <script src="/static/prebuild/rr_controls.js"></script>
++  <script src="/static/prebuild/rr_controls_boot.js"></script>
++  <link rel="stylesheet" href="/static/prebuild/sl_room_result.css" />
++  <script src="/static/prebuild/sl_room_result.js"></script>
+ </body>
+ </html>
+--- a/software/static/js/app.js
++++ b/software/static/js/app.js
+@@ -2412,6 +2412,8 @@
+     scheduleLiveParams();
+     scheduleDecayPreview();
+     schedulePolar();
++    if (window.RRControls) window.RRControls.refreshAll();  /* T1 prebuild hook */
++    window.RRState = state; window.RRColourSurfaces = colourSurfaces;  /* SL prebuild hook */
+   }
+ 
+   function onRoomDim(key, val) {

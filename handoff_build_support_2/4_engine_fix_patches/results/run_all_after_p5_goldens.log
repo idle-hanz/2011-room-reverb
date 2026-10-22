@@ -1,0 +1,4 @@
+FAIL     t03_golden_play_features_off          0.9s  play_std_unlocked_byp: differs from golden (null 3.1 dB > -100.0 dB, max diff 1). If the change is intended, regenerate goldens and record why.
+FAIL     t04_golden_render_features_off        5.5s  render_std_unlocked_byp: differs from golden (null 3.5 dB > -100.0 dB, max diff 1.2). If the change is intended, regenerate goldens and record why.
+
+0 pass, 2 fail/error, 0 skip, 0 pending, 0 xfail

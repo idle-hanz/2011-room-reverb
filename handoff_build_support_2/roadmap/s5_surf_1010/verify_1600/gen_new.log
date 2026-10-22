@@ -1,0 +1,12 @@
+default mix
+default fdn
+default early
+flat mix
+flat fdn
+flat early
+parity mix
+parity fdn
+hs6_all mix
+hs6_all fdn
+hs6_all early
+t19 done

@@ -1,0 +1,1722 @@
+{
+  "_embedded" : {
+    "bundles" : [ {
+      "uuid" : "51cd9e3c-7aec-40c8-a5b6-3209e24f0556",
+      "name" : "PRIVACYSTATEMENT",
+      "handle" : null,
+      "metadata" : {
+        "dc.title" : [ {
+          "value" : "PRIVACYSTATEMENT",
+          "language" : null,
+          "authority" : null,
+          "confidence" : -1,
+          "place" : 0
+        } ]
+      },
+      "type" : "bundle",
+      "_links" : {
+        "item" : {
+          "href" : "https://api-depositonce.tu-berlin.de/server/api/core/bundles/51cd9e3c-7aec-40c8-a5b6-3209e24f0556/item"
+        },
+        "bitstreams" : {
+          "href" : "https://api-depositonce.tu-berlin.de/server/api/core/bundles/51cd9e3c-7aec-40c8-a5b6-3209e24f0556/bitstreams"
+        },
+        "primaryBitstream" : {
+          "href" : "https://api-depositonce.tu-berlin.de/server/api/core/bundles/51cd9e3c-7aec-40c8-a5b6-3209e24f0556/primaryBitstream"
+        },
+        "self" : {
+          "href" : "https://api-depositonce.tu-berlin.de/server/api/core/bundles/51cd9e3c-7aec-40c8-a5b6-3209e24f0556"
+        }
+      },
+      "_embedded" : {
+        "bitstreams" : {
+          "_embedded" : {
+            "bitstreams" : [ {
+              "id" : "62d1b742-256d-4200-b912-f9d4c9b2e777",
+              "uuid" : "62d1b742-256d-4200-b912-f9d4c9b2e777",
+              "name" : "privacy_statements.txt",
+              "handle" : null,
+              "metadata" : {
+                "dc.source" : [ {
+                  "value" : "Written by org.dspace.submit.step.PrivacyStatementsStep.",
+                  "language" : null,
+                  "authority" : null,
+                  "confidence" : -1,
+                  "place" : 0
+                } ],
+                "dc.title" : [ {
+                  "value" : "privacy_statements.txt",
+                  "language" : null,
+                  "authority" : null,
+                  "confidence" : -1,
+                  "place" : 0
+                } ]
+              },
+              "bundleName" : "PRIVACYSTATEMENT",
+              "sizeBytes" : 645,
+              "checkSum" : {
+                "checkSumAlgorithm" : "MD5",
+                "value" : "daffb701057bbca153ac23250395daa7"
+              },
+              "sequenceId" : 1,
+              "type" : "bitstream",
+              "_links" : {
+                "content" : {
+                  "href" : "https://api-depositonce.tu-berlin.de/server/api/core/bitstreams/62d1b742-256d-4200-b912-f9d4c9b2e777/content"
+                },
+                "bundle" : {
+                  "href" : "https://api-depositonce.tu-berlin.de/server/api/core/bitstreams/62d1b742-256d-4200-b912-f9d4c9b2e777/bundle"
+                },
+                "accessStatus" : {
+                  "href" : "https://api-depositonce.tu-berlin.de/server/api/core/bitstreams/62d1b742-256d-4200-b912-f9d4c9b2e777/accessStatus"
+                },
+                "format" : {
+                  "href" : "https://api-depositonce.tu-berlin.de/server/api/core/bitstreams/62d1b742-256d-4200-b912-f9d4c9b2e777/format"
+                },
+                "thumbnail" : {
+                  "href" : "https://api-depositonce.tu-berlin.de/server/api/core/bitstreams/62d1b742-256d-4200-b912-f9d4c9b2e777/thumbnail"
+                },
+                "self" : {
+                  "href" : "https://api-depositonce.tu-berlin.de/server/api/core/bitstreams/62d1b742-256d-4200-b912-f9d4c9b2e777"
+                }
+              }
+            } ]
+          },
+          "page" : {
+            "number" : 0,
+            "size" : 20,
+            "totalPages" : 1,
+            "totalElements" : 1
+          },
+          "_links" : {
+            "self" : {
+              "href" : "https://api-depositonce.tu-berlin.de/server/api/core/bundles/51cd9e3c-7aec-40c8-a5b6-3209e24f0556/bitstreams"
+            }
+          }
+        }
+      }
+    }, {
+      "uuid" : "bd86bdd7-7700-4d08-8337-bf9907e7fca4",
+      "name" : "LICENSE",
+      "handle" : null,
+      "metadata" : {
+        "dc.title" : [ {
+          "value" : "LICENSE",
+          "language" : null,
+          "authority" : null,
+          "confidence" : -1,
+          "place" : 0
+        } ]
+      },
+      "type" : "bundle",
+      "_links" : {
+        "item" : {
+          "href" : "https://api-depositonce.tu-berlin.de/server/api/core/bundles/bd86bdd7-7700-4d08-8337-bf9907e7fca4/item"
+        },
+        "bitstreams" : {
+          "href" : "https://api-depositonce.tu-berlin.de/server/api/core/bundles/bd86bdd7-7700-4d08-8337-bf9907e7fca4/bitstreams"
+        },
+        "primaryBitstream" : {
+          "href" : "https://api-depositonce.tu-berlin.de/server/api/core/bundles/bd86bdd7-7700-4d08-8337-bf9907e7fca4/primaryBitstream"
+        },
+        "self" : {
+          "href" : "https://api-depositonce.tu-berlin.de/server/api/core/bundles/bd86bdd7-7700-4d08-8337-bf9907e7fca4"
+        }
+      },
+      "_embedded" : {
+        "bitstreams" : {
+          "_embedded" : {
+            "bitstreams" : [ {
+              "id" : "5fc335d1-7b59-45a8-90eb-095ec4e0911f",
+              "uuid" : "5fc335d1-7b59-45a8-90eb-095ec4e0911f",
+              "name" : "license.txt",
+              "handle" : null,
+              "metadata" : {
+                "dc.source" : [ {
+                  "value" : "Written by org.dspace.content.LicenseUtils",
+                  "language" : null,
+                  "authority" : null,
+                  "confidence" : -1,
+                  "place" : 0
+                } ],
+                "dc.title" : [ {
+                  "value" : "license.txt",
+                  "language" : null,
+                  "authority" : null,
+                  "confidence" : -1,
+                  "place" : 0
+                } ]
+              },
+              "bundleName" : "LICENSE",
+              "sizeBytes" : 2681,
+              "checkSum" : {
+                "checkSumAlgorithm" : "MD5",
+                "value" : "67ca974f88e1ca9a2ade343c3f48aa13"
+              },
+              "sequenceId" : 2,
+              "type" : "bitstream",
+              "_links" : {
+                "content" : {
+                  "href" : "https://api-depositonce.tu-berlin.de/server/api/core/bitstreams/5fc335d1-7b59-45a8-90eb-095ec4e0911f/content"
+                },
+                "bundle" : {
+                  "href" : "https://api-depositonce.tu-berlin.de/server/api/core/bitstreams/5fc335d1-7b59-45a8-90eb-095ec4e0911f/bundle"
+                },
+                "accessStatus" : {
+                  "href" : "https://api-depositonce.tu-berlin.de/server/api/core/bitstreams/5fc335d1-7b59-45a8-90eb-095ec4e0911f/accessStatus"
+                },
+                "format" : {
+                  "href" : "https://api-depositonce.tu-berlin.de/server/api/core/bitstreams/5fc335d1-7b59-45a8-90eb-095ec4e0911f/format"
+                },
+                "thumbnail" : {
+                  "href" : "https://api-depositonce.tu-berlin.de/server/api/core/bitstreams/5fc335d1-7b59-45a8-90eb-095ec4e0911f/thumbnail"
+                },
+                "self" : {
+                  "href" : "https://api-depositonce.tu-berlin.de/server/api/core/bitstreams/5fc335d1-7b59-45a8-90eb-095ec4e0911f"
+                }
+              }
+            } ]
+          },
+          "page" : {
+            "number" : 0,
+            "size" : 20,
+            "totalPages" : 1,
+            "totalElements" : 1
+          },
+          "_links" : {
+            "self" : {
+              "href" : "https://api-depositonce.tu-berlin.de/server/api/core/bundles/bd86bdd7-7700-4d08-8337-bf9907e7fca4/bitstreams"
+            }
+          }
+        }
+      }
+    }, {
+      "uuid" : "99bd4fda-8200-4702-8356-f47df1554082",
+      "name" : "TEXT",
+      "handle" : null,
+      "metadata" : {
+        "dc.title" : [ {
+          "value" : "TEXT",
+          "language" : null,
+          "authority" : null,
+          "confidence" : -1,
+          "place" : 0
+        } ]
+      },
+      "type" : "bundle",
+      "_links" : {
+        "item" : {
+          "href" : "https://api-depositonce.tu-berlin.de/server/api/core/bundles/99bd4fda-8200-4702-8356-f47df1554082/item"
+        },
+        "bitstreams" : {
+          "href" : "https://api-depositonce.tu-berlin.de/server/api/core/bundles/99bd4fda-8200-4702-8356-f47df1554082/bitstreams"
+        },
+        "primaryBitstream" : {
+          "href" : "https://api-depositonce.tu-berlin.de/server/api/core/bundles/99bd4fda-8200-4702-8356-f47df1554082/primaryBitstream"
+        },
+        "self" : {
+          "href" : "https://api-depositonce.tu-berlin.de/server/api/core/bundles/99bd4fda-8200-4702-8356-f47df1554082"
+        }
+      },
+      "_embedded" : {
+        "bitstreams" : {
+          "_embedded" : {
+            "bitstreams" : [ {
+              "id" : "f9ce2234-1f53-4e90-9769-7df183a30934",
+              "uuid" : "f9ce2234-1f53-4e90-9769-7df183a30934",
+              "name" : "0_Documentation_Database.pdf.txt",
+              "handle" : null,
+              "metadata" : {
+                "dc.description" : [ {
+                  "value" : "Extracted Text",
+                  "language" : null,
+                  "authority" : null,
+                  "confidence" : -1,
+                  "place" : 0
+                } ],
+                "dc.source" : [ {
+                  "value" : "Written by FormatFilter org.dspace.app.mediafilter.XPDF2Text on 2017-07-01T01:31:56Z (GMT).",
+                  "language" : null,
+                  "authority" : null,
+                  "confidence" : -1,
+                  "place" : 0
+                } ],
+                "dc.title" : [ {
+                  "value" : "0_Documentation_Database.pdf.txt",
+                  "language" : null,
+                  "authority" : null,
+                  "confidence" : -1,
+                  "place" : 0
+                } ]
+              },
+              "bundleName" : "TEXT",
+              "sizeBytes" : 11827,
+              "checkSum" : {
+                "checkSumAlgorithm" : "MD5",
+                "value" : "76a48c3c567015d4f9217688886412bf"
+              },
+              "sequenceId" : 50,
+              "type" : "bitstream",
+              "_links" : {
+                "content" : {
+                  "href" : "https://api-depositonce.tu-berlin.de/server/api/core/bitstreams/f9ce2234-1f53-4e90-9769-7df183a30934/content"
+                },
+                "bundle" : {
+                  "href" : "https://api-depositonce.tu-berlin.de/server/api/core/bitstreams/f9ce2234-1f53-4e90-9769-7df183a30934/bundle"
+                },
+                "accessStatus" : {
+                  "href" : "https://api-depositonce.tu-berlin.de/server/api/core/bitstreams/f9ce2234-1f53-4e90-9769-7df183a30934/accessStatus"
+                },
+                "format" : {
+                  "href" : "https://api-depositonce.tu-berlin.de/server/api/core/bitstreams/f9ce2234-1f53-4e90-9769-7df183a30934/format"
+                },
+                "thumbnail" : {
+                  "href" : "https://api-depositonce.tu-berlin.de/server/api/core/bitstreams/f9ce2234-1f53-4e90-9769-7df183a30934/thumbnail"
+                },
+                "self" : {
+                  "href" : "https://api-depositonce.tu-berlin.de/server/api/core/bitstreams/f9ce2234-1f53-4e90-9769-7df183a30934"
+                }
+              }
+            }, {
+              "id" : "e7ad76b7-ccce-4a38-9fe7-44eb4590beff",
+              "uuid" : "e7ad76b7-ccce-4a38-9fe7-44eb4590beff",
+              "name" : "0_Documentation_Musical_Instruments.pdf.txt",
+              "handle" : null,
+              "metadata" : {
+                "dc.description" : [ {
+                  "value" : "Extracted Text",
+                  "language" : null,
+                  "authority" : null,
+                  "confidence" : -1,
+                  "place" : 0
+                } ],
+                "dc.source" : [ {
+                  "value" : "Written by FormatFilter org.dspace.app.mediafilter.XPDF2Text on 2017-07-01T01:32:00Z (GMT).",
+                  "language" : null,
+                  "authority" : null,
+                  "confidence" : -1,
+                  "place" : 0
+                } ],
+                "dc.title" : [ {
+                  "value" : "0_Documentation_Musical_Instruments.pdf.txt",
+                  "language" : null,
+                  "authority" : null,
+                  "confidence" : -1,
+                  "place" : 0
+                } ]
+              },
+              "bundleName" : "TEXT",
+              "sizeBytes" : 12641,
+              "checkSum" : {
+                "checkSumAlgorithm" : "MD5",
+                "value" : "a0cbc73c20c748078924f3d185ef1285"
+              },
+              "sequenceId" : 51,
+              "type" : "bitstream",
+              "_links" : {
+                "content" : {
+                  "href" : "https://api-depositonce.tu-berlin.de/server/api/core/bitstreams/e7ad76b7-ccce-4a38-9fe7-44eb4590beff/content"
+                },
+                "bundle" : {
+                  "href" : "https://api-depositonce.tu-berlin.de/server/api/core/bitstreams/e7ad76b7-ccce-4a38-9fe7-44eb4590beff/bundle"
+                },
+                "accessStatus" : {
+                  "href" : "https://api-depositonce.tu-berlin.de/server/api/core/bitstreams/e7ad76b7-ccce-4a38-9fe7-44eb4590beff/accessStatus"
+                },
+                "format" : {
+                  "href" : "https://api-depositonce.tu-berlin.de/server/api/core/bitstreams/e7ad76b7-ccce-4a38-9fe7-44eb4590beff/format"
+                },
+                "thumbnail" : {
+                  "href" : "https://api-depositonce.tu-berlin.de/server/api/core/bitstreams/e7ad76b7-ccce-4a38-9fe7-44eb4590beff/thumbnail"
+                },
+                "self" : {
+                  "href" : "https://api-depositonce.tu-berlin.de/server/api/core/bitstreams/e7ad76b7-ccce-4a38-9fe7-44eb4590beff"
+                }
+              }
+            }, {
+              "id" : "50b31efd-7baa-4242-b2c9-57c065631143",
+              "uuid" : "50b31efd-7baa-4242-b2c9-57c065631143",
+              "name" : "0_README.TXT.txt",
+              "handle" : null,
+              "metadata" : {
+                "dc.description" : [ {
+                  "value" : "Extracted text",
+                  "language" : null,
+                  "authority" : null,
+                  "confidence" : -1,
+                  "place" : 0
+                } ],
+                "dc.source" : [ {
+                  "value" : "Written by FormatFilter org.dspace.app.mediafilter.HTMLFilter on 2017-07-01T01:32:02Z (GMT).",
+                  "language" : null,
+                  "authority" : null,
+                  "confidence" : -1,
+                  "place" : 0
+                } ],
+                "dc.title" : [ {
+                  "value" : "0_README.TXT.txt",
+                  "language" : null,
+                  "authority" : null,
+                  "confidence" : -1,
+                  "place" : 0
+                } ]
+              },
+              "bundleName" : "TEXT",
+              "sizeBytes" : 252,
+              "checkSum" : {
+                "checkSumAlgorithm" : "MD5",
+                "value" : "db942b185594328ab669c5e6a6d212e0"
+              },
+              "sequenceId" : 52,
+              "type" : "bitstream",
+              "_links" : {
+                "content" : {
+                  "href" : "https://api-depositonce.tu-berlin.de/server/api/core/bitstreams/50b31efd-7baa-4242-b2c9-57c065631143/content"
+                },
+                "bundle" : {
+                  "href" : "https://api-depositonce.tu-berlin.de/server/api/core/bitstreams/50b31efd-7baa-4242-b2c9-57c065631143/bundle"
+                },
+                "accessStatus" : {
+                  "href" : "https://api-depositonce.tu-berlin.de/server/api/core/bitstreams/50b31efd-7baa-4242-b2c9-57c065631143/accessStatus"
+                },
+                "format" : {
+                  "href" : "https://api-depositonce.tu-berlin.de/server/api/core/bitstreams/50b31efd-7baa-4242-b2c9-57c065631143/format"
+                },
+                "thumbnail" : {
+                  "href" : "https://api-depositonce.tu-berlin.de/server/api/core/bitstreams/50b31efd-7baa-4242-b2c9-57c065631143/thumbnail"
+                },
+                "self" : {
+                  "href" : "https://api-depositonce.tu-berlin.de/server/api/core/bitstreams/50b31efd-7baa-4242-b2c9-57c065631143"
+                }
+              }
+            }, {
+              "id" : "f0de8a01-9b33-4fdf-a049-7222eaf2a252",
+              "uuid" : "f0de8a01-9b33-4fdf-a049-7222eaf2a252",
+              "name" : "0_Documentation.pdf.txt",
+              "handle" : null,
+              "metadata" : {
+                "dc.description" : [ {
+                  "value" : "Extracted text",
+                  "language" : null,
+                  "authority" : null,
+                  "confidence" : -1,
+                  "place" : 0
+                } ],
+                "dc.source" : [ {
+                  "value" : "Written by FormatFilter org.dspace.app.mediafilter.TikaTextExtractionFilter on 2024-02-13T12:25:44Z (GMT).",
+                  "language" : null,
+                  "authority" : null,
+                  "confidence" : -1,
+                  "place" : 0
+                } ],
+                "dc.title" : [ {
+                  "value" : "0_Documentation.pdf.txt",
+                  "language" : null,
+                  "authority" : null,
+                  "confidence" : -1,
+                  "place" : 0
+                } ]
+              },
+              "bundleName" : "TEXT",
+              "sizeBytes" : 16165,
+              "checkSum" : {
+                "checkSumAlgorithm" : "MD5",
+                "value" : "b40cb4b9a19561a14b1d36ce28481f9d"
+              },
+              "sequenceId" : 105,
+              "type" : "bitstream",
+              "_links" : {
+                "content" : {
+                  "href" : "https://api-depositonce.tu-berlin.de/server/api/core/bitstreams/f0de8a01-9b33-4fdf-a049-7222eaf2a252/content"
+                },
+                "bundle" : {
+                  "href" : "https://api-depositonce.tu-berlin.de/server/api/core/bitstreams/f0de8a01-9b33-4fdf-a049-7222eaf2a252/bundle"
+                },
+                "accessStatus" : {
+                  "href" : "https://api-depositonce.tu-berlin.de/server/api/core/bitstreams/f0de8a01-9b33-4fdf-a049-7222eaf2a252/accessStatus"
+                },
+                "format" : {
+                  "href" : "https://api-depositonce.tu-berlin.de/server/api/core/bitstreams/f0de8a01-9b33-4fdf-a049-7222eaf2a252/format"
+                },
+                "thumbnail" : {
+                  "href" : "https://api-depositonce.tu-berlin.de/server/api/core/bitstreams/f0de8a01-9b33-4fdf-a049-7222eaf2a252/thumbnail"
+                },
+                "self" : {
+                  "href" : "https://api-depositonce.tu-berlin.de/server/api/core/bitstreams/f0de8a01-9b33-4fdf-a049-7222eaf2a252"
+                }
+              }
+            }, {
+              "id" : "4882313b-835c-4d67-950a-eb21f8be4d29",
+              "uuid" : "4882313b-835c-4d67-950a-eb21f8be4d29",
+              "name" : "3_Audio_Features.csv.txt",
+              "handle" : null,
+              "metadata" : {
+                "dc.description" : [ {
+                  "value" : "Extracted text",
+                  "language" : null,
+                  "authority" : null,
+                  "confidence" : -1,
+                  "place" : 0
+                } ],
+                "dc.source" : [ {
+                  "value" : "Written by FormatFilter org.dspace.app.mediafilter.TikaTextExtractionFilter on 2024-02-13T12:25:46Z (GMT).",
+                  "language" : null,
+                  "authority" : null,
+                  "confidence" : -1,
+                  "place" : 0
+                } ],
+                "dc.title" : [ {
+                  "value" : "3_Audio_Features.csv.txt",
+                  "language" : null,
+                  "authority" : null,
+                  "confidence" : -1,
+                  "place" : 0
+                } ]
+              },
+              "bundleName" : "TEXT",
+              "sizeBytes" : 100000,
+              "checkSum" : {
+                "checkSumAlgorithm" : "MD5",
+                "value" : "f734a8d1e783d108d62400c160069b3c"
+              },
+              "sequenceId" : 107,
+              "type" : "bitstream",
+              "_links" : {
+                "content" : {
+                  "href" : "https://api-depositonce.tu-berlin.de/server/api/core/bitstreams/4882313b-835c-4d67-950a-eb21f8be4d29/content"
+                },
+                "bundle" : {
+                  "href" : "https://api-depositonce.tu-berlin.de/server/api/core/bitstreams/4882313b-835c-4d67-950a-eb21f8be4d29/bundle"
+                },
+                "accessStatus" : {
+                  "href" : "https://api-depositonce.tu-berlin.de/server/api/core/bitstreams/4882313b-835c-4d67-950a-eb21f8be4d29/accessStatus"
+                },
+                "format" : {
+                  "href" : "https://api-depositonce.tu-berlin.de/server/api/core/bitstreams/4882313b-835c-4d67-950a-eb21f8be4d29/format"
+                },
+                "thumbnail" : {
+                  "href" : "https://api-depositonce.tu-berlin.de/server/api/core/bitstreams/4882313b-835c-4d67-950a-eb21f8be4d29/thumbnail"
+                },
+                "self" : {
+                  "href" : "https://api-depositonce.tu-berlin.de/server/api/core/bitstreams/4882313b-835c-4d67-950a-eb21f8be4d29"
+                }
+              }
+            } ]
+          },
+          "page" : {
+            "number" : 0,
+            "size" : 20,
+            "totalPages" : 1,
+            "totalElements" : 5
+          },
+          "_links" : {
+            "self" : {
+              "href" : "https://api-depositonce.tu-berlin.de/server/api/core/bundles/99bd4fda-8200-4702-8356-f47df1554082/bitstreams"
+            }
+          }
+        }
+      }
+    }, {
+      "uuid" : "90f903ff-5e3b-46bc-b100-3da4081a5042",
+      "name" : "THUMBNAIL",
+      "handle" : null,
+      "metadata" : {
+        "dc.title" : [ {
+          "value" : "THUMBNAIL",
+          "language" : null,
+          "authority" : null,
+          "confidence" : -1,
+          "place" : 0
+        } ]
+      },
+      "type" : "bundle",
+      "_links" : {
+        "item" : {
+          "href" : "https://api-depositonce.tu-berlin.de/server/api/core/bundles/90f903ff-5e3b-46bc-b100-3da4081a5042/item"
+        },
+        "bitstreams" : {
+          "href" : "https://api-depositonce.tu-berlin.de/server/api/core/bundles/90f903ff-5e3b-46bc-b100-3da4081a5042/bitstreams"
+        },
+        "primaryBitstream" : {
+          "href" : "https://api-depositonce.tu-berlin.de/server/api/core/bundles/90f903ff-5e3b-46bc-b100-3da4081a5042/primaryBitstream"
+        },
+        "self" : {
+          "href" : "https://api-depositonce.tu-berlin.de/server/api/core/bundles/90f903ff-5e3b-46bc-b100-3da4081a5042"
+        }
+      },
+      "_embedded" : {
+        "bitstreams" : {
+          "_embedded" : {
+            "bitstreams" : [ {
+              "id" : "995d9d30-2ce4-4d4a-9c02-24b94599fd79",
+              "uuid" : "995d9d30-2ce4-4d4a-9c02-24b94599fd79",
+              "name" : "0_Documentation.pdf.jpg",
+              "handle" : null,
+              "metadata" : {
+                "dc.description" : [ {
+                  "value" : "Generated Thumbnail",
+                  "language" : null,
+                  "authority" : null,
+                  "confidence" : -1,
+                  "place" : 0
+                } ],
+                "dc.source" : [ {
+                  "value" : "Written by FormatFilter org.dspace.app.mediafilter.PDFBoxThumbnail on 2024-02-13T12:25:46Z (GMT).",
+                  "language" : null,
+                  "authority" : null,
+                  "confidence" : -1,
+                  "place" : 0
+                } ],
+                "dc.title" : [ {
+                  "value" : "0_Documentation.pdf.jpg",
+                  "language" : null,
+                  "authority" : null,
+                  "confidence" : -1,
+                  "place" : 0
+                } ]
+              },
+              "bundleName" : "THUMBNAIL",
+              "sizeBytes" : 48409,
+              "checkSum" : {
+                "checkSumAlgorithm" : "MD5",
+                "value" : "62b9ecd483408e38ac30ecfd82562ada"
+              },
+              "sequenceId" : 106,
+              "type" : "bitstream",
+              "_links" : {
+                "content" : {
+                  "href" : "https://api-depositonce.tu-berlin.de/server/api/core/bitstreams/995d9d30-2ce4-4d4a-9c02-24b94599fd79/content"
+                },
+                "bundle" : {
+                  "href" : "https://api-depositonce.tu-berlin.de/server/api/core/bitstreams/995d9d30-2ce4-4d4a-9c02-24b94599fd79/bundle"
+                },
+                "accessStatus" : {
+                  "href" : "https://api-depositonce.tu-berlin.de/server/api/core/bitstreams/995d9d30-2ce4-4d4a-9c02-24b94599fd79/accessStatus"
+                },
+                "format" : {
+                  "href" : "https://api-depositonce.tu-berlin.de/server/api/core/bitstreams/995d9d30-2ce4-4d4a-9c02-24b94599fd79/format"
+                },
+                "thumbnail" : {
+                  "href" : "https://api-depositonce.tu-berlin.de/server/api/core/bitstreams/995d9d30-2ce4-4d4a-9c02-24b94599fd79/thumbnail"
+                },
+                "self" : {
+                  "href" : "https://api-depositonce.tu-berlin.de/server/api/core/bitstreams/995d9d30-2ce4-4d4a-9c02-24b94599fd79"
+                }
+              }
+            }, {
+              "id" : "4c19364f-eedf-486c-9372-19a2fb45c3e2",
+              "uuid" : "4c19364f-eedf-486c-9372-19a2fb45c3e2",
+              "name" : "0_Documentation_Musical_Instruments.pdf.jpg",
+              "handle" : null,
+              "metadata" : {
+                "dc.description" : [ {
+                  "value" : "Generated Thumbnail",
+                  "language" : null,
+                  "authority" : null,
+                  "confidence" : -1,
+                  "place" : 0
+                } ],
+                "dc.source" : [ {
+                  "value" : "Written by FormatFilter org.dspace.app.mediafilter.PDFBoxThumbnail on 2023-06-07T10:20:45Z (GMT).",
+                  "language" : null,
+                  "authority" : null,
+                  "confidence" : -1,
+                  "place" : 0
+                } ],
+                "dc.title" : [ {
+                  "value" : "0_Documentation_Musical_Instruments.pdf.jpg",
+                  "language" : null,
+                  "authority" : null,
+                  "confidence" : -1,
+                  "place" : 0
+                } ]
+              },
+              "bundleName" : "THUMBNAIL",
+              "sizeBytes" : 41248,
+              "checkSum" : {
+                "checkSumAlgorithm" : "MD5",
+                "value" : "b14456f016ed2ca87a0638c1e26b1512"
+              },
+              "sequenceId" : 54,
+              "type" : "bitstream",
+              "_links" : {
+                "content" : {
+                  "href" : "https://api-depositonce.tu-berlin.de/server/api/core/bitstreams/4c19364f-eedf-486c-9372-19a2fb45c3e2/content"
+                },
+                "bundle" : {
+                  "href" : "https://api-depositonce.tu-berlin.de/server/api/core/bitstreams/4c19364f-eedf-486c-9372-19a2fb45c3e2/bundle"
+                },
+                "accessStatus" : {
+                  "href" : "https://api-depositonce.tu-berlin.de/server/api/core/bitstreams/4c19364f-eedf-486c-9372-19a2fb45c3e2/accessStatus"
+                },
+                "format" : {
+                  "href" : "https://api-depositonce.tu-berlin.de/server/api/core/bitstreams/4c19364f-eedf-486c-9372-19a2fb45c3e2/format"
+                },
+                "thumbnail" : {
+                  "href" : "https://api-depositonce.tu-berlin.de/server/api/core/bitstreams/4c19364f-eedf-486c-9372-19a2fb45c3e2/thumbnail"
+                },
+                "self" : {
+                  "href" : "https://api-depositonce.tu-berlin.de/server/api/core/bitstreams/4c19364f-eedf-486c-9372-19a2fb45c3e2"
+                }
+              }
+            } ]
+          },
+          "page" : {
+            "number" : 0,
+            "size" : 20,
+            "totalPages" : 1,
+            "totalElements" : 2
+          },
+          "_links" : {
+            "self" : {
+              "href" : "https://api-depositonce.tu-berlin.de/server/api/core/bundles/90f903ff-5e3b-46bc-b100-3da4081a5042/bitstreams"
+            }
+          }
+        }
+      }
+    }, {
+      "uuid" : "8d6f2969-ee21-4fee-835a-dcecb28dd080",
+      "name" : "ORIGINAL",
+      "handle" : null,
+      "metadata" : {
+        "dc.title" : [ {
+          "value" : "ORIGINAL",
+          "language" : null,
+          "authority" : null,
+          "confidence" : -1,
+          "place" : 0
+        } ]
+      },
+      "type" : "bundle",
+      "_links" : {
+        "item" : {
+          "href" : "https://api-depositonce.tu-berlin.de/server/api/core/bundles/8d6f2969-ee21-4fee-835a-dcecb28dd080/item"
+        },
+        "bitstreams" : {
+          "href" : "https://api-depositonce.tu-berlin.de/server/api/core/bundles/8d6f2969-ee21-4fee-835a-dcecb28dd080/bitstreams"
+        },
+        "primaryBitstream" : {
+          "href" : "https://api-depositonce.tu-berlin.de/server/api/core/bundles/8d6f2969-ee21-4fee-835a-dcecb28dd080/primaryBitstream"
+        },
+        "self" : {
+          "href" : "https://api-depositonce.tu-berlin.de/server/api/core/bundles/8d6f2969-ee21-4fee-835a-dcecb28dd080"
+        }
+      },
+      "_embedded" : {
+        "bitstreams" : {
+          "_embedded" : {
+            "bitstreams" : [ {
+              "id" : "8d25bc14-a882-4f45-be0d-7e0c0035221c",
+              "uuid" : "8d25bc14-a882-4f45-be0d-7e0c0035221c",
+              "name" : "0_Documentation.pdf",
+              "handle" : null,
+              "metadata" : {
+                "dc.source" : [ {
+                  "value" : "0_Documentation.pdf",
+                  "language" : null,
+                  "authority" : null,
+                  "confidence" : -1,
+                  "place" : 0
+                } ],
+                "dc.title" : [ {
+                  "value" : "0_Documentation.pdf",
+                  "language" : null,
+                  "authority" : null,
+                  "confidence" : -1,
+                  "place" : 0
+                } ]
+              },
+              "bundleName" : "ORIGINAL",
+              "sizeBytes" : 1107344,
+              "checkSum" : {
+                "checkSumAlgorithm" : "MD5",
+                "value" : "3f64b8284507e17002d408b0a8b7a92d"
+              },
+              "sequenceId" : 55,
+              "type" : "bitstream",
+              "_links" : {
+                "content" : {
+                  "href" : "https://api-depositonce.tu-berlin.de/server/api/core/bitstreams/8d25bc14-a882-4f45-be0d-7e0c0035221c/content"
+                },
+                "bundle" : {
+                  "href" : "https://api-depositonce.tu-berlin.de/server/api/core/bitstreams/8d25bc14-a882-4f45-be0d-7e0c0035221c/bundle"
+                },
+                "accessStatus" : {
+                  "href" : "https://api-depositonce.tu-berlin.de/server/api/core/bitstreams/8d25bc14-a882-4f45-be0d-7e0c0035221c/accessStatus"
+                },
+                "format" : {
+                  "href" : "https://api-depositonce.tu-berlin.de/server/api/core/bitstreams/8d25bc14-a882-4f45-be0d-7e0c0035221c/format"
+                },
+                "thumbnail" : {
+                  "href" : "https://api-depositonce.tu-berlin.de/server/api/core/bitstreams/8d25bc14-a882-4f45-be0d-7e0c0035221c/thumbnail"
+                },
+                "self" : {
+                  "href" : "https://api-depositonce.tu-berlin.de/server/api/core/bitstreams/8d25bc14-a882-4f45-be0d-7e0c0035221c"
+                }
+              }
+            }, {
+              "id" : "94c03246-dce3-4d50-8c14-70973d056e3d",
+              "uuid" : "94c03246-dce3-4d50-8c14-70973d056e3d",
+              "name" : "1a_DirectivitiesSingleTones_SOFA.zip",
+              "handle" : null,
+              "metadata" : {
+                "dc.source" : [ {
+                  "value" : "1a_DirectivitiesSingleTones_SOFA.zip",
+                  "language" : null,
+                  "authority" : null,
+                  "confidence" : -1,
+                  "place" : 0
+                } ],
+                "dc.title" : [ {
+                  "value" : "1a_DirectivitiesSingleTones_SOFA.zip",
+                  "language" : null,
+                  "authority" : null,
+                  "confidence" : -1,
+                  "place" : 0
+                } ]
+              },
+              "bundleName" : "ORIGINAL",
+              "sizeBytes" : 45126485,
+              "checkSum" : {
+                "checkSumAlgorithm" : "MD5",
+                "value" : "e1d201a609fb50505bb2cf4912579cf2"
+              },
+              "sequenceId" : 56,
+              "type" : "bitstream",
+              "_links" : {
+                "content" : {
+                  "href" : "https://api-depositonce.tu-berlin.de/server/api/core/bitstreams/94c03246-dce3-4d50-8c14-70973d056e3d/content"
+                },
+                "bundle" : {
+                  "href" : "https://api-depositonce.tu-berlin.de/server/api/core/bitstreams/94c03246-dce3-4d50-8c14-70973d056e3d/bundle"
+                },
+                "accessStatus" : {
+                  "href" : "https://api-depositonce.tu-berlin.de/server/api/core/bitstreams/94c03246-dce3-4d50-8c14-70973d056e3d/accessStatus"
+                },
+                "format" : {
+                  "href" : "https://api-depositonce.tu-berlin.de/server/api/core/bitstreams/94c03246-dce3-4d50-8c14-70973d056e3d/format"
+                },
+                "thumbnail" : {
+                  "href" : "https://api-depositonce.tu-berlin.de/server/api/core/bitstreams/94c03246-dce3-4d50-8c14-70973d056e3d/thumbnail"
+                },
+                "self" : {
+                  "href" : "https://api-depositonce.tu-berlin.de/server/api/core/bitstreams/94c03246-dce3-4d50-8c14-70973d056e3d"
+                }
+              }
+            }, {
+              "id" : "11bc7c3e-1092-494c-8999-3595e05b207c",
+              "uuid" : "11bc7c3e-1092-494c-8999-3595e05b207c",
+              "name" : "1b_Directivities3rdOctave_SOFA.zip",
+              "handle" : null,
+              "metadata" : {
+                "dc.source" : [ {
+                  "value" : "1b_Directivities3rdOctave_SOFA.zip",
+                  "language" : null,
+                  "authority" : null,
+                  "confidence" : -1,
+                  "place" : 0
+                } ],
+                "dc.title" : [ {
+                  "value" : "1b_Directivities3rdOctave_SOFA.zip",
+                  "language" : null,
+                  "authority" : null,
+                  "confidence" : -1,
+                  "place" : 0
+                } ]
+              },
+              "bundleName" : "ORIGINAL",
+              "sizeBytes" : 473039,
+              "checkSum" : {
+                "checkSumAlgorithm" : "MD5",
+                "value" : "18c10043d9551876d71286bdbf8f25e7"
+              },
+              "sequenceId" : 57,
+              "type" : "bitstream",
+              "_links" : {
+                "content" : {
+                  "href" : "https://api-depositonce.tu-berlin.de/server/api/core/bitstreams/11bc7c3e-1092-494c-8999-3595e05b207c/content"
+                },
+                "bundle" : {
+                  "href" : "https://api-depositonce.tu-berlin.de/server/api/core/bitstreams/11bc7c3e-1092-494c-8999-3595e05b207c/bundle"
+                },
+                "accessStatus" : {
+                  "href" : "https://api-depositonce.tu-berlin.de/server/api/core/bitstreams/11bc7c3e-1092-494c-8999-3595e05b207c/accessStatus"
+                },
+                "format" : {
+                  "href" : "https://api-depositonce.tu-berlin.de/server/api/core/bitstreams/11bc7c3e-1092-494c-8999-3595e05b207c/format"
+                },
+                "thumbnail" : {
+                  "href" : "https://api-depositonce.tu-berlin.de/server/api/core/bitstreams/11bc7c3e-1092-494c-8999-3595e05b207c/thumbnail"
+                },
+                "self" : {
+                  "href" : "https://api-depositonce.tu-berlin.de/server/api/core/bitstreams/11bc7c3e-1092-494c-8999-3595e05b207c"
+                }
+              }
+            }, {
+              "id" : "61d064a4-088f-415d-9713-68306b637c63",
+              "uuid" : "61d064a4-088f-415d-9713-68306b637c63",
+              "name" : "1c_Directivities3rdOctave_OpenDAFF.zip",
+              "handle" : null,
+              "metadata" : {
+                "dc.source" : [ {
+                  "value" : "1c_Directivities3rdOctave_OpenDAFF.zip",
+                  "language" : null,
+                  "authority" : null,
+                  "confidence" : -1,
+                  "place" : 0
+                } ],
+                "dc.title" : [ {
+                  "value" : "1c_Directivities3rdOctave_OpenDAFF.zip",
+                  "language" : null,
+                  "authority" : null,
+                  "confidence" : -1,
+                  "place" : 0
+                } ]
+              },
+              "bundleName" : "ORIGINAL",
+              "sizeBytes" : 9422849,
+              "checkSum" : {
+                "checkSumAlgorithm" : "MD5",
+                "value" : "8eca59937748a00c4480446170733ab1"
+              },
+              "sequenceId" : 58,
+              "type" : "bitstream",
+              "_links" : {
+                "content" : {
+                  "href" : "https://api-depositonce.tu-berlin.de/server/api/core/bitstreams/61d064a4-088f-415d-9713-68306b637c63/content"
+                },
+                "bundle" : {
+                  "href" : "https://api-depositonce.tu-berlin.de/server/api/core/bitstreams/61d064a4-088f-415d-9713-68306b637c63/bundle"
+                },
+                "accessStatus" : {
+                  "href" : "https://api-depositonce.tu-berlin.de/server/api/core/bitstreams/61d064a4-088f-415d-9713-68306b637c63/accessStatus"
+                },
+                "format" : {
+                  "href" : "https://api-depositonce.tu-berlin.de/server/api/core/bitstreams/61d064a4-088f-415d-9713-68306b637c63/format"
+                },
+                "thumbnail" : {
+                  "href" : "https://api-depositonce.tu-berlin.de/server/api/core/bitstreams/61d064a4-088f-415d-9713-68306b637c63/thumbnail"
+                },
+                "self" : {
+                  "href" : "https://api-depositonce.tu-berlin.de/server/api/core/bitstreams/61d064a4-088f-415d-9713-68306b637c63"
+                }
+              }
+            }, {
+              "id" : "60714d02-5a64-4e6c-b7b3-944287b898aa",
+              "uuid" : "60714d02-5a64-4e6c-b7b3-944287b898aa",
+              "name" : "1d_Directivityies3rdOctave_GLL.zip",
+              "handle" : null,
+              "metadata" : {
+                "dc.source" : [ {
+                  "value" : "1d_Directivityies3rdOctave_GLL.zip",
+                  "language" : null,
+                  "authority" : null,
+                  "confidence" : -1,
+                  "place" : 0
+                } ],
+                "dc.title" : [ {
+                  "value" : "1d_Directivityies3rdOctave_GLL.zip",
+                  "language" : null,
+                  "authority" : null,
+                  "confidence" : -1,
+                  "place" : 0
+                } ]
+              },
+              "bundleName" : "ORIGINAL",
+              "sizeBytes" : 21557870,
+              "checkSum" : {
+                "checkSumAlgorithm" : "MD5",
+                "value" : "fb8d15fec6356506d36bd90c3b6dc121"
+              },
+              "sequenceId" : 59,
+              "type" : "bitstream",
+              "_links" : {
+                "content" : {
+                  "href" : "https://api-depositonce.tu-berlin.de/server/api/core/bitstreams/60714d02-5a64-4e6c-b7b3-944287b898aa/content"
+                },
+                "bundle" : {
+                  "href" : "https://api-depositonce.tu-berlin.de/server/api/core/bitstreams/60714d02-5a64-4e6c-b7b3-944287b898aa/bundle"
+                },
+                "accessStatus" : {
+                  "href" : "https://api-depositonce.tu-berlin.de/server/api/core/bitstreams/60714d02-5a64-4e6c-b7b3-944287b898aa/accessStatus"
+                },
+                "format" : {
+                  "href" : "https://api-depositonce.tu-berlin.de/server/api/core/bitstreams/60714d02-5a64-4e6c-b7b3-944287b898aa/format"
+                },
+                "thumbnail" : {
+                  "href" : "https://api-depositonce.tu-berlin.de/server/api/core/bitstreams/60714d02-5a64-4e6c-b7b3-944287b898aa/thumbnail"
+                },
+                "self" : {
+                  "href" : "https://api-depositonce.tu-berlin.de/server/api/core/bitstreams/60714d02-5a64-4e6c-b7b3-944287b898aa"
+                }
+              }
+            }, {
+              "id" : "fff8b867-d786-43de-853f-cfcb61e4546e",
+              "uuid" : "fff8b867-d786-43de-853f-cfcb61e4546e",
+              "name" : "2_Acoustic_guitar_modern_recordings.zip",
+              "handle" : null,
+              "metadata" : {
+                "dc.source" : [ {
+                  "value" : "2_Acoustic_guitar_modern_recordings.zip",
+                  "language" : null,
+                  "authority" : null,
+                  "confidence" : -1,
+                  "place" : 0
+                } ],
+                "dc.title" : [ {
+                  "value" : "2_Acoustic_guitar_modern_recordings.zip",
+                  "language" : null,
+                  "authority" : null,
+                  "confidence" : -1,
+                  "place" : 0
+                } ]
+              },
+              "bundleName" : "ORIGINAL",
+              "sizeBytes" : 1095042381,
+              "checkSum" : {
+                "checkSumAlgorithm" : "MD5",
+                "value" : "bae71e7f2d10bc6ea025314f2727462d"
+              },
+              "sequenceId" : 60,
+              "type" : "bitstream",
+              "_links" : {
+                "content" : {
+                  "href" : "https://api-depositonce.tu-berlin.de/server/api/core/bitstreams/fff8b867-d786-43de-853f-cfcb61e4546e/content"
+                },
+                "bundle" : {
+                  "href" : "https://api-depositonce.tu-berlin.de/server/api/core/bitstreams/fff8b867-d786-43de-853f-cfcb61e4546e/bundle"
+                },
+                "accessStatus" : {
+                  "href" : "https://api-depositonce.tu-berlin.de/server/api/core/bitstreams/fff8b867-d786-43de-853f-cfcb61e4546e/accessStatus"
+                },
+                "format" : {
+                  "href" : "https://api-depositonce.tu-berlin.de/server/api/core/bitstreams/fff8b867-d786-43de-853f-cfcb61e4546e/format"
+                },
+                "thumbnail" : {
+                  "href" : "https://api-depositonce.tu-berlin.de/server/api/core/bitstreams/fff8b867-d786-43de-853f-cfcb61e4546e/thumbnail"
+                },
+                "self" : {
+                  "href" : "https://api-depositonce.tu-berlin.de/server/api/core/bitstreams/fff8b867-d786-43de-853f-cfcb61e4546e"
+                }
+              }
+            }, {
+              "id" : "c43fc0f7-c0e4-479c-a337-5cb3ef77885b",
+              "uuid" : "c43fc0f7-c0e4-479c-a337-5cb3ef77885b",
+              "name" : "2_Alto_saxophone_modern_recordings.zip",
+              "handle" : null,
+              "metadata" : {
+                "dc.source" : [ {
+                  "value" : "2_Alto_saxophone_modern_recordings.zip",
+                  "language" : null,
+                  "authority" : null,
+                  "confidence" : -1,
+                  "place" : 0
+                } ],
+                "dc.title" : [ {
+                  "value" : "2_Alto_saxophone_modern_recordings.zip",
+                  "language" : null,
+                  "authority" : null,
+                  "confidence" : -1,
+                  "place" : 0
+                } ]
+              },
+              "bundleName" : "ORIGINAL",
+              "sizeBytes" : 991109630,
+              "checkSum" : {
+                "checkSumAlgorithm" : "MD5",
+                "value" : "b139a6dc8807e4df216e4522efc0680d"
+              },
+              "sequenceId" : 61,
+              "type" : "bitstream",
+              "_links" : {
+                "content" : {
+                  "href" : "https://api-depositonce.tu-berlin.de/server/api/core/bitstreams/c43fc0f7-c0e4-479c-a337-5cb3ef77885b/content"
+                },
+                "bundle" : {
+                  "href" : "https://api-depositonce.tu-berlin.de/server/api/core/bitstreams/c43fc0f7-c0e4-479c-a337-5cb3ef77885b/bundle"
+                },
+                "accessStatus" : {
+                  "href" : "https://api-depositonce.tu-berlin.de/server/api/core/bitstreams/c43fc0f7-c0e4-479c-a337-5cb3ef77885b/accessStatus"
+                },
+                "format" : {
+                  "href" : "https://api-depositonce.tu-berlin.de/server/api/core/bitstreams/c43fc0f7-c0e4-479c-a337-5cb3ef77885b/format"
+                },
+                "thumbnail" : {
+                  "href" : "https://api-depositonce.tu-berlin.de/server/api/core/bitstreams/c43fc0f7-c0e4-479c-a337-5cb3ef77885b/thumbnail"
+                },
+                "self" : {
+                  "href" : "https://api-depositonce.tu-berlin.de/server/api/core/bitstreams/c43fc0f7-c0e4-479c-a337-5cb3ef77885b"
+                }
+              }
+            }, {
+              "id" : "dd82e246-30a9-4510-a831-65cc5351ab41",
+              "uuid" : "dd82e246-30a9-4510-a831-65cc5351ab41",
+              "name" : "2_Alto_trombone_historical_recordings.zip",
+              "handle" : null,
+              "metadata" : {
+                "dc.source" : [ {
+                  "value" : "2_Alto_trombone_historical_recordings.zip",
+                  "language" : null,
+                  "authority" : null,
+                  "confidence" : -1,
+                  "place" : 0
+                } ],
+                "dc.title" : [ {
+                  "value" : "2_Alto_trombone_historical_recordings.zip",
+                  "language" : null,
+                  "authority" : null,
+                  "confidence" : -1,
+                  "place" : 0
+                } ]
+              },
+              "bundleName" : "ORIGINAL",
+              "sizeBytes" : 1024555392,
+              "checkSum" : {
+                "checkSumAlgorithm" : "MD5",
+                "value" : "efaf770b970f06e358ead58bfc7f436e"
+              },
+              "sequenceId" : 62,
+              "type" : "bitstream",
+              "_links" : {
+                "content" : {
+                  "href" : "https://api-depositonce.tu-berlin.de/server/api/core/bitstreams/dd82e246-30a9-4510-a831-65cc5351ab41/content"
+                },
+                "bundle" : {
+                  "href" : "https://api-depositonce.tu-berlin.de/server/api/core/bitstreams/dd82e246-30a9-4510-a831-65cc5351ab41/bundle"
+                },
+                "accessStatus" : {
+                  "href" : "https://api-depositonce.tu-berlin.de/server/api/core/bitstreams/dd82e246-30a9-4510-a831-65cc5351ab41/accessStatus"
+                },
+                "format" : {
+                  "href" : "https://api-depositonce.tu-berlin.de/server/api/core/bitstreams/dd82e246-30a9-4510-a831-65cc5351ab41/format"
+                },
+                "thumbnail" : {
+                  "href" : "https://api-depositonce.tu-berlin.de/server/api/core/bitstreams/dd82e246-30a9-4510-a831-65cc5351ab41/thumbnail"
+                },
+                "self" : {
+                  "href" : "https://api-depositonce.tu-berlin.de/server/api/core/bitstreams/dd82e246-30a9-4510-a831-65cc5351ab41"
+                }
+              }
+            }, {
+              "id" : "4514b40b-aeb9-4c5c-b524-2619429936a3",
+              "uuid" : "4514b40b-aeb9-4c5c-b524-2619429936a3",
+              "name" : "2_Baroque_bassoon_historical_recordings.zip",
+              "handle" : null,
+              "metadata" : {
+                "dc.source" : [ {
+                  "value" : "2_Baroque_bassoon_historical_recordings.zip",
+                  "language" : null,
+                  "authority" : null,
+                  "confidence" : -1,
+                  "place" : 0
+                } ],
+                "dc.title" : [ {
+                  "value" : "2_Baroque_bassoon_historical_recordings.zip",
+                  "language" : null,
+                  "authority" : null,
+                  "confidence" : -1,
+                  "place" : 0
+                } ]
+              },
+              "bundleName" : "ORIGINAL",
+              "sizeBytes" : 837608935,
+              "checkSum" : {
+                "checkSumAlgorithm" : "MD5",
+                "value" : "00cbc4e87232aa65a817f111fb9f2ee8"
+              },
+              "sequenceId" : 63,
+              "type" : "bitstream",
+              "_links" : {
+                "content" : {
+                  "href" : "https://api-depositonce.tu-berlin.de/server/api/core/bitstreams/4514b40b-aeb9-4c5c-b524-2619429936a3/content"
+                },
+                "bundle" : {
+                  "href" : "https://api-depositonce.tu-berlin.de/server/api/core/bitstreams/4514b40b-aeb9-4c5c-b524-2619429936a3/bundle"
+                },
+                "accessStatus" : {
+                  "href" : "https://api-depositonce.tu-berlin.de/server/api/core/bitstreams/4514b40b-aeb9-4c5c-b524-2619429936a3/accessStatus"
+                },
+                "format" : {
+                  "href" : "https://api-depositonce.tu-berlin.de/server/api/core/bitstreams/4514b40b-aeb9-4c5c-b524-2619429936a3/format"
+                },
+                "thumbnail" : {
+                  "href" : "https://api-depositonce.tu-berlin.de/server/api/core/bitstreams/4514b40b-aeb9-4c5c-b524-2619429936a3/thumbnail"
+                },
+                "self" : {
+                  "href" : "https://api-depositonce.tu-berlin.de/server/api/core/bitstreams/4514b40b-aeb9-4c5c-b524-2619429936a3"
+                }
+              }
+            }, {
+              "id" : "32470ec8-b4ad-4c7c-bce2-6c1112203854",
+              "uuid" : "32470ec8-b4ad-4c7c-bce2-6c1112203854",
+              "name" : "2_Baroque_traverse_flute_historical_recordings.zip",
+              "handle" : null,
+              "metadata" : {
+                "dc.source" : [ {
+                  "value" : "2_Baroque_traverse_flute_historical_recordings.zip",
+                  "language" : null,
+                  "authority" : null,
+                  "confidence" : -1,
+                  "place" : 0
+                } ],
+                "dc.title" : [ {
+                  "value" : "2_Baroque_traverse_flute_historical_recordings.zip",
+                  "language" : null,
+                  "authority" : null,
+                  "confidence" : -1,
+                  "place" : 0
+                } ]
+              },
+              "bundleName" : "ORIGINAL",
+              "sizeBytes" : 942092928,
+              "checkSum" : {
+                "checkSumAlgorithm" : "MD5",
+                "value" : "7076776f6cf958c6488febca96f2af1c"
+              },
+              "sequenceId" : 64,
+              "type" : "bitstream",
+              "_links" : {
+                "content" : {
+                  "href" : "https://api-depositonce.tu-berlin.de/server/api/core/bitstreams/32470ec8-b4ad-4c7c-bce2-6c1112203854/content"
+                },
+                "bundle" : {
+                  "href" : "https://api-depositonce.tu-berlin.de/server/api/core/bitstreams/32470ec8-b4ad-4c7c-bce2-6c1112203854/bundle"
+                },
+                "accessStatus" : {
+                  "href" : "https://api-depositonce.tu-berlin.de/server/api/core/bitstreams/32470ec8-b4ad-4c7c-bce2-6c1112203854/accessStatus"
+                },
+                "format" : {
+                  "href" : "https://api-depositonce.tu-berlin.de/server/api/core/bitstreams/32470ec8-b4ad-4c7c-bce2-6c1112203854/format"
+                },
+                "thumbnail" : {
+                  "href" : "https://api-depositonce.tu-berlin.de/server/api/core/bitstreams/32470ec8-b4ad-4c7c-bce2-6c1112203854/thumbnail"
+                },
+                "self" : {
+                  "href" : "https://api-depositonce.tu-berlin.de/server/api/core/bitstreams/32470ec8-b4ad-4c7c-bce2-6c1112203854"
+                }
+              }
+            }, {
+              "id" : "c92466a2-70db-4803-a890-c4ba72a36439",
+              "uuid" : "c92466a2-70db-4803-a890-c4ba72a36439",
+              "name" : "2_Bass_trombone_historical_recordings.zip",
+              "handle" : null,
+              "metadata" : {
+                "dc.source" : [ {
+                  "value" : "2_Bass_trombone_historical_recordings.zip",
+                  "language" : null,
+                  "authority" : null,
+                  "confidence" : -1,
+                  "place" : 0
+                } ],
+                "dc.title" : [ {
+                  "value" : "2_Bass_trombone_historical_recordings.zip",
+                  "language" : null,
+                  "authority" : null,
+                  "confidence" : -1,
+                  "place" : 0
+                } ]
+              },
+              "bundleName" : "ORIGINAL",
+              "sizeBytes" : 1045686072,
+              "checkSum" : {
+                "checkSumAlgorithm" : "MD5",
+                "value" : "c6697a58f1aff9d045545b9e6c93be9c"
+              },
+              "sequenceId" : 66,
+              "type" : "bitstream",
+              "_links" : {
+                "content" : {
+                  "href" : "https://api-depositonce.tu-berlin.de/server/api/core/bitstreams/c92466a2-70db-4803-a890-c4ba72a36439/content"
+                },
+                "bundle" : {
+                  "href" : "https://api-depositonce.tu-berlin.de/server/api/core/bitstreams/c92466a2-70db-4803-a890-c4ba72a36439/bundle"
+                },
+                "accessStatus" : {
+                  "href" : "https://api-depositonce.tu-berlin.de/server/api/core/bitstreams/c92466a2-70db-4803-a890-c4ba72a36439/accessStatus"
+                },
+                "format" : {
+                  "href" : "https://api-depositonce.tu-berlin.de/server/api/core/bitstreams/c92466a2-70db-4803-a890-c4ba72a36439/format"
+                },
+                "thumbnail" : {
+                  "href" : "https://api-depositonce.tu-berlin.de/server/api/core/bitstreams/c92466a2-70db-4803-a890-c4ba72a36439/thumbnail"
+                },
+                "self" : {
+                  "href" : "https://api-depositonce.tu-berlin.de/server/api/core/bitstreams/c92466a2-70db-4803-a890-c4ba72a36439"
+                }
+              }
+            }, {
+              "id" : "71b0171d-0d89-4492-b535-ad02fa359474",
+              "uuid" : "71b0171d-0d89-4492-b535-ad02fa359474",
+              "name" : "2_Bass_trombone_modern_recordings.zip",
+              "handle" : null,
+              "metadata" : {
+                "dc.source" : [ {
+                  "value" : "2_Bass_trombone_modern_recordings.zip",
+                  "language" : null,
+                  "authority" : null,
+                  "confidence" : -1,
+                  "place" : 0
+                } ],
+                "dc.title" : [ {
+                  "value" : "2_Bass_trombone_modern_recordings.zip",
+                  "language" : null,
+                  "authority" : null,
+                  "confidence" : -1,
+                  "place" : 0
+                } ]
+              },
+              "bundleName" : "ORIGINAL",
+              "sizeBytes" : 1346936420,
+              "checkSum" : {
+                "checkSumAlgorithm" : "MD5",
+                "value" : "3b0da3b105b0a9e66e616cc9b872311f"
+              },
+              "sequenceId" : 67,
+              "type" : "bitstream",
+              "_links" : {
+                "content" : {
+                  "href" : "https://api-depositonce.tu-berlin.de/server/api/core/bitstreams/71b0171d-0d89-4492-b535-ad02fa359474/content"
+                },
+                "bundle" : {
+                  "href" : "https://api-depositonce.tu-berlin.de/server/api/core/bitstreams/71b0171d-0d89-4492-b535-ad02fa359474/bundle"
+                },
+                "accessStatus" : {
+                  "href" : "https://api-depositonce.tu-berlin.de/server/api/core/bitstreams/71b0171d-0d89-4492-b535-ad02fa359474/accessStatus"
+                },
+                "format" : {
+                  "href" : "https://api-depositonce.tu-berlin.de/server/api/core/bitstreams/71b0171d-0d89-4492-b535-ad02fa359474/format"
+                },
+                "thumbnail" : {
+                  "href" : "https://api-depositonce.tu-berlin.de/server/api/core/bitstreams/71b0171d-0d89-4492-b535-ad02fa359474/thumbnail"
+                },
+                "self" : {
+                  "href" : "https://api-depositonce.tu-berlin.de/server/api/core/bitstreams/71b0171d-0d89-4492-b535-ad02fa359474"
+                }
+              }
+            }, {
+              "id" : "83127f54-2510-49ee-a07b-cf9006b3f9ce",
+              "uuid" : "83127f54-2510-49ee-a07b-cf9006b3f9ce",
+              "name" : "2_Basset_horn_historical_recordings.zip",
+              "handle" : null,
+              "metadata" : {
+                "dc.source" : [ {
+                  "value" : "2_Basset_horn_historical_recordings.zip",
+                  "language" : null,
+                  "authority" : null,
+                  "confidence" : -1,
+                  "place" : 0
+                } ],
+                "dc.title" : [ {
+                  "value" : "2_Basset_horn_historical_recordings.zip",
+                  "language" : null,
+                  "authority" : null,
+                  "confidence" : -1,
+                  "place" : 0
+                } ]
+              },
+              "bundleName" : "ORIGINAL",
+              "sizeBytes" : 1405290569,
+              "checkSum" : {
+                "checkSumAlgorithm" : "MD5",
+                "value" : "b7e6cc43b338497805caff46408f2a73"
+              },
+              "sequenceId" : 68,
+              "type" : "bitstream",
+              "_links" : {
+                "content" : {
+                  "href" : "https://api-depositonce.tu-berlin.de/server/api/core/bitstreams/83127f54-2510-49ee-a07b-cf9006b3f9ce/content"
+                },
+                "bundle" : {
+                  "href" : "https://api-depositonce.tu-berlin.de/server/api/core/bitstreams/83127f54-2510-49ee-a07b-cf9006b3f9ce/bundle"
+                },
+                "accessStatus" : {
+                  "href" : "https://api-depositonce.tu-berlin.de/server/api/core/bitstreams/83127f54-2510-49ee-a07b-cf9006b3f9ce/accessStatus"
+                },
+                "format" : {
+                  "href" : "https://api-depositonce.tu-berlin.de/server/api/core/bitstreams/83127f54-2510-49ee-a07b-cf9006b3f9ce/format"
+                },
+                "thumbnail" : {
+                  "href" : "https://api-depositonce.tu-berlin.de/server/api/core/bitstreams/83127f54-2510-49ee-a07b-cf9006b3f9ce/thumbnail"
+                },
+                "self" : {
+                  "href" : "https://api-depositonce.tu-berlin.de/server/api/core/bitstreams/83127f54-2510-49ee-a07b-cf9006b3f9ce"
+                }
+              }
+            }, {
+              "id" : "3bc79913-ef49-47c1-9183-4e9529af1f8d",
+              "uuid" : "3bc79913-ef49-47c1-9183-4e9529af1f8d",
+              "name" : "2_Bassoon_modern_recordings.zip",
+              "handle" : null,
+              "metadata" : {
+                "dc.source" : [ {
+                  "value" : "2_Bassoon_modern_recordings.zip",
+                  "language" : null,
+                  "authority" : null,
+                  "confidence" : -1,
+                  "place" : 0
+                } ],
+                "dc.title" : [ {
+                  "value" : "2_Bassoon_modern_recordings.zip",
+                  "language" : null,
+                  "authority" : null,
+                  "confidence" : -1,
+                  "place" : 0
+                } ]
+              },
+              "bundleName" : "ORIGINAL",
+              "sizeBytes" : 1663341098,
+              "checkSum" : {
+                "checkSumAlgorithm" : "MD5",
+                "value" : "7f52f593d0ec0147a7297cc4fb063204"
+              },
+              "sequenceId" : 69,
+              "type" : "bitstream",
+              "_links" : {
+                "content" : {
+                  "href" : "https://api-depositonce.tu-berlin.de/server/api/core/bitstreams/3bc79913-ef49-47c1-9183-4e9529af1f8d/content"
+                },
+                "bundle" : {
+                  "href" : "https://api-depositonce.tu-berlin.de/server/api/core/bitstreams/3bc79913-ef49-47c1-9183-4e9529af1f8d/bundle"
+                },
+                "accessStatus" : {
+                  "href" : "https://api-depositonce.tu-berlin.de/server/api/core/bitstreams/3bc79913-ef49-47c1-9183-4e9529af1f8d/accessStatus"
+                },
+                "format" : {
+                  "href" : "https://api-depositonce.tu-berlin.de/server/api/core/bitstreams/3bc79913-ef49-47c1-9183-4e9529af1f8d/format"
+                },
+                "thumbnail" : {
+                  "href" : "https://api-depositonce.tu-berlin.de/server/api/core/bitstreams/3bc79913-ef49-47c1-9183-4e9529af1f8d/thumbnail"
+                },
+                "self" : {
+                  "href" : "https://api-depositonce.tu-berlin.de/server/api/core/bitstreams/3bc79913-ef49-47c1-9183-4e9529af1f8d"
+                }
+              }
+            }, {
+              "id" : "51186d50-5128-43ec-a49a-4b555adf3206",
+              "uuid" : "51186d50-5128-43ec-a49a-4b555adf3206",
+              "name" : "3_Audio_Features.csv",
+              "handle" : null,
+              "metadata" : {
+                "dc.source" : [ {
+                  "value" : "3_Audio_Features.csv",
+                  "language" : null,
+                  "authority" : null,
+                  "confidence" : -1,
+                  "place" : 0
+                } ],
+                "dc.title" : [ {
+                  "value" : "3_Audio_Features.csv",
+                  "language" : null,
+                  "authority" : null,
+                  "confidence" : -1,
+                  "place" : 0
+                } ]
+              },
+              "bundleName" : "ORIGINAL",
+              "sizeBytes" : 7900263,
+              "checkSum" : {
+                "checkSumAlgorithm" : "MD5",
+                "value" : "c56740e922336fa7cc87b48d5b2690c3"
+              },
+              "sequenceId" : 70,
+              "type" : "bitstream",
+              "_links" : {
+                "content" : {
+                  "href" : "https://api-depositonce.tu-berlin.de/server/api/core/bitstreams/51186d50-5128-43ec-a49a-4b555adf3206/content"
+                },
+                "bundle" : {
+                  "href" : "https://api-depositonce.tu-berlin.de/server/api/core/bitstreams/51186d50-5128-43ec-a49a-4b555adf3206/bundle"
+                },
+                "accessStatus" : {
+                  "href" : "https://api-depositonce.tu-berlin.de/server/api/core/bitstreams/51186d50-5128-43ec-a49a-4b555adf3206/accessStatus"
+                },
+                "format" : {
+                  "href" : "https://api-depositonce.tu-berlin.de/server/api/core/bitstreams/51186d50-5128-43ec-a49a-4b555adf3206/format"
+                },
+                "thumbnail" : {
+                  "href" : "https://api-depositonce.tu-berlin.de/server/api/core/bitstreams/51186d50-5128-43ec-a49a-4b555adf3206/thumbnail"
+                },
+                "self" : {
+                  "href" : "https://api-depositonce.tu-berlin.de/server/api/core/bitstreams/51186d50-5128-43ec-a49a-4b555adf3206"
+                }
+              }
+            }, {
+              "id" : "7c824ee5-2f9c-469e-bd4e-0073aed09999",
+              "uuid" : "7c824ee5-2f9c-469e-bd4e-0073aed09999",
+              "name" : "4_Pictures.zip",
+              "handle" : null,
+              "metadata" : {
+                "dc.source" : [ {
+                  "value" : "4_Pictures.zip",
+                  "language" : null,
+                  "authority" : null,
+                  "confidence" : -1,
+                  "place" : 0
+                } ],
+                "dc.title" : [ {
+                  "value" : "4_Pictures.zip",
+                  "language" : null,
+                  "authority" : null,
+                  "confidence" : -1,
+                  "place" : 0
+                } ]
+              },
+              "bundleName" : "ORIGINAL",
+              "sizeBytes" : 15294786,
+              "checkSum" : {
+                "checkSumAlgorithm" : "MD5",
+                "value" : "b88b886319832593f3027111c8ab6dbe"
+              },
+              "sequenceId" : 71,
+              "type" : "bitstream",
+              "_links" : {
+                "content" : {
+                  "href" : "https://api-depositonce.tu-berlin.de/server/api/core/bitstreams/7c824ee5-2f9c-469e-bd4e-0073aed09999/content"
+                },
+                "bundle" : {
+                  "href" : "https://api-depositonce.tu-berlin.de/server/api/core/bitstreams/7c824ee5-2f9c-469e-bd4e-0073aed09999/bundle"
+                },
+                "accessStatus" : {
+                  "href" : "https://api-depositonce.tu-berlin.de/server/api/core/bitstreams/7c824ee5-2f9c-469e-bd4e-0073aed09999/accessStatus"
+                },
+                "format" : {
+                  "href" : "https://api-depositonce.tu-berlin.de/server/api/core/bitstreams/7c824ee5-2f9c-469e-bd4e-0073aed09999/format"
+                },
+                "thumbnail" : {
+                  "href" : "https://api-depositonce.tu-berlin.de/server/api/core/bitstreams/7c824ee5-2f9c-469e-bd4e-0073aed09999/thumbnail"
+                },
+                "self" : {
+                  "href" : "https://api-depositonce.tu-berlin.de/server/api/core/bitstreams/7c824ee5-2f9c-469e-bd4e-0073aed09999"
+                }
+              }
+            }, {
+              "id" : "fb6f50d5-7ccd-4e0f-aa9d-25fe55e07319",
+              "uuid" : "fb6f50d5-7ccd-4e0f-aa9d-25fe55e07319",
+              "name" : "2_Clarinet_modern_recordings.zip",
+              "handle" : null,
+              "metadata" : {
+                "dc.source" : [ {
+                  "value" : "2_Clarinet_modern_recordings.zip",
+                  "language" : null,
+                  "authority" : null,
+                  "confidence" : -1,
+                  "place" : 0
+                } ],
+                "dc.title" : [ {
+                  "value" : "2_Clarinet_modern_recordings.zip",
+                  "language" : null,
+                  "authority" : null,
+                  "confidence" : -1,
+                  "place" : 0
+                } ]
+              },
+              "bundleName" : "ORIGINAL",
+              "sizeBytes" : 1996009561,
+              "checkSum" : {
+                "checkSumAlgorithm" : "MD5",
+                "value" : "9ac87f93e2afe19b547e65ac8152c011"
+              },
+              "sequenceId" : 74,
+              "type" : "bitstream",
+              "_links" : {
+                "content" : {
+                  "href" : "https://api-depositonce.tu-berlin.de/server/api/core/bitstreams/fb6f50d5-7ccd-4e0f-aa9d-25fe55e07319/content"
+                },
+                "bundle" : {
+                  "href" : "https://api-depositonce.tu-berlin.de/server/api/core/bitstreams/fb6f50d5-7ccd-4e0f-aa9d-25fe55e07319/bundle"
+                },
+                "accessStatus" : {
+                  "href" : "https://api-depositonce.tu-berlin.de/server/api/core/bitstreams/fb6f50d5-7ccd-4e0f-aa9d-25fe55e07319/accessStatus"
+                },
+                "format" : {
+                  "href" : "https://api-depositonce.tu-berlin.de/server/api/core/bitstreams/fb6f50d5-7ccd-4e0f-aa9d-25fe55e07319/format"
+                },
+                "thumbnail" : {
+                  "href" : "https://api-depositonce.tu-berlin.de/server/api/core/bitstreams/fb6f50d5-7ccd-4e0f-aa9d-25fe55e07319/thumbnail"
+                },
+                "self" : {
+                  "href" : "https://api-depositonce.tu-berlin.de/server/api/core/bitstreams/fb6f50d5-7ccd-4e0f-aa9d-25fe55e07319"
+                }
+              }
+            }, {
+              "id" : "ebb4daf7-9874-450a-9323-d2d9d994a102",
+              "uuid" : "ebb4daf7-9874-450a-9323-d2d9d994a102",
+              "name" : "2_Bass_clarinet_modern_recordings.zip",
+              "handle" : null,
+              "metadata" : {
+                "dc.source" : [ {
+                  "value" : "2_Bass_clarinet_modern_recordings.zip",
+                  "language" : null,
+                  "authority" : null,
+                  "confidence" : -1,
+                  "place" : 0
+                } ],
+                "dc.title" : [ {
+                  "value" : "2_Bass_clarinet_modern_recordings.zip",
+                  "language" : null,
+                  "authority" : null,
+                  "confidence" : -1,
+                  "place" : 0
+                } ]
+              },
+              "bundleName" : "ORIGINAL",
+              "sizeBytes" : 1797003887,
+              "checkSum" : {
+                "checkSumAlgorithm" : "MD5",
+                "value" : "679bc4eb4536a4ee0ef656c41496a59b"
+              },
+              "sequenceId" : 65,
+              "type" : "bitstream",
+              "_links" : {
+                "content" : {
+                  "href" : "https://api-depositonce.tu-berlin.de/server/api/core/bitstreams/ebb4daf7-9874-450a-9323-d2d9d994a102/content"
+                },
+                "bundle" : {
+                  "href" : "https://api-depositonce.tu-berlin.de/server/api/core/bitstreams/ebb4daf7-9874-450a-9323-d2d9d994a102/bundle"
+                },
+                "accessStatus" : {
+                  "href" : "https://api-depositonce.tu-berlin.de/server/api/core/bitstreams/ebb4daf7-9874-450a-9323-d2d9d994a102/accessStatus"
+                },
+                "format" : {
+                  "href" : "https://api-depositonce.tu-berlin.de/server/api/core/bitstreams/ebb4daf7-9874-450a-9323-d2d9d994a102/format"
+                },
+                "thumbnail" : {
+                  "href" : "https://api-depositonce.tu-berlin.de/server/api/core/bitstreams/ebb4daf7-9874-450a-9323-d2d9d994a102/thumbnail"
+                },
+                "self" : {
+                  "href" : "https://api-depositonce.tu-berlin.de/server/api/core/bitstreams/ebb4daf7-9874-450a-9323-d2d9d994a102"
+                }
+              }
+            }, {
+              "id" : "c2ee951f-dac2-448d-b489-0d1c863eeff4",
+              "uuid" : "c2ee951f-dac2-448d-b489-0d1c863eeff4",
+              "name" : "5_Tools.zip",
+              "handle" : null,
+              "metadata" : {
+                "dc.source" : [ {
+                  "value" : "5_Tools.zip",
+                  "language" : null,
+                  "authority" : null,
+                  "confidence" : -1,
+                  "place" : 0
+                } ],
+                "dc.title" : [ {
+                  "value" : "5_Tools.zip",
+                  "language" : null,
+                  "authority" : null,
+                  "confidence" : -1,
+                  "place" : 0
+                } ]
+              },
+              "bundleName" : "ORIGINAL",
+              "sizeBytes" : 57016490,
+              "checkSum" : {
+                "checkSumAlgorithm" : "MD5",
+                "value" : "225348e4301141156ed98b552675790e"
+              },
+              "sequenceId" : 72,
+              "type" : "bitstream",
+              "_links" : {
+                "content" : {
+                  "href" : "https://api-depositonce.tu-berlin.de/server/api/core/bitstreams/c2ee951f-dac2-448d-b489-0d1c863eeff4/content"
+                },
+                "bundle" : {
+                  "href" : "https://api-depositonce.tu-berlin.de/server/api/core/bitstreams/c2ee951f-dac2-448d-b489-0d1c863eeff4/bundle"
+                },
+                "accessStatus" : {
+                  "href" : "https://api-depositonce.tu-berlin.de/server/api/core/bitstreams/c2ee951f-dac2-448d-b489-0d1c863eeff4/accessStatus"
+                },
+                "format" : {
+                  "href" : "https://api-depositonce.tu-berlin.de/server/api/core/bitstreams/c2ee951f-dac2-448d-b489-0d1c863eeff4/format"
+                },
+                "thumbnail" : {
+                  "href" : "https://api-depositonce.tu-berlin.de/server/api/core/bitstreams/c2ee951f-dac2-448d-b489-0d1c863eeff4/thumbnail"
+                },
+                "self" : {
+                  "href" : "https://api-depositonce.tu-berlin.de/server/api/core/bitstreams/c2ee951f-dac2-448d-b489-0d1c863eeff4"
+                }
+              }
+            }, {
+              "id" : "01536ed3-4421-4068-875f-9583baa73e67",
+              "uuid" : "01536ed3-4421-4068-875f-9583baa73e67",
+              "name" : "2_Classic_bassoon_historical_recordings.zip",
+              "handle" : null,
+              "metadata" : {
+                "dc.source" : [ {
+                  "value" : "2_Classic_bassoon_historical_recordings.zip",
+                  "language" : null,
+                  "authority" : null,
+                  "confidence" : -1,
+                  "place" : 0
+                } ],
+                "dc.title" : [ {
+                  "value" : "2_Classic_bassoon_historical_recordings.zip",
+                  "language" : null,
+                  "authority" : null,
+                  "confidence" : -1,
+                  "place" : 0
+                } ]
+              },
+              "bundleName" : "ORIGINAL",
+              "sizeBytes" : 759088524,
+              "checkSum" : {
+                "checkSumAlgorithm" : "MD5",
+                "value" : "4ffb92265451ddf25773cb591af8d37a"
+              },
+              "sequenceId" : 73,
+              "type" : "bitstream",
+              "_links" : {
+                "content" : {
+                  "href" : "https://api-depositonce.tu-berlin.de/server/api/core/bitstreams/01536ed3-4421-4068-875f-9583baa73e67/content"
+                },
+                "bundle" : {
+                  "href" : "https://api-depositonce.tu-berlin.de/server/api/core/bitstreams/01536ed3-4421-4068-875f-9583baa73e67/bundle"
+                },
+                "accessStatus" : {
+                  "href" : "https://api-depositonce.tu-berlin.de/server/api/core/bitstreams/01536ed3-4421-4068-875f-9583baa73e67/accessStatus"
+                },
+                "format" : {
+                  "href" : "https://api-depositonce.tu-berlin.de/server/api/core/bitstreams/01536ed3-4421-4068-875f-9583baa73e67/format"
+                },
+                "thumbnail" : {
+                  "href" : "https://api-depositonce.tu-berlin.de/server/api/core/bitstreams/01536ed3-4421-4068-875f-9583baa73e67/thumbnail"
+                },
+                "self" : {
+                  "href" : "https://api-depositonce.tu-berlin.de/server/api/core/bitstreams/01536ed3-4421-4068-875f-9583baa73e67"
+                }
+              }
+            } ]
+          },
+          "page" : {
+            "number" : 0,
+            "size" : 20,
+            "totalPages" : 3,
+            "totalElements" : 50
+          },
+          "_links" : {
+            "next" : {
+              "href" : "https://api-depositonce.tu-berlin.de/server/api/core/bundles/8d6f2969-ee21-4fee-835a-dcecb28dd080/bitstreams?page=1"
+            },
+            "last" : {
+              "href" : "https://api-depositonce.tu-berlin.de/server/api/core/bundles/8d6f2969-ee21-4fee-835a-dcecb28dd080/bitstreams?page=2"
+            },
+            "self" : {
+              "href" : "https://api-depositonce.tu-berlin.de/server/api/core/bundles/8d6f2969-ee21-4fee-835a-dcecb28dd080/bitstreams"
+            }
+          }
+        }
+      }
+    } ]
+  },
+  "page" : {
+    "number" : 0,
+    "size" : 50,
+    "totalPages" : 1,
+    "totalElements" : 5
+  },
+  "_links" : {
+    "self" : {
+      "href" : "https://api-depositonce.tu-berlin.de/server/api/core/items/b194da8b-e98c-4761-9100-2b0bb6ba93e8/bundles?embed=bitstreams&size=50"
+    }
+  }
+}

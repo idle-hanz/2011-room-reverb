@@ -1,0 +1,130 @@
+{
+  "honesty": "MEASURED",
+  "note": "MEASURED from Franco et al. Zenodo extract (20 mics, DOI 10.5281/zenodo.4633508). WAVs under /workspace/mic_fitter/data/zenodo. Angles held out: 45\u00b0, 135\u00b0.",
+  "zenodo": "https://zenodo.org/records/4633508",
+  "doi": "10.5281/zenodo.4633508",
+  "mic_ids": [
+    "ShureSM57",
+    "SchoepsCMC5UCardioid",
+    "NeumannU87AiCardioid",
+    "RoyerR121",
+    "ElectroVoiceRE20",
+    "AKGC414Cardioid",
+    "ShureSM58",
+    "SennheiserMD441",
+    "NeumannU87AiOmni",
+    "NeumannU87AiBidirect",
+    "AKGC414Omni",
+    "AKGC414Hyper",
+    "AKGC414Bidirect",
+    "SchoepsCMC5UOmni",
+    "SchoepsCMC5UBidirect",
+    "Coles4038",
+    "DPA4006",
+    "RodeNT2ACardioid",
+    "RodeNT2AOmni",
+    "RodeNT2ABidirect"
+  ],
+  "preferred_mics": [
+    {
+      "id": "ShureSM57",
+      "family": "dynamic_cardioid",
+      "display": "Shure SM57 \u2014 dynamic cardioid"
+    },
+    {
+      "id": "SchoepsCMC5UCardioid",
+      "family": "sdc_cardioid",
+      "display": "Schoeps CMC5-U Cardioid \u2014 SDC"
+    },
+    {
+      "id": "NeumannU87AiCardioid",
+      "family": "ldc_cardioid",
+      "display": "Neumann U87 Ai Cardioid \u2014 LDC"
+    },
+    {
+      "id": "RoyerR121",
+      "family": "fig8_ribbon",
+      "display": "Royer R-121 \u2014 fig-8 ribbon"
+    },
+    {
+      "id": "ElectroVoiceRE20",
+      "family": "dynamic_cardioid",
+      "display": "Electro-Voice RE20 \u2014 dynamic cardioid"
+    },
+    {
+      "id": "AKGC414Cardioid",
+      "family": "ldc_cardioid",
+      "display": "AKG C414 Cardioid \u2014 LDC multipattern"
+    },
+    {
+      "id": "ShureSM58",
+      "family": "dynamic_cardioid",
+      "display": "Shure SM58 \u2014 dynamic cardioid"
+    },
+    {
+      "id": "SennheiserMD441",
+      "family": "hypercardioid",
+      "display": "Sennheiser MD 441 \u2014 dynamic hypercardioid"
+    },
+    {
+      "id": "NeumannU87AiOmni",
+      "family": "omni",
+      "display": "Neumann U87 Ai Omni \u2014 LDC"
+    },
+    {
+      "id": "NeumannU87AiBidirect",
+      "family": "fig8",
+      "display": "Neumann U87 Ai Bidirect \u2014 LDC fig-8"
+    },
+    {
+      "id": "AKGC414Omni",
+      "family": "omni",
+      "display": "AKG C414 Omni \u2014 LDC multipattern"
+    },
+    {
+      "id": "AKGC414Hyper",
+      "family": "hypercardioid",
+      "display": "AKG C414 Hyper \u2014 LDC multipattern"
+    },
+    {
+      "id": "AKGC414Bidirect",
+      "family": "fig8",
+      "display": "AKG C414 Bidirect \u2014 LDC fig-8"
+    },
+    {
+      "id": "SchoepsCMC5UOmni",
+      "family": "omni",
+      "display": "Schoeps CMC5-U Omni \u2014 SDC"
+    },
+    {
+      "id": "SchoepsCMC5UBidirect",
+      "family": "fig8",
+      "display": "Schoeps CMC5-U Bidirect \u2014 SDC fig-8"
+    },
+    {
+      "id": "Coles4038",
+      "family": "fig8_ribbon",
+      "display": "Coles 4038 \u2014 fig-8 ribbon"
+    },
+    {
+      "id": "DPA4006",
+      "family": "omni",
+      "display": "DPA 4006 \u2014 measurement omni"
+    },
+    {
+      "id": "RodeNT2ACardioid",
+      "family": "ldc_cardioid",
+      "display": "R\u00f8de NT2-A Cardioid"
+    },
+    {
+      "id": "RodeNT2AOmni",
+      "family": "omni",
+      "display": "R\u00f8de NT2-A Omni"
+    },
+    {
+      "id": "RodeNT2ABidirect",
+      "family": "fig8",
+      "display": "R\u00f8de NT2-A Bidirect (fig-8)"
+    }
+  ]
+}

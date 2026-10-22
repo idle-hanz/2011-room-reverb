@@ -1,0 +1,123 @@
+id,plugin,params,step_to_dbfs,gr_final_db,t10_s,t63_s,t90_s
+a_dbx_-10,uaudio_dbx_160,"{""thresh"": -30.0, ""compress"": "" 4.0:1"", ""gain"": 0.0}",-10,-15.10,0.0008,0.0073,0.0345
+a_dbx_-20,uaudio_dbx_160,"{""thresh"": -30.0, ""compress"": "" 4.0:1"", ""gain"": 0.0}",-20,-7.47,0.0050,0.0203,0.0558
+a_dbx_0,uaudio_dbx_160,"{""thresh"": -30.0, ""compress"": "" 4.0:1"", ""gain"": 0.0}",0,-22.73,0.0000,0.0030,0.0245
+a_dsA_0,uaudio_distressor,"{""input"": 5.0, ""ratio"": ""6:1"", ""attack"": 0.0, ""release"": 5.0, ""output"": 5.0}",-6,-10.88,0.0000,0.0000,0.0008
+a_dsA_1,uaudio_distressor,"{""input"": 5.0, ""ratio"": ""6:1"", ""attack"": 1.0, ""release"": 5.0, ""output"": 5.0}",-6,-10.85,0.0000,0.0005,0.0015
+a_dsA_10,uaudio_distressor,"{""input"": 5.0, ""ratio"": ""6:1"", ""attack"": 10.0, ""release"": 5.0, ""output"": 5.0}",-6,-8.37,0.0037,0.0238,0.0705
+a_dsA_2,uaudio_distressor,"{""input"": 5.0, ""ratio"": ""6:1"", ""attack"": 2.0, ""release"": 5.0, ""output"": 5.0}",-6,-10.79,0.0000,0.0008,0.0030
+a_dsA_3,uaudio_distressor,"{""input"": 5.0, ""ratio"": ""6:1"", ""attack"": 3.0, ""release"": 5.0, ""output"": 5.0}",-6,-10.70,0.0000,0.0013,0.0055
+a_dsA_3.5,uaudio_distressor,"{""input"": 5.0, ""ratio"": ""6:1"", ""attack"": 3.5, ""release"": 5.0, ""output"": 5.0}",-6,-10.63,0.0000,0.0018,0.0070
+a_dsA_4,uaudio_distressor,"{""input"": 5.0, ""ratio"": ""6:1"", ""attack"": 4.0, ""release"": 5.0, ""output"": 5.0}",-6,-10.57,0.0003,0.0022,0.0085
+a_dsA_5,uaudio_distressor,"{""input"": 5.0, ""ratio"": ""6:1"", ""attack"": 5.0, ""release"": 5.0, ""output"": 5.0}",-6,-10.46,0.0005,0.0030,0.0112
+a_dsA_6,uaudio_distressor,"{""input"": 5.0, ""ratio"": ""6:1"", ""attack"": 6.0, ""release"": 5.0, ""output"": 5.0}",-6,-10.31,0.0008,0.0040,0.0150
+a_dsA_7,uaudio_distressor,"{""input"": 5.0, ""ratio"": ""6:1"", ""attack"": 7.0, ""release"": 5.0, ""output"": 5.0}",-6,-10.07,0.0010,0.0060,0.0210
+a_dsA_8,uaudio_distressor,"{""input"": 5.0, ""ratio"": ""6:1"", ""attack"": 8.0, ""release"": 5.0, ""output"": 5.0}",-6,-9.60,0.0015,0.0103,0.0338
+a_dsA_9,uaudio_distressor,"{""input"": 5.0, ""ratio"": ""6:1"", ""attack"": 9.0, ""release"": 5.0, ""output"": 5.0}",-6,-8.99,0.0025,0.0168,0.0517
+a_mv_0.0,uaudio_manley_variable_mu,"{""dual_input"": 5.0, ""l_thresh"": 5.0, ""r_thresh"": 5.0, ""l_recovery"": ""Fast"", ""r_recovery"": ""Fast"", ""l_attack"": 0.0, ""r_attack"": 0.0, ""l_comp_lim"": ""Comp"", ""r_comp_lim"": ""Comp""}",0,-4.83,0.0018,0.0192,0.0520
+a_mv_10.0,uaudio_manley_variable_mu,"{""dual_input"": 5.0, ""l_thresh"": 5.0, ""r_thresh"": 5.0, ""l_recovery"": ""Fast"", ""r_recovery"": ""Fast"", ""l_attack"": 10.0, ""r_attack"": 10.0, ""l_comp_lim"": ""Comp"", ""r_comp_lim"": ""Comp""}",0,-5.78,0.0000,0.0018,0.0063
+a_mv_5.0,uaudio_manley_variable_mu,"{""dual_input"": 5.0, ""l_thresh"": 5.0, ""r_thresh"": 5.0, ""l_recovery"": ""Fast"", ""r_recovery"": ""Fast"", ""l_attack"": 5.0, ""r_attack"": 5.0, ""l_comp_lim"": ""Comp"", ""r_comp_lim"": ""Comp""}",0,-4.88,0.0018,0.0182,0.0495
+a_sg10_-14,uaudio_ssl_g_bus_compressor,"{""thresh"": 0.0, ""make_up"": 0.0, ""ratio"": ""4:1"", ""attack"": 10.0, ""release"": ""0.1 s""}",-14,-7.77,0.0010,0.0092,0.0248
+a_sg10_-21,uaudio_ssl_g_bus_compressor,"{""thresh"": 0.0, ""make_up"": 0.0, ""ratio"": ""4:1"", ""attack"": 10.0, ""release"": ""0.1 s""}",-21,-3.56,0.0015,0.0150,0.0372
+a_sg10_-6,uaudio_ssl_g_bus_compressor,"{""thresh"": 0.0, ""make_up"": 0.0, ""ratio"": ""4:1"", ""attack"": 10.0, ""release"": ""0.1 s""}",-6,-13.18,0.0008,0.0060,0.0170
+a_sg30_-14,uaudio_ssl_g_bus_compressor,"{""thresh"": 0.0, ""make_up"": 0.0, ""ratio"": ""4:1"", ""attack"": 30.0, ""release"": ""0.1 s""}",-14,-5.93,0.0022,0.0210,0.0517
+a_sg30_-21,uaudio_ssl_g_bus_compressor,"{""thresh"": 0.0, ""make_up"": 0.0, ""ratio"": ""4:1"", ""attack"": 30.0, ""release"": ""0.1 s""}",-21,-2.50,0.0032,0.0310,0.0732
+a_sg30_-6,uaudio_ssl_g_bus_compressor,"{""thresh"": 0.0, ""make_up"": 0.0, ""ratio"": ""4:1"", ""attack"": 30.0, ""release"": ""0.1 s""}",-6,-10.67,0.0018,0.0143,0.0370
+b_dbx_rel,uaudio_dbx_160,"{""thresh"": -30.0, ""compress"": "" 4.0:1"", ""gain"": 0.0}",-3,-20.41,0.0000,0.0037,0.0267
+b_dsN_r2_0.05,uaudio_distressor,"{""input"": 5.0, ""ratio"": ""NUKE"", ""attack"": 5.0, ""release"": 2.0, ""output"": 5.0}",-10,-9.50,0.0003,0.0013,0.0022
+b_dsN_r2_1,uaudio_distressor,"{""input"": 5.0, ""ratio"": ""NUKE"", ""attack"": 5.0, ""release"": 2.0, ""output"": 5.0}",-10,-9.76,0.0003,0.0013,0.0022
+b_dsN_r3_0.05,uaudio_distressor,"{""input"": 5.0, ""ratio"": ""NUKE"", ""attack"": 5.0, ""release"": 3.0, ""output"": 5.0}",-10,-9.57,0.0003,0.0013,0.0022
+b_dsN_r3_1,uaudio_distressor,"{""input"": 5.0, ""ratio"": ""NUKE"", ""attack"": 5.0, ""release"": 3.0, ""output"": 5.0}",-10,-9.81,0.0003,0.0013,0.0022
+b_dsN_r5_0.05,uaudio_distressor,"{""input"": 5.0, ""ratio"": ""NUKE"", ""attack"": 5.0, ""release"": 5.0, ""output"": 5.0}",-10,-9.69,0.0003,0.0013,0.0022
+b_dsN_r5_1,uaudio_distressor,"{""input"": 5.0, ""ratio"": ""NUKE"", ""attack"": 5.0, ""release"": 5.0, ""output"": 5.0}",-10,-9.90,0.0003,0.0013,0.0025
+b_dsO_0.05,uaudio_distressor,"{""input"": 5.0, ""ratio"": ""10:1"", ""attack"": 5.0, ""release"": 5.0, ""output"": 5.0}",-10,-10.06,0.0000,0.0015,0.0040
+b_dsO_0.5,uaudio_distressor,"{""input"": 5.0, ""ratio"": ""10:1"", ""attack"": 5.0, ""release"": 5.0, ""output"": 5.0}",-10,-10.61,0.0000,0.0018,0.0055
+b_dsO_10,uaudio_distressor,"{""input"": 5.0, ""ratio"": ""10:1"", ""attack"": 5.0, ""release"": 5.0, ""output"": 5.0}",-10,-10.99,0.0000,0.0018,0.0095
+b_dsO_3,uaudio_distressor,"{""input"": 5.0, ""ratio"": ""10:1"", ""attack"": 5.0, ""release"": 5.0, ""output"": 5.0}",-10,-10.91,0.0000,0.0018,0.0080
+b_dsR_0,uaudio_distressor,"{""input"": 5.0, ""ratio"": ""6:1"", ""attack"": 5.0, ""release"": 0.0, ""output"": 5.0}",-6,-9.27,0.0003,0.0027,0.0638
+b_dsR_1,uaudio_distressor,"{""input"": 5.0, ""ratio"": ""6:1"", ""attack"": 5.0, ""release"": 1.0, ""output"": 5.0}",-6,-9.60,0.0003,0.0027,0.0457
+b_dsR_10,uaudio_distressor,"{""input"": 5.0, ""ratio"": ""6:1"", ""attack"": 5.0, ""release"": 10.0, ""output"": 5.0}",-6,-11.64,0.0005,0.0037,0.0260
+b_dsR_10.5,uaudio_distressor,"{""input"": 5.0, ""ratio"": ""6:1"", ""attack"": 5.0, ""release"": 10.5, ""output"": 5.0}",-6,-11.64,0.0005,0.0037,0.0260
+b_dsR_2,uaudio_distressor,"{""input"": 5.0, ""ratio"": ""6:1"", ""attack"": 5.0, ""release"": 2.0, ""output"": 5.0}",-6,-10.15,0.0005,0.0030,0.0198
+b_dsR_3,uaudio_distressor,"{""input"": 5.0, ""ratio"": ""6:1"", ""attack"": 5.0, ""release"": 3.0, ""output"": 5.0}",-6,-10.35,0.0005,0.0030,0.0173
+b_dsR_4,uaudio_distressor,"{""input"": 5.0, ""ratio"": ""6:1"", ""attack"": 5.0, ""release"": 4.0, ""output"": 5.0}",-6,-10.50,0.0005,0.0030,0.0170
+b_dsR_5,uaudio_distressor,"{""input"": 5.0, ""ratio"": ""6:1"", ""attack"": 5.0, ""release"": 5.0, ""output"": 5.0}",-6,-10.73,0.0005,0.0032,0.0168
+b_dsR_6,uaudio_distressor,"{""input"": 5.0, ""ratio"": ""6:1"", ""attack"": 5.0, ""release"": 6.0, ""output"": 5.0}",-6,-11.08,0.0005,0.0032,0.0182
+b_dsR_7,uaudio_distressor,"{""input"": 5.0, ""ratio"": ""6:1"", ""attack"": 5.0, ""release"": 7.0, ""output"": 5.0}",-6,-11.38,0.0005,0.0035,0.0213
+b_dsR_8,uaudio_distressor,"{""input"": 5.0, ""ratio"": ""6:1"", ""attack"": 5.0, ""release"": 8.0, ""output"": 5.0}",-6,-11.54,0.0005,0.0035,0.0238
+b_dsR_9,uaudio_distressor,"{""input"": 5.0, ""ratio"": ""6:1"", ""attack"": 5.0, ""release"": 9.0, ""output"": 5.0}",-6,-11.63,0.0005,0.0037,0.0257
+b_fc1_1,uaudio_fairchild_670,"{""l_input"": 0.0, ""r_input"": 0.0, ""l_thresh"": 5.0, ""r_thresh"": 5.0, ""l_timecnst"": 1.0, ""r_timecnst"": 1.0}",-9,-9.79,0.0000,0.0020,0.0050
+b_fc2_1,uaudio_fairchild_670,"{""l_input"": 0.0, ""r_input"": 0.0, ""l_thresh"": 5.0, ""r_thresh"": 5.0, ""l_timecnst"": 2.0, ""r_timecnst"": 2.0}",-9,-10.14,0.0003,0.0020,0.0055
+b_fc3_1,uaudio_fairchild_670,"{""l_input"": 0.0, ""r_input"": 0.0, ""l_thresh"": 5.0, ""r_thresh"": 5.0, ""l_timecnst"": 3.0, ""r_timecnst"": 3.0}",-9,-10.23,0.0005,0.0037,0.0120
+b_fc4_1,uaudio_fairchild_670,"{""l_input"": 0.0, ""r_input"": 0.0, ""l_thresh"": 5.0, ""r_thresh"": 5.0, ""l_timecnst"": 4.0, ""r_timecnst"": 4.0}",-9,-10.22,0.0008,0.0075,0.0250
+b_fc5_0.01,uaudio_fairchild_670,"{""l_input"": 0.0, ""r_input"": 0.0, ""l_thresh"": 5.0, ""r_thresh"": 5.0, ""l_timecnst"": 5.0, ""r_timecnst"": 5.0}",-9,-6.36,0.0003,0.0018,0.0030
+b_fc5_0.05,uaudio_fairchild_670,"{""l_input"": 0.0, ""r_input"": 0.0, ""l_thresh"": 5.0, ""r_thresh"": 5.0, ""l_timecnst"": 5.0, ""r_timecnst"": 5.0}",-9,-9.97,0.0005,0.0037,0.0107
+b_fc5_0.3,uaudio_fairchild_670,"{""l_input"": 0.0, ""r_input"": 0.0, ""l_thresh"": 5.0, ""r_thresh"": 5.0, ""l_timecnst"": 5.0, ""r_timecnst"": 5.0}",-9,-10.03,0.0005,0.0037,0.0112
+b_fc5_1,uaudio_fairchild_670,"{""l_input"": 0.0, ""r_input"": 0.0, ""l_thresh"": 5.0, ""r_thresh"": 5.0, ""l_timecnst"": 5.0, ""r_timecnst"": 5.0}",-9,-10.09,0.0005,0.0037,0.0115
+b_fc5_10,uaudio_fairchild_670,"{""l_input"": 0.0, ""r_input"": 0.0, ""l_thresh"": 5.0, ""r_thresh"": 5.0, ""l_timecnst"": 5.0, ""r_timecnst"": 5.0}",-9,-10.22,0.0005,0.0040,0.0125
+b_fc5_3,uaudio_fairchild_670,"{""l_input"": 0.0, ""r_input"": 0.0, ""l_thresh"": 5.0, ""r_thresh"": 5.0, ""l_timecnst"": 5.0, ""r_timecnst"": 5.0}",-9,-10.18,0.0005,0.0037,0.0123
+b_fc6_0.01,uaudio_fairchild_670,"{""l_input"": 0.0, ""r_input"": 0.0, ""l_thresh"": 5.0, ""r_thresh"": 5.0, ""l_timecnst"": 6.0, ""r_timecnst"": 6.0}",-9,-7.77,0.0000,0.0013,0.0025
+b_fc6_0.3,uaudio_fairchild_670,"{""l_input"": 0.0, ""r_input"": 0.0, ""l_thresh"": 5.0, ""r_thresh"": 5.0, ""l_timecnst"": 6.0, ""r_timecnst"": 6.0}",-9,-9.87,0.0000,0.0020,0.0053
+b_fc6_1,uaudio_fairchild_670,"{""l_input"": 0.0, ""r_input"": 0.0, ""l_thresh"": 5.0, ""r_thresh"": 5.0, ""l_timecnst"": 6.0, ""r_timecnst"": 6.0}",-9,-9.96,0.0003,0.0020,0.0053
+b_fc6_10,uaudio_fairchild_670,"{""l_input"": 0.0, ""r_input"": 0.0, ""l_thresh"": 5.0, ""r_thresh"": 5.0, ""l_timecnst"": 6.0, ""r_timecnst"": 6.0}",-9,-10.19,0.0003,0.0020,0.0060
+b_fc6_20,uaudio_fairchild_670,"{""l_input"": 0.0, ""r_input"": 0.0, ""l_thresh"": 5.0, ""r_thresh"": 5.0, ""l_timecnst"": 6.0, ""r_timecnst"": 6.0}",-9,-10.21,0.0003,0.0020,0.0063
+b_fc6_3,uaudio_fairchild_670,"{""l_input"": 0.0, ""r_input"": 0.0, ""l_thresh"": 5.0, ""r_thresh"": 5.0, ""l_timecnst"": 6.0, ""r_timecnst"": 6.0}",-9,-10.09,0.0003,0.0020,0.0057
+b_la2_0.05,uaudio_teletronix_la-2,"{""peak_reduct"": ""50"", ""gain"": ""30""}",-7,-7.75,0.0000,0.0020,0.0110
+b_la2_0.3,uaudio_teletronix_la-2,"{""peak_reduct"": ""50"", ""gain"": ""30""}",-7,-9.82,0.0000,0.0043,0.0993
+b_la2_1,uaudio_teletronix_la-2,"{""peak_reduct"": ""50"", ""gain"": ""30""}",-7,-10.04,0.0000,0.0047,0.1148
+b_la2_20,uaudio_teletronix_la-2,"{""peak_reduct"": ""50"", ""gain"": ""30""}",-7,-10.22,0.0000,0.0053,0.1303
+b_la2_5,uaudio_teletronix_la-2,"{""peak_reduct"": ""50"", ""gain"": ""30""}",-7,-10.22,0.0000,0.0053,0.1303
+b_la2ag_0.05,uaudio_teletronix_la-2a_gray,"{""peak_reduct"": ""50"", ""gain"": ""30"", ""comp_limit"": ""Comp""}",-17,-8.16,0.0000,0.0018,0.0143
+b_la2ag_0.3,uaudio_teletronix_la-2a_gray,"{""peak_reduct"": ""50"", ""gain"": ""30"", ""comp_limit"": ""Comp""}",-17,-8.79,0.0000,0.0022,0.0280
+b_la2ag_1,uaudio_teletronix_la-2a_gray,"{""peak_reduct"": ""50"", ""gain"": ""30"", ""comp_limit"": ""Comp""}",-17,-8.95,0.0000,0.0025,0.0340
+b_la2ag_20,uaudio_teletronix_la-2a_gray,"{""peak_reduct"": ""50"", ""gain"": ""30"", ""comp_limit"": ""Comp""}",-17,-8.96,0.0000,0.0025,0.0340
+b_la2ag_5,uaudio_teletronix_la-2a_gray,"{""peak_reduct"": ""50"", ""gain"": ""30"", ""comp_limit"": ""Comp""}",-17,-8.96,0.0000,0.0025,0.0340
+b_la2as_0.05,uaudio_teletronix_la-2a_silver,"{""peak_reduct"": ""50"", ""gain"": ""30"", ""comp_limit"": ""Comp""}",-12,-9.22,0.0000,0.0013,0.0047
+b_la2as_0.3,uaudio_teletronix_la-2a_silver,"{""peak_reduct"": ""50"", ""gain"": ""30"", ""comp_limit"": ""Comp""}",-12,-10.00,0.0000,0.0015,0.0225
+b_la2as_1,uaudio_teletronix_la-2a_silver,"{""peak_reduct"": ""50"", ""gain"": ""30"", ""comp_limit"": ""Comp""}",-12,-10.22,0.0000,0.0015,0.0375
+b_la2as_20,uaudio_teletronix_la-2a_silver,"{""peak_reduct"": ""50"", ""gain"": ""30"", ""comp_limit"": ""Comp""}",-12,-10.23,0.0000,0.0015,0.0382
+b_la2as_5,uaudio_teletronix_la-2a_silver,"{""peak_reduct"": ""50"", ""gain"": ""30"", ""comp_limit"": ""Comp""}",-12,-10.23,0.0000,0.0015,0.0382
+b_la3a_0.05,uaudio_la3a,"{""peak_reduction"": 5.0, ""gain"": 5.0}",-9,-8.65,0.0000,0.0008,0.0022
+b_la3a_0.3,uaudio_la3a,"{""peak_reduction"": 5.0, ""gain"": 5.0}",-9,-9.23,0.0000,0.0008,0.0127
+b_la3a_1,uaudio_la3a,"{""peak_reduction"": 5.0, ""gain"": 5.0}",-9,-9.33,0.0000,0.0008,0.0190
+b_la3a_20,uaudio_la3a,"{""peak_reduction"": 5.0, ""gain"": 5.0}",-9,-9.53,0.0000,0.0008,0.0333
+b_la3a_5,uaudio_la3a,"{""peak_reduction"": 5.0, ""gain"": 5.0}",-9,-9.52,0.0000,0.0008,0.0318
+b_ln_r1,uaudio_ua_1176ln_rev_e,"{""input"": -40.0, ""output"": -20.0, ""ratio"": ""4:1"", ""attack"": ""4.00"", ""release"": 1.0}",-7,-5.72,0.0000,0.0030,0.0390
+b_ln_r2,uaudio_ua_1176ln_rev_e,"{""input"": -40.0, ""output"": -20.0, ""ratio"": ""4:1"", ""attack"": ""4.00"", ""release"": 2.0}",-7,-5.67,0.0000,0.0030,0.0395
+b_ln_r3,uaudio_ua_1176ln_rev_e,"{""input"": -40.0, ""output"": -20.0, ""ratio"": ""4:1"", ""attack"": ""4.00"", ""release"": 3.0}",-7,-5.70,0.0000,0.0027,0.0382
+b_ln_r4,uaudio_ua_1176ln_rev_e,"{""input"": -40.0, ""output"": -20.0, ""ratio"": ""4:1"", ""attack"": ""4.00"", ""release"": 4.0}",-7,-5.77,0.0000,0.0027,0.0335
+b_ln_r4_0.05,uaudio_ua_1176ln_rev_e,"{""input"": -40.0, ""output"": -20.0, ""ratio"": ""4:1"", ""attack"": ""4.00"", ""release"": 4.0}",-7,-5.21,0.0000,0.0022,0.0075
+b_ln_r4_3,uaudio_ua_1176ln_rev_e,"{""input"": -40.0, ""output"": -20.0, ""ratio"": ""4:1"", ""attack"": ""4.00"", ""release"": 4.0}",-7,-6.75,0.0003,0.0045,0.8385
+b_ln_r5,uaudio_ua_1176ln_rev_e,"{""input"": -40.0, ""output"": -20.0, ""ratio"": ""4:1"", ""attack"": ""4.00"", ""release"": 5.0}",-7,-5.88,0.0000,0.0025,0.0305
+b_ln_r6,uaudio_ua_1176ln_rev_e,"{""input"": -40.0, ""output"": -20.0, ""ratio"": ""4:1"", ""attack"": ""4.00"", ""release"": 6.0}",-7,-5.73,0.0000,0.0022,0.0385
+b_ln_r7,uaudio_ua_1176ln_rev_e,"{""input"": -40.0, ""output"": -20.0, ""ratio"": ""4:1"", ""attack"": ""4.00"", ""release"": 7.0}",-7,-5.87,0.0000,0.0020,0.0382
+b_mv_Fast,uaudio_manley_variable_mu,"{""dual_input"": 5.0, ""l_thresh"": 5.0, ""r_thresh"": 5.0, ""l_recovery"": ""Fast"", ""r_recovery"": ""Fast"", ""l_attack"": 5.0, ""r_attack"": 5.0, ""l_comp_lim"": ""Comp"", ""r_comp_lim"": ""Comp""}",0,-4.88,0.0018,0.0182,0.0495
+b_mv_Med,uaudio_manley_variable_mu,"{""dual_input"": 5.0, ""l_thresh"": 5.0, ""r_thresh"": 5.0, ""l_recovery"": ""Med"", ""r_recovery"": ""Med"", ""l_attack"": 5.0, ""r_attack"": 5.0, ""l_comp_lim"": ""Comp"", ""r_comp_lim"": ""Comp""}",0,-4.88,0.0077,0.0833,0.2235
+b_mv_MedFast,uaudio_manley_variable_mu,"{""dual_input"": 5.0, ""l_thresh"": 5.0, ""r_thresh"": 5.0, ""l_recovery"": ""Med Fast"", ""r_recovery"": ""Med Fast"", ""l_attack"": 5.0, ""r_attack"": 5.0, ""l_comp_lim"": ""Comp"", ""r_comp_lim"": ""Comp""}",0,-4.88,0.0035,0.0395,0.1062
+b_mv_MedSlo,uaudio_manley_variable_mu,"{""dual_input"": 5.0, ""l_thresh"": 5.0, ""r_thresh"": 5.0, ""l_recovery"": ""Med Slo"", ""r_recovery"": ""Med Slo"", ""l_attack"": 5.0, ""r_attack"": 5.0, ""l_comp_lim"": ""Comp"", ""r_comp_lim"": ""Comp""}",0,-4.80,0.0170,0.1755,0.4510
+b_mv_Slo,uaudio_manley_variable_mu,"{""dual_input"": 5.0, ""l_thresh"": 5.0, ""r_thresh"": 5.0, ""l_recovery"": ""Slo"", ""r_recovery"": ""Slo"", ""l_attack"": 5.0, ""r_attack"": 5.0, ""l_comp_lim"": ""Comp"", ""r_comp_lim"": ""Comp""}",0,-4.42,0.0310,0.2973,0.6565
+b_ra_r1,uaudio_ua_1176_rev_a,"{""input"": -40.0, ""output"": -20.0, ""ratio"": ""4:1"", ""attack"": ""4.00"", ""release"": 1.0}",-7,-10.31,0.0000,0.0022,0.1230
+b_ra_r2,uaudio_ua_1176_rev_a,"{""input"": -40.0, ""output"": -20.0, ""ratio"": ""4:1"", ""attack"": ""4.00"", ""release"": 2.0}",-7,-10.28,0.0000,0.0022,0.1237
+b_ra_r3,uaudio_ua_1176_rev_a,"{""input"": -40.0, ""output"": -20.0, ""ratio"": ""4:1"", ""attack"": ""4.00"", ""release"": 3.0}",-7,-10.29,0.0000,0.0022,0.1242
+b_ra_r4,uaudio_ua_1176_rev_a,"{""input"": -40.0, ""output"": -20.0, ""ratio"": ""4:1"", ""attack"": ""4.00"", ""release"": 4.0}",-7,-10.36,0.0000,0.0022,0.1253
+b_ra_r4_0.05,uaudio_ua_1176_rev_a,"{""input"": -40.0, ""output"": -20.0, ""ratio"": ""4:1"", ""attack"": ""4.00"", ""release"": 4.0}",-7,-8.90,0.0000,0.0015,0.0055
+b_ra_r4_3,uaudio_ua_1176_rev_a,"{""input"": -40.0, ""output"": -20.0, ""ratio"": ""4:1"", ""attack"": ""4.00"", ""release"": 4.0}",-7,-10.89,0.0000,0.0025,0.2500
+b_ra_r5,uaudio_ua_1176_rev_a,"{""input"": -40.0, ""output"": -20.0, ""ratio"": ""4:1"", ""attack"": ""4.00"", ""release"": 5.0}",-7,-10.45,0.0000,0.0020,0.1263
+b_ra_r6,uaudio_ua_1176_rev_a,"{""input"": -40.0, ""output"": -20.0, ""ratio"": ""4:1"", ""attack"": ""4.00"", ""release"": 6.0}",-7,-10.23,0.0000,0.0018,0.1340
+b_ra_r7,uaudio_ua_1176_rev_a,"{""input"": -40.0, ""output"": -20.0, ""ratio"": ""4:1"", ""attack"": ""4.00"", ""release"": 7.0}",-7,-10.39,0.0000,0.0018,0.1325
+b_sgA_0.05,uaudio_ssl_g_bus_compressor,"{""thresh"": 0.0, ""make_up"": 0.0, ""ratio"": ""4:1"", ""attack"": 10.0, ""release"": ""Auto""}",-11,-8.87,0.0008,0.0065,0.0165
+b_sgA_0.3,uaudio_ssl_g_bus_compressor,"{""thresh"": 0.0, ""make_up"": 0.0, ""ratio"": ""4:1"", ""attack"": 10.0, ""release"": ""Auto""}",-11,-9.50,0.0008,0.0075,0.0245
+b_sgA_1,uaudio_ssl_g_bus_compressor,"{""thresh"": 0.0, ""make_up"": 0.0, ""ratio"": ""4:1"", ""attack"": 10.0, ""release"": ""Auto""}",-11,-10.47,0.0010,0.0092,0.2487
+b_sgA_20,uaudio_ssl_g_bus_compressor,"{""thresh"": 0.0, ""make_up"": 0.0, ""ratio"": ""4:1"", ""attack"": 10.0, ""release"": ""Auto""}",-11,-11.27,0.0010,0.0110,0.6915
+b_sgA_3,uaudio_ssl_g_bus_compressor,"{""thresh"": 0.0, ""make_up"": 0.0, ""ratio"": ""4:1"", ""attack"": 10.0, ""release"": ""Auto""}",-11,-11.20,0.0010,0.0110,0.6425
+b_sgA_8,uaudio_ssl_g_bus_compressor,"{""thresh"": 0.0, ""make_up"": 0.0, ""ratio"": ""4:1"", ""attack"": 10.0, ""release"": ""Auto""}",-11,-11.27,0.0010,0.0110,0.6915
+b_sgF_0.1,uaudio_ssl_g_bus_compressor,"{""thresh"": 0.0, ""make_up"": 0.0, ""ratio"": ""4:1"", ""attack"": 10.0, ""release"": ""0.1 s""}",-11,-9.74,0.0010,0.0077,0.0213
+b_sgF_0.3,uaudio_ssl_g_bus_compressor,"{""thresh"": 0.0, ""make_up"": 0.0, ""ratio"": ""4:1"", ""attack"": 10.0, ""release"": ""0.3 s""}",-11,-10.27,0.0010,0.0085,0.0238
+b_sgF_0.6,uaudio_ssl_g_bus_compressor,"{""thresh"": 0.0, ""make_up"": 0.0, ""ratio"": ""4:1"", ""attack"": 10.0, ""release"": ""0.6 s""}",-11,-11.02,0.0010,0.0095,0.0278
+b_sgF_1.2,uaudio_ssl_g_bus_compressor,"{""thresh"": 0.0, ""make_up"": 0.0, ""ratio"": ""4:1"", ""attack"": 10.0, ""release"": ""1.2 s""}",-11,-11.57,0.0010,0.0103,0.0312
+b_u1176all20_r1,uaudio_ua_1176,"{""input"": -20.0, ""output"": -20.0, ""ratio"": ""ALL"", ""attack"": 4.0, ""release"": 1.0}",-30,-3.54,0.0020,0.0060,0.2800
+b_u1176all20_r4,uaudio_ua_1176,"{""input"": -20.0, ""output"": -20.0, ""ratio"": ""ALL"", ""attack"": 4.0, ""release"": 4.0}",-30,-3.70,0.0018,0.0045,0.2690
+b_u1176all20_r7,uaudio_ua_1176,"{""input"": -20.0, ""output"": -20.0, ""ratio"": ""ALL"", ""attack"": 4.0, ""release"": 7.0}",-30,-4.44,0.0008,0.0020,0.2077
+b_u1176all_r1,uaudio_ua_1176,"{""input"": -40.0, ""output"": -20.0, ""ratio"": ""ALL"", ""attack"": 4.0, ""release"": 1.0}",-7,-2.73,0.0025,0.0097,0.3225
+b_u1176all_r4,uaudio_ua_1176,"{""input"": -40.0, ""output"": -20.0, ""ratio"": ""ALL"", ""attack"": 4.0, ""release"": 4.0}",-7,-2.90,0.0022,0.0065,0.3103
+b_u1176all_r7,uaudio_ua_1176,"{""input"": -40.0, ""output"": -20.0, ""ratio"": ""ALL"", ""attack"": 4.0, ""release"": 7.0}",-7,-3.66,0.0010,0.0022,0.2502

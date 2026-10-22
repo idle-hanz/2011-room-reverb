@@ -1,0 +1,51 @@
+{
+  "directional": false,
+  "t20": [
+    2.9875,
+    2.5972,
+    1.8883,
+    1.613,
+    1.3587,
+    1.0673,
+    0.6454
+  ],
+  "target_T_oct": [
+    3.1967,
+    3.1161,
+    1.9393,
+    1.6607,
+    1.3453,
+    1.0462,
+    0.5954
+  ],
+  "err_pct": [
+    -6.54,
+    -16.65,
+    -2.63,
+    -2.87,
+    1.0,
+    2.02,
+    8.4
+  ],
+  "peak": 0.4634194825232011,
+  "finite": true,
+  "limiter_db": 0.0,
+  "limiter_samples": 0,
+  "flat_limiter_db": 0.0,
+  "flat_limiter_samples": 0,
+  "stab_max_loop_db": [
+    -0.15542,
+    -0.15614,
+    -0.15619
+  ],
+  "makeup_surfaces": [
+    0.77987085
+  ],
+  "makeup_flat": [
+    0.77987085
+  ],
+  "makeup_equal": true,
+  "surfaces_equals_flat_samples": false,
+  "gate_125_250": true,
+  "gate_500_up": true
+}

@@ -1,0 +1,20 @@
+AKGC414Bidirect build 7.9s repaired 0 nodes 65 worst-mid 0.190 max err 0.242 dB rms max 0.082 HPF@90: sos-vs-FIR 23.9 dB @49 Hz; sos-vs-analytic 0.08; FIR-vs-analytic 23.9 (>100 Hz 4.5)
+AKGC414Cardioid build 13.1s repaired 6 nodes 73 worst-mid 0.361 max err 0.173 dB rms max 0.062 HPF@90: sos-vs-FIR 20.4 dB @49 Hz; sos-vs-analytic 0.12; FIR-vs-analytic 20.3 (>100 Hz 4.7)
+AKGC414Hyper build 15.1s repaired 1 nodes 81 worst-mid 0.352 max err 0.204 dB rms max 0.058 HPF@90: sos-vs-FIR 20.8 dB @49 Hz; sos-vs-analytic 0.11; FIR-vs-analytic 20.7 (>100 Hz 4.7)
+AKGC414Omni build 7.7s repaired 0 nodes 65 worst-mid 0.127 max err 0.127 dB rms max 0.025 HPF@90: sos-vs-FIR 19.6 dB @49 Hz; sos-vs-analytic 0.10; FIR-vs-analytic 19.6 (>100 Hz 4.7)
+Coles4038 build 7.2s repaired 0 nodes 69 worst-mid 0.219 max err 0.175 dB rms max 0.063 
+DPA4006 build 20.2s repaired 0 nodes 65 worst-mid 0.117 max err 0.119 dB rms max 0.031 
+ElectroVoiceRE20 build 3.6s repaired 0 nodes 65 worst-mid 0.099 max err 0.202 dB rms max 0.059 
+NeumannU87AiBidirect build 2.9s repaired 0 nodes 65 worst-mid 0.057 max err 0.133 dB rms max 0.042 HPF@90: sos-vs-FIR 19.8 dB @49 Hz; sos-vs-analytic 0.05; FIR-vs-analytic 19.8 (>100 Hz 4.7)
+NeumannU87AiCardioid build 2.7s repaired 0 nodes 65 worst-mid 0.082 max err 0.098 dB rms max 0.043 HPF@90: sos-vs-FIR 18.2 dB @49 Hz; sos-vs-analytic 0.05; FIR-vs-analytic 18.2 (>100 Hz 4.9)
+NeumannU87AiOmni build 18.7s repaired 0 nodes 160 worst-mid 0.469 max err 0.472 dB rms max 0.104 HPF@90: sos-vs-FIR 17.8 dB @49 Hz; sos-vs-analytic 0.17; FIR-vs-analytic 17.8 (>100 Hz 4.9)
+RodeNT2ABidirect build 3.0s repaired 0 nodes 65 worst-mid 0.084 max err 0.114 dB rms max 0.040 HPF@90: sos-vs-FIR 13.6 dB @49 Hz; sos-vs-analytic 0.03; FIR-vs-analytic 13.6 (>100 Hz 5.4)
+RodeNT2ACardioid build 14.5s repaired 1 nodes 65 worst-mid 0.187 max err 0.179 dB rms max 0.059 HPF@90: sos-vs-FIR 13.6 dB @70 Hz; sos-vs-analytic 0.12; FIR-vs-analytic 13.6 (>100 Hz 5.5)
+RodeNT2AOmni build 8.1s repaired 0 nodes 65 worst-mid 0.191 max err 0.194 dB rms max 0.050 HPF@90: sos-vs-FIR 13.9 dB @70 Hz; sos-vs-analytic 0.08; FIR-vs-analytic 13.9 (>100 Hz 5.6)
+RoyerR121 build 18.2s repaired 0 nodes 118 worst-mid 0.220 max err 0.259 dB rms max 0.089 
+SchoepsCMC5UBidirect build 4.6s repaired 0 nodes 65 worst-mid 0.061 max err 0.118 dB rms max 0.032 
+SchoepsCMC5UCardioid build 11.3s repaired 6 nodes 73 worst-mid 0.839 max err 0.177 dB rms max 0.060 
+SchoepsCMC5UOmni build 10.2s repaired 0 nodes 73 worst-mid 2.479 max err 0.107 dB rms max 0.027 
+SennheiserMD441 build 5.4s repaired 3 nodes 69 worst-mid 0.216 max err 0.246 dB rms max 0.066 
+ShureSM57 build 8.6s repaired 7 nodes 77 worst-mid 0.968 max err 0.247 dB rms max 0.067 
+ShureSM58 build 4.2s repaired 0 nodes 65 worst-mid 0.059 max err 0.260 dB rms max 0.069 

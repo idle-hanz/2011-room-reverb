@@ -1,0 +1,52 @@
+{
+  "schema": "mic_fitter.preset.v2",
+  "mic_id": "ShureSM57",
+  "display_name": "Shure SM57 \u2014 dynamic cardioid",
+  "honesty": "MEASURED",
+  "family": "dynamic_cardioid",
+  "source": "Franco et al. Zenodo 10.5281/zenodo.4633508 (Raw_IRs, 5m, 24-bit, selected angles)",
+  "model": "dual_shelf_plus_soft_one_pole",
+  "angle_law": "0.5*(1-cos(theta))^p",
+  "params": {
+    "f0": 200.00000000000003,
+    "depth_max_db": -23.70185779703961,
+    "shelf_slope": 1.5000000000000002,
+    "f_lo": 289.1617768243881,
+    "depth_lo_db": -1.4629114720429321,
+    "res_hz": 1500.0001468612936,
+    "lp_mix": 0.30318419485241205,
+    "fc_floor": 6199.282688136083,
+    "p": 0.85524090237471
+  },
+  "metrics": {
+    "train_rmse_db": 3.359742370836717,
+    "holdout_rmse_db": 2.8642206676988478,
+    "train_mse_db": 11.287868798395523,
+    "holdout_mse_db": 8.203760033273234,
+    "n_train_angles": 8,
+    "n_holdout_angles": 2,
+    "train_angles_deg": [
+      0.0,
+      15.0,
+      30.0,
+      60.0,
+      90.0,
+      120.0,
+      150.0,
+      180.0
+    ],
+    "holdout_angles_deg": [
+      45.0,
+      135.0
+    ],
+    "freq_range_hz": [
+      20.0,
+      16000.0
+    ]
+  },
+  "notes": "Structure LP / room engine path is SEPARATE \u2014 these presets are off-axis magnitude colour only. Fits are ASSUMED when honesty=ASSUMED. v2: dual shelf (high + mild low) + soft one-pole; shelves preferred over LP.",
+  "fit": {
+    "success": true,
+    "message": "DE success=False nit=70 fun=11.747334; LS success=True cost=3005.346014"
+  }
+}

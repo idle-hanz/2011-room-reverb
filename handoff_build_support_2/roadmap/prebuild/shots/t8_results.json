@@ -1,0 +1,17 @@
+{
+ "right_wall_to_7.5": 7.49,
+ "left_wall_+1.0": {
+  "W": 6.49,
+  "sx": 1.6,
+  "mcx": 2
+ },
+ "front_wall_into_source": 4.85,
+ "split_r": {
+  "place_r": "room",
+  "x": 5.676,
+  "z": 3.642
+ },
+ "mirror_l_space": 1.1961,
+ "ceiling_up_1.2": 4.19,
+ "errors": []
+}

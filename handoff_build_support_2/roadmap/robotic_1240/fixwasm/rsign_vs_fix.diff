@@ -1,0 +1,13 @@
+1274c1274,1283
+< static void fwht32(double *a) { FWHT_BODY(32); }
+---
+> #ifdef RSIGN
+> /* Row signs: feedback matrix D*H (still a +-1 Hadamard). Spreads the all-ones output
+>  * funnel (1^T D H = d^T H, max 8 of 32) without touching the output tap. */
+> static const double RSIGN_D[32] = {1.0, -1.0, -1.0, -1.0, -1.0, -1.0, 1.0, -1.0, -1.0, 1.0, -1.0, 1.0, 1.0, 1.0, 1.0, 1.0, -1.0, 1.0, 1.0, 1.0, -1.0, 1.0, 1.0, 1.0, -1.0, 1.0, 1.0, 1.0, -1.0, 1.0, 1.0, 1.0};
+> #endif
+> static void fwht32(double *a) { FWHT_BODY(32);
+> #ifdef RSIGN
+>     { int k; for (k = 0; k < 32; k++) a[k] *= RSIGN_D[k]; }
+> #endif
+> }

@@ -1,0 +1,47 @@
+{
+  "schema": "scattering_fitter.material_scatter.v1",
+  "id": "diffuser_ceiling_measured",
+  "honesty": "VERIFIED_MEASURED",
+  "scatter_hz": [
+    125.0,
+    250.0,
+    500.0,
+    1000.0,
+    2000.0,
+    4000.0,
+    8000.0
+  ],
+  "scatter": [
+    0.0819,
+    0.1034,
+    0.1575,
+    0.2773,
+    0.4802,
+    0.7065,
+    0.8663
+  ],
+  "scatter_data_octave": null,
+  "model": "logistic_log2f",
+  "params": {
+    "s_lo": 0.0691,
+    "s_hi": 1.0,
+    "fc": 2349.10896,
+    "k": 1.00984
+  },
+  "rmse_s": 0.01592,
+  "n_points": 6,
+  "fit_range_hz": [
+    250,
+    8000
+  ],
+  "source": "Kamisi\u0144ski T., Rubacha J., Pilch A.: The Study of Sound Scattering Structures for the Purposes of Room Acoustic Enhancement, Acta Physica Polonica A 118(1) 2010, https://przyrbwn.icm.edu.pl/APP/PDF/118/a118z1p19.pdf \u2014 Table: ceiling-mounted diffuser, ISO 17497-1",
+  "source_key": "kamisinski",
+  "odeon_anchor": null,
+  "note": "Kamisi\u0144ski 2010 ceiling diffuser, octave table 250-8k, ISO 17497-1.",
+  "usage": "Per hit: E_spec *= (1 - s_b); E_scatter = 1 - prod(1 - s_b). Specular tap amplitude sqrt(prod(1-s)); scattered share -> short Lambert-envelope velvet cluster, feed-forward on the early tap only. Muted face contributes neither absorption nor scattering.",
+  "locks": {
+    "measured_by_us": false,
+    "honesty_note": "never promote to MEASURED; cite source",
+    "live_software": "do not import into live software/ until Idle says go"
+  }
+}

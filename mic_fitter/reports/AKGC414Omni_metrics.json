@@ -1,0 +1,44 @@
+{
+  "mic_id": "AKGC414Omni",
+  "display_name": "AKG C414 Omni \u2014 LDC multipattern",
+  "honesty": "MEASURED",
+  "family": "omni",
+  "source": "Franco et al. Zenodo 10.5281/zenodo.4633508 (Raw_IRs, 5m, 24-bit, selected angles)",
+  "params": {
+    "f0": 9807.16291900873,
+    "depth_max_db": -23.999999999999996,
+    "shelf_slope": 3.100012114160725,
+    "f_lo": 242.43564291432207,
+    "depth_lo_db": -0.34208209736199385,
+    "res_hz": 1500.0080162041681,
+    "lp_mix": 0.2832137377677979,
+    "fc_floor": 6002.42219953281,
+    "p": 0.6000000000000001
+  },
+  "train_rmse_db": 2.9877431911946775,
+  "holdout_rmse_db": 2.638039600138112,
+  "train_mse_db": 8.926609376530156,
+  "holdout_mse_db": 6.959252931896851,
+  "holdout_angles_deg": [
+    45.0,
+    135.0
+  ],
+  "train_angles_deg": [
+    0.0,
+    15.0,
+    30.0,
+    60.0,
+    90.0,
+    120.0,
+    150.0,
+    180.0
+  ],
+  "fit_message": "DE success=False nit=70 fun=9.110504; LS success=True cost=2331.929258",
+  "preset": "AKGC414Omni.json",
+  "plots": {
+    "polar": "plots/polars/AKGC414Omni_polar.png",
+    "colour": "plots/colour/AKGC414Omni_colour.png",
+    "fit_train": "plots/fit/AKGC414Omni_train.png",
+    "fit_holdout": "plots/fit/AKGC414Omni_holdout.png"
+  }
+}

@@ -1,0 +1,24 @@
+{'pre': 'sslE', 'signal': 'noise', 'rel_clip_db': -6, 'held_out': True, 'lin_err_db': -16.8, 'ham3_err_db': -16.8, 'ham5_err_db': -18.1, 'ham7_err_db': -17.1, 'ham5+volt_err_db': -18.0}
+{'pre': 'sslE', 'signal': 'noise', 'rel_clip_db': -12, 'held_out': False, 'lin_err_db': -42.0, 'ham3_err_db': -40.1, 'ham5_err_db': -38.5, 'ham7_err_db': -36.4, 'ham5+volt_err_db': -38.5}
+{'pre': 'sslE', 'signal': 'ess', 'rel_clip_db': -3, 'held_out': False, 'lin_err_db': -39.4, 'ham3_err_db': -39.3, 'ham5_err_db': -38.6, 'ham7_err_db': -37.8, 'ham5+volt_err_db': -38.9}
+{'pre': 'sslE', 'signal': 'mix', 'rel_clip_db': -6, 'held_out': True, 'lin_err_db': -32.9, 'ham3_err_db': -32.7, 'ham5_err_db': -32.6, 'ham7_err_db': -32.5, 'ham5+volt_err_db': -32.5}
+{'pre': 'sslE', 'signal': 'mix', 'rel_clip_db': 0, 'held_out': True, 'lin_err_db': -32.8, 'ham3_err_db': -32.7, 'ham5_err_db': -32.5, 'ham7_err_db': -32.4, 'ham5+volt_err_db': -32.5}
+{'pre': 'sslE', 'signal': 'vocal', 'rel_clip_db': -6, 'held_out': True, 'lin_err_db': -60.3, 'ham3_err_db': -63.5, 'ham5_err_db': -62.2, 'ham7_err_db': -62.2, 'ham5+volt_err_db': -59.9}
+{'pre': 'sslE', 'signal': 'vocal', 'rel_clip_db': 0, 'held_out': True, 'lin_err_db': -34.5, 'ham3_err_db': -34.5, 'ham5_err_db': -35.7, 'ham7_err_db': -31.8, 'ham5+volt_err_db': -34.8}
+{'pre': 'sslE', 'signal': 'drums', 'rel_clip_db': -6, 'held_out': True, 'lin_err_db': -22.7, 'ham3_err_db': -22.5, 'ham5_err_db': -22.3, 'ham7_err_db': -22.2, 'ham5+volt_err_db': -22.3}
+{'pre': 'sslE', 'signal': 'drums', 'rel_clip_db': 0, 'held_out': True, 'lin_err_db': -22.7, 'ham3_err_db': -22.5, 'ham5_err_db': -22.3, 'ham7_err_db': -22.2, 'ham5+volt_err_db': -22.3}
+{'pre': 'sslE', 'signal': 'wetmix', 'rel_clip_db': -6, 'held_out': True, 'lin_err_db': -38.9, 'ham3_err_db': -38.8, 'ham5_err_db': -38.7, 'ham7_err_db': -38.7, 'ham5+volt_err_db': -38.7}
+{'pre': 'sslE', 'signal': 'wetmix', 'rel_clip_db': 0, 'held_out': True, 'lin_err_db': -38.4, 'ham3_err_db': -38.3, 'ham5_err_db': -38.3, 'ham7_err_db': -38.3, 'ham5+volt_err_db': -38.2}
+sslE done 30s
+{'pre': 'manley', 'signal': 'noise', 'rel_clip_db': -6, 'held_out': True, 'lin_err_db': -21.0, 'ham3_err_db': -20.2, 'ham5_err_db': -6.4, 'ham7_err_db': 8.0, 'ham5+volt_err_db': -7.6}
+{'pre': 'manley', 'signal': 'noise', 'rel_clip_db': -12, 'held_out': False, 'lin_err_db': -40.3, 'ham3_err_db': -35.2, 'ham5_err_db': -32.0, 'ham7_err_db': -26.6, 'ham5+volt_err_db': -26.4}
+{'pre': 'manley', 'signal': 'ess', 'rel_clip_db': -3, 'held_out': False, 'lin_err_db': -13.1, 'ham3_err_db': -17.7, 'ham5_err_db': -14.3, 'ham7_err_db': -17.7, 'ham5+volt_err_db': -16.0}
+{'pre': 'manley', 'signal': 'mix', 'rel_clip_db': -6, 'held_out': True, 'lin_err_db': -28.3, 'ham3_err_db': -28.2, 'ham5_err_db': -26.9, 'ham7_err_db': -27.7, 'ham5+volt_err_db': -24.8}
+{'pre': 'manley', 'signal': 'mix', 'rel_clip_db': 0, 'held_out': True, 'lin_err_db': -28.3, 'ham3_err_db': -26.7, 'ham5_err_db': -22.9, 'ham7_err_db': -22.5, 'ham5+volt_err_db': -20.9}
+{'pre': 'manley', 'signal': 'vocal', 'rel_clip_db': -6, 'held_out': True, 'lin_err_db': -54.1, 'ham3_err_db': -41.7, 'ham5_err_db': -38.7, 'ham7_err_db': -23.9, 'ham5+volt_err_db': -24.6}
+{'pre': 'manley', 'signal': 'vocal', 'rel_clip_db': 0, 'held_out': True, 'lin_err_db': -29.7, 'ham3_err_db': -30.7, 'ham5_err_db': -10.1, 'ham7_err_db': -5.8, 'ham5+volt_err_db': -12.0}
+{'pre': 'manley', 'signal': 'drums', 'rel_clip_db': -6, 'held_out': True, 'lin_err_db': -22.1, 'ham3_err_db': -21.8, 'ham5_err_db': -21.5, 'ham7_err_db': -21.6, 'ham5+volt_err_db': -21.2}
+{'pre': 'manley', 'signal': 'drums', 'rel_clip_db': 0, 'held_out': True, 'lin_err_db': -22.1, 'ham3_err_db': -21.8, 'ham5_err_db': -21.1, 'ham7_err_db': -21.1, 'ham5+volt_err_db': -20.5}
+{'pre': 'manley', 'signal': 'wetmix', 'rel_clip_db': -6, 'held_out': True, 'lin_err_db': -30.7, 'ham3_err_db': -30.4, 'ham5_err_db': -28.5, 'ham7_err_db': -29.0, 'ham5+volt_err_db': -25.7}
+{'pre': 'manley', 'signal': 'wetmix', 'rel_clip_db': 0, 'held_out': True, 'lin_err_db': -30.6, 'ham3_err_db': -27.6, 'ham5_err_db': -20.0, 'ham7_err_db': -18.8, 'ham5+volt_err_db': -19.5}
+manley done 30s

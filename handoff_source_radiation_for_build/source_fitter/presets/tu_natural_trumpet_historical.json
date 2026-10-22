@@ -1,0 +1,192 @@
+{
+  "schema": "source_fitter.preset.v1",
+  "id": "tu_natural_trumpet_historical",
+  "label": "Natural trumpet historical (TU Berlin)",
+  "category": "library_tu",
+  "tag": "MEASURED-FIT",
+  "model": "radiation_shelf_plus_soft_one_pole",
+  "level_reference": "on_axis (0 dB when facing the receiver; omni = exact null)",
+  "frame": {
+    "x": "facing (radiation reference axis of the dataset)",
+    "y": "source left",
+    "z": "up",
+    "facing_definition": "Mic#04 direction (from SourceView text; VERIFIED text, mapping ASSUMED where 'between' / 'slightly')"
+  },
+  "params": {
+    "lp_order": 2.0,
+    "lo_db": -8.34366,
+    "hi_db": -40.0,
+    "f0": 11810.01992,
+    "shelf_s": 0.61458,
+    "p": 0.36305,
+    "q": 0.10555,
+    "b_ud": -0.15759,
+    "b_lr": -0.0162,
+    "aim_az": -2.33928,
+    "aim_el": -6.86763,
+    "lp_hz": 1358.55633,
+    "lp_mix": 0.87654,
+    "p_lo": 4.0,
+    "dip": 0.38987
+  },
+  "size": {
+    "a_eq_m": 0.0046,
+    "beaming_onset_hz": 11810.0,
+    "rule": "a_eq = c/(2*pi*f0), c=340 m/s as engine (piston ka=1); UI size slider sets size_scale = a_user/a_eq -> f0, lp_hz divided by size_scale"
+  },
+  "di_db": {
+    "125": 3.0,
+    "250": 3.13,
+    "500": 3.61,
+    "1000": 5.16,
+    "2000": 8.78,
+    "4000": 14.31,
+    "8000": 20.71,
+    "16000": 27.53
+  },
+  "diffuse_inject": {
+    "gain_db": -3.2455735261354057,
+    "shelf_f0": 4284.545613959319,
+    "shelf_gain_db": -23.80207472544712,
+    "shelf_s": 0.7,
+    "fit_rmse_db": 0.5720022860134498,
+    "target_db": {
+      "50": -2.966584856526286,
+      "104": -2.9897388480674483,
+      "218": -3.089479732203646,
+      "455": -3.5025288321749732,
+      "951": -4.986043502577543,
+      "1986": -8.729080570295121,
+      "4148": -14.632864853408066,
+      "8662": -21.483025639245035
+    }
+  },
+  "fit": {
+    "rmse_train_db": 2.013228037076782,
+    "rmse_holdout_db": 1.8828032214822832,
+    "rmse_per_band_db": {
+      "125": 2.208533605816394,
+      "200": 1.3501231147665922,
+      "250": 2.148637683497608,
+      "315": 1.6854732793529823,
+      "400": 2.223061614675328,
+      "500": 1.9161520559800531,
+      "630": 1.4940184007190087,
+      "800": 1.2419131418275713,
+      "1000": 1.7466083977138744,
+      "1250": 1.5254262900780042,
+      "1600": 1.8596329042088724,
+      "2000": 2.5490161589742395,
+      "2500": 2.0938581332682955,
+      "3150": 2.4238385056232508,
+      "4000": 1.9012184418654197,
+      "5000": 2.3409853808483825,
+      "6300": 2.0864550276652736,
+      "8000": 1.703112788516076,
+      "10000": 2.0755638235809695,
+      "12500": 2.4564606884921334,
+      "16000": 2.069931975979018
+    },
+    "n_dirs": 32,
+    "n_train": 26,
+    "n_holdout": 6,
+    "fit_bands_hz": [
+      125.0,
+      16000.0
+    ],
+    "n_bands": 21,
+    "free_params": [
+      "lo_db",
+      "hi_db",
+      "f0",
+      "shelf_s",
+      "p",
+      "q",
+      "b_ud",
+      "b_lr",
+      "aim_az",
+      "aim_el",
+      "lp_hz",
+      "lp_mix",
+      "p_lo",
+      "dip"
+    ],
+    "fixed_params": {
+      "lp_order": 2.0
+    },
+    "di_data_db": {
+      "125": 4.973157528235829,
+      "200": 0.9157939989316191,
+      "250": 0.862962389071285,
+      "315": 3.2717610277252795,
+      "400": 4.325448438145269,
+      "500": 2.8094633824129907,
+      "630": 3.479595587438671,
+      "800": 3.598374124091973,
+      "1000": 6.294641372733051,
+      "1250": 4.783325173288193,
+      "1600": 7.898664135033458,
+      "2000": 8.811078362231873,
+      "2500": 9.890948884093227,
+      "3150": 11.429286839009947,
+      "4000": 12.742897190912027,
+      "5000": 13.63373509391381,
+      "6300": 13.68422860971583,
+      "8000": 14.053661274938692,
+      "10000": 14.455037510956846,
+      "12500": 14.609438703770813,
+      "16000": 14.747316419535029
+    },
+    "di_model_db": {
+      "125": 3.0027022403014794,
+      "200": 3.0690902792088757,
+      "250": 3.12959577361444,
+      "315": 3.226801427800103,
+      "400": 3.383607527121203,
+      "500": 3.6071020498897592,
+      "630": 3.9516090120105125,
+      "800": 4.473974519262587,
+      "1000": 5.158760928610322,
+      "1250": 6.069219241082507,
+      "1600": 7.360169519275348,
+      "2000": 8.776681265930863,
+      "2500": 10.401205289705624,
+      "3150": 12.2586018474121,
+      "4000": 14.312423646924055,
+      "5000": 16.311149511032593,
+      "6300": 18.438742122670416,
+      "8000": 20.70696643016191,
+      "10000": 22.91678073363151,
+      "12500": 25.19399769060955,
+      "16000": 27.534658579751547
+    }
+  },
+  "dsp": {
+    "stages": [
+      "broadband_gain(k_lo*lo_db)",
+      "rbj_high_shelf(f0, k*hi_db, shelf_s)",
+      "soft_beaming_lp(lp_hz/k_hi, lp_mix, lp_order 1|2 cascaded one-poles)"
+    ],
+    "fs_ref_hz": 48000,
+    "k": "k_hi = A*u^p*(1-q*u^8); k_lo = A*((1-dip)*u^p_lo*(1-q*u^8) + dip*4u(1-u)); both 0 on axis",
+    "slot": "FIRST stage of each image's serial cascade (before surfaces/air/mic)"
+  },
+  "provenance": {
+    "dataset": "TU Berlin \u2014 A Database of Anechoic Microphone Array Measurements of Musical Instruments (1b_Directivities3rdOctave_SOFA)",
+    "url": "https://depositonce.tu-berlin.de/items/b194da8b-e98c-4761-9100-2b0bb6ba93e8",
+    "doi": "10.14279/depositonce-19858 ; paper 10.17743/jaes.2022.0128",
+    "file": "Natural_trumpet_historical_3rdOctave.sofa",
+    "license": "cc by-nc-sa 4.0 (file attribute; NC = non-commercial)",
+    "source_type": "Natural trumpet historical",
+    "manufacturer": "Instrument: Rainer Egger (2003), copy of instrument approx. 1800",
+    "source_view": "Bell aiming at Mic#04, normal of the top of the pipe aiming at between Mic#29 and Mic#13",
+    "forward_axis": "Mic#04 direction (from SourceView text; VERIFIED text, mapping ASSUMED where 'between' / 'slightly')",
+    "grid": "32-mic pentakis dodecahedron r=2.06 m; equal quadrature weights ASSUMED",
+    "measurement": "MEASURED (anechoic, 3rd-octave band average of partials)"
+  },
+  "tags": {
+    "params": "VERIFIED fit output (this code) of MEASURED data",
+    "model_form": "ASSUMED (engineering model, mirrors mic_fitter v3)",
+    "size_rule": "VERIFIED physics (piston ka=1) applied as ASSUMED mapping"
+  }
+}

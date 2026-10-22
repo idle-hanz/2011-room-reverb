@@ -1,0 +1,90 @@
+{
+ "render_factors": {
+  "natural": 2,
+  "glue": "ADAA1",
+  "room_crush": 2,
+  "nuke": "ADAA1",
+  "swell": 2,
+  "neve1073": 8,
+  "u610a": 8
+ },
+ "play_factors": {
+  "natural": 2,
+  "glue": "ADAA1",
+  "room_crush": 1,
+  "nuke": "ADAA1",
+  "swell": 2,
+  "neve1073": 1,
+  "u610a": 8
+ },
+ "guitar": "C:\\Users\\IdleHanz\\Desktop\\2011 Room Reverb\\handoff_build_support_2\\roadmap\\robotic_1240\\test_guitar_dualmono_clean.wav",
+ "guitar_seconds": 3,
+ "tail_seconds": 1,
+ "rows": [
+  {
+   "name": "natural",
+   "wav": "C:\\Users\\IdleHanz\\Desktop\\2011 Room Reverb\\handoff_build_support_2\\roadmap\\overnight\\bloom_listen\\natural.wav",
+   "bytes": 1955564,
+   "seconds_audio": 6.79,
+   "render_s": 145.53,
+   "render_os": 2,
+   "peak": 0.74445,
+   "limiter_db": 0.0,
+   "limiter_samples": 0,
+   "glue_colour": false,
+   "amount": 100
+  },
+  {
+   "name": "glue",
+   "wav": "C:\\Users\\IdleHanz\\Desktop\\2011 Room Reverb\\handoff_build_support_2\\roadmap\\overnight\\bloom_listen\\glue.wav",
+   "bytes": 1955564,
+   "seconds_audio": 6.79,
+   "render_s": 103.47,
+   "render_os": "ADAA1",
+   "peak": 0.86268,
+   "limiter_db": 0.0,
+   "limiter_samples": 0,
+   "glue_colour": true,
+   "amount": 100
+  },
+  {
+   "name": "room_crush",
+   "wav": "C:\\Users\\IdleHanz\\Desktop\\2011 Room Reverb\\handoff_build_support_2\\roadmap\\overnight\\bloom_listen\\room_crush.wav",
+   "bytes": 1955564,
+   "seconds_audio": 6.79,
+   "render_s": 137.08,
+   "render_os": 2,
+   "peak": 0.6639,
+   "limiter_db": 0.0,
+   "limiter_samples": 0,
+   "glue_colour": false,
+   "amount": 100
+  },
+  {
+   "name": "nuke",
+   "wav": "C:\\Users\\IdleHanz\\Desktop\\2011 Room Reverb\\handoff_build_support_2\\roadmap\\overnight\\bloom_listen\\nuke.wav",
+   "bytes": 1955564,
+   "seconds_audio": 6.79,
+   "render_s": 100.16,
+   "render_os": "ADAA1",
+   "peak": 0.73633,
+   "limiter_db": 0.0,
+   "limiter_samples": 0,
+   "glue_colour": false,
+   "amount": 100
+  },
+  {
+   "name": "swell",
+   "wav": "C:\\Users\\IdleHanz\\Desktop\\2011 Room Reverb\\handoff_build_support_2\\roadmap\\overnight\\bloom_listen\\swell.wav",
+   "bytes": 1955564,
+   "seconds_audio": 6.79,
+   "render_s": 131.99,
+   "render_os": 2,
+   "peak": 0.81063,
+   "limiter_db": 0.0,
+   "limiter_samples": 0,
+   "glue_colour": false,
+   "amount": 100
+  }
+ ]
+}

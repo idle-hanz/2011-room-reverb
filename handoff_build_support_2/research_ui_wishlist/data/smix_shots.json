@@ -1,0 +1,562 @@
+{
+ "pixel": [
+  {
+   "case": "ab_omni",
+   "mode": "MEASURED_SHELF",
+   "canvas": {
+    "L": {
+     "maxPx": 0,
+     "n": 64,
+     "dataMax": 0
+    },
+    "C": {
+     "maxPx": 0,
+     "n": 64,
+     "dataMax": 0
+    },
+    "R": {
+     "maxPx": 0,
+     "n": 64,
+     "dataMax": 0
+    },
+    "legend": [
+     "rgb(231, 64, 64)",
+     "rgb(231, 156, 64)",
+     "rgb(231, 204, 64)",
+     "rgb(132, 231, 64)",
+     "rgb(64, 208, 231)",
+     "rgb(64, 67, 231)",
+     "rgb(124, 64, 231)",
+     "rgb(170, 64, 231)"
+    ]
+   },
+   "engine_db": {
+    "L": 0.0,
+    "C": 0.0,
+    "R": 0.0
+   }
+  },
+  {
+   "case": "ab_omni",
+   "mode": "BYPASS",
+   "canvas": {
+    "L": {
+     "maxPx": 0,
+     "n": 64,
+     "dataMax": 0
+    },
+    "C": {
+     "maxPx": 0,
+     "n": 64,
+     "dataMax": 0
+    },
+    "R": {
+     "maxPx": 0,
+     "n": 64,
+     "dataMax": 0
+    },
+    "legend": [
+     "rgb(231, 64, 64)",
+     "rgb(231, 156, 64)",
+     "rgb(231, 204, 64)",
+     "rgb(132, 231, 64)",
+     "rgb(64, 208, 231)",
+     "rgb(64, 67, 231)",
+     "rgb(124, 64, 231)",
+     "rgb(170, 64, 231)"
+    ]
+   },
+   "engine_db": {
+    "L": 0.0,
+    "C": 0.0,
+    "R": 0.0
+   }
+  },
+  {
+   "case": "ab_omni",
+   "mode": "ASSUMED_TOYS",
+   "canvas": {
+    "L": {
+     "maxPx": 0,
+     "n": 64,
+     "dataMax": 0
+    },
+    "C": {
+     "maxPx": 0,
+     "n": 64,
+     "dataMax": 0
+    },
+    "R": {
+     "maxPx": 0,
+     "n": 64,
+     "dataMax": 0
+    },
+    "legend": [
+     "rgb(231, 64, 64)",
+     "rgb(231, 156, 64)",
+     "rgb(231, 204, 64)",
+     "rgb(132, 231, 64)",
+     "rgb(64, 208, 231)",
+     "rgb(64, 67, 231)",
+     "rgb(124, 64, 231)",
+     "rgb(170, 64, 231)"
+    ]
+   }
+  },
+  {
+   "case": "ortf",
+   "mode": "MEASURED_SHELF",
+   "canvas": {
+    "L": {
+     "maxPx": 0,
+     "n": 64,
+     "dataMax": 0
+    },
+    "C": {
+     "maxPx": 0,
+     "n": 64,
+     "dataMax": 0
+    },
+    "R": {
+     "maxPx": 0,
+     "n": 64,
+     "dataMax": 0
+    },
+    "legend": [
+     "rgb(231, 64, 64)",
+     "rgb(231, 156, 64)",
+     "rgb(231, 204, 64)",
+     "rgb(132, 231, 64)",
+     "rgb(64, 208, 231)",
+     "rgb(64, 67, 231)",
+     "rgb(124, 64, 231)",
+     "rgb(170, 64, 231)"
+    ]
+   },
+   "engine_db": {
+    "L": 0.0,
+    "C": 0.0,
+    "R": 0.0
+   }
+  },
+  {
+   "case": "ortf",
+   "mode": "BYPASS",
+   "canvas": {
+    "L": {
+     "maxPx": 0,
+     "n": 64,
+     "dataMax": 0
+    },
+    "C": {
+     "maxPx": 0,
+     "n": 64,
+     "dataMax": 0
+    },
+    "R": {
+     "maxPx": 0,
+     "n": 64,
+     "dataMax": 0
+    },
+    "legend": [
+     "rgb(231, 64, 64)",
+     "rgb(231, 156, 64)",
+     "rgb(231, 204, 64)",
+     "rgb(132, 231, 64)",
+     "rgb(64, 208, 231)",
+     "rgb(64, 67, 231)",
+     "rgb(124, 64, 231)",
+     "rgb(170, 64, 231)"
+    ]
+   },
+   "engine_db": {
+    "L": 0.0,
+    "C": 0.0,
+    "R": 0.0
+   }
+  },
+  {
+   "case": "ortf",
+   "mode": "ASSUMED_TOYS",
+   "canvas": {
+    "L": {
+     "maxPx": 0,
+     "n": 64,
+     "dataMax": 0
+    },
+    "C": {
+     "maxPx": 0,
+     "n": 64,
+     "dataMax": 0
+    },
+    "R": {
+     "maxPx": 0,
+     "n": 64,
+     "dataMax": 0
+    },
+    "legend": [
+     "rgb(231, 64, 64)",
+     "rgb(231, 156, 64)",
+     "rgb(231, 204, 64)",
+     "rgb(132, 231, 64)",
+     "rgb(64, 208, 231)",
+     "rgb(64, 67, 231)",
+     "rgb(124, 64, 231)",
+     "rgb(170, 64, 231)"
+    ]
+   }
+  },
+  {
+   "case": "ms",
+   "mode": "MEASURED_SHELF",
+   "canvas": {
+    "L": {
+     "maxPx": 0,
+     "n": 64,
+     "dataMax": 0
+    },
+    "C": {
+     "maxPx": 0,
+     "n": 64,
+     "dataMax": 0
+    },
+    "R": {
+     "maxPx": 0,
+     "n": 64,
+     "dataMax": 0
+    },
+    "legend": [
+     "rgb(231, 64, 64)",
+     "rgb(231, 156, 64)",
+     "rgb(231, 204, 64)",
+     "rgb(132, 231, 64)",
+     "rgb(64, 208, 231)",
+     "rgb(64, 67, 231)",
+     "rgb(124, 64, 231)",
+     "rgb(170, 64, 231)"
+    ]
+   },
+   "engine_db": {
+    "L": 0.0,
+    "C": 0.0,
+    "R": 0.0
+   }
+  },
+  {
+   "case": "ms",
+   "mode": "BYPASS",
+   "canvas": {
+    "L": {
+     "maxPx": 0,
+     "n": 64,
+     "dataMax": 0
+    },
+    "C": {
+     "maxPx": 0,
+     "n": 64,
+     "dataMax": 0
+    },
+    "R": {
+     "maxPx": 0,
+     "n": 64,
+     "dataMax": 0
+    },
+    "legend": [
+     "rgb(231, 64, 64)",
+     "rgb(231, 156, 64)",
+     "rgb(231, 204, 64)",
+     "rgb(132, 231, 64)",
+     "rgb(64, 208, 231)",
+     "rgb(64, 67, 231)",
+     "rgb(124, 64, 231)",
+     "rgb(170, 64, 231)"
+    ]
+   },
+   "engine_db": {
+    "L": 0.0,
+    "C": 0.0,
+    "R": 0.0
+   }
+  },
+  {
+   "case": "ms",
+   "mode": "ASSUMED_TOYS",
+   "canvas": {
+    "L": {
+     "maxPx": 0,
+     "n": 64,
+     "dataMax": 0
+    },
+    "C": {
+     "maxPx": 0,
+     "n": 64,
+     "dataMax": 0
+    },
+    "R": {
+     "maxPx": 0,
+     "n": 64,
+     "dataMax": 0
+    },
+    "legend": [
+     "rgb(231, 64, 64)",
+     "rgb(231, 156, 64)",
+     "rgb(231, 204, 64)",
+     "rgb(132, 231, 64)",
+     "rgb(64, 208, 231)",
+     "rgb(64, 67, 231)",
+     "rgb(124, 64, 231)",
+     "rgb(170, 64, 231)"
+    ]
+   }
+  },
+  {
+   "case": "split",
+   "mode": "MEASURED_SHELF",
+   "canvas": {
+    "L": {
+     "maxPx": 0,
+     "n": 64,
+     "dataMax": 0
+    },
+    "C": {
+     "maxPx": 0,
+     "n": 64,
+     "dataMax": 0
+    },
+    "R": {
+     "maxPx": 0,
+     "n": 64,
+     "dataMax": 0
+    },
+    "legend": [
+     "rgb(231, 64, 64)",
+     "rgb(231, 156, 64)",
+     "rgb(231, 204, 64)",
+     "rgb(132, 231, 64)",
+     "rgb(64, 208, 231)",
+     "rgb(64, 67, 231)",
+     "rgb(124, 64, 231)",
+     "rgb(170, 64, 231)"
+    ]
+   },
+   "engine_db": {
+    "L": 0.0,
+    "C": 0.0,
+    "R": 0.0
+   }
+  },
+  {
+   "case": "split",
+   "mode": "BYPASS",
+   "canvas": {
+    "L": {
+     "maxPx": 0,
+     "n": 64,
+     "dataMax": 0
+    },
+    "C": {
+     "maxPx": 0,
+     "n": 64,
+     "dataMax": 0
+    },
+    "R": {
+     "maxPx": 0,
+     "n": 64,
+     "dataMax": 0
+    },
+    "legend": [
+     "rgb(231, 64, 64)",
+     "rgb(231, 156, 64)",
+     "rgb(231, 204, 64)",
+     "rgb(132, 231, 64)",
+     "rgb(64, 208, 231)",
+     "rgb(64, 67, 231)",
+     "rgb(124, 64, 231)",
+     "rgb(170, 64, 231)"
+    ]
+   },
+   "engine_db": {
+    "L": 0.0,
+    "C": 0.0,
+    "R": 0.0
+   }
+  },
+  {
+   "case": "split",
+   "mode": "ASSUMED_TOYS",
+   "canvas": {
+    "L": {
+     "maxPx": 0,
+     "n": 64,
+     "dataMax": 0
+    },
+    "C": {
+     "maxPx": 0,
+     "n": 64,
+     "dataMax": 0
+    },
+    "R": {
+     "maxPx": 0,
+     "n": 64,
+     "dataMax": 0
+    },
+    "legend": [
+     "rgb(231, 64, 64)",
+     "rgb(231, 156, 64)",
+     "rgb(231, 204, 64)",
+     "rgb(132, 231, 64)",
+     "rgb(64, 208, 231)",
+     "rgb(64, 67, 231)",
+     "rgb(124, 64, 231)",
+     "rgb(170, 64, 231)"
+    ]
+   }
+  }
+ ],
+ "tour": {
+  "edit": [
+   "panelRoom",
+   "panelPreview",
+   "panelAdvanced"
+  ],
+  "source": [
+   "panelRoom",
+   "panelPreview",
+   "panelAdvanced"
+  ],
+  "mic": [
+   "panelListen",
+   "panelMics",
+   "panelAdvanced"
+  ],
+  "mix": [
+   "panelPreview",
+   "panelAdvanced"
+  ],
+  "space": [
+   "panelRoom",
+   "panelHadamard",
+   "panelAdvanced"
+  ],
+  "surfaces": [
+   "panelRoom",
+   "panelPreview",
+   "panelAdvanced"
+  ],
+  "polar": [
+   "panelListen",
+   "panelAdvanced"
+  ]
+ },
+ "console": [
+  [
+   "error",
+   "Failed to load resource: the server responded with a status of 404 (Not Found)"
+  ]
+ ],
+ "dialogs": [
+  [
+   "accept",
+   "Replace the desk with this setup's mix? Cancel keeps your routes."
+  ],
+  [
+   "accept",
+   "Replace the desk with this setup's mix? Cancel keeps your routes."
+  ]
+ ],
+ "data_db": [
+  {
+   "case": "ab_omni",
+   "mode": "MEASURED_SHELF",
+   "engine_db": {
+    "L": 0.0,
+    "C": 0.0,
+    "R": 0.0
+   }
+  },
+  {
+   "case": "ab_omni",
+   "mode": "BYPASS",
+   "engine_db": {
+    "L": 0.0,
+    "C": 0.0,
+    "R": 0.0
+   }
+  },
+  {
+   "case": "ab_omni",
+   "mode": "ASSUMED_TOYS",
+   "engine_db": null
+  },
+  {
+   "case": "ortf",
+   "mode": "MEASURED_SHELF",
+   "engine_db": {
+    "L": 0.0,
+    "C": 0.0,
+    "R": 0.0
+   }
+  },
+  {
+   "case": "ortf",
+   "mode": "BYPASS",
+   "engine_db": {
+    "L": 0.0,
+    "C": 0.0,
+    "R": 0.0
+   }
+  },
+  {
+   "case": "ortf",
+   "mode": "ASSUMED_TOYS",
+   "engine_db": null
+  },
+  {
+   "case": "ms",
+   "mode": "MEASURED_SHELF",
+   "engine_db": {
+    "L": 0.0,
+    "C": 0.0,
+    "R": 0.0
+   }
+  },
+  {
+   "case": "ms",
+   "mode": "BYPASS",
+   "engine_db": {
+    "L": 0.0,
+    "C": 0.0,
+    "R": 0.0
+   }
+  },
+  {
+   "case": "ms",
+   "mode": "ASSUMED_TOYS",
+   "engine_db": null
+  },
+  {
+   "case": "split",
+   "mode": "MEASURED_SHELF",
+   "engine_db": {
+    "L": 0.0,
+    "C": 0.0,
+    "R": 0.0
+   }
+  },
+  {
+   "case": "split",
+   "mode": "BYPASS",
+   "engine_db": {
+    "L": 0.0,
+    "C": 0.0,
+    "R": 0.0
+   }
+  },
+  {
+   "case": "split",
+   "mode": "ASSUMED_TOYS",
+   "engine_db": null
+  }
+ ],
+ "matrix": "L +1.259 -1.259   C +1.500 +1.500   R +0.175 +0.326"
+}

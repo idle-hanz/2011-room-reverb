@@ -1,0 +1,199 @@
+﻿<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"><title>2011 Room Reverb: UI MOCKUP (not shipping)</title>
+<style>
+:root{--bg:#0b0c10;--panel:#13151b;--panel2:#191c25;--border:#2a2f3d;--text:#e9ecf3;--muted:#8b93a8;--faint:#5c6478;--accent:#2dd4bf;--accent-dim:rgba(45,212,191,.16);--source:#fbbf24;--mic:#60a5fa;--left:#a78bfa;--right:#34d399;--warn:#fbbf24;--danger:#f472b6;--r:12px;--font:"Segoe UI",system-ui,sans-serif;--mono:ui-monospace,Consolas,monospace}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:13px var(--font)}
+.banner{background:#3a3420;color:var(--warn);padding:6px 12px;text-align:center;font-weight:600}
+header{display:flex;align-items:center;gap:10px;padding:8px 12px;border-bottom:1px solid var(--border);flex-wrap:wrap}
+h1{font-size:16px;margin:0 12px 0 0}
+button,.chip{background:var(--panel2);color:var(--text);border:1px solid var(--border);border-radius:999px;padding:5px 11px;cursor:pointer;font:inherit}
+button:hover{border-color:var(--accent)}button.on,.chip.on{background:var(--accent-dim);border-color:var(--accent);color:var(--accent)}
+button:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.primary{background:var(--accent);color:#042f2e;font-weight:600}
+.engine{width:100%;color:var(--muted);font:12px var(--mono)}
+.engine b{color:var(--accent)}.rtag{background:var(--danger);color:#000;border-radius:4px;padding:0 4px;font-size:10px;margin-left:4px}
+main{display:grid;grid-template-columns:230px 1fr 340px;gap:10px;padding:10px}
+.panel{background:var(--panel);border:1px solid var(--border);border-radius:var(--r);padding:10px;margin-bottom:10px}
+.panel h2{font-size:12px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin:0 0 8px}
+.row{display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin:4px 0}
+label.ctl{display:grid;grid-template-columns:70px 1fr 52px;gap:6px;align-items:center;margin:5px 0}
+output{font-family:var(--mono);color:var(--accent);text-align:right}
+input[type=range]{width:100%;accent-color:var(--accent)}
+.sub{display:grid;grid-template-columns:60px 1fr;gap:4px;font-size:11px;color:var(--muted)}
+.bar{height:6px;background:var(--panel2);border-radius:3px;overflow:hidden;margin-top:4px}.bar i{display:block;height:100%;background:var(--accent)}
+canvas{width:100%;display:block;background:#0a0b0e;border-radius:8px}
+.tabs{display:flex;gap:4px;margin-bottom:6px}
+.mix{grid-column:1/4;display:flex;gap:18px;align-items:end;flex-wrap:wrap}
+.fader{display:flex;flex-direction:column;align-items:center;gap:4px}
+.fader input{writing-mode:vertical-lr;direction:rtl;height:90px;width:24px}
+.editors{grid-column:1/4}
+.ex{color:var(--warn);font-size:11px}
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.6);display:none;align-items:center;justify-content:center}
+.modal div{background:var(--panel);border:1px solid var(--accent);border-radius:var(--r);padding:18px;max-width:420px}
+.hint{color:var(--muted);font-size:11px}
+.snap{border-radius:6px;padding:3px 8px}.snap.full{border-color:var(--source)}
+#toast{position:fixed;bottom:16px;left:50%;transform:translateX(-50%);background:var(--panel2);border:1px solid var(--accent);padding:8px 14px;border-radius:8px;display:none}
+.meter{display:grid;grid-template-columns:14px 1fr 60px;gap:6px;align-items:center;margin:4px 0;font:11px var(--mono)}
+.mbar{height:10px;background:linear-gradient(90deg,#34d399 0 70%,#fbbf24 70% 88%,#f472b6 88%);border-radius:3px;position:relative}
+.mbar span{position:absolute;right:0;top:0;bottom:0;background:#0a0b0e}
+</style></head><body>
+<div class="banner">MOCKUP, NOT SHIPPING. Every number, curve and meter below is EXAMPLE DATA. Nothing here makes sound.</div>
+<header>
+ <h1>2011 Room Reverb</h1>
+ <button>File: guitar_DI.wav (example) ▾</button>
+ <button id="play" class="">▶ Play</button><button class="primary" id="render">● Render</button>
+ <button id="undo" title="Undo (Ctrl+Z)">↶ Undo</button><button id="redo" title="Redo (Ctrl+Y)">↷ Redo</button>
+ <span class="row" role="group" aria-label="A/B compare"><button id="abA" class="on">A</button><button id="abB">B</button><button id="abCopy" title="Copy A to B">A→B</button></span>
+ <span class="row" id="snaps" aria-label="Snapshots"></span>
+ <button id="save">Save…</button><button id="load">Load…</button>
+ <div class="engine">Engine · Play: <b>32 lines</b> · Surfaces ✓ · shared tail · physics ✓ &nbsp;|&nbsp; Render: <b id="engR">32 lines</b> &nbsp;· autosaved 11:24 (example)</div>
+</header>
+<main>
+ <section>
+  <div class="panel"><h2>Room</h2>
+   <div class="row" id="places"><button data-p="studio" class="on">Studio</button><button data-p="club">Club</button><button data-p="hall">Hall</button><button title="Save current room as a place">+</button></div>
+   <div class="hint" id="roomSize">5.6 × 7.2 × 2.8 m</div>
+   <label class="ctl"><span>Width m</span><input type="range" id="W" min="2" max="80" step=".1" value="5.6"><output id="Wo">5.6</output></label>
+   <label class="ctl"><span>Length m</span><input type="range" id="L" min="2" max="120" step=".1" value="7.2"><output id="Lo">7.2</output></label>
+  </div>
+  <div class="panel"><h2>Character <span class="ex">(proposed macro: needs Idle)</span></h2>
+   <label class="ctl"><span>Natural</span><input type="range" id="char" min="0" max="100" value="20"><output id="charO">20</output></label>
+   <div class="hint" style="text-align:right">Warm chamber →</div>
+   <div class="sub"><span>Surfaces</span><div class="bar"><i id="bS"></i></div><span>Density</span><div class="bar"><i id="bD"></i></div><span>BLOOM</span><div class="bar"><i id="bB"></i></div></div>
+  </div>
+  <div class="panel"><h2>Decay</h2>
+   <label class="ctl"><span>Mid T</span><input type="range" id="dec" min="0" max="1" step=".001" value=".55" title="Log taper. Double-click resets to 1.80 s. Shift = fine."><output id="decO">1.80 s</output></label>
+   <div class="row"><label><input type="checkbox" checked> Physical</label><span class="hint" id="reach">reachable ✓</span></div>
+   <label class="ctl"><span>Pre-delay</span><input type="range" id="pd" min="0" max="250" value="12"><output id="pdO">12 ms</output></label>
+   <div class="ex">Pre-delay is new: SOUND, needs Idle</div>
+  </div>
+ </section>
+ <section>
+  <div class="panel"><div class="row"><h2 style="margin:0">Plan</h2><span class="tabs"><button class="on">Top</button><button>Side</button><button>3D</button></span><span class="hint">Drag ★ source or ◉ stand. Grid 1 m. Ring = critical distance (example).</span></div>
+   <canvas id="plan" width="900" height="560" aria-label="Room plan, drag source and mics" tabindex="0"></canvas>
+   <div class="row"><span class="hint">Sources:</span><span class="chip on" style="color:var(--source)">● Gtr (A)</span><button>S</button><button>M</button><span class="chip" style="color:var(--danger)">● Vox (B)</span><button>+ Link track</button>
+   <span class="hint" style="margin-left:auto">Mics:</span><select style="background:var(--panel2);color:var(--text);border:1px solid var(--border);border-radius:6px"><option>ORTF</option><option>AB omni</option><option>XY 90°</option><option>Binaural</option></select>
+   <span class="hint" id="dist">source→stand 3.1 m</span></div>
+  </div>
+ </section>
+ <section>
+  <div class="panel"><h2>Output <span class="ex">(example meter)</span></h2>
+   <div class="meter"><span>L</span><div class="mbar"><span id="mL"></span></div><span id="mLo">-12.0 dB</span></div>
+   <div class="meter"><span>R</span><div class="mbar"><span id="mR"></span></div><span id="mRo">-14.0 dB</span></div>
+   <div class="meter"><span>GR</span><div class="bar"><i id="gr" style="width:0;background:var(--danger)"></i></div><span id="grO">0.0 dB</span></div>
+   <div class="row"><span class="hint">Correlation</span><input type="range" id="corr" min="-1" max="1" step=".01" value=".6" disabled><output id="corrO">+0.60</output></div>
+   <canvas id="gonio" width="300" height="140" aria-label="Goniometer"></canvas>
+  </div>
+  <div class="panel"><h2>What you hear</h2>
+   <div class="tabs" id="gtabs"><button data-g="etc" class="on">ETC</button><button data-g="band">Decay/band</button><button data-g="early">Early map</button><button data-g="spec">Spectrum</button></div>
+   <canvas id="graph" width="320" height="200"></canvas>
+   <div class="hint" id="gcap"></div>
+  </div>
+ </section>
+ <div class="panel mix"><h2 style="width:100%">Mix</h2>
+  <div class="fader"><input type="range" value="0"><span>Dry</span></div>
+  <div class="fader"><input type="range" value="70"><span>Direct</span></div>
+  <div class="fader"><input type="range" value="40"><span>Early</span></div>
+  <div class="fader"><input type="range" value="70"><span>Tail</span></div>
+  <div class="fader"><input type="range" value="60"><span>Width*</span></div>
+  <div class="fader"><input type="range" value="70"><span>Output*</span></div>
+  <button>Wet solo*</button><span class="row"><button class="on">Re-Mic</button><button>Reverb</button></span>
+  <span class="ex">* new controls: SOUND, needs Idle. Faders: audio taper, 0 dB detent, double-click = 0 dB.</span>
+ </div>
+ <div class="panel editors"><h2>Editors</h2><div class="row">
+  <button>Source</button><button>Mics</button><button>Desk</button><button>Surfaces</button><button>Air</button><button>Polar</button><button>Space (3D)</button><button>Advanced (Hadamard <span class="rtag">R 64/128</span>, 2011 law, parity…)</button></div>
+  <div class="hint">Editors open as panels; the main page stays visible. Signal flow: Source → Room → Mics → Desk → BLOOM → Output.</div></div>
+</main>
+<div class="modal" id="modal"><div><h3 id="mT">Load Hall?</h3><p>This changes the <b>room size, source and mic positions</b>. Your mic setup, Mix and Surfaces stay as they are. <span class="hint">(Proposed rule: Idle to decide.)</span></p><div class="row"><button class="primary" id="mOk">Load</button><button id="mNo">Cancel</button><label><input type="checkbox" id="mKeep" checked> Keep my mic positions</label></div></div></div>
+<div id="toast"></div>
+<script>
+var S={W:5.6,L:7.2,src:{x:2.8,z:5.3},stand:{x:2.8,z:1.6},char:20,dec:1.8,pd:12,place:"studio"};
+var hist=[],fut=[],AB={A:null,B:null},cur="A",snaps=[null,null,null,null,null,null,null,null];
+var $=function(i){return document.getElementById(i)};
+function toast(t){var e=$("toast");e.textContent=t;e.style.display="block";clearTimeout(toast.t);toast.t=setTimeout(function(){e.style.display="none"},1800)}
+function push(){hist.push(JSON.stringify(S));if(hist.length>50)hist.shift();fut=[]}
+function decFrom(v){return +(0.1*Math.pow(80,v)).toFixed(2)}function decTo(s){return Math.log(s/0.1)/Math.log(80)}
+function sync(){$("W").value=S.W;$("Wo").textContent=S.W.toFixed(1);$("L").value=S.L;$("Lo").textContent=S.L.toFixed(1);
+ $("roomSize").textContent=S.W.toFixed(1)+" × "+S.L.toFixed(1)+" × 2.8 m";$("char").value=S.char;$("charO").textContent=S.char;
+ $("bS").style.width=(20+S.char*.6)+"%";$("bD").style.width=(30+S.char*.5)+"%";$("bB").style.width=(S.char*.8)+"%";
+ $("dec").value=decTo(S.dec);$("decO").textContent=S.dec.toFixed(2)+" s";$("pd").value=S.pd;$("pdO").textContent=S.pd+" ms";
+ var reach=S.dec<=Math.max(1.2,(S.W*S.L)/20);$("reach").textContent=reach?"reachable ✓ (example)":"room max ≈ "+Math.max(1.2,(S.W*S.L)/20).toFixed(1)+" s (example)";$("reach").style.color=reach?"":"var(--warn)";
+ document.querySelectorAll("#places button[data-p]").forEach(function(b){b.classList.toggle("on",b.dataset.p===S.place)});
+ drawPlan();drawGraph();}
+// plan
+var plan=$("plan"),pc=plan.getContext("2d"),drag=null;
+function geo(){var m=40,sc=Math.min((plan.width-2*m)/S.W,(plan.height-2*m)/S.L);return{m:m,sc:sc,ox:(plan.width-S.W*sc)/2,oy:(plan.height-S.L*sc)/2}}
+function P(x,z){var g=geo();return[g.ox+x*g.sc,g.oy+(S.L-z)*g.sc]}
+function drawPlan(){var g=geo(),c=pc;c.clearRect(0,0,plan.width,plan.height);
+ c.strokeStyle="#1e2330";c.lineWidth=1;var step=S.W>30?5:1;for(var x=0;x<=S.W;x+=step){var a=P(x,0),b=P(x,S.L);c.beginPath();c.moveTo(a[0],a[1]);c.lineTo(b[0],b[1]);c.stroke()}
+ for(var z=0;z<=S.L;z+=step){a=P(0,z);b=P(S.W,z);c.beginPath();c.moveTo(a[0],a[1]);c.lineTo(b[0],b[1]);c.stroke()}
+ c.strokeStyle="#2dd4bf";c.lineWidth=2;c.strokeRect(g.ox,g.oy,S.W*g.sc,S.L*g.sc);
+ c.fillStyle="#8b93a8";c.font="12px Segoe UI";c.fillText("Front",g.ox+4,g.oy-6);c.fillText("Back",g.ox+4,g.oy+S.L*g.sc+16);c.fillText("grid "+step+" m",g.ox+S.W*g.sc-60,g.oy-6);
+ var s=P(S.src.x,S.src.z),m=P(S.stand.x,S.stand.z);
+ // reflection ticks (example: first-order mirror points)
+ [[0,S.src.z*.6+S.stand.z*.4],[S.W,S.src.z*.6+S.stand.z*.4]].forEach(function(r){var p=P(r[0],r[1]);c.fillStyle="#a78bfa";c.fillRect(p[0]-3,p[1]-6,6,12)});
+ var p=P((S.src.x+S.stand.x)/2,S.L);c.fillStyle="#34d399";c.fillRect(p[0]-6,p[1]-3,12,6);
+ // critical distance ring (example formula)
+ var rc=0.057*Math.sqrt(S.W*S.L*2.8/S.dec);c.strokeStyle="rgba(251,191,36,.35)";c.setLineDash([4,4]);c.beginPath();c.arc(s[0],s[1],rc*g.sc,0,7);c.stroke();c.setLineDash([]);
+ c.strokeStyle="#5c6478";c.beginPath();c.moveTo(s[0],s[1]);c.lineTo(m[0],m[1]);c.stroke();
+ var d=Math.hypot(S.src.x-S.stand.x,S.src.z-S.stand.z);c.fillStyle="#e9ecf3";c.fillText(d.toFixed(2)+" m",(s[0]+m[0])/2+6,(s[1]+m[1])/2);$("dist").textContent="source→stand "+d.toFixed(2)+" m · crit. dist ≈ "+rc.toFixed(2)+" m (example)";
+ c.fillStyle="#fbbf24";c.font="22px Segoe UI";c.fillText("★",s[0]-8,s[1]+8);c.font="12px Segoe UI";c.fillText("Gtr (A)",s[0]+12,s[1]+4);
+ c.fillStyle="#a78bfa";c.beginPath();c.arc(m[0]-14,m[1],6,0,7);c.fill();c.fillStyle="#60a5fa";c.beginPath();c.arc(m[0],m[1],6,0,7);c.fill();c.fillStyle="#34d399";c.beginPath();c.arc(m[0]+14,m[1],6,0,7);c.fill();
+ c.fillStyle="#8b93a8";c.fillText("L  C  R  (ORTF stand)",m[0]-30,m[1]+22);}
+function hit(e){var r=plan.getBoundingClientRect(),x=(e.clientX-r.left)*plan.width/r.width,y=(e.clientY-r.top)*plan.height/r.height;
+ var s=P(S.src.x,S.src.z),m=P(S.stand.x,S.stand.z);if(Math.hypot(x-s[0],y-s[1])<20)return"src";if(Math.hypot(x-m[0],y-m[1])<24)return"stand";return null}
+function toM(e){var r=plan.getBoundingClientRect(),x=(e.clientX-r.left)*plan.width/r.width,y=(e.clientY-r.top)*plan.height/r.height,g=geo();
+ return{x:Math.max(.2,Math.min(S.W-.2,(x-g.ox)/g.sc)),z:Math.max(.2,Math.min(S.L-.2,S.L-(y-g.oy)/g.sc))}}
+plan.addEventListener("pointerdown",function(e){drag=hit(e);if(drag){push();plan.setPointerCapture(e.pointerId)}});
+plan.addEventListener("pointermove",function(e){if(!drag){plan.style.cursor=hit(e)?"grab":"default";return}var p=toM(e);S[drag].x=+p.x.toFixed(2);S[drag].z=+p.z.toFixed(2);drawPlan();drawGraph()});
+plan.addEventListener("pointerup",function(){drag=null});
+plan.addEventListener("keydown",function(e){var d={ArrowLeft:[-.1,0],ArrowRight:[.1,0],ArrowUp:[0,.1],ArrowDown:[0,-.1]}[e.key];if(!d)return;e.preventDefault();push();S.src.x=+(S.src.x+d[0]).toFixed(2);S.src.z=+(S.src.z+d[1]).toFixed(2);sync()});
+// graphs (example curves)
+var gc=$("graph").getContext("2d"),gmode="etc";
+function axes(c,W,H,xl,yl){c.clearRect(0,0,W,H);c.strokeStyle="#2a2f3d";c.strokeRect(30,8,W-38,H-30);c.fillStyle="#8b93a8";c.font="10px Segoe UI";c.fillText(xl,W-60,H-6);c.save();c.translate(10,H/2+20);c.rotate(-Math.PI/2);c.fillText(yl,0,0);c.restore()}
+function drawGraph(){var cv=$("graph"),c=gc,W=cv.width,H=cv.height;var T=S.dec,dens=S.char/100;
+ if(gmode==="etc"){axes(c,W,H,"time ms","dB");var tmax=Math.max(400,T*1000*.8);
+  c.fillStyle="rgba(167,139,250,.12)";c.fillRect(30+S.pd/tmax*(W-38),8,80/tmax*(W-38),H-30);
+  c.strokeStyle="#2dd4bf";c.beginPath();for(var i=0;i<300;i++){var t=i/300*tmax,db=(t<S.pd?-80:-60*t/1000/T-(Math.sin(i*1.7)*(1-dens)*6+Math.random()*3)),y=8+(-db/80)*(H-30);if(i===0&&t>=S.pd)db=0;c.lineTo(30+t/tmax*(W-38),Math.min(H-22,y))}c.stroke();
+  c.fillStyle="#fbbf24";c.fillRect(30+S.pd/tmax*(W-38),8,2,10);$("gcap").textContent="EXAMPLE energy-time curve. Shaded = early window. Amber = direct after pre-delay. Slope follows Decay "+T.toFixed(2)+" s."}
+ else if(gmode==="band"){axes(c,W,H,"Hz (log)","T s");var f=[63,125,250,500,1000,2000,4000,8000],X=function(i){return 30+i/7*(W-38)},ym=Math.max(2,T*1.8),Y=function(v){return 8+(1-v/ym)*(H-30)};
+  c.strokeStyle="#5c6478";c.setLineDash([3,3]);c.beginPath();f.forEach(function(_,i){c.lineTo(X(i),Y(T*[1.4,1.25,1.1,1,1,.85,.65,.45][i]))});c.stroke();c.setLineDash([]);
+  c.strokeStyle="#2dd4bf";c.lineWidth=2;c.beginPath();f.forEach(function(_,i){c.lineTo(X(i),Y(T*[1.3,1.2,1.05,1,1,.9-.1*dens,.7-.1*dens,.5-.1*dens][i]))});c.stroke();c.lineWidth=1;
+  c.fillStyle="#fbbf24";f.forEach(function(_,i){c.beginPath();c.arc(X(i),Y(T*[1.28,1.18,1.06,1.01,.99,.88,.66,.47][i]),3,0,7);c.fill()});
+  c.fillStyle="#8b93a8";f.forEach(function(v,i){c.fillText(v>=1000?v/1000+"k":v,X(i)-8,H-12)});$("gcap").textContent="EXAMPLE. Teal = engine decay per band (what Play/Render use). Grey dashed = room theory (Eyring). Dots = last Render T20."}
+ else if(gmode==="early"){axes(c,W,H,"ms","dB");var cols=["#a78bfa","#34d399","#60a5fa","#fbbf24","#f472b6"];for(var k=0;k<24;k++){var t=S.pd+(k*k*0.25+k*3)*(S.L/7),db=-6-k*1.2-Math.random()*4,x=30+t/150*(W-38);if(x>W-8)break;c.strokeStyle=cols[k%5];c.beginPath();c.moveTo(x,H-22);c.lineTo(x,8+(-db/50)*(H-30));c.stroke()}
+  $("gcap").textContent="EXAMPLE early reflection map. Each stick = one reflection, coloured by wall, height = level at the mics."}
+ else{axes(c,W,H,"Hz (log)","dB");["A","now"].forEach(function(w,j){c.strokeStyle=j?"#2dd4bf":"#fbbf24";c.beginPath();for(var i=0;i<30;i++){var y=8+(H-30)*(.3+.25*Math.sin(i/5+j)+i*.008*(1-dens))*.9;c.lineTo(30+i/29*(W-38),y)}c.stroke()});$("gcap").textContent="EXAMPLE 1/3-octave spectrum. Teal = now, amber = A (global A/B)."}}
+document.querySelectorAll("#gtabs button").forEach(function(b){b.onclick=function(){gmode=b.dataset.g;document.querySelectorAll("#gtabs button").forEach(function(x){x.classList.toggle("on",x===b)});drawGraph()}});
+// meters (example animation)
+var go=$("gonio").getContext("2d"),playing=false;
+function meters(){var a=playing?(-14+Math.random()*6):-60,b=playing?(-15+Math.random()*6):-60;
+ $("mL").style.width=Math.min(100,-a/60*100)+"%";$("mR").style.width=Math.min(100,-b/60*100)+"%";$("mLo").textContent=a.toFixed(1)+" dB";$("mRo").textContent=b.toFixed(1)+" dB";
+ var g=playing?(S.char/100)*Math.random()*3:0;$("gr").style.width=(g/6*100)+"%";$("grO").textContent=(-g).toFixed(1)+" dB";
+ var corr=.8-S.char/250;$("corr").value=corr;$("corrO").textContent=(corr>=0?"+":"")+corr.toFixed(2);
+ go.fillStyle="rgba(10,11,14,.25)";go.fillRect(0,0,300,140);if(playing){go.fillStyle="#2dd4bf";for(var i=0;i<60;i++){var l=(Math.random()-.5),r=l*corr+(Math.random()-.5)*(1-corr);go.fillRect(150+(l-r)*90,70-(l+r)*55,2,2)}}
+ requestAnimationFrame(meters)}
+// controls
+function bindR(id,f){var dirty=false;$(id).addEventListener("pointerdown",function(){push();dirty=true});$(id).addEventListener("input",function(e){if(!dirty){push();dirty=true}f(+e.target.value);sync()});$(id).addEventListener("change",function(){dirty=false});$(id).addEventListener("blur",function(){dirty=false})}
+bindR("W",function(v){S.W=v;S.src.x=Math.min(S.src.x,v-.2);S.stand.x=Math.min(S.stand.x,v-.2)});bindR("L",function(v){S.L=v;S.src.z=Math.min(S.src.z,v-.2);S.stand.z=Math.min(S.stand.z,v-.2)});
+bindR("char",function(v){S.char=v});bindR("dec",function(v){S.dec=decFrom(v)});bindR("pd",function(v){S.pd=v});
+$("dec").addEventListener("dblclick",function(){push();S.dec=1.8;sync();toast("Decay reset to 1.80 s")});
+$("char").addEventListener("dblclick",function(){push();S.char=20;sync()});
+$("undo").onclick=function(){if(!hist.length)return toast("Nothing to undo");fut.push(JSON.stringify(S));S=JSON.parse(hist.pop());sync();toast("Undo")};
+$("redo").onclick=function(){if(!fut.length)return toast("Nothing to redo");hist.push(JSON.stringify(S));S=JSON.parse(fut.pop());sync();toast("Redo")};
+document.addEventListener("keydown",function(e){if(e.ctrlKey&&e.key==="z")$("undo").click();if(e.ctrlKey&&e.key==="y")$("redo").click()});
+function ab(w){if(w===cur)return;AB[cur]=JSON.stringify(S);if(!AB[w])AB[w]=AB[cur];cur=w;S=JSON.parse(AB[w]);$("abA").classList.toggle("on",w==="A");$("abB").classList.toggle("on",w==="B");sync();toast("Listening to "+w+" (level-matched, example)")}
+$("abA").onclick=function(){ab("A")};$("abB").onclick=function(){ab("B")};$("abCopy").onclick=function(){AB.B=JSON.stringify(S);toast("A copied to B")};
+var sn=$("snaps");snaps.forEach(function(_,i){var b=document.createElement("button");b.className="snap";b.textContent=i+1;b.title="Click: store/recall. Shift-click: clear";b.onclick=function(e){if(e.shiftKey){snaps[i]=null;b.classList.remove("full");return}if(snaps[i]){push();S=JSON.parse(snaps[i]);sync();toast("Snapshot "+(i+1)+" recalled")}else{snaps[i]=JSON.stringify(S);b.classList.add("full");toast("Stored in snapshot "+(i+1))}};sn.appendChild(b)});
+$("save").onclick=function(){var a=document.createElement("a");a.href=URL.createObjectURL(new Blob([JSON.stringify(S,null,1)],{type:"application/json"}));a.download="room_setup_example.json";a.click();toast("Saved (example JSON)")};
+$("load").onclick=function(){toast("Load would open a .json setup file")};
+$("play").onclick=function(){playing=!playing;this.classList.toggle("on",playing);this.textContent=playing?"■ Stop":"▶ Play"};
+$("render").onclick=function(){toast("Render (mockup): would bake the WAV and update ETC / Decay dots")};
+var PL={studio:{W:5.6,L:7.2,src:{x:2.8,z:5.3},stand:{x:2.8,z:1.6},dec:1.8},club:{W:14,L:22,src:{x:7,z:14.5},stand:{x:7,z:3.4},dec:1.8},hall:{W:57,L:97,src:{x:24.9,z:72.1},stand:{x:24.9,z:24.25},dec:4}},pend=null;
+document.querySelectorAll("#places button[data-p]").forEach(function(b){b.onclick=function(){pend=b.dataset.p;$("mT").textContent="Load "+b.textContent+"?";$("modal").style.display="flex";$("mOk").focus()}});
+$("mNo").onclick=function(){$("modal").style.display="none"};
+$("mOk").onclick=function(){push();var p=PL[pend],keep=$("mKeep").checked;S.W=p.W;S.L=p.L;S.src=Object.assign({},p.src);S.dec=p.dec;
+ if(keep){S.stand.x=Math.min(S.stand.x,p.W-.2);S.stand.z=Math.min(S.stand.z,p.L-.2)}else S.stand=Object.assign({},p.stand);S.place=pend;$("modal").style.display="none";sync();toast(pend+" loaded · Undo restores the previous room")};
+document.addEventListener("keydown",function(e){if(e.key==="Escape")$("modal").style.display="none"});
+sync();meters();
+</script></body></html>

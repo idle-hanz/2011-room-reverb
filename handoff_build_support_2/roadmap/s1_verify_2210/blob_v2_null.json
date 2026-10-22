@@ -1,0 +1,56 @@
+{
+ "std_lock18_col_iso0": {
+  "peak_new": 0.7679,
+  "null_new_vs_old_tree_dB(v2 vs v1, same params)": -Infinity,
+  "null_new_vs_oldworklet_v1_into_new_wasm_dB": -Infinity,
+  "v2_blob_into_old_wasm_peak": 0.824999988079071,
+  "v2_into_old_wasm_err": "",
+  "shelf2_on_lines": 0,
+  "stderr": []
+ },
+ "std_lock18_col_iso1": {
+  "peak_new": 0.7644,
+  "null_new_vs_old_tree_dB(v2 vs v1, same params)": -37.2,
+  "null_new_vs_oldworklet_v1_into_new_wasm_dB": -37.2,
+  "v2_blob_into_old_wasm_peak": 0.824999988079071,
+  "v2_into_old_wasm_err": "",
+  "shelf2_on_lines": 96,
+  "stderr": []
+ },
+ "two_mirror_col_iso0": {
+  "peak_new": 0.8001,
+  "null_new_vs_old_tree_dB(v2 vs v1, same params)": -Infinity,
+  "null_new_vs_oldworklet_v1_into_new_wasm_dB": -Infinity,
+  "v2_blob_into_old_wasm_peak": 0.824999988079071,
+  "v2_into_old_wasm_err": "",
+  "shelf2_on_lines": 0,
+  "stderr": []
+ },
+ "two_mirror_col_iso1": {
+  "peak_new": 0.7968,
+  "null_new_vs_old_tree_dB(v2 vs v1, same params)": -39.3,
+  "null_new_vs_oldworklet_v1_into_new_wasm_dB": -39.3,
+  "v2_blob_into_old_wasm_peak": 0.824999988079071,
+  "v2_into_old_wasm_err": "",
+  "shelf2_on_lines": 96,
+  "stderr": []
+ },
+ "binaural_iso0": {
+  "peak_new": 0.7229,
+  "null_new_vs_old_tree_dB(v2 vs v1, same params)": -Infinity,
+  "null_new_vs_oldworklet_v1_into_new_wasm_dB": -Infinity,
+  "v2_blob_into_old_wasm_peak": 0.824999988079071,
+  "v2_into_old_wasm_err": "",
+  "shelf2_on_lines": 0,
+  "stderr": []
+ },
+ "binaural_iso1": {
+  "peak_new": 0.7216,
+  "null_new_vs_old_tree_dB(v2 vs v1, same params)": -39.7,
+  "null_new_vs_oldworklet_v1_into_new_wasm_dB": -39.7,
+  "v2_blob_into_old_wasm_peak": 0.824999988079071,
+  "v2_into_old_wasm_err": "",
+  "shelf2_on_lines": 64,
+  "stderr": []
+ }
+}

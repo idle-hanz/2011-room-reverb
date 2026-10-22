@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><title>Mockup · Surfaces (redesign)</title>
+<link rel="stylesheet" href="/static/css/app.css"><link rel="stylesheet" href="mock_common.css">
+<style>
+.surf-grid{grid-template-columns:minmax(0,1.35fr) minmax(0,1fr)}
+#net{width:100%;height:auto}
+</style></head><body>
+<div class="mk-top"><h1>Surfaces</h1><span class="mk-note">Mockup · static design for T10 · numbers are computed live from the material table</span></div>
+<div class="view-switch" style="margin-bottom:10px"><button class="view-tab">Room</button><button class="view-tab">Source</button><button class="view-tab">Mic</button><button class="view-tab">Mix</button><button class="view-tab">Space</button><button class="view-tab active">Surfaces</button><button class="view-tab">Polar</button></div>
+<div class="mk-flow"><b>Source</b><i>→</i><b class="on">Surfaces: material + face tone</b><i>→</i><b>Early reflections</b><i>+</i><b>FDN tank</b><i>→</i><b class="on">Air</b><i>→</i><b>Mics</b>
+ <span style="margin-left:8px">Every face colours each reflection that touches it <i>before</i> the tank. Air is the last step for every path.</span></div>
+<div class="mk-grid surf-grid">
+ <div class="panel" style="padding:12px">
+  <div class="panel-head"><h2>Faces <span class="tag">6 faces · rectangle</span></h2><span style="font-size:.7rem;color:var(--muted)">Angled rooms will list 5–10 faces here the same way</span></div>
+  <table class="mk" id="faces"><tr><th>Face</th><th>Area</th><th>Material</th><th>Absorption 125 Hz → 8 kHz</th><th>Face tone</th><th></th></tr></table>
+  <div class="mk-cap">Only real materials are offered, and only where they belong (no carpet on a ceiling). Every material shows where its numbers come from: <span class="tag tb">Textbook table</span> <span class="tag md">Modelled</span> <span class="tag ms">Measured</span>.</div>
+ </div>
+ <div class="panel" style="padding:12px">
+  <div class="panel-head"><h2>Map</h2><span style="font-size:.7rem;color:var(--muted)">click a face to select it · shade = how much it absorbs</span></div>
+  <svg id="net" viewBox="0 0 420 300"></svg>
+ </div>
+ <div class="panel" style="padding:12px">
+  <div class="panel-head"><h2 id="selTitle">Face C · Right wall</h2><span class="tag">wall</span></div>
+  <div class="grp">Material</div><div class="matgrid" id="mats"></div>
+  <div class="grp" style="margin-top:12px">Face tone · EQ on this face's reflections (was the Colour tab)</div>
+  <div class="ctl-row">
+   <div class="mk-knob"><span>Low</span><div class="k" style="--n:-35deg"></div><output>−2.0 dB</output></div>
+   <div class="mk-knob"><span>Low Hz</span><div class="k" style="--n:-60deg"></div><output>200</output></div>
+   <div class="mk-knob"><span>Mid</span><div class="k" style="--n:0deg"></div><output>0.0 dB</output></div>
+   <div class="mk-knob"><span>Mid Hz</span><div class="k" style="--n:10deg"></div><output>1.2 k</output></div>
+   <div class="mk-knob"><span>High</span><div class="k" style="--n:25deg"></div><output>+1.5 dB</output></div>
+   <div class="mk-knob"><span>High Hz</span><div class="k" style="--n:40deg"></div><output>6 k</output></div>
+   <canvas id="eq" width="300" height="90" style="margin-left:8px"></canvas>
+  </div>
+  <div class="mk-cap">Face tone and material multiply: the curve shows what one bounce off this face does (material reflection × tone).</div>
+ </div>
+ <div class="panel" style="padding:12px">
+  <div class="panel-head"><h2>Room result</h2><span style="font-size:.7rem;color:var(--muted)">Eyring estimate from the faces + air · the decay dial still sets the tail</span></div>
+  <canvas id="rt" width="560" height="190"></canvas>
+  <div class="grp">Air (moved here from its own tab)</div>
+  <div class="ctl-row">
+   <label class="mini-range"><span>Humidity <output>50 %</output></span><input type="range" min="10" max="100" value="50"></label>
+   <label class="mini-range"><span>Temperature <output>20 °C</output></span><input type="range" min="0" max="35" value="20"></label>
+   <span class="tag tb" title="ISO 9613-1 table values">ISO 9613‑1</span>
+  </div>
+ </div>
+</div>
+<script>
+var HZ=[125,250,500,1000,2000,4000,8000], HCOL=["#ef4444","#f97316","#eab308","#22c55e","#06b6d4","#3b82f6","#8b5cf6"];
+var MATS=[
+ ["plaster_smooth","Plaster (smooth)","Hard","tb",["wall","ceiling"],[.02,.02,.03,.04,.05,.05,.05]],
+ ["gypsum_painted","Gypsum board (painted)","Hard","tb",["wall","ceiling"],[.1,.08,.05,.04,.05,.06,.07]],
+ ["brick_unglazed","Brick (unglazed)","Hard","tb",["wall"],[.03,.03,.03,.04,.05,.07,.08]],
+ ["concrete_painted","Concrete (painted)","Hard","tb",["floor","wall","ceiling"],[.01,.01,.02,.02,.02,.03,.03]],
+ ["glass_window","Glass window","Hard","tb",["wall"],[.35,.25,.18,.12,.07,.04,.04]],
+ ["wood_parquet","Wood parquet","Wood","tb",["floor"],[.04,.04,.07,.06,.06,.07,.08]],
+ ["plywood_panel","Plywood panel","Wood","tb",["wall"],[.28,.22,.17,.09,.1,.11,.12]],
+ ["carpet_on_concrete","Carpet on concrete","Soft","tb",["floor"],[.02,.06,.14,.37,.6,.65,.68]],
+ ["carpet_on_foam","Carpet on foam","Soft","tb",["floor"],[.08,.24,.57,.69,.71,.73,.76]],
+ ["heavy_curtain","Heavy curtain","Soft","tb",["wall"],[.14,.35,.55,.72,.7,.65,.68]],
+ ["acoustic_ceiling_tile","Acoustic ceiling tile","Absorber","tb",["ceiling"],[.45,.55,.7,.8,.8,.75,.78]],
+ ["absorber_panel_2in","Absorber panel 2 in","Absorber","tb",["wall"],[.28,.7,.88,.92,.94,.92,.95]],
+ ["absorber_panel_1in_gap1in","Panel 1 in + 1 in gap","Absorber","md",["wall","ceiling"],[.07,.19,.44,.74,.88,.89,.95]],
+ ["absorber_panel_2in_gap2in","Panel 2 in + 2 in gap","Absorber","md",["wall","ceiling"],[.22,.51,.81,.92,.93,.95,.96]],
+ ["absorber_panel_4in_gap4in","Panel 4 in + 4 in gap","Absorber","md",["wall","ceiling"],[.6,.83,.89,.93,.95,.95,.96]]];
+var M={}; MATS.forEach(function(m){M[m[0]]={id:m[0],name:m[1],grp:m[2],src:m[3],roles:m[4],a:m[5]};});
+var W=6,H=3,L=8;
+var FACES=[["A","Left wall","wall",L*H,"plaster_smooth","flat"],["B","Front","wall",W*H,"gypsum_painted","flat"],["C","Right wall","wall",L*H,"absorber_panel_2in_gap2in","−2 dB low · +1.5 dB high"],
+ ["D","Back","wall",W*H,"heavy_curtain","flat"],["E","Floor","floor",W*L,"wood_parquet","flat"],["F","Ceiling","ceiling",W*L,"acoustic_ceiling_tile","flat"]];
+var SEL="C";
+function mean(a){return a.reduce(function(s,x){return s+x;},0)/a.length;}
+function bars(a){return '<div class="bars">'+a.map(function(v,i){return '<span title="'+HZ[i]+' Hz: '+v.toFixed(2)+'" style="height:'+Math.max(2,v*22)+'px;background:'+HCOL[i]+'"></span>';}).join("")+'</div>';}
+function paintFaces(){var t=document.getElementById("faces");while(t.rows.length>1)t.deleteRow(1);
+ FACES.forEach(function(f){var r=t.insertRow();if(f[0]===SEL)r.className="sel";var m=M[f[4]];
+  var opts=MATS.filter(function(x){return x[4].indexOf(f[2])>=0;}).map(function(x){return '<option'+(x[0]===f[4]?' selected':'')+'>'+x[1]+'</option>';}).join("");
+  r.innerHTML='<td><b>'+f[0]+'</b> · '+f[1]+'</td><td style="font-family:var(--mono)">'+f[3].toFixed(0)+' m²</td><td><select class="sel-mat">'+opts+'</select> <span class="tag '+m.src+'">'+({tb:"Textbook",md:"Modelled",ms:"Measured"})[m.src]+'</span></td><td>'+bars(m.a)+'</td><td style="color:'+(f[5]==="flat"?"var(--faint)":"var(--text)")+'">'+f[5]+'</td><td><button class="chip" style="padding:2px 8px">S</button> <button class="chip" style="padding:2px 8px">M</button></td>';});}
+function paintNet(){var s=document.getElementById("net"),k=16,ox=40,oy=40;
+ var rects={F:[ox+H*k,oy,W*k,L*k*0+H*k],B:[ox+H*k,oy+H*k,W*k,H*k]};
+ // unfolded box: ceiling top, front, floor centre, back bottom, left/right either side of the floor
+ rects={B:[ox+H*k,oy,W*k,H*k],A:[ox,oy+H*k,H*k,L*k],E:[ox+H*k,oy+H*k,W*k,L*k],C:[ox+H*k+W*k,oy+H*k,H*k,L*k],D:[ox+H*k,oy+H*k+L*k,W*k,H*k],F:[ox+2*H*k+W*k+18,oy+H*k,W*k,L*k]};
+ var h="";FACES.forEach(function(f){var r=rects[f[0]],m=M[f[4]],a=mean(m.a);var shade="rgba(45,212,191,"+(0.08+a*0.6).toFixed(2)+")";
+  h+='<rect x="'+r[0]+'" y="'+r[1]+'" width="'+r[2]+'" height="'+r[3]+'" fill="'+shade+'" stroke="'+(f[0]===SEL?"#2dd4bf":"#2a2f3d")+'" stroke-width="'+(f[0]===SEL?3:1)+'"/>'+
+     '<text x="'+(r[0]+r[2]/2)+'" y="'+(r[1]+r[3]/2-2)+'" fill="#e9ecf3" font-size="13" text-anchor="middle" font-weight="700">'+f[0]+'</text>'+
+     '<text x="'+(r[0]+r[2]/2)+'" y="'+(r[1]+r[3]/2+12)+'" fill="#8b93a8" font-size="9" text-anchor="middle">'+f[1]+'</text>';});
+ h+='<text x="'+(rects.F[0]+rects.F[2]/2)+'" y="'+(rects.F[1]-6)+'" fill="#5c6478" font-size="9" text-anchor="middle">ceiling (seen from below)</text>';
+ s.innerHTML=h;}
+function paintMats(){var host=document.getElementById("mats"),f=FACES.filter(function(x){return x[0]===SEL;})[0];host.innerHTML="";
+ ["Hard","Wood","Soft","Absorber"].forEach(function(g){MATS.filter(function(x){return x[2]===g;}).forEach(function(x){var d=document.createElement("div");
+  var ok=x[4].indexOf(f[2])>=0;d.className="mat"+(x[0]===f[4]?" on":"")+(ok?"":" no");d.title=ok?"":"Not offered on a "+f[2];
+  d.innerHTML=x[1]+'<small>'+g+' · avg α '+mean(x[5]).toFixed(2)+' · '+({tb:"textbook",md:"modelled",ms:"measured"})[x[3]]+'</small>';host.appendChild(d);});});}
+function shelf(f,f0,g,hi){var x=Math.log2(f/f0);var s=1/(1+Math.exp((hi?-1:1)*x*2.2));return g*s;}
+function paintEq(){var c=document.getElementById("eq").getContext("2d"),w=300,h=90;c.clearRect(0,0,w,h);var m=M["absorber_panel_2in_gap2in"];
+ c.strokeStyle="#2a2f3d";c.beginPath();c.moveTo(0,h/2);c.lineTo(w,h/2);c.stroke();
+ function X(f){return w*Math.log(f/60)/Math.log(16000/60);} function Y(db){return h/2-db*2.2;}
+ c.strokeStyle="#5c6478";c.setLineDash([3,3]);c.beginPath();for(var i=0;i<=60;i++){var f=60*Math.pow(16000/60,i/60);var a=interp(m.a,f);var db=10*Math.log10(1-a);c[i?"lineTo":"moveTo"](X(f),Y(db+0));}c.stroke();c.setLineDash([]);
+ c.strokeStyle="#2dd4bf";c.lineWidth=2;c.beginPath();for(i=0;i<=60;i++){f=60*Math.pow(16000/60,i/60);a=interp(m.a,f);db=10*Math.log10(1-a)+shelf(f,200,-2,false)+shelf(f,6000,1.5,true);c[i?"lineTo":"moveTo"](X(f),Y(db));}c.stroke();
+ c.fillStyle="#5c6478";c.font="9px sans-serif";c.fillText("0 dB",2,h/2-3);c.fillText("one bounce: material (dashed) × tone",120,10);[100,1000,10000].forEach(function(f){c.fillText(f>=1000?f/1000+"k":f,X(f)-6,h-2);});}
+function interp(a,f){var x=Math.log2(f/125);if(x<=0)return a[0];if(x>=6)return a[6];var i=Math.floor(x),t=x-i;return a[i]*(1-t)+a[i+1]*t;}
+function paintRt(){var c=document.getElementById("rt").getContext("2d"),w=560,h=190;c.clearRect(0,0,w,h);var V=W*H*L,S=0;FACES.forEach(function(f){S+=f[3];});
+ var air=[0.44,1.31,2.73,4.66,9.86,32.8,117].map(function(x){return x/4343;});var T=[],Ta=[];
+ HZ.forEach(function(f,i){var A=0;FACES.forEach(function(fc){A+=fc[3]*M[fc[4]].a[i];});var ab=A/S;var t=0.161*V/(-S*Math.log(1-ab)+4*air[i]*V);var t0=0.161*V/(-S*Math.log(1-ab));T.push(t);Ta.push(t0);});
+ var mx=Math.max.apply(null,Ta)*1.15,bw=50;c.font="10px sans-serif";
+ HZ.forEach(function(f,i){var x=40+i*72,y1=h-24;var hh=(T[i]/mx)*(h-50),ha=(Ta[i]/mx)*(h-50);
+  c.fillStyle="rgba(139,147,168,.18)";c.fillRect(x,y1-ha,bw,ha);c.fillStyle=HCOL[i];c.fillRect(x,y1-hh,bw,hh);
+  c.fillStyle="#e9ecf3";c.fillText(T[i].toFixed(2)+" s",x+6,y1-hh-4);c.fillStyle="#8b93a8";c.fillText(f>=1000?f/1000+" kHz":f+" Hz",x+8,h-8);});
+ c.fillStyle="#8b93a8";c.fillText("decay time per band (coloured = faces + air, grey = faces only)",40,12);}
+paintFaces();paintNet();paintMats();paintEq();paintRt();
+</script></body></html>

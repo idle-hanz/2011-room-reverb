@@ -1,0 +1,106 @@
+PASS      3.4s  test_binaural_play_and_gaps::test_binaural_play_tail_coherence_matches_head 
+PASS      0.8s  test_binaural_play_and_gaps::test_binaural_play_direct_left_source_left_ear_first_and_louder 
+PASS      2.0s  test_binaural_play_and_gaps::test_binaural_play_direct_is_mirror_exact 
+PASS      0.0s  test_binaural_play_and_gaps::test_gap_hrtf_tables_vendored_in_software 
+XFAIL     0.0s  test_binaural_play_and_gaps::test_gap_floor_head_rotate_handle         BINAURAL gap: no head-yaw rotate handle on the Floor view (only a look arrow)
+XFAIL     0.0s  test_binaural_play_and_gaps::test_gap_head_with_ears_drawing_and_3d    BINAURAL gap: no head-with-ears drawing (room_3d.js / mic_desk.js have no binaural branch)
+XFAIL     0.0s  test_binaural_play_and_gaps::test_gap_hrtf_polar_and_ild_panel         BINAURAL gap: no HRTF polar / ILD panel
+XFAIL     0.0s  test_binaural_play_and_gaps::test_gap_play_shows_unsupported_rate_notice BINAURAL gap: Play does not display colour_notice (e.g. 96 kHz device: colour OFF silently)
+PASS      0.4s  test_colour_sos::test_colour_tables_match_presets                      
+PASS      0.0s  test_colour_sos::test_colour_at_c1_48k_within_0p5db                    
+PASS      0.0s  test_colour_sos::test_colour_at_c4_44k1_within_0p6db                   
+PASS      0.0s  test_colour_sos::test_colour_44k1_tables_match_presets                 
+PASS      0.0s  test_colour_sos::test_colour_unsupported_rate_disabled_with_notice[32000] 
+PASS      0.0s  test_colour_sos::test_colour_unsupported_rate_disabled_with_notice[88200] 
+PASS      0.0s  test_colour_sos::test_colour_unsupported_rate_disabled_with_notice[96000] 
+PASS      0.0s  test_colour_sos::test_colour_sos_stable[44100]                         
+PASS      0.0s  test_colour_sos::test_colour_sos_stable[48000]                         
+PASS      0.0s  test_colour_sos::test_colour_hpf_on_low_end[44100]                     
+PASS      0.0s  test_colour_sos::test_colour_hpf_on_low_end[48000]                     
+PASS      0.5s  test_colour_sos::test_colour_play_bank_fits_two_sources_apart          
+PASS      8.7s  test_colour_sos::test_colour_cpu_active                                
+PASS      0.0s  test_colour_sos::test_colour_numpy_sos_matches_loop                    
+PASS      0.0s  test_decisions_2026_09_28::test_k1_single_yaw_convention               
+PASS      1.4s  test_decisions_2026_09_28::test_k1_left_source_L_louder_and_earlier_play[xy_90] 
+PASS      1.4s  test_decisions_2026_09_28::test_k1_left_source_L_louder_and_earlier_play[xy_120] 
+PASS      1.3s  test_decisions_2026_09_28::test_k1_left_source_L_louder_and_earlier_play[ortf] 
+PASS      1.3s  test_decisions_2026_09_28::test_k1_left_source_L_louder_and_earlier_play[nos] 
+PASS      1.3s  test_decisions_2026_09_28::test_k1_left_source_L_louder_and_earlier_play[din] 
+PASS      1.3s  test_decisions_2026_09_28::test_k1_left_source_L_louder_and_earlier_play[ms] 
+PASS      3.2s  test_decisions_2026_09_28::test_k1_left_source_L_louder_and_earlier_render[ortf] 
+PASS      2.7s  test_decisions_2026_09_28::test_k1_left_source_L_louder_and_earlier_render[xy_90] 
+PASS      2.8s  test_decisions_2026_09_28::test_k1_left_source_L_louder_and_earlier_render[ms] 
+PASS      0.0s  test_decisions_2026_09_28::test_k2_air_1pole_default_zero              
+PASS      0.0s  test_decisions_2026_09_28::test_k3_default_source_29_distinct_delays   
+PASS      0.0s  test_decisions_2026_09_28::test_k3_client_default_matches              
+PASS      0.0s  test_decisions_2026_09_28::test_k4_fdn_first_defaults                  
+PASS      2.7s  test_decisions_2026_09_28::test_k4_raise_early_fader_no_stale_replay   
+PASS      0.0s  test_decisions_2026_09_28::test_headroom_trim_table                    
+PASS      5.6s  test_decisions_2026_09_28::test_headroom_t14_fdn_level_matches_pre_f2  
+XFAIL     4.6s  test_decisions_2026_09_28::test_headroom_t14_whole_mix_informational   whole mix +1.64 dB vs pre-F2 (peak 0.559 vs 0.512): direct/early not trimmed - DECISION
+PASS      0.0s  test_locks::test_lock_unscaled_pm1_hadamard_render                     
+PASS      0.0s  test_locks::test_lock_unscaled_pm1_hadamard_play                       
+PASS      0.0s  test_locks::test_lock_geometric_level_inverse_square                   
+PASS      0.0s  test_locks::test_lock_early_images_excite_fdn                          
+XFAIL     0.0s  test_locks::test_lock_two_diffusion_layers_separate_keys               P0.3 diffusion key split not in tree (card "diffusion" still feeds both layers)
+PASS      0.0s  test_mirror_symmetry::test_mirror_image_set_is_mirror_symmetric        
+PASS      4.3s  test_mirror_symmetry::test_mirror_play_one_source                      
+PASS      6.8s  test_mirror_symmetry::test_mirror_play_two_sources_hard[fdn-MEASURED_SHELF] 
+PASS      6.0s  test_mirror_symmetry::test_mirror_play_two_sources_hard[fdn-BYPASS]    
+PASS      4.5s  test_mirror_symmetry::test_mirror_play_two_sources_hard[early-MEASURED_SHELF] 
+PASS      4.2s  test_mirror_symmetry::test_mirror_play_two_sources_hard[early-BYPASS]  
+PASS      3.3s  test_mirror_symmetry::test_mirror_play_two_sources_hard[direct-MEASURED_SHELF] 
+PASS      3.1s  test_mirror_symmetry::test_mirror_play_two_sources_hard[direct-BYPASS] 
+PASS      3.5s  test_mirror_symmetry::test_mirror_play_two_sources_centre_is_self_mirror 
+PASS     47.7s  test_mirror_symmetry::test_mirror_render_one_source                    
+PASS      0.0s  test_p0_engine::test_p0_1_denormal_guard_in_source                     
+PASS      4.1s  test_p0_engine::test_p0_1_silence_cost[colour_off-over0-0.5]           
+PASS      5.1s  test_p0_engine::test_p0_1_silence_cost[colour_on-over1-0.75]           
+PASS      1.4s  test_p0_engine::test_p0_2_t60_play_within_8pct[std_lock18]             
+FAIL      2.0s  test_p0_engine::test_p0_2_t60_play_within_8pct[small_lock08]           AssertionError: Play T30 {500: 0.773, 1000: 0.732, 2000: 0.737, 4000: 0.782, 8000: 0.759} vs dial 0.8 s (+-8%); out: {1000: 0.732} assert not {1000: 0.732}
+PASS      3.9s  test_p0_engine::test_p0_2_t60_play_within_8pct[hall_lock40]            
+PASS      1.6s  test_p0_engine::test_p0_2_t60_play_independent_of_dffs[0.0]            
+PASS      1.6s  test_p0_engine::test_p0_2_t60_play_independent_of_dffs[-0.5]           
+PASS      1.6s  test_p0_engine::test_p0_2_t60_play_independent_of_dffs[-0.9]           
+PASS      1.5s  test_p0_engine::test_p0_2_hf_residue_play                              
+PASS     48.0s  test_p0_engine::test_p0_2_t60_render_within_8pct                       
+PASS      0.6s  test_p0_engine::test_p0_2_decay_lock_off_unchanged                     
+XFAIL     0.0s  test_p0_engine::test_p0_3_two_diffusion_layers_independent             P0.3 diffusion key split not in tree (card "diffusion" still feeds both layers)
+XFAIL     0.0s  test_p0_engine::test_p0_4_fdn_tail_null_play_vs_render                 P0.4 loop semantics not decided/landed (no build_mix / loop_semantics / packed loop_mix) - F5 is DECISION FOR IDLE
+XFAIL     0.2s  test_p0_engine::test_p0_5_server_defaults_equal_client_state           P0.5b: client does not load /api/defaults (hard-coded state in app.js); 10 shared-key mismatches: decay_lock False/True, decay_s 0.0/1.8, early_wet 0.0/1, humidity 0.0/0.35, mic_proximity 0.0/0.25, mirror_b False/True, space 0.25/0.17, toe_half_deg None/55, yaw_l_deg None/-55, yaw_r_deg None/55
+PASS      0.0s  test_p0_engine::test_p0_5_scipy_in_requirements                        
+XFAIL     0.0s  test_p0_engine::test_p0_5_loop_mix_not_dead_payload                    P0.5a: loop_mix still computed in render_pipeline.py but never packed/used by Play (dead payload); delete it or consume it with F5 (DECISION FOR IDLE with the loop-semantics choice)
+PASS      0.0s  test_p0_engine::test_p0_5_diffusion_master_clamped                     
+PASS      0.0s  test_p0_engine::test_p0_5_diffusion_master_single_value                
+PASS      0.0s  test_p1_blob::test_p1_worklet_ver_consistent_everywhere                
+PASS      0.1s  test_p1_blob::test_p1_blob_len_matches_packer                          
+PASS      6.0s  test_p1_blob::test_p1_wasm_matches_source                              
+PASS      0.0s  test_p1_blob::test_p1_blob_v2_header_and_sections                      
+PASS      0.0s  test_p1_blob::test_p1_max_blob_raised                                  
+XFAIL     0.0s  test_p1_blob::test_p1_old_wasm_silent_on_v2_blob                       needs the pre-P1 wasm as a fixture: keep a copy of static/wasm/live_stereo.wasm from before P1 and play a v2 blob through it with harness/lib/wasm_run.js (WASM=<old>) -> expect all-zero output
+PASS      1.3s  test_p2_air::test_lock_direct_is_air_free_play                         
+PASS      4.1s  test_p2_air::test_lock_direct_is_air_free_render                       
+PASS      0.0s  test_p2_air::test_lock_no_air_on_fdn_return_play                       
+PASS      0.0s  test_p2_air::test_lock_no_air_on_fdn_return_render                     
+PASS      0.0s  test_p2_air::test_lock_humidity_one_pole_separate_from_shelf           
+PASS      0.0s  test_p2_air::test_lock_render_stage_order                              
+PASS      0.0s  test_p2_air::test_p2_iso_air_fit_within_tolerance                      
+PASS      2.6s  test_p2_air::test_p2_air_shelf_zero_nulls_iso_off                      
+XFAIL     0.0s  test_p2_air::test_p2_play_render_early_null                            needs the P4 per-hit cascade in Play before an early-only null <= -60 dB is possible
+PASS      0.0s  test_p3_p4_surfaces::test_lock_per_hit_cascade_is_serial_render        
+PASS      0.0s  test_p3_p4_surfaces::test_lock_render_passes_every_hit                 
+XFAIL     0.0s  test_p3_p4_surfaces::test_p3a_curtain_wall_only_real_materials         P3A Track A materials/role bans not in tree
+XFAIL     0.0s  test_p3_p4_surfaces::test_p3b_mute_all_panels_leaves_direct_and_fdn    P3B surfaces Solo/Mute not in tree
+XFAIL     0.0s  test_p3_p4_surfaces::test_p4_play_render_early_null                    P4 present: Play vs Render early-only null <= -60 dB with default and extreme cards (wire when SURF section lands)
+XFAIL     0.0s  test_p3_p4_surfaces::test_p4_flat_cards_bit_exact_bypass               P4 present: all-flat cards -> Play output bit-identical to cascade-off
+XFAIL     0.0s  test_p3_p4_surfaces::test_p4_cpu_budget                                P4 present: CPU <= +0.15 ms/block with 1 source (ASSUMED budget) via wasm_run.js bench
+PASS      0.0s  test_p5_p6::test_lock_no_scattering_inside_fdn_loop                    
+XFAIL     0.0s  test_p5_p6::test_p5_scatter_zero_is_bit_identical                      P5 scattering (Track C) not in tree
+XFAIL     0.0s  test_p5_p6::test_p5_scatter_after_air                                  P5 scattering (Track C) not in tree
+XFAIL     0.0s  test_p5_p6::test_p5_energy_and_feed_forward                            P5 scattering (Track C) not in tree
+FAIL      1.2s  test_p5_p6::test_p6_omni_source_bit_identical                          AssertionError: play_std_unlocked_byp: differs from golden (null -70.8 dB > -100.0 dB, max diff 0.000187). If the change is intended, regenerate goldens and record why.
+PASS      2.7s  test_p5_p6::test_p6_tail_invariant_to_source_yaw                       
+PASS      0.0s  test_s1_followups::test_p2_realised_rbj_pair_close_to_iso              
+PASS      0.0s  test_s1_followups::test_gap_air_presets_vendored_in_software           
+PASS      0.0s  test_s1_followups::test_gap_new_air_keys_in_defaults_and_parameters    
+{'PASS': 83, 'FAIL': 2, 'XFAIL': 20, 'SKIP': 0}

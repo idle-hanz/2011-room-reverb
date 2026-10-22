@@ -1,0 +1,40 @@
+
+Note: No compatibility mode selected!
+
+
+Circuit: * la2a_t4_burst5.0
+
+Doing analysis at TEMP = 27.000000 and TNOM = 27.000000
+
+Using SPARSE 1.3 as Direct Linear Solver
+
+Initial Transient Solution
+--------------------------
+
+Node                                   Voltage
+----                                   -------
+in                                           0
+gt0                                          1
+out                                          0
+gf                                  1.1065e-06
+gs                                 1.55411e-07
+lraw                                     1e-36
+l                                        1e-36
+tgt                                1.26191e-06
+m1                                           0
+m                                            0
+bt#branch                                    0
+bl#branch                                    0
+bout#branch                                  0
+vgate#branch                                 0
+vin#branch                                   0
+
+ Reference value :  1.07449e+00
+ Reference value :  2.14964e+00
+ Reference value :  3.29474e+00
+ Reference value :  4.70694e+00
+ Reference value :  6.33357e+00
+ Reference value :  7.98732e+00
+ Reference value :  9.61862e+00
+No. of Data Rows : 220021
+ngspice-44.2 done

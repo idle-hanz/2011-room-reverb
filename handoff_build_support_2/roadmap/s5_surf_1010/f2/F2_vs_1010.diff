@@ -1,0 +1,50 @@
+131,133d130
+<     /* Shared-tail taps. Unused while shared is off. */
+<     double jit, jitB;
+<     double injS, injSB, rS;
+258a256,258
+>     /* Shared-tail taps, kept out of the hot Line struct. */
+>     double shJit[3][N], shJitB[3][N];
+>     double shInjS[N], shInjSB[N], shRS[N];
+1083,1085c1083,1085
+<         c->injS = (s < 0.0 ? -1.0 : 1.0) * ls_sqrt(q / 3.0);
+<         c->injSB = (sB < 0.0 ? -1.0 : 1.0) * ls_sqrt(qB / 3.0);
+<         c->rS = c->inj != 0.0 ? c->injS / c->inj : 0.0;
+---
+>         st->shInjS[i] = (s < 0.0 ? -1.0 : 1.0) * ls_sqrt(q / 3.0);
+>         st->shInjSB[i] = (sB < 0.0 ? -1.0 : 1.0) * ls_sqrt(qB / 3.0);
+>         st->shRS[i] = c->inj != 0.0 ? st->shInjS[i] / c->inj : 0.0;
+1093,1094c1093,1094
+<             m->jit = js * shared_jit(st->bus[key].line[i].delayT + (b == BUS_C ? 0.5 : 0.0));
+<             m->jitB = js * shared_jit(st->bus[key].line[i].delayBT + (b == BUS_C ? 0.5 : 0.0));
+---
+>             st->shJit[b][i] = js * shared_jit(st->bus[key].line[i].delayT + (b == BUS_C ? 0.5 : 0.0));
+>             st->shJitB[b][i] = js * shared_jit(st->bus[key].line[i].delayBT + (b == BUS_C ? 0.5 : 0.0));
+1591a1592
+>     const int shC = st->shared && b == BUS_C;
+1641c1642
+<                 if (st->shared && b == BUS_C) injLoop = line->injS;
+---
+>                 if (shC) injLoop = st->shInjS[i];
+1649c1650
+<             } else if (st->shared && b == BUS_C) {
+---
+>             } else if (shC) {
+1653c1654
+<                 xin = line->inj != 0.0 ? ein * line->rS : tint(line, x * line->injS, 1);
+---
+>                 xin = line->inj != 0.0 ? ein * st->shRS[i] : tint(line, x * st->shInjS[i], 1);
+1714c1715
+<             if (st->shared && b == BUS_C) injUse = line->injS;
+---
+>             if (shC) injUse = st->shInjS[i];
+1737c1738
+<             if (st->shared && b == BUS_C) injUse = line->injSB;
+---
+>             if (shC) injUse = st->shInjSB[i];
+2348,2349c2349,2350
+<                         offA += st->bus[bb].line[i].jit;
+<                         offB += st->bus[bb].line[i].jitB;
+---
+>                         offA += st->shJit[bb][i];
+>                         offB += st->shJitB[bb][i];

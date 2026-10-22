@@ -1,0 +1,21 @@
+round 0
+round 1
+round 2
+round 3
+round 4
+round 5
+bin_def_1src|skipc_1630 {'min': 0.6515, 'med': 0.6907}
+bin_def_1src|noskip_1630 {'min': 0.8982, 'med': 0.9467}
+bin_def_2src|skipc_1630 {'min': 1.2118, 'med': 1.238}
+bin_def_2src|noskip_1630 {'min': 1.6292, 'med': 1.6728}
+bin_big|skipc_1630 {'min': 0.7499, 'med': 0.7665}
+bin_big|noskip_1630 {'min': 0.9337, 'med': 1.0303}
+def_1src|ship_1630 {'min': 0.9993, 'med': 1.016}
+def_1src|ship_1140 {'min': 0.9931, 'med': 1.0504}
+def_2src|ship_1630 {'min': 1.9358, 'med': 1.9801}
+def_2src|ship_1140 {'min': 1.9127, 'med': 2.0831}
+bin_def_1src|delta_pct_skipc_1630_vs_noskip_1630 {'min': -27.5, 'med': -27.0}
+bin_def_2src|delta_pct_skipc_1630_vs_noskip_1630 {'min': -25.6, 'med': -26.0}
+bin_big|delta_pct_skipc_1630_vs_noskip_1630 {'min': -19.7, 'med': -25.6}
+def_1src|delta_pct_ship_1630_vs_ship_1140 {'min': 0.6, 'med': -3.3}
+def_2src|delta_pct_ship_1630_vs_ship_1140 {'min': 1.2, 'med': -4.9}

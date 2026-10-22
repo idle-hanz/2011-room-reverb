@@ -1,0 +1,17 @@
+* fairchild_pos3_burst30.0
+.include /workspace/compressors/spice/models/devices.lib
+Vd drv 0 PWL(0 0 1u 6.867585608733194 30.0 6.867585608733194 30.000001 0)
+D1 drv a DSIG
+Rsrc a sc 100
+CT sc 0 4e-06
+RT sc 0 220000.0
+
+.control
+set wr_singlescale
+set wr_vecnames
+option numdgt=7
+tran 0.0032599999999999994 65.19999999999999 0 0.0032599999999999994
+wrdata /workspace/compressors/spice/raw/fairchild_pos3_burst30.0.txt v(sc)
+quit
+.endc
+.end

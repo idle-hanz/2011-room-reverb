@@ -1,0 +1,30 @@
+{
+ "ortf_sym_fdn_only": {
+  "max_abs_LminusR_rel": 0.0,
+  "lr_corr": 1.0
+ },
+ "ortf_sym_full_mix": {
+  "max_abs_LminusR_rel": 0.0,
+  "lr_corr": 1.0
+ },
+ "ortf_sym_early_only": {
+  "max_abs_LminusR_rel": 0.0,
+  "lr_corr": 1.0
+ },
+ "ortf_default_pos_fdn": {
+  "max_abs_LminusR_rel": 0.9859464373825972,
+  "lr_corr": 0.4613
+ },
+ "binaural_sym_fdn": {
+  "max_abs_LminusR_rel": 1.2478718078133346,
+  "lr_corr": -0.086
+ },
+ "binaural_sym_full": {
+  "max_abs_LminusR_rel": 0.12819876573543054,
+  "lr_corr": 0.9276
+ },
+ "binaural_default_fdn": {
+  "max_abs_LminusR_rel": 0.9951508960815862,
+  "lr_corr": 0.0284
+ }
+}

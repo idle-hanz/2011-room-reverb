@@ -1,0 +1,207 @@
+{
+ "octave_hz": [
+  125.0,
+  250.0,
+  500.0,
+  1000.0,
+  2000.0,
+  4000.0,
+  8000.0
+ ],
+ "room": [
+  6.0,
+  3.0,
+  8.0
+ ],
+ "cases": {
+  "plaster room, parquet floor, plaster ceiling": {
+   "sabine": [
+    5.084,
+    5.084,
+    3.167,
+    2.841,
+    2.446,
+    2.328,
+    2.221
+   ],
+   "sabine_with_air_ref_only": [
+    5.021,
+    4.899,
+    3.024,
+    2.654,
+    2.192,
+    1.751,
+    1.056
+   ],
+   "eyring": [
+    5.02,
+    5.02,
+    3.102,
+    2.776,
+    2.381,
+    2.263,
+    2.156
+   ],
+   "fitzroy": [
+    5.23,
+    5.23,
+    3.313,
+    2.812,
+    2.386,
+    2.282,
+    2.194
+   ],
+   "alpha_mean": [
+    0.025,
+    0.025,
+    0.041,
+    0.045,
+    0.053,
+    0.055,
+    0.058
+   ],
+   "assignment": {
+    "sides": "plaster_smooth",
+    "floor": "wood_parquet",
+    "ceiling": "plaster_smooth",
+    "ahead": "plaster_smooth",
+    "behind": "plaster_smooth"
+   },
+   "eyring_shape_re_1k": [
+    1.808,
+    1.808,
+    1.117,
+    1.0,
+    0.857,
+    0.815,
+    0.776
+   ]
+  },
+  "same + tile ceiling": {
+   "sabine": [
+    0.92,
+    0.773,
+    0.587,
+    0.519,
+    0.51,
+    0.532,
+    0.51
+   ],
+   "sabine_with_air_ref_only": [
+    0.918,
+    0.768,
+    0.582,
+    0.513,
+    0.498,
+    0.495,
+    0.407
+   ],
+   "eyring": [
+    0.854,
+    0.706,
+    0.52,
+    0.452,
+    0.442,
+    0.465,
+    0.442
+   ],
+   "fitzroy": [
+    3.22,
+    3.172,
+    2.115,
+    1.595,
+    1.294,
+    1.302,
+    1.294
+   ],
+   "alpha_mean": [
+    0.14,
+    0.167,
+    0.219,
+    0.248,
+    0.253,
+    0.242,
+    0.253
+   ],
+   "assignment": {
+    "sides": "plaster_smooth",
+    "floor": "wood_parquet",
+    "ceiling": "acoustic_ceiling_tile",
+    "ahead": "plaster_smooth",
+    "behind": "plaster_smooth"
+   },
+   "eyring_shape_re_1k": [
+    1.89,
+    1.563,
+    1.151,
+    1.0,
+    0.979,
+    1.029,
+    0.979
+   ]
+  },
+  "studio: absorber sides, carpet, tile ceiling": {
+   "sabine": [
+    0.541,
+    0.34,
+    0.268,
+    0.226,
+    0.202,
+    0.203,
+    0.195
+   ],
+   "sabine_with_air_ref_only": [
+    0.54,
+    0.339,
+    0.267,
+    0.225,
+    0.2,
+    0.197,
+    0.177
+   ],
+   "eyring": [
+    0.474,
+    0.27,
+    0.197,
+    0.152,
+    0.126,
+    0.128,
+    0.119
+   ],
+   "fitzroy": [
+    0.483,
+    0.376,
+    0.363,
+    0.475,
+    0.4,
+    0.361,
+    0.322
+   ],
+   "alpha_mean": [
+    0.238,
+    0.379,
+    0.481,
+    0.57,
+    0.639,
+    0.636,
+    0.662
+   ],
+   "assignment": {
+    "sides": "absorber_panel_2in",
+    "floor": "carpet_on_concrete",
+    "ceiling": "acoustic_ceiling_tile",
+    "ahead": "gypsum_painted",
+    "behind": "plywood_panel"
+   },
+   "eyring_shape_re_1k": [
+    3.108,
+    1.771,
+    1.289,
+    1.0,
+    0.829,
+    0.837,
+    0.779
+   ]
+  }
+ }
+}

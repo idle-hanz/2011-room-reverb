@@ -1,0 +1,15 @@
+1274c1274,1285
+< static void fwht32(double *a) { FWHT_BODY(32); }
+---
+> #ifdef CSIGN
+> /* Column signs: feedback matrix H*D (still a +-1 Hadamard; Sylvester columns re-signed).
+>  * No row of H*D is parallel to the all-ones output sum (d is not a Walsh row; max |H d| = 8 of 32),
+>  * so the output no longer funnels back through line 0. The output tap and the first pass are unchanged. */
+> static const double RSIGN_D[32] = {1.0, -1.0, -1.0, -1.0, -1.0, -1.0, 1.0, -1.0, -1.0, 1.0, -1.0, 1.0, 1.0, 1.0, 1.0, 1.0, -1.0, 1.0, 1.0, 1.0, -1.0, 1.0, 1.0, 1.0, -1.0, 1.0, 1.0, 1.0, -1.0, 1.0, 1.0, 1.0};
+> #endif
+> static void fwht32(double *a) {
+> #ifdef CSIGN
+>     { int k; for (k = 0; k < 32; k++) a[k] *= RSIGN_D[k]; }
+> #endif
+>     FWHT_BODY(32);
+> }

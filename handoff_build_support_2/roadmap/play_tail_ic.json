@@ -1,0 +1,19 @@
+{
+ "bin48": {
+  "max_abs_dIC": 0.205,
+  "rms_dIC": 0.084,
+  "peak": 0.0786,
+  "rms_db": -69.54
+ },
+ "bin48_noic": {
+  "max_abs_dIC": 0.539,
+  "rms_dIC": 0.197,
+  "peak": 0.0584,
+  "rms_db": -70.64
+ },
+ "bin48_decay8s": {
+  "max_abs_dIC": 0.118,
+  "rms_dIC": 0.052,
+  "worst_band_hz": 400.0
+ }
+}

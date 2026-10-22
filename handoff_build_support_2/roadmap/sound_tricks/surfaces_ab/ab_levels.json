@@ -1,0 +1,64 @@
+{
+ "3_surfaces_default_room": {
+  "guitar": {
+   "shared_gain_db": 6.65,
+   "rms_trim_db": {
+    "A_flat_2011": 0.0,
+    "B_room_average": -0.85,
+    "C_directional": -0.66,
+    "D_directional_with_room_shell": -1.69
+   }
+  },
+  "snare": {
+   "shared_gain_db": 7.13,
+   "rms_trim_db": {
+    "A_flat_2011": -0.31,
+    "B_room_average": -0.07,
+    "C_directional": -0.08,
+    "D_directional_with_room_shell": 0.0
+   }
+  }
+ },
+ "4_material_contrast": {
+  "guitar": {
+   "shared_gain_db": 6.61,
+   "rms_trim_db": {
+    "studio_flat": -0.63,
+    "studio_room_average": -0.71,
+    "studio_directional": -0.61,
+    "brick_flat": 0.0,
+    "brick_room_average": -2.82,
+    "brick_directional": -0.94
+   }
+  },
+  "snare": {
+   "shared_gain_db": 7.97,
+   "rms_trim_db": {
+    "studio_flat": -1.98,
+    "studio_room_average": -1.73,
+    "studio_directional": -1.77,
+    "brick_flat": -0.38,
+    "brick_room_average": -0.02,
+    "brick_directional": 0.0
+   }
+  }
+ },
+ "5_auto_treat": {
+  "guitar": {
+   "shared_gain_db": 6.11,
+   "rms_trim_db": {
+    "A_untreated": 0.0,
+    "B_broadband_only": -0.58,
+    "C_auto_treated_panels": -0.54
+   }
+  },
+  "snare": {
+   "shared_gain_db": 7.63,
+   "rms_trim_db": {
+    "A_untreated": 0.0,
+    "B_broadband_only": -1.65,
+    "C_auto_treated_panels": -1.64
+   }
+  }
+ }
+}

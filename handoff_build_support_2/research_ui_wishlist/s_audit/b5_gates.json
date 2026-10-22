@@ -1,0 +1,23 @@
+{
+  "fixed_by": "S-MIX",
+  "b5_level_change_db": 0.0,
+  "preset_vs_explicit_mute_db": -3003.63358699791,
+  "preset_vs_moved_fader_db": -3003.63358699791,
+  "max_abs_mute": 0.0,
+  "max_abs_fader": 0.0,
+  "weights": [
+    0.0,
+    0.0,
+    0.5,
+    0.5,
+    0.0,
+    0.0
+  ],
+  "corr_lr": 0.9999999999999998,
+  "note": "B5 adds no level. Direct L/R-off vs L/R-on is the coherent 3-to-1 law (\u22129.54 dB), the same number as the table tail. The table total (\u221210.66 dB) is the box 2000 ms mix.",
+  "direct_lr_off_vs_on_db": -9.54,
+  "short_mix_lr_off_vs_on_total_db": -2.61,
+  "short_mix_lr_off_vs_on_peak_db": -2.01,
+  "table_total_db": -10.66,
+  "table_tail_db": -9.54
+}

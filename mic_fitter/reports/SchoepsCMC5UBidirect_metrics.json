@@ -1,0 +1,44 @@
+{
+  "mic_id": "SchoepsCMC5UBidirect",
+  "display_name": "Schoeps CMC5-U Bidirect \u2014 SDC fig-8",
+  "honesty": "MEASURED",
+  "family": "fig8",
+  "source": "Franco et al. Zenodo 10.5281/zenodo.4633508 (Raw_IRs, 5m, 24-bit, selected angles)",
+  "params": {
+    "f0": 7638.243173231971,
+    "depth_max_db": -18.71106918016628,
+    "shelf_slope": 0.6000000000000001,
+    "f_lo": 192.58174346939623,
+    "depth_lo_db": -0.7575635781073159,
+    "res_hz": 1500.0000020933953,
+    "lp_mix": 0.27703300070917813,
+    "fc_floor": 3157.898040673983,
+    "p": 0.6000000000000001
+  },
+  "train_rmse_db": 4.124596234445988,
+  "holdout_rmse_db": 2.084430397609987,
+  "train_mse_db": 17.012294097206023,
+  "holdout_mse_db": 4.344850082480528,
+  "holdout_angles_deg": [
+    45.0,
+    135.0
+  ],
+  "train_angles_deg": [
+    0.0,
+    15.0,
+    30.0,
+    60.0,
+    90.0,
+    120.0,
+    150.0,
+    180.0
+  ],
+  "fit_message": "DE success=False nit=70 fun=17.225503; LS success=True cost=4408.443139",
+  "preset": "SchoepsCMC5UBidirect.json",
+  "plots": {
+    "polar": "plots/polars/SchoepsCMC5UBidirect_polar.png",
+    "colour": "plots/colour/SchoepsCMC5UBidirect_colour.png",
+    "fit_train": "plots/fit/SchoepsCMC5UBidirect_train.png",
+    "fit_holdout": "plots/fit/SchoepsCMC5UBidirect_holdout.png"
+  }
+}

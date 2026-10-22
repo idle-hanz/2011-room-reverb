@@ -1,0 +1,44 @@
+{
+  "mic_id": "ShureSM57",
+  "display_name": "Shure SM57 \u2014 dynamic cardioid",
+  "honesty": "MEASURED",
+  "family": "dynamic_cardioid",
+  "source": "Franco et al. Zenodo 10.5281/zenodo.4633508 (Raw_IRs, 5m, 24-bit, selected angles)",
+  "params": {
+    "f0": 200.00000000000003,
+    "depth_max_db": -23.70185779703961,
+    "shelf_slope": 1.5000000000000002,
+    "f_lo": 289.1617768243881,
+    "depth_lo_db": -1.4629114720429321,
+    "res_hz": 1500.0001468612936,
+    "lp_mix": 0.30318419485241205,
+    "fc_floor": 6199.282688136083,
+    "p": 0.85524090237471
+  },
+  "train_rmse_db": 3.359742370836717,
+  "holdout_rmse_db": 2.8642206676988478,
+  "train_mse_db": 11.287868798395523,
+  "holdout_mse_db": 8.203760033273234,
+  "holdout_angles_deg": [
+    45.0,
+    135.0
+  ],
+  "train_angles_deg": [
+    0.0,
+    15.0,
+    30.0,
+    60.0,
+    90.0,
+    120.0,
+    150.0,
+    180.0
+  ],
+  "fit_message": "DE success=False nit=70 fun=11.747334; LS success=True cost=3005.346014",
+  "preset": "ShureSM57.json",
+  "plots": {
+    "polar": "plots/polars/ShureSM57_polar.png",
+    "colour": "plots/colour/ShureSM57_colour.png",
+    "fit_train": "plots/fit/ShureSM57_train.png",
+    "fit_holdout": "plots/fit/ShureSM57_holdout.png"
+  }
+}

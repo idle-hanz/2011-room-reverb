@@ -1,0 +1,8 @@
+# Run rules (Idle, 2026-10-22). Every prompt follows these.
+1. One goal per run. If the prompt has two goals, do the first and stop.
+2. Time box: about 60 minutes. If not done, stop, write a 10-line status, keep the work on a branch/backup, do not restore and redo.
+3. No rabbit holes. Any side issue, odd number or old failure: one line in roadmap\IDEAS_BACKLOG_2026-10-19.md, then carry on. Never investigate it in this run.
+4. Tests: QUICK after each step (sound pins/MD5s, goldens, tests for the touched files). FULL suite + CPU bench once, at the end only.
+5. Known-red acceptance tests are not reasons to stop or to dig.
+6. On a stop: say which gate, by how much, and the one-line likely cause. No extra diagnosis.
+7. Report: under 20 lines, plain words.

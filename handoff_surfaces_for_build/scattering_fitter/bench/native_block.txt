@@ -1,0 +1,12 @@
+native-block N= 32 K= 0  0.0214 ms/128-block  (0.80% of 2.667 ms)  chk=-0.386655
+native-block N= 32 K= 8  0.0292 ms/128-block  (1.10% of 2.667 ms)  chk=-0.497463
+native-block N= 32 K=16  0.0393 ms/128-block  (1.47% of 2.667 ms)  chk=-1.98606
+native-block N= 32 K=24  0.0490 ms/128-block  (1.84% of 2.667 ms)  chk=-0.0879352
+native-block N= 64 K= 0  0.0438 ms/128-block  (1.64% of 2.667 ms)  chk=-2.77753
+native-block N= 64 K= 8  0.0605 ms/128-block  (2.27% of 2.667 ms)  chk=1.51418
+native-block N= 64 K=16  0.0795 ms/128-block  (2.98% of 2.667 ms)  chk=-1.20535
+native-block N= 64 K=24  0.0983 ms/128-block  (3.69% of 2.667 ms)  chk=-1.98758
+native-block N=128 K= 0  0.0874 ms/128-block  (3.28% of 2.667 ms)  chk=3.57382
+native-block N=128 K= 8  0.1234 ms/128-block  (4.63% of 2.667 ms)  chk=-3.27239
+native-block N=128 K=16  0.1625 ms/128-block  (6.09% of 2.667 ms)  chk=-0.861803
+native-block N=128 K=24  0.1998 ms/128-block  (7.49% of 2.667 ms)  chk=-2.11484

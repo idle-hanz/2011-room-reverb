@@ -1,0 +1,41 @@
+{
+  "mic_id": "proxy_sdc_cardioid",
+  "display_name": "ASSUMED SDC Cardioid (KM184-ish)",
+  "honesty": "ASSUMED",
+  "family": "sdc_cardioid",
+  "source": "synthetic_proxy_curves_mimicking_published_off_axis_shapes",
+  "params": {
+    "f0": 1472.2267418846038,
+    "depth_max_db": -19.215432489529775,
+    "res_hz": 13901.757355293903,
+    "lp_mix": 0.9999999999999999,
+    "fc_floor": 3733.8730027684073,
+    "p": 0.8283799974970113
+  },
+  "train_rmse_db": 0.4850963890526354,
+  "holdout_rmse_db": 0.5171644224243336,
+  "train_mse_db": 0.2353185066719058,
+  "holdout_mse_db": 0.26745903982149455,
+  "holdout_angles_deg": [
+    45.0,
+    135.0
+  ],
+  "train_angles_deg": [
+    0.0,
+    15.0,
+    30.0,
+    60.0,
+    90.0,
+    120.0,
+    150.0,
+    180.0
+  ],
+  "fit_message": "DE success=False nit=40 fun=0.239396; LS success=True cost=60.431935",
+  "preset": "proxy_sdc_cardioid.json",
+  "plots": {
+    "polar": "plots/polars/proxy_sdc_cardioid_polar.png",
+    "colour": "plots/colour/proxy_sdc_cardioid_colour.png",
+    "fit_train": "plots/fit/proxy_sdc_cardioid_train.png",
+    "fit_holdout": "plots/fit/proxy_sdc_cardioid_holdout.png"
+  }
+}

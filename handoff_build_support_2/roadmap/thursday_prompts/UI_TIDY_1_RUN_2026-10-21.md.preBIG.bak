@@ -1,0 +1,104 @@
+# UI-TIDY-1 - UI-only tidy (DRAFT - awaiting Idle approval) (2026-10-21)
+
+**DRAFT. Do not paste into Build until Idle says yes.** No sound change. No chip-rule change (confirm only). No Hall ramp. Do not delete `index.html.orig`.
+
+Read HANDOVER.md **Current pin (2026-10-20) - PERROOMK** first. Baseline: `WORKLET_VER` **59**, `live_fdn.js?v=59`, `pack_room.js?v=52`, `app.js?v=62`, `sl_room_result.js?v=3`, wasm `843a6eb8c91a9278ba927f643481f3260766a08c`, `live_stereo.c` `bbdf57994e0996e2c9b77eb8a634550bb71ef3cf`, Temp DLL `dcde61dfa8ccc17244595244bd3cb7077c7f8433`, empty MD5 `b6c55d429fa63d6d0d3cd1fcc7d23e88`, centre `b3e6bcd9dfa13ad737d2b15d561f7d30`, two-source `std_lock18` key-absent `a5dcacc67a269c234c4b5745899b038e`, explicit-false `0e94bd03d899b76b43adf31ae87f0cd2`, five TLAW goldens max-abs 0, GOLDEN_META `a362cf5e490089807b39346ba207633b88511548`, `render_std_unlocked_byp.f32` sha1 from that pin. Also read `roadmap\review\UI_REVIEW_2026-10-21.md` (U1/U2/U4/U7/U8/U10/U11/U13/U20/U24/U35) and `roadmap\review\UI_DESIGN_PROPOSAL_2026-10-21.md`  section 7 quick wins.
+
+Line numbers below were read on the PERROOMK tree (2026-10-21). Re-find by the symbol if a line has drifted by a few.
+
+## Why
+Idle asked for a hard look at the UI and for small fixes that fit the ~7% token budget. This run is **UI / API-shape only**: confirms, readouts, slider limits, cache pins, one visual lattice fix that matches what Play/Render already do. No DSP, no wasm, no `live_stereo.c`, no `render_pipeline.py` audio path, no Movement, no BLOOM, no Hall ramp, no change to what a place chip writes into `state` (only a confirm before it runs today's `applyPlace`).
+
+## Hard rules
+1. **No sound change.** Wasm, `live_stereo.c`, Temp DLL, `fdn_worklet.js`, `pack_room.js`, `render_pipeline.py` audio helpers, `surf_loop.py`, makeup, Smooth, limiter, 1/r, Surfaces, physics, Movement (`MOVEMENT_FORCED_OFF`) - untouched. Sha1s above must match at the end (except UI files listed under Versions).
+2. **`WORKLET_VER` stays 59.** Do not bump `live_fdn.js` pin unless Phase 7 forces a tiny export (prefer not). If Phase 7 needs a one-line `LiveFDN.outputPeak` helper, bump `live_fdn.js?v=59->60` only; **WORKLET_VER number stays 59** (same worklet module). Prefer reading the existing `analyser` via a new `LiveFDN.getMeter()` that does not change the graph.
+3. **Gates (all must pass):** selfcheck **45/45**; `pytest software/tests/test_s_audit_ui.py` (rerun alone if suite-load flake); node `--test` for any UI unit file touched; empty MD5 `b6c55d42…`; centre `b3e6bcd9…`; two-source `std_lock18` key-absent `a5dcacc6…`; explicit-false `0e94bd03…`; five goldens max-abs 0; `d18`/`d4` prefix max-abs 0; `render_std_unlocked_byp.f32` sha1 unchanged. Any other pin move = STOP.
+4. **Token order:** do Phases 1->6, then U35, then Phase 8, then Phase 7. If tokens run short: **drop Phase 8 first, then Phase 7**. Do not start a dropped phase. Report what was skipped.
+5. Out of scope (do not touch): chip reset *semantics* (what keys `applyPlace` / `resetToFresh` overwrite - F5 rule stays for Idle); Hall ramp (F4); Character macro; Pre-delay / Width / Output; deleting `software/static/index.html.orig`; Advanced panel moves; Mic-tab B10/B11.
+
+## Versions (expected)
+- `app.js?v=62->63` (`index.html` ~969)
+- `app.css?v=34 -> 35` (`index.html` ~8) if Phase 6 lands
+- `index.html` itself (place hint, Hadamard R tag, Save/Load buttons if Phase 8, meter DOM if Phase 7)
+- U35 may touch `app_server.py` (images path only) and/or `image_geometry.py` - bump nothing for Python; if `image_geometry.py` changes, no `?v=`
+- `sl_room_result.js` - **not** in this run (U12 was a false positive; `RR_SL_STAGE=3` already)
+- `WORKLET_VER` 59, `live_fdn.js?v=59` unless Phase 7 needs the helper above (`->60` pin only)
+- Bloom's planned 59->60 / `app.js` 62->63 becomes **60 / 64** if this run takes `app.js` to 63; note that in the HANDOVER pin, do not edit `BLOOM_*.md` unless Idle asks
+
+---
+
+## Step 0 - REVIEW ONLY (plan mode, high effort, no edits)
+
+For each item tag **VERIFIED / CHANGED / UNKNOWN / STOP**. Max 3 review rounds. Do not code.
+
+0. Live pins vs PERROOMK pin (every sha1 / MD5 / `?v=` / WORKLET_VER listed above).
+1. Confirm `applyPlace` / `resetToFresh` (`app.js:3599`, `:3614`) still wipe full state - list the keys they touch. Confirm the confirm-dialog plan does **not** change that list.
+2. Confirm `/api/phys_preview` (`app_server.py:1307`) already returns `on`, `armed`, `reachable`, `reached_mid`, `mean_500_1k`, `k` (PERROOMK). Confirm `paintPhysReadout` / `pullPhysPreview` (`app.js:676`, `:698`) ignore `on:false` and `reachable` today (U7/U8).
+3. Confirm `_attach_warnings` (`app_server.py:433`) and that no JS reads `payload.warnings` (U10). List every `fetch(` in `app.js` with an empty `catch` (U20): at least phys `:722`, decay preview `:1291`, mic presets `:2604`, defaults `:3711`.
+4. Confirm stand slider HTML maxima (`index.html:586-589` Stand X max 40, Z 60, heights 20) and that only `space.max` is updated in `syncUINow` (`app.js:2727`) (U11).
+5. Confirm Hadamard chips 64/128 (`index.html:808-809`, `setHadamardN` `app.js:1798`) stay clickable during Play; note text at `:812` already says Render-only (U13).
+6. Confirm `app.css:356-358` `outline: none` on selects (U24).
+7. **U35:** re-confirm `fetchImages` (`app.js:1458`) posts `Object.assign({}, state)` not `heardMix`; `api_images` (`app_server.py:908-927`) never passes `mic_x_*` into `build_images_payload` (`image_geometry.py:168`). Cite the 2026-10-21 probe (deltas 3.5-5.5 m) in the review file. Propose the **smallest** fix: (A) `fetchImages` body = `heardMix(state)` + `mics`, and `api_images` / `build_images_payload` place capsules via existing `place_stand` / `mic_x_*`, **or** (B) only client-side if Step 0 finds a cheaper path. Must not change Play/Render audio. Name every file:line you will edit.
+8. Phase 7 meter: confirm `live_fdn.js:58` `outputRms` and analyser at `:103`. Propose peak hold + L/R without changing the audio graph. Phase 8: confirm no `localStorage` today; propose key name and that restore only calls existing `Object.assign(state,…)` + `syncUI` paths.
+9. Any finding that would change a golden, MD5, wasm, or chip write-set = **STOP**.
+
+Report findings. Idle / parent folds them into Step 1 before paste.
+
+---
+
+## Step 1 - BUILD (fresh session, high effort, after Step 0 corrections)
+
+1. Backup first: `software_backup_2026-10-21_preUITIDY1.zip` of `software\` (exclude `.venv`, `__pycache__`; include `renders\out_20261013_115900.wav` if present). Manifest of sha1s. On any STOP: restore, verify manifest, selfcheck 45/45, report.
+2. Read Current pin. Do not start if a BLOOM / other audio run is mid-flight.
+
+### Phase 1 - Place chips confirm + hint + active (U1 stop-gap, U2, U4)
+- `index.html:539` hint: change to say a place chip resets size and starting source/mic **and** Mix / Surfaces / colour (honest). Do not change behaviour.
+- `app.js:3630` click handler: before `applyPlace(name)`, `window.confirm` (or the existing toast/`showToast` pattern at `:1989` if Step 0 prefers one modal style) - e.g. "Load Hall? This resets mics, mix and surfaces." Cancel = no call. **Same `applyPlace` body as today.**
+- Active state: mark `#placeRow [data-place]` chip whose place was last loaded (track a `state._place` or reuse `placeChosen` + last name). CSS: existing `.chip.active` / `.on`.
+
+### Phase 2 - Physical readout (U7, U8)
+- `pullPhysPreview` (`app.js:698-728`): if `data.on === false`, hide `#physReadout`, grey `#phys_ceiling` row or show "off with two sources" (match server stopgap F13); do not write NaN strings.
+- If `data.armed && data.reachable === false`, append "room can reach ~{reached_mid} s" using `data.reached_mid`.
+
+### Phase 3 - Warnings + failed fetches -> toast (U10, U20)
+- After every `live_params` / `render` / `phys_preview` / `defaults` / `mic_presets` JSON that includes `warnings`, call `showToast` with a short list (cap ~3 keys).
+- Replace empty `catch` blocks listed in Step 0 with `showToast("… failed")` (keep dial/state unchanged).
+
+### Phase 4 - Slider limits from room (U11)
+- In `syncUINow` (~`app.js:2800`), set `#mcx`/`#sx` max = `state.W`, `#mcz`/`#sz` max = `state.L`, `#my`/`#sy` max = `state.H` (clamp current values with existing `RoomMath.clampRoom`). Mirror on any duplicate height inputs Step 0 lists.
+
+### Phase 5 - Hadamard 64/128 during Play (U13)
+- While `LiveFDN.isRunning()`, disable chips `data-n="64"` and `128`, add title "Render only", optional small `R` mark. Re-enable on stop. Do not change `setHadamardN` allowed list.
+
+### Phase 6 - focus-visible (U24)
+- `app.css`: add `:focus-visible` outline (accent) for buttons, chips, inputs, selects. Do not remove existing `:focus { outline: none }` without replacing it.
+
+### Phase U35 - Lattice uses room-mic positions (UI/visual only)
+- Implement the Step 0-approved plan. Acceptance: with L/C/R on Room at the probe coordinates (or equivalent), `/api/images` capsule positions match `place_stand` within 1 cm. Stand-only scenes bit-identical to today (same payload positions). No change to `heardMix` gains, live dict, or Render IR.
+
+### Phase 8 - Autosave + Save/Load (drop first if short)
+- `localStorage` key e.g. `rr2011.setup.v1`: debounce-write `JSON.stringify(state)` on `syncUI` (exclude file blobs). On boot, after `loadServerDefaults`, offer restore or auto-restore once with toast.
+- Top-bar Save downloads JSON; Load reads a file into `state` + `migrateRoomState` + `syncUI`. No server schema change.
+
+### Phase 7 - Live output meter (drop second if short)
+- Small L/R peak/RMS readout near `#limiterLed` or Preview (`index.html:29`). Drive from existing AnalyserNode (`live_fdn.js:58-105`) via a read-only helper. 30 fps while Play runs; hide or dash when stopped. **No** worklet/DSP change. Do not alter limiter behaviour.
+
+### Gates & pin
+- Run: selfcheck 45/45; `pytest software/tests/test_s_audit_ui.py`; node tests if any; MD5s and goldens in Hard rule 3. Playwright: place confirm cancel/accept; phys NaN gone with two sources; Hadamard 64 disabled while Play; U35 probe positions; Save round-trip if Phase 8 landed.
+- Bump `?v=` only for files that changed (Versions). Update HANDOVER Current pin: UI-TIDY-1, list phases done/skipped, new `app.js?v`, note Bloom version shift if any. Append `BUILD_RUN_LOG.md`.
+- **STOP and restore** if any MD5/golden/wasm/c file moves, if Place confirm is skipped and behaviour still changes write-set, if U35 changes Play audio, or if a test fails for a reason not listed.
+
+## Report
+Phases done/skipped; every file touched with old to new sha1 or `?v=`; MD5/golden confirmation; U35 before/after capsule positions; anything left for Idle (F4/F5 rule, Character, meter polish).
+
+## Paste lines (after Idle approves)
+
+**Step 0 (review chat, plan mode, high effort):**
+```
+Read roadmap\thursday_prompts\UI_TIDY_1_RUN_2026-10-21.md. DRAFT was approved. Do Step 0 only (plan mode, read-only). Report every numbered item VERIFIED/CHANGED/UNKNOWN/STOP. No edits.
+```
+
+**Step 1 (new Build chat, high effort, after Step 0 fold-in):**
+```
+Read roadmap\thursday_prompts\UI_TIDY_1_RUN_2026-10-21.md and the Step 0 report. Do Step 1. Backup software_backup_2026-10-21_preUITIDY1.zip first. UI-only; WORKLET_VER stays 59; drop Phase 8 then 7 if tokens run short. STOP and restore on any sound/MD5/golden change.
+```

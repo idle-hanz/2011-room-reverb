@@ -1,0 +1,18 @@
+def_omni2 src_rad head [] binaural False
+def_dirA_Bomni src_rad head [1.0, 0.0] binaural False
+def_dirAB src_rad head [1.0, 1.0] binaural False
+big_omni2 src_rad head [] binaural False
+big_dirAB src_rad head [1.0, 1.0] binaural False
+bin_def_dirAB src_rad head [1.0, 1.0] binaural False
+bin_big_dirAB src_rad head [1.0, 1.0] binaural False
+round 0
+round 1
+round 2
+round 3
+def_omni2        play min 1.744 med 1.753  sil med 1.700
+def_dirA_Bomni   play min 1.731 med 1.763  sil med 1.763
+def_dirAB        play min 1.778 med 1.857  sil med 1.746
+big_omni2        play min 1.843 med 1.874  sil med 1.860
+big_dirAB        play min 1.894 med 1.974  sil med 1.901
+bin_def_dirAB    play min 1.629 med 1.674  sil med 1.647
+bin_big_dirAB    play min 1.718 med 1.733  sil med 1.629

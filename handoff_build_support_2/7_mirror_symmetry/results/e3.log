@@ -1,0 +1,15 @@
+base     RENDER one A vs B-pos measured        null   -19.8 dB | band max  1.54 dB @100 rms 0.52 | early80 -0.01/+0.06 | T30 max 23.3% | ILDdiff 1.69 ICdiff 0.117 | lvl +0.03
+   secs 57.1
+base     Render A vs Play A (same side) measured null   -31.5 dB | band max  0.04 dB @16127 rms 0.01 | early80 -0.01/-0.02 | T30 max  0.6% | ILDdiff 0.01 ICdiff 0.001 | lvl -0.01
+sym      RENDER one A vs B-pos measured        null   -33.3 dB | band max  0.22 dB @100 rms 0.04 | early80 -0.01/+0.06 | T30 max 10.3% | ILDdiff 0.21 ICdiff 0.005 | lvl -0.01
+   secs 57.1
+sym      Render A vs Play A (same side) measured null   -31.3 dB | band max  0.03 dB @16127 rms 0.01 | early80 -0.02/-0.02 | T30 max  0.6% | ILDdiff 0.01 ICdiff 0.001 | lvl -0.02
+tau      RENDER one A vs B-pos measured        null  -229.2 dB | band max  0.00 dB @126 rms 0.00 | early80 +0.00/+0.00 | T30 max  0.0% | ILDdiff 0.00 ICdiff 0.000 | lvl -0.00
+   secs 57.1
+tau      Render A vs Play A (same side) measured null   -30.1 dB | band max  0.23 dB @16127 rms 0.05 | early80 +0.04/+0.14 | T30 max  0.5% | ILDdiff 0.16 ICdiff 0.008 | lvl +0.04
+p6       RENDER one A vs B-pos measured        null   -20.1 dB | band max  1.04 dB @16127 rms 0.58 | early80 +1.02/-0.14 | T30 max 20.8% | ILDdiff 1.16 ICdiff 0.029 | lvl -0.11
+   secs 57.5
+p6       Render A vs Play A (same side) measured null   -13.0 dB | band max  1.81 dB @1008 rms 1.63 | early80 +1.35/+1.47 | T30 max  4.3% | ILDdiff 0.25 ICdiff 0.003 | lvl +1.46
+p6_tau   RENDER one A vs B-pos measured        null  -211.7 dB | band max  0.00 dB @100 rms 0.00 | early80 +0.00/+0.00 | T30 max  0.0% | ILDdiff 0.00 ICdiff 0.000 | lvl -0.00
+   secs 56.8
+p6_tau   Render A vs Play A (same side) measured null   -10.2 dB | band max  4.37 dB @16127 rms 1.98 | early80 +2.92/+2.21 | T30 max  2.0% | ILDdiff 1.75 ICdiff 0.075 | lvl +2.23

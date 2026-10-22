@@ -1,0 +1,60 @@
+{
+  "schema": "mic_fitter.preset_index.v2",
+  "presets": [
+    {
+      "mic_id": "ShureSM57",
+      "display_name": "Shure SM57 \u2014 dynamic cardioid",
+      "honesty": "MEASURED",
+      "family": "dynamic_cardioid",
+      "file": "ShureSM57.json",
+      "holdout_rmse_db": 2.8642206676988478,
+      "train_rmse_db": 3.359742370836717
+    },
+    {
+      "mic_id": "SchoepsCMC5UCardioid",
+      "display_name": "Schoeps CMC5-U Cardioid \u2014 SDC",
+      "honesty": "MEASURED",
+      "family": "sdc_cardioid",
+      "file": "SchoepsCMC5UCardioid.json",
+      "holdout_rmse_db": 4.341847580605127,
+      "train_rmse_db": 3.6321035493906324
+    },
+    {
+      "mic_id": "NeumannU87AiCardioid",
+      "display_name": "Neumann U87 Ai Cardioid \u2014 LDC",
+      "honesty": "MEASURED",
+      "family": "ldc_cardioid",
+      "file": "NeumannU87AiCardioid.json",
+      "holdout_rmse_db": 4.174992997111162,
+      "train_rmse_db": 3.4046972245963514
+    },
+    {
+      "mic_id": "RoyerR121",
+      "display_name": "Royer R-121 \u2014 fig-8 ribbon",
+      "honesty": "MEASURED",
+      "family": "fig8_ribbon",
+      "file": "RoyerR121.json",
+      "holdout_rmse_db": 3.7775703465627535,
+      "train_rmse_db": 9.500430779809196
+    },
+    {
+      "mic_id": "ElectroVoiceRE20",
+      "display_name": "Electro-Voice RE20 \u2014 dynamic cardioid",
+      "honesty": "MEASURED",
+      "family": "dynamic_cardioid",
+      "file": "ElectroVoiceRE20.json",
+      "holdout_rmse_db": 3.620985883612335,
+      "train_rmse_db": 3.4193282549923714
+    },
+    {
+      "mic_id": "AKGC414Cardioid",
+      "display_name": "AKG C414 Cardioid \u2014 LDC multipattern",
+      "honesty": "MEASURED",
+      "family": "ldc_cardioid",
+      "file": "AKGC414Cardioid.json",
+      "holdout_rmse_db": 3.3173513874279092,
+      "train_rmse_db": 3.5010539065590387
+    }
+  ],
+  "note": "Structure LP is separate from these off-axis colour presets."
+}

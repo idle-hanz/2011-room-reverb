@@ -1,0 +1,14 @@
+758a759,771
+> #ifdef PEAK_DC_FIX
+>         /* Cut-only peaking has unity DC gain. The float32 blob loses it near DC
+>          * (2.78 Hz axis: DC 1.5), which makes long decays run away. Restore it. */
+>         if (on) {
+>             double dcFix = 1.0 + st->pa1[b] + st->pa2[b] - st->pb0[b] - st->pb1[b];
+> #ifdef PEAK_DC_FIX_ONLY_IF_OFF
+>             double num = st->pb0[b] + st->pb1[b] + st->pb2[b], den = 1.0 + st->pa1[b] + st->pa2[b];
+>             if (den != 0.0 && (num / den > 1.0 + 1e-6 || num / den < 1.0 - 1e-6)) st->pb2[b] = dcFix;
+> #else
+>             st->pb2[b] = dcFix;
+> #endif
+>         }
+> #endif

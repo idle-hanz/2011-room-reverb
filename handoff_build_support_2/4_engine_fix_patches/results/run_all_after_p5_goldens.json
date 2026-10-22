@@ -1,0 +1,31 @@
+{
+ "meta": {
+  "sw": "/workspace/build_support_2/work/p5/software",
+  "when": "2026-09-28 21:55:58",
+  "node": "/usr/bin/node",
+  "python": "/workspace/scratch_er_dropout/venv/bin/python",
+  "sha1": {
+   "engine/live_stereo.c": "2087e9478026",
+   "static/wasm/live_stereo.wasm": "e2891134de29",
+   "static/js/fdn_worklet.js": "4b374a370796",
+   "render_pipeline.py": "b1543f2eac16",
+   "engine/fdn.py": "45379edba52a"
+  }
+ },
+ "results": [
+  {
+   "test": "t03_golden_play_features_off",
+   "status": "FAIL",
+   "secs": 0.9,
+   "detail": "play_std_unlocked_byp: differs from golden (null 3.1 dB > -100.0 dB, max diff 1). If the change is intended, regenerate goldens and record why.",
+   "doc": "Play IR with new features off equals the golden baseline (null <= -100 dB)."
+  },
+  {
+   "test": "t04_golden_render_features_off",
+   "status": "FAIL",
+   "secs": 5.5,
+   "detail": "render_std_unlocked_byp: differs from golden (null 3.5 dB > -100.0 dB, max diff 1.2). If the change is intended, regenerate goldens and record why.",
+   "doc": "Render IR (BYPASS colour, 0.5 s) equals the golden baseline (null <= -100 dB)."
+  }
+ ]
+}

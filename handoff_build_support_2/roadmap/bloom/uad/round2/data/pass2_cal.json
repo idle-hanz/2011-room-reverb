@@ -1,0 +1,19 @@
+{
+ "prog_levels": {
+  "la2as_pr50": -17.35769561478934,
+  "ssl_4_auto": -21.44886975242196,
+  "fet_all": -27.11237113402062,
+  "dis_nuke_room": -1.6422985379122748,
+  "fc_t5": -14.453691275167785,
+  "mvm_comp": -2.3929219600725955
+ },
+ "NUKE_ROOM": {
+  "input": 5.0,
+  "ratio": "NUKE",
+  "attack": 4.5,
+  "release": 2.5,
+  "output": 5.0,
+  "detector": "HP",
+  "audio": "Norm"
+ }
+}

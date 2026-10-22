@@ -1,0 +1,179 @@
+{
+ "base": {
+  "decay_lock": true,
+  "decay_s": 1.8,
+  "humidity": 0.5,
+  "early_wet": 0.0,
+  "two_sources": true,
+  "mirror_b": true,
+  "source_radiation": "violin_byu",
+  "fdn_wet": 0.0,
+  "toe_half_deg": 55,
+  "space": 0.17,
+  "source_yaw": 172.98,
+  "source_pitch": 5.23
+ },
+ "variants": {
+  "ui_0830": {
+   "source_radiation_b": "omni",
+   "source_yaw_b": null,
+   "source_pitch_b": 0
+  },
+  "intended": {},
+  "explicit_b": {
+   "source_radiation_b": "violin_byu",
+   "source_yaw_b": -172.98,
+   "source_pitch_b": 5.23
+  },
+  "all_omni": {
+   "source_radiation": "omni",
+   "source_radiation_b": "omni"
+  }
+ },
+ "results": {
+  "play|ui_0830": {
+   "swap_null_db(B.L-A.R, 60ms)": -5.6,
+   "B_vs_allomniB_db": -600.0,
+   "bands_B.L_minus_A.R": {
+    "500": 0.63,
+    "1000": 0.69,
+    "2000": 0.93,
+    "4000": 1.67,
+    "8000": 3.14
+   },
+   "bands_B.L_minus_omniB.L": {
+    "500": 0.0,
+    "1000": 0.0,
+    "2000": 0.0,
+    "4000": 0.0,
+    "8000": 0.0
+   }
+  },
+  "play|intended": {
+   "swap_null_db(B.L-A.R, 60ms)": -40.2,
+   "B_vs_allomniB_db": -7.4,
+   "bands_B.L_minus_A.R": {
+    "500": 0.01,
+    "1000": 0.01,
+    "2000": 0.03,
+    "4000": 0.05,
+    "8000": 0.09
+   },
+   "bands_B.L_minus_omniB.L": {
+    "500": -0.62,
+    "1000": -0.68,
+    "2000": -0.9,
+    "4000": -1.62,
+    "8000": -3.05
+   }
+  },
+  "play|explicit_b": {
+   "swap_null_db(B.L-A.R, 60ms)": -40.2,
+   "B_vs_allomniB_db": -7.4,
+   "bands_B.L_minus_A.R": {
+    "500": 0.01,
+    "1000": 0.01,
+    "2000": 0.03,
+    "4000": 0.05,
+    "8000": 0.09
+   },
+   "bands_B.L_minus_omniB.L": {
+    "500": -0.62,
+    "1000": -0.68,
+    "2000": -0.9,
+    "4000": -1.62,
+    "8000": -3.05
+   }
+  },
+  "play|all_omni": {
+   "swap_null_db(B.L-A.R, 60ms)": -600.0,
+   "B_vs_allomniB_db": -600.0,
+   "bands_B.L_minus_A.R": {
+    "500": 0.0,
+    "1000": 0.0,
+    "2000": 0.0,
+    "4000": 0.0,
+    "8000": 0.0
+   },
+   "bands_B.L_minus_omniB.L": {
+    "500": 0.0,
+    "1000": 0.0,
+    "2000": 0.0,
+    "4000": 0.0,
+    "8000": 0.0
+   }
+  },
+  "render|ui_0830": {
+   "swap_null_db(B.L-A.R, 60ms)": -5.6,
+   "B_vs_allomniB_db": -600.0,
+   "bands_B.L_minus_A.R": {
+    "500": 0.63,
+    "1000": 0.69,
+    "2000": 0.93,
+    "4000": 1.67,
+    "8000": 3.14
+   },
+   "bands_B.L_minus_omniB.L": {
+    "500": 0.0,
+    "1000": 0.0,
+    "2000": 0.0,
+    "4000": 0.0,
+    "8000": 0.0
+   }
+  },
+  "render|intended": {
+   "swap_null_db(B.L-A.R, 60ms)": -40.2,
+   "B_vs_allomniB_db": -7.4,
+   "bands_B.L_minus_A.R": {
+    "500": 0.01,
+    "1000": 0.01,
+    "2000": 0.03,
+    "4000": 0.05,
+    "8000": 0.09
+   },
+   "bands_B.L_minus_omniB.L": {
+    "500": -0.62,
+    "1000": -0.68,
+    "2000": -0.9,
+    "4000": -1.62,
+    "8000": -3.05
+   }
+  },
+  "render|explicit_b": {
+   "swap_null_db(B.L-A.R, 60ms)": -40.2,
+   "B_vs_allomniB_db": -7.4,
+   "bands_B.L_minus_A.R": {
+    "500": 0.01,
+    "1000": 0.01,
+    "2000": 0.03,
+    "4000": 0.05,
+    "8000": 0.09
+   },
+   "bands_B.L_minus_omniB.L": {
+    "500": -0.62,
+    "1000": -0.68,
+    "2000": -0.9,
+    "4000": -1.62,
+    "8000": -3.05
+   }
+  },
+  "render|all_omni": {
+   "swap_null_db(B.L-A.R, 60ms)": -600.0,
+   "B_vs_allomniB_db": -600.0,
+   "bands_B.L_minus_A.R": {
+    "500": 0.0,
+    "1000": 0.0,
+    "2000": 0.0,
+    "4000": 0.0,
+    "8000": 0.0
+   },
+   "bands_B.L_minus_omniB.L": {
+    "500": 0.0,
+    "1000": 0.0,
+    "2000": 0.0,
+    "4000": 0.0,
+    "8000": 0.0
+   }
+  }
+ }
+}

@@ -1,0 +1,1330 @@
+diff -ruN -x __pycache__ -x .pytest_cache -x renders -x .venv -x '*.wasm' -x '*.orig' -x presets snapshot_2026-10-01_1550/software/app_server.py snapshot_2026-10-01_2210/software/app_server.py
+--- snapshot_2026-10-01_1550/software/app_server.py	2026-10-01 11:32:47.000000000 +0100
++++ snapshot_2026-10-01_2210/software/app_server.py	2026-10-01 21:28:58.000000000 +0100
+@@ -359,6 +359,8 @@
+         "humidity": _f(body.get("humidity"), 0.0),
+         "air_lp": _f(body.get("air_lp"), 0.0),  # K2 locked: 1-pole kept, default mix 0
+         "air_shelf": _f(body.get("air_shelf"), 1.0),
++        "air_climate": str(body.get("air_climate") or "studio_20C_50RH"),
++        "air_iso": _b(body.get("air_iso"), True),
+         "diffusion_master": _span(body.get("diffusion_master"), DIFFUSION_MASTER_DEFAULT, DIFFUSION_MASTER_MIN, 0.0),
+         "decay_s": _f(body.get("decay_s"), 0.0),
+         "decay_lock": _b(body.get("decay_lock"), False),
+@@ -653,6 +655,9 @@
+             humidity=p.get("humidity") or 0.0,
+             air_lp=p.get("air_lp") if p.get("air_lp") is not None else 0.0,
+             air_shelf=p.get("air_shelf") if p.get("air_shelf") is not None else 1.0,
++            reaktor_parity=bool(p.get("reaktor_parity")),
++            air_climate=str(p.get("air_climate") or "studio_20C_50RH"),
++            air_iso=bool(p.get("air_iso")) if p.get("air_iso") is not None else True,
+             diffusion_master=p.get("diffusion_master") if p.get("diffusion_master") is not None else DIFFUSION_MASTER_DEFAULT,
+             decay_s=p.get("decay_s") or 0.0,
+             decay_lock=bool(p.get("decay_lock")),
+@@ -829,6 +834,7 @@
+         room, prep.source, stand, c=c, grid=grid, origin="corner",
+         z_face_4l=False, hadamard_n=n_had,
+         include_offaxis_shelf=mic_colour.include_offaxis_shelf,
++        reaktor_parity=bool(p.get("reaktor_parity")),
+     )
+     wall_cache = precompute_wall_peaking_coeffs(room, sr, c, DEFAULT_DEPTH)
+     ap_cache = {
+diff -ruN -x __pycache__ -x .pytest_cache -x renders -x .venv -x '*.wasm' -x '*.orig' -x presets snapshot_2026-10-01_1550/software/engine/air_iso.py snapshot_2026-10-01_2210/software/engine/air_iso.py
+--- snapshot_2026-10-01_1550/software/engine/air_iso.py	1970-01-01 01:00:00.000000000 +0100
++++ snapshot_2026-10-01_2210/software/engine/air_iso.py	2026-10-01 21:24:04.000000000 +0100
+@@ -0,0 +1,119 @@
++"""ISO 9613-1 air colour for the engine. FITTED_TO_ISO_9613_1.
++
++The analytic curve is candidate C (dual log-sigmoid high shelf) from
++``air_fitter/presets``. Realtime Render and Play use two RBJ high shelves
++(slope 1) with the same corners and dB/m, so both paths share one gain law.
++Do not import the ``air_fitter`` package (its init pulls SciPy).
++
++Humidity still gates the stage and still owns the Structure 1-pole.
++It does not scale these dB. ``air_shelf`` 0..1 scales the ISO depth.
++"""
++
++from __future__ import annotations
++
++import json
++from pathlib import Path
++from typing import Dict, List, Tuple
++
++import numpy as np
++
++_PRESETS = Path(__file__).resolve().parents[2] / "air_fitter" / "presets"
++_CACHE: Dict[str, dict] = {}
++DEFAULT_CLIMATE = "studio_20C_50RH"
++
++_REF_T = 293.15
++_REF_P = 101.325
++_TRIPLE = 273.16
++
++
++def climate_record(name: str = DEFAULT_CLIMATE) -> dict:
++    """Preset JSON. An unknown id falls back to the studio climate."""
++    key = str(name or DEFAULT_CLIMATE)
++    hit = _CACHE.get(key)
++    if hit is not None:
++        return hit
++    path = _PRESETS / f"{key}.json"
++    if not path.is_file():
++        path = _PRESETS / f"{DEFAULT_CLIMATE}.json"
++    data = json.loads(path.read_text(encoding="utf-8"))
++    _CACHE[key] = data
++    if key != data.get("id"):
++        _CACHE[str(data.get("id") or key)] = data
++    return data
++
++
++def high_shelf_db(freqs, f0: float, depth_db: float, shelf_slope: float) -> np.ndarray:
++    """Log-sigmoid high shelf in dB (the fitter's magnitude model, not RBJ)."""
++    f = np.asarray(freqs, dtype=float)
++    x = np.log10(np.maximum(f, 1.0) / max(float(f0), 1.0))
++    blend = 1.0 / (1.0 + np.exp(-float(shelf_slope) * x))
++    return float(depth_db) * blend
++
++
++def h1_db_per_m(freqs, climate: str = DEFAULT_CLIMATE) -> np.ndarray:
++    """H1(f) in dB/m. Path loss is distance times this."""
++    p = climate_record(climate)["params"]
++    lo = high_shelf_db(freqs, p["f0"], p["depth_db_per_m"], p["shelf_slope"])
++    hi = high_shelf_db(freqs, p["f0_hi"], p["depth_hi_db_per_m"], p["shelf_slope_hi"])
++    return lo + hi
++
++
++def model_path_loss_db(freqs, distance_m: float, climate: str = DEFAULT_CLIMATE) -> np.ndarray:
++    """Analytic candidate-C loss, dB (≤ 0). This is the fit the tolerance test checks."""
++    return float(distance_m) * h1_db_per_m(freqs, climate)
++
++
++def _iso_alpha_db_per_m(freqs, temperature_c: float, rh_pct: float, pressure_kpa: float) -> np.ndarray:
++    """ISO 9613-1 α(f) in dB/m. Numpy only; same equations as air_fitter/iso9613.py."""
++    t_k = float(temperature_c) + 273.15
++    p = float(pressure_kpa)
++    rh = float(rh_pct) / 100.0
++    c = -6.8346 * (_TRIPLE / t_k) ** 1.261 + 4.6151
++    p_sat = _REF_P * (10.0 ** c)
++    h = rh * p_sat / p
++    fr_o = (p / _REF_P) * (24.0 + 4.04e4 * h * (0.02 + h) / (0.391 + h))
++    fr_n = (p / _REF_P) * (t_k / _REF_T) ** (-0.5) * (
++        9.0 + 280.0 * h * np.exp(-4.170 * ((t_k / _REF_T) ** (-1.0 / 3.0) - 1.0))
++    )
++    f = np.asarray(freqs, dtype=float)
++    t_ratio = t_k / _REF_T
++    classical = 1.84e-11 * (_REF_P / p) * (t_ratio ** 0.5)
++    oxygen = 0.01275 * np.exp(-2239.1 / t_k) * (fr_o + (f ** 2) / fr_o) ** (-1.0)
++    nitrogen = 0.1068 * np.exp(-3352.0 / t_k) * (fr_n + (f ** 2) / fr_n) ** (-1.0)
++    return 8.686 * (f ** 2) * (classical + (t_ratio ** (-2.5)) * (oxygen + nitrogen))
++
++
++def iso_path_loss_db(freqs, distance_m: float, climate: str = DEFAULT_CLIMATE) -> np.ndarray:
++    """A_db = −α(f)·d for the preset's temperature, RH, and pressure."""
++    cond = climate_record(climate)["conditions"]
++    alpha = _iso_alpha_db_per_m(
++        freqs,
++        cond["temperature_c"],
++        cond["relative_humidity_pct"],
++        cond.get("pressure_kpa", _REF_P),
++    )
++    return -alpha * float(distance_m)
++
++
++def shelf_specs(
++    distance_m: float,
++    mix: float,
++    climate: str = DEFAULT_CLIMATE,
++    sr: float = 48000.0,
++) -> List[Tuple[float, float]]:
++    """(f0 Hz, gain dB) for the two realtime RBJ shelves. Empty when the shelf is off.
++
++    Gain is depth_db_per_m × distance × mix. Mix is the air-shelf fader, not humidity.
++    Corners clamp to 0.45·sr. Gain clamps at −24 dB.
++    """
++    if float(distance_m) <= 0.0 or float(mix) <= 0.0 or float(sr) < 1.0:
++        return []
++    p = climate_record(climate)["params"]
++    cap_hz = 0.45 * float(sr)
++    depth = float(distance_m) * float(mix)
++    out: List[Tuple[float, float]] = []
++    for f_key, d_key in (("f0", "depth_db_per_m"), ("f0_hi", "depth_hi_db_per_m")):
++        f0 = min(max(float(p[f_key]), 20.0), cap_hz)
++        gain = max(float(p[d_key]) * depth, -24.0)
++        out.append((f0, gain))
++    return out
+diff -ruN -x __pycache__ -x .pytest_cache -x renders -x .venv -x '*.wasm' -x '*.orig' -x presets snapshot_2026-10-01_1550/software/engine/early_field.py snapshot_2026-10-01_2210/software/engine/early_field.py
+--- snapshot_2026-10-01_1550/software/engine/early_field.py	2026-10-01 11:45:50.000000000 +0100
++++ snapshot_2026-10-01_2210/software/engine/early_field.py	2026-10-01 21:29:56.000000000 +0100
+@@ -16,10 +16,10 @@
+   ALLPASS delays     = 1.2 ms / 2.7 ms — ASSUMED
+   Peaking Q          = 1.5 — ASSUMED (do not invent Res filter Q/dB from file)
+   Air Abs 1-pole     = LP, fc = Wet/Dis (256). Humidity Wet 100–700 default 400 (486)
+-  Air Abs high-shelf = extra HF roll-off vs distance — ASSUMED upgrade, both run
++  Air Abs high-shelf = ISO 9613-1 dual RBJ shelf (candidate C). 1-pole stays separate.
+   Mic 1-pole         = LP after delay; P = FtoP(Res)×(1-(2·|Dir|)^C/O) (410, 466)
+   Image origin       = corner (default) | centre — see image_position*
+-  Live-32            = SX/SY/SZ voices 1–32 (420/434/435); 29 unique, no ±2W, no −Z
++  Live-32            = symmetric τ order; Reaktor 29-unique order is LIVE_32_REAKTOR
+   A–F surface dict / full Hadamard OCR rows — NOT invented here
+ """
+ 
+@@ -250,11 +250,50 @@
+     return aliases[g]
+ 
+ 
+-# Live poly voices 1–32 from Distances SX/SY/SZ debug (420, 434, 435),
+-# checked against Dis metres (462). Three duplicate images. No ±2W, no −Z,
+-# no 4L−Z. Voice 3 is direct. Order is Reaktor voice 1..32 (LIKELY FDN lanes).
++# Default Play/Render table. X-symmetric multiset, τ=(b0 b4)(b1 b3) order.
++# Line 0 stays (0,2,0) so the coherent Hadamard sum is not the direct image.
++# Direct (0,0,0) is index 10. 30 unique. The 2011 Reaktor voice order,
++# including its X gap, is LIVE_32_REAKTOR under reaktor_parity.
+ LIVE_32: Tuple[Tuple[int, int, int], ...] = (
+     (0, 2, 0),
++    (-1, 1, 0),
++    (0, 0, 1),
++    (1, -2, 0),
++    (0, -2, 0),
++    (1, 2, 0),
++    (-1, 0, 1),
++    (1, -1, 1),
++    (0, 0, 1),
++    (-1, -1, 0),
++    (0, 0, 0),
++    (1, 1, 1),
++    (1, 0, 1),
++    (1, 0, 0),
++    (0, -1, 0),
++    (0, 1, 1),
++    (1, 1, 0),
++    (0, 1, 0),
++    (1, -1, 0),
++    (1, 2, 1),
++    (-1, 2, 0),
++    (0, 2, 1),
++    (-1, 0, 0),
++    (1, -2, 1),
++    (-1, -2, 0),
++    (-1, 2, 1),
++    (-1, 1, 1),
++    (0, 1, 2),
++    (-1, -1, 1),
++    (-1, -2, 1),
++    (0, 1, 1),
++    (0, 0, 2),
++)
++
++# Reaktor poly voices 1–32 from Distances SX/SY/SZ (420, 434, 435).
++# 29 unique, three duplicates. No ±2W, no −Z. Voice 3 (index 2) is direct.
++# Kept for reaktor_parity so the 2011 patch, including its X gap, stays bit-exact.
++LIVE_32_REAKTOR: Tuple[Tuple[int, int, int], ...] = (
++    (0, 2, 0),
+     (0, 1, 0),
+     (0, 0, 0),
+     (0, -1, 0),
+@@ -423,11 +462,17 @@
+     return 0
+ 
+ 
+-def build_image_indices(hadamard_n: int = DEFAULT_HADAMARD_N) -> List[Tuple[int, int, int]]:
++def build_image_indices(
++    hadamard_n: int = DEFAULT_HADAMARD_N,
++    reaktor_parity: bool = False,
++) -> List[Tuple[int, int, int]]:
+     """Image index table sized to Hadamard N (default 32 = live Structure).
+ 
+-    32: ordered poly voices 1–32 (LIVE_32). Other N: see enumerate_scaled_grid.
++    32: symmetric LIVE_32. reaktor_parity keeps the 2011 voice order.
++    Other N: see enumerate_scaled_grid. The first argument stays hadamard_n.
+     """
++    if reaktor_parity and int(hadamard_n) == 32:
++        return list(LIVE_32_REAKTOR)
+     return enumerate_scaled_grid(bias=grid_bias_for_hadamard_n(hadamard_n))
+ 
+ 
+@@ -1577,6 +1622,7 @@
+     z_face_4l: bool = False,
+     hadamard_n: Optional[int] = None,
+     include_offaxis_shelf: bool = True,
++    reaktor_parity: bool = False,
+ ) -> List[ImageTap]:
+     """Build taps for the chosen image table.
+ 
+@@ -1617,6 +1663,8 @@
+             # validate via hadamard_n_for_grid (accepts 64 / 64like aliases)
+             hadamard_n_for_grid(bias)
+         imgs = enumerate_scaled_grid(bias=bias)
++        if reaktor_parity and bias == "32" and not is_binaural:
++            imgs = list(LIVE_32_REAKTOR)
+         if is_binaural and bias == "32":
+             imgs = list(BINAURAL_REAR32)
+     taps: List[ImageTap] = []
+@@ -2008,6 +2056,31 @@
+     return one_pole_g_from_fc(fc, sr)
+ 
+ 
++def iso_shelf_pair(
++    distance: float,
++    sr: int,
++    mix: float,
++    climate: str = "studio_20C_50RH",
++):
++    """Two RBJ high shelves for the ISO dual-shelf. (None, None) when off.
++
++    Slope is 1. The log-sigmoid slope in the preset is the analytic fit only.
++    """
++    if float(mix) <= 0.0 or float(distance) <= 0.0:
++        return None, None
++    import air_iso
++    specs = air_iso.shelf_specs(distance, mix, climate, sr)
++    out = []
++    for f0, gain_db in specs:
++        if abs(float(gain_db)) < 1e-12:
++            out.append(None)
++        else:
++            out.append(rbj_highshelf(float(sr), float(f0), float(gain_db), slope=1.0))
++    while len(out) < 2:
++        out.append(None)
++    return out[0], out[1]
++
++
+ def apply_air_absorption(
+     buf: "np.ndarray",
+     distance: float,
+@@ -2015,13 +2088,14 @@
+     humidity: float,
+     air_lp: float = 0.25,
+     air_shelf: float = 1.0,
++    air_climate: str = "studio_20C_50RH",
++    air_iso: bool = True,
+ ) -> "np.ndarray":
+-    """Air absorption: independent 1-pole and high-shelf mixes.
++    """Air absorption: Structure 1-pole, then the ISO dual high-shelf.
+ 
+-    humidity 0 = no-op. air_lp / air_shelf in [0, 1]:
+-      1-pole (256, fc=Wet/Dis) dry/wet mix — 1.0 is full Structure LP
+-      high-shelf (ASSUMED) scales dB depth — 1.0 is full upgrade shelf
+-    Defaults: a little 1-pole (0.25) + full shelf. Tune later.
++    humidity ≤ 0 bypasses both stages. air_lp is the 1-pole dry/wet mix.
++    air_shelf scales the ISO dB. air_iso False leaves the shelf off.
++    Humidity does not scale the ISO curve (the climate already has RH).
+     """
+     if humidity <= 0.0:
+         return buf
+@@ -2032,10 +2106,12 @@
+         if fc > 0.0:
+             filt = one_pole_lp_process(np.copy(buf), fc, sr)
+             buf = (1.0 - lp) * buf + lp * filt
+-    if sh > 0.0:
+-        shelf = humidity_shelf_coeffs(distance, sr, humidity * sh)
+-        if shelf is not None:
+-            buf = biquad_process(buf, shelf)
++    if sh > 0.0 and air_iso:
++        low, high = iso_shelf_pair(distance, sr, sh, air_climate)
++        if low is not None:
++            buf = biquad_process(buf, low)
++        if high is not None:
++            buf = biquad_process(buf, high)
+     return buf
+ 
+ 
+diff -ruN -x __pycache__ -x .pytest_cache -x renders -x .venv -x '*.wasm' -x '*.orig' -x presets snapshot_2026-10-01_1550/software/engine/fdn.py snapshot_2026-10-01_2210/software/engine/fdn.py
+--- snapshot_2026-10-01_1550/software/engine/fdn.py	2026-10-01 11:05:49.000000000 +0100
++++ snapshot_2026-10-01_2210/software/engine/fdn.py	2026-10-01 21:27:02.000000000 +0100
+@@ -1031,6 +1031,8 @@
+     humidity: float = 0.0,
+     air_lp: float = 0.25,
+     air_shelf: float = 1.0,
++    air_climate: str = "studio_20C_50RH",
++    air_iso: bool = True,
+ ) -> "np.ndarray":
+     """Forward input into Diffuser Delay: air-absorbed per-line inject.
+ 
+@@ -1061,6 +1063,7 @@
+         inj[:, i] += apply_air_absorption(
+             col, _tap_distance(t, ch), sr, humidity,
+             air_lp=air_lp, air_shelf=air_shelf,
++            air_climate=air_climate, air_iso=air_iso,
+         )
+     return inj
+ 
+diff -ruN -x __pycache__ -x .pytest_cache -x renders -x .venv -x '*.wasm' -x '*.orig' -x presets snapshot_2026-10-01_1550/software/engine/live_stereo.c snapshot_2026-10-01_2210/software/engine/live_stereo.c
+--- snapshot_2026-10-01_1550/software/engine/live_stereo.c	2026-10-01 11:45:50.000000000 +0100
++++ snapshot_2026-10-01_2210/software/engine/live_stereo.c	2026-10-01 21:45:39.000000000 +0100
+@@ -20,7 +20,7 @@
+  *   -o software/static/wasm/live_stereo.wasm software/engine/live_stereo.c
+  * Export every live_* the worklet calls, not only live_stereo.
+  *
+- * Room blob (float, magic 1), in order:
++ * Room blob v1 (float, magic 1) is still accepted. Order after the magic:
+  *   g, fdn_wet, direct_wet, early_wet, dry_gain, makeup, gain_a, gain_b,
+  *   two, colour_on, mono, direct_index, max_delay_ms, snap, ignored_sr,
+  *   mic g,pan,phase × L C R,
+@@ -29,7 +29,13 @@
+  *     32 delay_ms, 32 inject, 32 dffs, 32 air_g, air_lp,
+  *     32 × (shelf on,b0,b1,b2,a1,a2), dir_ms, dir_gain,
+  *     the same block again for source B.
+- *   then line_t60 (seconds; 0 = absorption off). Blob length 1982.
++ *   then line_t60 (seconds; 0 = absorption off).
++ * Blob v2: magic 2, major 2, minor, n_sections, total_len, then
++ *   n_sections × {id, offset, length, section_version}.
++ *   1 CORE = the v1 body without the magic, plus 8 reserved floats.
++ *     Those reserves are not applied (order stays 32, one-sample feedback, unity).
++ *   2 AIR = second shelf, 1152 floats, or length 0 (bypass).
++ *   3 SURF, 4 SCATTER, 5 SRC_RAD length 0 until a later phase.
+  * Route (int), in order: fdn[3][32], early L/R [2][32], early B L/R [2][32],
+  * direct[3], direct B[3], fdn B[3][32]. -1 is a wire. < -1 is silent.
+  */
+@@ -66,7 +72,7 @@
+     LANE_EARLY = 1,
+     LANE_FDNB = 2,
+     LANE_EARLYB = 3,
+-    MAX_BLOB = 8192,
++    MAX_BLOB = 16384,
+     MAX_IR_FLOATS = MAX_IRS * 8192,
+     MAX_AUDIO = 2048,
+     ROUTE_LEN = 3 * 32 + 2 * 32 + 2 * 32 + 3 + 3 + 3 * 32,
+@@ -89,6 +95,11 @@
+     double sb0, sb1, sb2, sa1, sa2;
+     double sb0b, sb1b, sb2b, sa1b, sa2b;
+     double sz1, sz2, sz1e, sz2e, sz1b, sz2b, sz1f, sz2f;
++    /* Second shelf (ISO high band). Same four kinds as the first shelf. */
++    int sh2On, sh2OnB;
++    double h2b0, h2b1, h2b2, h2a1, h2a2;
++    double h2b0b, h2b1b, h2b2b, h2a1b, h2a2b;
++    double h2z1, h2z2, h2z1e, h2z2e, h2z1b, h2z2b, h2z1f, h2z2f;
+     double pz1, pz2, pz1b, pz2b;
+     /* Per-line absorption for the decay lock: lg = 10^(-3 d / (sr T60)). 1 = off. */
+     double lg, lgB;
+@@ -601,6 +612,8 @@
+             line->airZe = 0; line->sz1e = 0; line->sz2e = 0;
+             line->airZb = 0; line->sz1b = 0; line->sz2b = 0;
+             line->airZf = 0; line->sz1f = 0; line->sz2f = 0;
++            line->h2z1b = 0; line->h2z2b = 0;
++            line->h2z1f = 0; line->h2z2f = 0;
+             bus->fb[i] = 0;
+             bus->fbB[i] = 0;
+         }
+@@ -637,15 +650,10 @@
+     }
+ }
+ 
+-LS_EXPORT("live_load_room")
+-void live_load_room(LiveStereo *st, int n) {
+-    Rd r;
++static void load_core_body(LiveStereo *st, Rd *src) {
++    Rd r = *src;
+     int b, i, nextTwo, snap, maxMs;
+     double d;
+-    if (!st || st->magic != 0x2011 || n < 16) return;
+-    if (n > MAX_BLOB) n = MAX_BLOB;
+-    r.p = st->blob; r.i = 0; r.n = n;
+-    if ((int)rf(&r) != 1) return;
+     d = rf(&r); if (finite_d(d)) st->g = d;
+     st->fdn_wet = rf(&r);
+     st->direct_wet = rf(&r);
+@@ -753,7 +761,96 @@
+             }
+         }
+     }
+-    /* A new room drops the IC mixer until live_load_ic runs again. */
++    /* Eight reserved CORE floats. Not applied (N stays 32, one-sample feedback, unity). */
++    if (r.n - r.i >= 8) {
++        int k;
++        for (k = 0; k < 8; k++) (void)rf(&r);
++    }
++}
++
++static void clear_sh2_on(LiveStereo *st) {
++    int b, i;
++    for (b = 0; b < 3; b++) {
++        for (i = 0; i < N; i++) {
++            st->bus[b].line[i].sh2On = 0;
++            st->bus[b].line[i].sh2OnB = 0;
++        }
++    }
++}
++
++static void load_sh2_one(Rd *r, Line *line, int bankB) {
++    int on = rf(r) > 0.5;
++    double b0 = rf(r), b1 = rf(r), b2 = rf(r), a1 = rf(r), a2 = rf(r);
++    if (bankB) {
++        line->sh2OnB = on;
++        if (on) {
++            line->h2b0b = b0; line->h2b1b = b1; line->h2b2b = b2;
++            line->h2a1b = a1; line->h2a2b = a2;
++        }
++    } else {
++        line->sh2On = on;
++        if (on) {
++            line->h2b0 = b0; line->h2b1 = b1; line->h2b2 = b2;
++            line->h2a1 = a1; line->h2a2 = a2;
++        }
++    }
++}
++
++/* AIR section: 3 buses × (32 A + 32 B) × 6 floats. Any other length is a bypass. */
++static void load_sh2_section(LiveStereo *st, int off, int n) {
++    Rd r;
++    int b, i;
++    if (n != 3 * 64 * 6) return;
++    if (off < 0 || off + n > MAX_BLOB) return;
++    r.p = st->blob; r.i = off; r.n = off + n;
++    for (b = 0; b < 3; b++) {
++        for (i = 0; i < N; i++) load_sh2_one(&r, &st->bus[b].line[i], 0);
++        for (i = 0; i < N; i++) load_sh2_one(&r, &st->bus[b].line[i], 1);
++    }
++}
++
++LS_EXPORT("live_load_room")
++void live_load_room(LiveStereo *st, int n) {
++    Rd r;
++    int magic, nsec, s, core;
++    int id[16], off[16], ln[16];
++    if (!st || st->magic != 0x2011 || n < 16) return;
++    if (n > MAX_BLOB) n = MAX_BLOB;
++    r.p = st->blob; r.i = 0; r.n = n;
++    magic = (int)rf(&r);
++    if (magic == 1) {
++        clear_sh2_on(st);
++        load_core_body(st, &r);
++        st->icOn = 0;
++        return;
++    }
++    if (magic != 2) return;
++    (void)rf(&r);
++    (void)rf(&r);
++    nsec = (int)rf(&r);
++    (void)rf(&r);
++    if (nsec < 1 || nsec > 16) return;
++    for (s = 0; s < nsec; s++) {
++        id[s] = (int)rf(&r);
++        off[s] = (int)rf(&r);
++        ln[s] = (int)rf(&r);
++        (void)rf(&r);
++    }
++    core = -1;
++    for (s = 0; s < nsec; s++) {
++        if (id[s] == 1 && ln[s] >= 16 && off[s] >= 0 && off[s] + ln[s] <= n) core = s;
++    }
++    if (core < 0) return;
++    clear_sh2_on(st);
++    r.p = st->blob;
++    r.i = off[core];
++    r.n = off[core] + ln[core];
++    load_core_body(st, &r);
++    for (s = 0; s < nsec; s++) {
++        if (id[s] != 2) continue;
++        if (ln[s] < 1 || off[s] < 0 || off[s] + ln[s] > n) continue;
++        load_sh2_section(st, off[s], ln[s]);
++    }
+     st->icOn = 0;
+ }
+ 
+@@ -995,26 +1092,49 @@
+     }
+ }
+ 
++static double sh2_step(double xin, int on, double b0, double b1, double b2,
++    double a1, double a2, double *s1, double *s2) {
++    double yi;
++    if (!on) return xin;
++    yi = b0 * xin + *s1;
++    *s1 = b1 * xin - a1 * yi + *s2;
++    *s2 = b2 * xin - a2 * yi;
++    return yi;
++}
++
+ static double tint(Line *line, double xin, int kind) {
+     double g, z, lp, b0, b1, b2, a1, a2, s1, s2, yi;
+-    int on;
++    double q0, q1, q2, p1, p2, u1, u2;
++    int on, on2;
+     lp = line->airLp;
+     if (kind == 3) {
+         g = line->airGb; z = line->airZf; on = line->shelfOnB;
+         b0 = line->sb0b; b1 = line->sb1b; b2 = line->sb2b;
+         a1 = line->sa1b; a2 = line->sa2b; s1 = line->sz1f; s2 = line->sz2f;
++        on2 = line->sh2OnB;
++        q0 = line->h2b0b; q1 = line->h2b1b; q2 = line->h2b2b;
++        p1 = line->h2a1b; p2 = line->h2a2b; u1 = line->h2z1f; u2 = line->h2z2f;
+     } else if (kind == 2) {
+         g = line->airGb; z = line->airZb; on = line->shelfOnB;
+         b0 = line->sb0b; b1 = line->sb1b; b2 = line->sb2b;
+         a1 = line->sa1b; a2 = line->sa2b; s1 = line->sz1b; s2 = line->sz2b;
++        on2 = line->sh2OnB;
++        q0 = line->h2b0b; q1 = line->h2b1b; q2 = line->h2b2b;
++        p1 = line->h2a1b; p2 = line->h2a2b; u1 = line->h2z1b; u2 = line->h2z2b;
+     } else if (kind == 1) {
+         g = line->airG; z = line->airZe; on = line->shelfOn;
+         b0 = line->sb0; b1 = line->sb1; b2 = line->sb2;
+         a1 = line->sa1; a2 = line->sa2; s1 = line->sz1e; s2 = line->sz2e;
++        on2 = line->sh2On;
++        q0 = line->h2b0; q1 = line->h2b1; q2 = line->h2b2;
++        p1 = line->h2a1; p2 = line->h2a2; u1 = line->h2z1e; u2 = line->h2z2e;
+     } else {
+         g = line->airG; z = line->airZ; on = line->shelfOn;
+         b0 = line->sb0; b1 = line->sb1; b2 = line->sb2;
+         a1 = line->sa1; a2 = line->sa2; s1 = line->sz1; s2 = line->sz2;
++        on2 = line->sh2On;
++        q0 = line->h2b0; q1 = line->h2b1; q2 = line->h2b2;
++        p1 = line->h2a1; p2 = line->h2a2; u1 = line->h2z1; u2 = line->h2z2;
+     }
+     if (lp > 0.0 && g > 0.0) {
+         z += g * (xin - z);
+@@ -1026,13 +1146,25 @@
+         s2 = b2 * xin - a2 * yi;
+         xin = yi;
+     }
++    xin = sh2_step(xin, on2, q0, q1, q2, p1, p2, &u1, &u2);
+     z = ls_flush(z);
+     s1 = ls_flush(s1);
+     s2 = ls_flush(s2);
+-    if (kind == 3) { line->airZf = z; line->sz1f = s1; line->sz2f = s2; }
+-    else if (kind == 2) { line->airZb = z; line->sz1b = s1; line->sz2b = s2; }
+-    else if (kind == 1) { line->airZe = z; line->sz1e = s1; line->sz2e = s2; }
+-    else { line->airZ = z; line->sz1 = s1; line->sz2 = s2; }
++    u1 = ls_flush(u1);
++    u2 = ls_flush(u2);
++    if (kind == 3) {
++        line->airZf = z; line->sz1f = s1; line->sz2f = s2;
++        line->h2z1f = u1; line->h2z2f = u2;
++    } else if (kind == 2) {
++        line->airZb = z; line->sz1b = s1; line->sz2b = s2;
++        line->h2z1b = u1; line->h2z2b = u2;
++    } else if (kind == 1) {
++        line->airZe = z; line->sz1e = s1; line->sz2e = s2;
++        line->h2z1e = u1; line->h2z2e = u2;
++    } else {
++        line->airZ = z; line->sz1 = s1; line->sz2 = s2;
++        line->h2z1 = u1; line->h2z2 = u2;
++    }
+     return xin;
+ }
+ 
+diff -ruN -x __pycache__ -x .pytest_cache -x renders -x .venv -x '*.wasm' -x '*.orig' -x presets snapshot_2026-10-01_1550/software/engine/selfcheck.py snapshot_2026-10-01_2210/software/engine/selfcheck.py
+--- snapshot_2026-10-01_1550/software/engine/selfcheck.py	2026-10-01 11:05:49.000000000 +0100
++++ snapshot_2026-10-01_2210/software/engine/selfcheck.py	2026-10-01 21:32:11.000000000 +0100
+@@ -26,6 +26,7 @@
+ from early_field import (
+     build_image_indices,
+     LIVE_32,
++    LIVE_32_REAKTOR,
+     enumerate_scaled_grid,
+     polarity,
+     geometric_level,
+@@ -65,18 +66,30 @@
+ 
+ 
+ def test_32_indices_exact_set() -> None:
+-    """Live poly 1–32 from SX/SY/SZ (420/434/435) + Dis (462). 29 unique, 3 dups."""
++    """Default table is the symmetric 32. Reaktor order stays behind reaktor_parity."""
++    from collections import Counter
++    parity = build_image_indices(32, reaktor_parity=True)
++    assert parity == list(LIVE_32_REAKTOR)
++    assert len(set(parity)) == 29
++    assert parity[2] == (0, 0, 0)
++    assert parity[0] == (0, 2, 0)
++    assert (0, 0, -2) not in parity
++    assert all(n[2] >= 0 for n in parity)
++    assert parity.count((0, 1, 1)) == 2
++    assert parity.count((0, 0, 1)) == 2
++    assert parity.count((-1, -2, 0)) == 2
+     got = build_image_indices()
+     assert got == list(LIVE_32)
++    assert got == list(enumerate_scaled_grid(bias="32"))
+     assert len(got) == 32
+-    assert len(set(got)) == 29
+-    assert (0, 0, 0) == got[2]
++    assert got[0] == (0, 2, 0)
++    assert got[10] == (0, 0, 0)
++    assert len(set(got)) == 30
++    counts = Counter(got)
++    for (a, b, z), n in list(counts.items()):
++        assert counts[(-a, b, z)] == n
+     assert (0, 0, -2) not in got
+-    assert (-2, 0, 0) not in got and (2, 0, 0) not in got
+     assert all(n[2] >= 0 for n in got)
+-    assert got.count((0, 1, 1)) == 2
+-    assert got.count((0, 0, 1)) == 2
+-    assert got.count((-1, -2, 0)) == 2
+ 
+ 
+ 
+@@ -672,6 +685,7 @@
+         sys.path.insert(0, str(root))
+     from early_field import (
+         LIVE_32,
++        LIVE_32_REAKTOR,
+         MicStand,
+         allpass_ir_for_stages,
+         compute_taps,
+@@ -681,7 +695,9 @@
+     )
+     from render_pipeline import clip_guard, combined_ir, live_fdn_params
+ 
+-    assert LIVE_32[2] == (0, 0, 0)
++    assert LIVE_32_REAKTOR[2] == (0, 0, 0)
++    assert LIVE_32[0] == (0, 2, 0)
++    assert LIVE_32[10] == (0, 0, 0)
+     p = {
+         "W": 6.0, "H": 3.0, "L": 8.0,
+         "mz": 6.5, "my": 1.5, "sy": 1.5, "space": 0.17, "diverg": 1.0,
+@@ -693,7 +709,7 @@
+         "diffusion_master": -0.5,
+     }
+     live = live_fdn_params(p)
+-    assert live["direct_index"] == 2
++    assert live["direct_index"] == 10
+     assert live["dry_gain"] == 0.0
+     assert live["direct_wet"] == 1.0
+     assert 0.05 <= live["makeup"] <= 256.0
+@@ -710,8 +726,10 @@
+         "yaw_l_deg": -55, "yaw_c_deg": 0, "yaw_r_deg": 55,
+     })
+     live_ortf = live_fdn_params(p_ortf)
++    di_o = live_ortf["direct_index"]
++    assert di_o == 10
+     assert 0.45 < abs(
+-        live_ortf["buses"]["l"]["inject"][2] + 0.5 * live_ortf["buses"]["c"]["inject"][2]
++        live_ortf["buses"]["l"]["inject"][di_o] + 0.5 * live_ortf["buses"]["c"]["inject"][di_o]
+     ) * live_ortf["makeup"] < 0.95
+ 
+     prep = prepare_direct_field(
+@@ -720,7 +738,7 @@
+     stand = MicStand.from_prepare(prep, car_omni=1.0)
+     room = (6.0, 3.0, 8.0)
+     taps = compute_taps(room, prep.source, stand, hadamard_n=32)
+-    assert direct_line_index(taps, 32) == 2
++    assert direct_line_index(taps, 32) == 10
+     sr = 44100
+     c = 340.0
+     wall_cache = precompute_wall_peaking_coeffs(room, sr, c, 1.5)
+diff -ruN -x __pycache__ -x .pytest_cache -x renders -x .venv -x '*.wasm' -x '*.orig' -x presets snapshot_2026-10-01_1550/software/render_pipeline.py snapshot_2026-10-01_2210/software/render_pipeline.py
+--- snapshot_2026-10-01_1550/software/render_pipeline.py	2026-10-01 11:32:32.000000000 +0100
++++ snapshot_2026-10-01_2210/software/render_pipeline.py	2026-10-01 21:29:52.000000000 +0100
+@@ -41,7 +41,7 @@
+     apply_air_absorption,
+     air_abs_cutoff_hz,
+     air_abs_wet_from_humidity,
+-    humidity_shelf_coeffs,
++    iso_shelf_pair,
+     normalize_biquad,
+     one_pole_g_from_fc,
+     normalize_hadamard_n,
+@@ -374,6 +374,8 @@
+     air_shelf=1.0,
+     colour=None,
+     early_toys=None,
++    air_climate: str = "studio_20C_50RH",
++    air_iso: bool = True,
+ ):
+     """Render early IR. Optional ASSUMED surfaces absorb×EQ + path-length jitter.
+ 
+@@ -464,9 +466,11 @@
+             br = cascade_biquads(br, peaks)
+         bl = apply_air_absorption(
+             bl, d_l, sr, humidity, air_lp=air_lp, air_shelf=air_shelf,
++            air_climate=air_climate, air_iso=air_iso,
+         )
+         br = apply_air_absorption(
+             br, d_r, sr, humidity, air_lp=air_lp, air_shelf=air_shelf,
++            air_climate=air_climate, air_iso=air_iso,
+         )
+         # ASSUMED absorb×EQ cascade for hit surfaces
+         if surfaces and hit:
+@@ -561,10 +565,11 @@
+         mic_left=mic_left,
+         mic_right=mic_right,
+         capsule_mm=capsule_mm,
+-        air_lp=air_lp,
+-        air_shelf=air_shelf,
++        air_lp=0.0,
++        air_shelf=0.0,
+         colour=colour,
+         early_toys=early_toys,
++        air_iso=False,
+     )
+ 
+ 
+@@ -581,6 +586,8 @@
+     weights=None,
+     colour=None,
+     line_t60=0.0,
++    air_climate: str = "studio_20C_50RH",
++    air_iso: bool = True,
+ ):
+     """2011 wet: L / C / R Diffuser Delay loops + Hadamard feedback + Mixer fold.
+ 
+@@ -609,6 +616,7 @@
+         inj = build_inject_from_taps(
+             taps, n_samp, sr, c, n_lines, channel=ch, humidity=humidity,
+             air_lp=air_lp, air_shelf=air_shelf,
++            air_climate=air_climate, air_iso=air_iso,
+         )
+         _scale_inject_reflect(inj, taps, surfaces)
+         if omit_direct_inject and 0 <= di < n_lines:
+@@ -808,6 +816,8 @@
+     colour=None,
+     line_t60: float = 0.0,
+     loop_g=None,
++    air_climate: str = "studio_20C_50RH",
++    air_iso: bool = True,
+ ):
+     weights = capsule_speaker_weights(
+         mic_gain_l, mic_gain_c, mic_gain_r,
+@@ -826,6 +836,8 @@
+             air_lp=air_lp,
+             air_shelf=air_shelf,
+             colour=colour,
++            air_climate=air_climate,
++            air_iso=air_iso,
+         )
+     else:
+         Le = np.zeros(1, dtype=np.float64)
+@@ -844,6 +856,8 @@
+         weights=weights,
+         colour=colour,
+         line_t60=line_t60,
++        air_climate=air_climate,
++        air_iso=air_iso,
+     )
+     n = max(len(Le), len(Lf), len(Ld))
+     def _pad(a):
+@@ -955,6 +969,9 @@
+     mic_hpf_sides: Optional[bool] = None,
+     mic_hpf_centre: Optional[bool] = None,
+     progress_cb=None,
++    reaktor_parity: bool = False,
++    air_climate: str = "studio_20C_50RH",
++    air_iso: bool = True,
+ ) -> Tuple[np.ndarray, np.ndarray, dict]:
+     """Render dry mono through early-field (+ optional FDN) with optional motion.
+ 
+@@ -1012,6 +1029,7 @@
+             room, prep.source, stand, c=c, grid=grid, origin="corner",
+             z_face_4l=False, hadamard_n=n_had,
+             include_offaxis_shelf=mic_colour.include_offaxis_shelf,
++            reaktor_parity=reaktor_parity,
+         )
+         return taps, prep
+ 
+@@ -1039,6 +1057,7 @@
+             room, prep_i.source, stand_i, c=c, grid=grid, origin="corner",
+             z_face_4l=False, hadamard_n=n_had,
+             include_offaxis_shelf=mic_colour.include_offaxis_shelf,
++            reaktor_parity=reaktor_parity,
+         )
+         return taps_i, prep_i
+ 
+@@ -1113,6 +1132,8 @@
+                     air_lp=air_lp,
+                     air_shelf=air_shelf,
+                     colour=mic_colour,
++                    air_climate=air_climate,
++                    air_iso=air_iso,
+                 )
+                 n_ir = max(len(Ld), len(Le))
+ 
+@@ -1143,6 +1164,8 @@
+                     weights=weights,
+                     colour=mic_colour,
+                     line_t60=line_t60,
++                    air_climate=air_climate,
++                    air_iso=air_iso,
+                 )
+                 return float(fdn_wet) * mk * left, float(fdn_wet) * mk * right
+ 
+@@ -1248,6 +1271,8 @@
+             colour=mic_colour,
+             line_t60=line_t60,
+             loop_g=(1.0 / math.sqrt(float(n_had))) if line_t60 > 0.05 else None,
++            air_climate=air_climate,
++            air_iso=air_iso,
+         )
+         yL = fft_convolve(dry, ir_L)
+         yR = fft_convolve(dry, ir_R)
+@@ -1348,6 +1373,8 @@
+             colour=mic_colour,
+             line_t60=line_t60,
+             loop_g=(1.0 / math.sqrt(float(n_had))) if line_t60 > 0.05 else None,
++            air_climate=air_climate,
++            air_iso=air_iso,
+         )
+         end = min(start + frame, n_dry)
+         block = np.zeros(frame, dtype=np.float64)
+@@ -1394,21 +1421,35 @@
+     return mix_L, mix_R, info
+ 
+ 
+-def _live_air_for_distance(dist_m: float, sr: int, humidity: float, air_lp: float, air_shelf: float):
+-    """Per-line Structure 1-pole mix + ASSUMED high-shelf (same as apply_air_absorption)."""
++def _shelf_off() -> dict:
++    return {"on": False, "b0": 1.0, "b1": 0.0, "b2": 0.0, "a1": 0.0, "a2": 0.0}
++
++
++def _shelf_on(raw) -> dict:
++    if raw is None:
++        return _shelf_off()
++    b0, b1, b2, a1, a2 = normalize_biquad(raw)
++    return {"on": True, "b0": b0, "b1": b1, "b2": b2, "a1": a1, "a2": a2}
++
++
++def _live_air_for_distance(
++    dist_m: float, sr: int, humidity: float, air_lp: float, air_shelf: float,
++    air_climate: str = "studio_20C_50RH", air_iso: bool = True,
++):
++    """Per-line Structure 1-pole plus the two ISO shelves (same gains as Render)."""
+     lp = max(0.0, min(1.0, float(air_lp)))
+     sh = max(0.0, min(1.0, float(air_shelf)))
+     air_g = 0.0
+     if humidity > 0.0 and lp > 0.0:
+         fc = air_abs_cutoff_hz(dist_m, air_abs_wet_from_humidity(humidity))
+         air_g = one_pole_g_from_fc(fc, sr)
+-    shelf = {"on": False, "b0": 1.0, "b1": 0.0, "b2": 0.0, "a1": 0.0, "a2": 0.0}
+-    if humidity > 0.0 and sh > 0.0:
+-        raw = humidity_shelf_coeffs(dist_m, sr, humidity * sh)
+-        if raw is not None:
+-            b0, b1, b2, a1, a2 = normalize_biquad(raw)
+-            shelf = {"on": True, "b0": b0, "b1": b1, "b2": b2, "a1": a1, "a2": a2}
+-    return air_g, lp, shelf
++    shelf = _shelf_off()
++    shelf2 = _shelf_off()
++    if humidity > 0.0 and sh > 0.0 and air_iso:
++        low, high = iso_shelf_pair(dist_m, sr, sh, air_climate)
++        shelf = _shelf_on(low)
++        shelf2 = _shelf_on(high)
++    return air_g, lp, shelf, shelf2
+ 
+ 
+ def _attach_loop_mix(bus: dict, g: float) -> None:
+@@ -1446,6 +1487,10 @@
+     humidity = float(p.get("humidity") or 0.0)
+     air_lp = float(p.get("air_lp") if p.get("air_lp") is not None else 0.0)
+     air_shelf = float(p.get("air_shelf") if p.get("air_shelf") is not None else 1.0)
++    air_climate = str(p.get("air_climate") or "studio_20C_50RH")
++    air_iso_on = p.get("air_iso")
++    air_iso = True if air_iso_on is None else bool(air_iso_on)
++    parity = bool(p.get("reaktor_parity"))
+     diffusion_master = float(p.get("diffusion_master") if p.get("diffusion_master") is not None else DIFFUSION_MASTER_LIVE)
+     mic_response_hz = float(p.get("mic_response_hz") or 10000.0)
+     ir_length_ms = float(p.get("ir_length_ms") if p.get("ir_length_ms") is not None else 1500.0)
+@@ -1499,6 +1544,7 @@
+         room, prep.source, stand, c=c, grid=grid, origin="corner",
+         z_face_4l=False, hadamard_n=n_had,
+         include_offaxis_shelf=mic_colour.include_offaxis_shelf,
++        reaktor_parity=parity,
+     )
+     dff_per_tap = [tap_dff(t.n, surfaces, master=diffusion_master) for t in taps]
+     diffusion = diffusion_scale_from_room(room)
+@@ -1514,6 +1560,7 @@
+         inject = []
+         air_g = []
+         shelf = []
++        shelf2 = []
+         for i in range(n_had):
+             t = taps[i % len(taps)]
+             if ch == "l":
+@@ -1527,9 +1574,12 @@
+                 dist_m = float(getattr(t, "distance_c", 0.5 * (t.distance_l + t.distance_r)))
+             amp *= tap_reflect_gain(t.n, surfaces)
+             inject.append(amp)
+-            ag, _lp, sh = _live_air_for_distance(dist_m, rate, humidity, air_lp, air_shelf)
++            ag, _lp, sh, sh2 = _live_air_for_distance(
++                dist_m, rate, humidity, air_lp, air_shelf, air_climate, air_iso,
++            )
+             air_g.append(ag)
+             shelf.append(sh)
++            shelf2.append(sh2)
+             mean_ms_acc += delay_ms[i]
+             mean_ms_n += 1
+         buses[ch] = {
+@@ -1540,6 +1590,7 @@
+             "air_g": air_g,
+             "air_lp": (max(0.0, min(1.0, air_lp)) if humidity > 0.0 else 0.0),
+             "shelf": shelf,
++            "shelf2": shelf2,
+         }
+     mean_ms = mean_ms_acc / float(max(1, mean_ms_n))
+     if decay_lock and decay_s > 0.05:
+@@ -1615,6 +1666,7 @@
+             room, prep_b.source, stand_b, c=c, grid=grid, origin="corner",
+             z_face_4l=False, hadamard_n=n_had,
+             include_offaxis_shelf=mic_colour.include_offaxis_shelf,
++            reaktor_parity=parity,
+         )
+         dff_b = [tap_dff(t.n, surfaces, master=diffusion_master) for t in taps_b]
+         for ch in ("l", "c", "r"):
+@@ -1623,6 +1675,7 @@
+             inject_b = []
+             air_g_b = []
+             shelf_b = []
++            shelf2_b = []
+             n_tb = len(taps_b)
+             for i in range(n_had):
+                 t = taps_b[i % n_tb]
+@@ -1637,9 +1690,12 @@
+                     dist_m = float(getattr(t, "distance_c", 0.5 * (t.distance_l + t.distance_r)))
+                 amp *= tap_reflect_gain(t.n, surfaces)
+                 inject_b.append(amp)
+-                ag, _lp, sh = _live_air_for_distance(dist_m, rate, humidity, air_lp, air_shelf)
++                ag, _lp, sh, sh2 = _live_air_for_distance(
++                    dist_m, rate, humidity, air_lp, air_shelf, air_climate, air_iso,
++                )
+                 air_g_b.append(ag)
+                 shelf_b.append(sh)
++                shelf2_b.append(sh2)
+             dffs_b = dffs_from_taps(taps_b, dff_b, diffusion, n=n_had, channel=ch)
+             buses[ch]["b"] = {
+                 "delay_ms": delay_ms_b,
+@@ -1648,6 +1704,7 @@
+                 "air_g": air_g_b,
+                 "air_lp": buses[ch]["air_lp"],
+                 "shelf": shelf_b,
++                "shelf2": shelf2_b,
+             }
+         sp = direct_capsule_spikes(taps[di % len(taps)])
+         spb = direct_capsule_spikes(taps_b[di % len(taps_b)])
+@@ -1697,6 +1754,9 @@
+         "mic_phase_c": float(p.get("mic_phase_c", 1.0)),
+         "mic_phase_r": float(p.get("mic_phase_r", 1.0)),
+         "direct_index": int(di),
++        "hadamard_n": n_had,
++        "loop_semantics": 0,
++        "solo_mute": [1.0, 1.0, 1.0, 1.0, 1.0, 1.0],
+         "makeup": makeup,
+         "direct_makeup": dm,
+         "max_delay_ms": MAX_DELAY_MS,
+@@ -1724,5 +1784,122 @@
+     }
+ 
+ 
++def _pb_num(v, d: float) -> float:
++    try:
++        n = float(v)
++    except (TypeError, ValueError):
++        return d
++    if n != n or n in (float("inf"), float("-inf")):
++        return d
++    return n
++
++
++def _pb_shelf(a: list, sh) -> None:
++    if sh and sh.get("on"):
++        a += [1.0, _pb_num(sh.get("b0"), 1.0), _pb_num(sh.get("b1"), 0.0),
++              _pb_num(sh.get("b2"), 0.0), _pb_num(sh.get("a1"), 0.0), _pb_num(sh.get("a2"), 0.0)]
++    else:
++        a += [0.0, 1.0, 0.0, 0.0, 0.0, 0.0]
++
++
++def _pb_arr(a: list, src, n: int, d: float) -> None:
++    for i in range(n):
++        v = src[i] if (src is not None and i < len(src)) else None
++        a.append(v if isinstance(v, (int, float)) and not isinstance(v, bool) else d)
++
++
++def _pb_side(a: list, bus, di: int) -> None:
++    src = bus or {}
++    shelf = src.get("shelf") or []
++    _pb_arr(a, src.get("delay_ms"), 32, 20.0)
++    _pb_arr(a, src.get("inject"), 32, 0.0)
++    _pb_arr(a, src.get("dffs"), 32, 0.0)
++    _pb_arr(a, src.get("air_g"), 32, 0.0)
++    a.append(_pb_num(src.get("air_lp"), 0.0))
++    for i in range(32):
++        _pb_shelf(a, shelf[i] if i < len(shelf) else None)
++    dl = src.get("delay_ms")
++    dms = dl[di] if dl and isinstance(dl[di], (int, float)) and not isinstance(dl[di], bool) else 20.0
++    a += [float(dms), _pb_num(src.get("direct_gain"), 1.0)]
++
++
++def pack_blob_v2(params: dict) -> list:
++    """v2 room blob. Same layout as fdn_worklet.js packRoom and the harness packer.
++
++    CORE is the magic-1 body without the magic, plus hadamard_n, loop_semantics,
++    and solo_mute[6]. AIR is the second shelf (1152) or empty. SURF, SCATTER,
++    and SRC_RAD are empty until those phases fill them.
++    """
++    d = params or {}
++    di = int(_pb_num(d.get("direct_index"), 10.0))
++    di = max(0, min(31, di))
++    core: list = []
++    core += [_pb_num(d.get("g"), 0.03), _pb_num(d.get("fdn_wet"), 1.0), _pb_num(d.get("direct_wet"), 1.0),
++             _pb_num(d.get("early_wet"), 0.0), _pb_num(d.get("dry_gain"), 0.0), _pb_num(d.get("makeup"), 1.0),
++             _pb_num(d.get("gain_a"), 1.0), _pb_num(d.get("gain_b"), 1.0)]
++    core += [1.0 if d.get("two_sources") else 0.0, 1.0 if d.get("colour_on") else 0.0,
++             1.0 if d.get("mono") else 0.0, float(di), _pb_num(d.get("max_delay_ms"), 1000.0),
++             1.0 if d.get("snap", True) else 0.0, 0.0]
++    for i, k in enumerate("lcr"):
++        core += [_pb_num(d.get("mic_gain_" + k), 1.0),
++                 _pb_num(d.get("mic_pan_" + k), (-1.0, 0.0, 1.0)[i]),
++                 _pb_num(d.get("mic_phase_" + k), 1.0)]
++    peaks = d.get("peaking") or [None, None, None]
++    for i in range(3):
++        pk = peaks[i] if i < len(peaks) else None
++        if pk and pk.get("on"):
++            core += [1.0, _pb_num(pk.get("b0"), 1.0), _pb_num(pk.get("b1"), 0.0),
++                     _pb_num(pk.get("b2"), 0.0), _pb_num(pk.get("a1"), 0.0), _pb_num(pk.get("a2"), 0.0)]
++        else:
++            core += [0.0, 1.0, 0.0, 0.0, 0.0, 0.0]
++    buses = d.get("buses") or {}
++    for k in "lcr":
++        bus = buses.get(k)
++        _pb_side(core, bus, di)
++        _pb_side(core, bus.get("b") if bus else None, di)
++    core.append(_pb_num(d.get("line_t60"), 0.0))
++    sm = d.get("solo_mute") or []
++    hn = d.get("hadamard_n")
++    if hn is None:
++        hn = d.get("n")
++    core.append(_pb_num(hn, 32.0))
++    core.append(_pb_num(d.get("loop_semantics"), 0.0))
++    for i in range(6):
++        core.append(_pb_num(sm[i] if i < len(sm) else 1.0, 1.0))
++    air: list = []
++    live = False
++    for k in "lcr":
++        src = buses.get(k)
++        for _ in range(2):
++            if not src:
++                break
++            for sh in (src.get("shelf2") or []):
++                if sh and sh.get("on"):
++                    live = True
++            src = src.get("b") if isinstance(src, dict) else None
++    if live:
++        for k in "lcr":
++            bus = buses.get(k) or {}
++            shelf = bus.get("shelf2") or []
++            for i in range(32):
++                _pb_shelf(air, shelf[i] if i < len(shelf) else None)
++            b = bus.get("b") or {}
++            shelf = b.get("shelf2") or []
++            for i in range(32):
++                _pb_shelf(air, shelf[i] if i < len(shelf) else None)
++    parts = [(1, core), (2, air), (3, []), (4, []), (5, [])]
++    off = 5 + 4 * len(parts)
++    directory: list = []
++    body: list = []
++    for sid, payload in parts:
++        directory += [sid, off, len(payload), 1]
++        if payload:
++            body += payload
++            off += len(payload)
++    blob = [2.0, 2.0, 0.0, float(len(parts)), 0.0] + [float(x) for x in directory] + [float(x) for x in body]
++    blob[4] = float(len(blob))
++    return blob
++
++
+ def default_out_path() -> Path:
+     return Path(__file__).resolve().parent / "renders" / "out.wav"
+diff -ruN -x __pycache__ -x .pytest_cache -x renders -x .venv -x '*.wasm' -x '*.orig' -x presets snapshot_2026-10-01_1550/software/static/index.html snapshot_2026-10-01_2210/software/static/index.html
+--- snapshot_2026-10-01_1550/software/static/index.html	2026-10-01 11:40:50.000000000 +0100
++++ snapshot_2026-10-01_2210/software/static/index.html	2026-10-01 21:28:58.000000000 +0100
+@@ -561,7 +561,15 @@
+           <label class="ctrl"><span>Humidity</span><input type="range" id="humidity" min="0" max="1" step="0.01" value="0.35" /><output id="humidity_out">0.35</output></label>
+           <label class="ctrl"><span>Air 1-pole mix</span><input type="range" id="air_lp" min="0" max="1" step="0.01" value="0" /><output id="air_lp_out">0.00</output></label>
+           <label class="ctrl"><span>Air shelf mix</span><input type="range" id="air_shelf" min="0" max="1" step="0.01" value="1" /><output id="air_shelf_out">1.00</output></label>
+-          <p class="hint">Humidity 0 = off. 0.5 = Structure Wet 400. 1-pole can be dark; mix it down with Air 1-pole.</p>
++          <label class="ctrl"><span>Air climate</span>
++            <select id="air_climate">
++              <option value="studio_20C_50RH">Studio 20 °C / 50% RH</option>
++              <option value="dry_20C_20RH">Dry 20 °C / 20% RH</option>
++              <option value="humid_20C_80RH">Humid 20 °C / 80% RH</option>
++              <option value="warm_22C_40RH">Warm 22 °C / 40% RH</option>
++            </select>
++          </label>
++          <p class="hint">Humidity 0 = off. 0.5 = Structure Wet 400. The shelf is the ISO 9613-1 dual high-shelf for the climate. The 1-pole stays a separate mix. Direct has no air.</p>
+           <button type="button" class="btn" id="reaktorSnapshotBtn">2011 Reaktor snapshot</button>
+           <p class="hint">Hall 57×34×97, source/mic from the dump, g=1/32, Humidity 400, Mic 10 kHz, live surface Dif.</p>
+           <label class="check">
+@@ -632,7 +640,7 @@
+   <script src="/static/js/colour_surfaces.js"></script>
+   <script src="/static/js/polar_field.js?v=4"></script>
+   <script src="/static/js/mic_desk.js?v=8"></script>
+-  <script src="/static/js/live_fdn.js?v=37"></script>
+-  <script src="/static/js/app.js?v=23"></script>
++  <script src="/static/js/live_fdn.js?v=38"></script>
++  <script src="/static/js/app.js?v=24"></script>
+ </body>
+ </html>
+diff -ruN -x __pycache__ -x .pytest_cache -x renders -x .venv -x '*.wasm' -x '*.orig' -x presets snapshot_2026-10-01_1550/software/static/js/app.js snapshot_2026-10-01_2210/software/static/js/app.js
+--- snapshot_2026-10-01_1550/software/static/js/app.js	2026-10-01 11:41:41.000000000 +0100
++++ snapshot_2026-10-01_2210/software/static/js/app.js	2026-10-01 21:28:58.000000000 +0100
+@@ -108,7 +108,7 @@
+     mute_direct: false, mute_fdn: false, mute_early: false, mute_dry: false,
+     phase_l: 1, phase_c: 1, phase_r: 1,
+     /* K2 (locked): air 1-pole mix default 0 (shelf still gives HF loss). diffusion_master −0.25 (Structure), clamp [−0.5, 0]. */
+-    humidity: 0.35, air_lp: 0, air_shelf: 1, diffusion_master: -0.25,
++    humidity: 0.35, air_lp: 0, air_shelf: 1, air_climate: "studio_20C_50RH", diffusion_master: -0.25,
+     reaktor_parity: false, live_drag_render: false,
+     two_sources: false, mirror_b: true, source_balance: 0,
+     sx_b: 3.4, sy_b: 1.2, sz_b: 4.75, /* K3: mirror of the default source (W − 2.6, 1.2) */
+@@ -1425,6 +1425,10 @@
+     }
+     var parity = document.getElementById("reaktor_parity");
+     if (parity) parity.checked = !!state.reaktor_parity;
++    var climateEl = document.getElementById("air_climate");
++    if (climateEl && document.activeElement !== climateEl) {
++      climateEl.value = state.air_climate || "studio_20C_50RH";
++    }
+     var implEl = document.getElementById("colour_impl");
+     if (implEl && document.activeElement !== implEl) implEl.value = state.colour_impl || "sos";
+     var liveDrag = document.getElementById("live_drag_render");
+@@ -1532,6 +1536,13 @@
+       onRoomDim(id, parseFloat(e.target.value));
+     });
+   });
++  var climatePick = document.getElementById("air_climate");
++  if (climatePick) {
++    climatePick.addEventListener("change", function (e) {
++      state.air_climate = e.target.value || "studio_20C_50RH";
++      syncUI();
++    });
++  }
+   ["space","car_omni","fdn_g","ir_length_ms","humidity","air_lp","air_shelf"].forEach(function (id) {
+     var el = document.getElementById(id);
+     if (!el) return;
+diff -ruN -x __pycache__ -x .pytest_cache -x renders -x .venv -x '*.wasm' -x '*.orig' -x presets snapshot_2026-10-01_1550/software/static/js/fdn_worklet.js snapshot_2026-10-01_2210/software/static/js/fdn_worklet.js
+--- snapshot_2026-10-01_1550/software/static/js/fdn_worklet.js	2026-10-01 11:34:17.000000000 +0100
++++ snapshot_2026-10-01_2210/software/static/js/fdn_worklet.js	2026-10-01 21:25:36.000000000 +0100
+@@ -6,7 +6,8 @@
+  * This thread has no fetch.
+  */
+ 
+-var BLOB_LEN = 1982;
++/* v2 blob length is the directory total. Reject only an empty or huge blob. */
++var MAX_BLOB = 16384;
+ var ROUTE_LEN = 326;
+ var MAX_AUDIO = 2048;
+ var MAX_IRS = 192;
+@@ -47,11 +48,11 @@
+   a.push(dms, num(src.direct_gain, 1));
+ }
+ 
+-function packRoom(data) {
+-  var a = [1];
++function packCore(data) {
++  var a = [];
+   var names = ["l", "c", "r"];
+-  var di = num(data.direct_index, 2) | 0;
+-  var i, bus, pk, key;
++  var di = num(data.direct_index, 10) | 0;
++  var i, bus, pk, key, sm, hn;
+   if (di < 0) di = 0;
+   if (di > 31) di = 31;
+   a.push(num(data.g, 0.03), num(data.fdn_wet, 1), num(data.direct_wet, 1),
+@@ -78,6 +79,64 @@
+     pushSide(a, bus && bus.b, di);
+   }
+   a.push(num(data.line_t60, 0));
++  sm = data.solo_mute || [];
++  hn = data.hadamard_n != null ? data.hadamard_n : data.n;
++  a.push(num(hn, 32), num(data.loop_semantics, 0));
++  for (i = 0; i < 6; i++) a.push(num(sm[i], 1));
++  return a;
++}
++
++function shelf2Live(data) {
++  var names = ["l", "c", "r"];
++  var i, k, src, shelf, j;
++  for (i = 0; i < 3; i++) {
++    src = data.buses && data.buses[names[i]];
++    for (k = 0; k < 2 && src; k++) {
++      shelf = src.shelf2;
++      if (shelf) {
++        for (j = 0; j < shelf.length; j++) {
++          if (shelf[j] && shelf[j].on) return true;
++        }
++      }
++      src = src.b;
++    }
++  }
++  return false;
++}
++
++function packAir(data) {
++  var a = [];
++  var names = ["l", "c", "r"];
++  var i, bus, shelf, j;
++  if (!shelf2Live(data)) return a;
++  for (i = 0; i < 3; i++) {
++    bus = (data.buses && data.buses[names[i]]) || {};
++    shelf = bus.shelf2 || [];
++    for (j = 0; j < 32; j++) pushShelf(a, shelf[j]);
++    shelf = (bus.b && bus.b.shelf2) || [];
++    for (j = 0; j < 32; j++) pushShelf(a, shelf[j]);
++  }
++  return a;
++}
++
++function packRoom(data) {
++  var parts = [[1, packCore(data)], [2, packAir(data)], [3, []], [4, []], [5, []]];
++  var nsec = parts.length;
++  var off = 5 + 4 * nsec;
++  var dir = [];
++  var body = [];
++  var s, payload, ln;
++  for (s = 0; s < nsec; s++) {
++    payload = parts[s][1];
++    ln = payload.length;
++    dir.push(parts[s][0], off, ln, 1);
++    if (ln) {
++      body = body.concat(payload);
++      off += ln;
++    }
++  }
++  var a = [2, 2, 0, nsec, 0].concat(dir, body);
++  a[4] = a.length;
+   return a;
+ }
+ 
+@@ -155,7 +214,7 @@
+     if (over) data.colour_on = 0;
+     data.snap = this.snap;
+     blob = packRoom(data);
+-    if (blob.length !== BLOB_LEN) {
++    if (blob.length < 16 || blob.length > MAX_BLOB) {
+       this._fail("Live room blob is " + blob.length + " floats.");
+       return;
+     }
+diff -ruN -x __pycache__ -x .pytest_cache -x renders -x .venv -x '*.wasm' -x '*.orig' -x presets snapshot_2026-10-01_1550/software/static/js/live_fdn.js snapshot_2026-10-01_2210/software/static/js/live_fdn.js
+--- snapshot_2026-10-01_1550/software/static/js/live_fdn.js	2026-10-01 11:34:17.000000000 +0100
++++ snapshot_2026-10-01_2210/software/static/js/live_fdn.js	2026-10-01 21:25:36.000000000 +0100
+@@ -16,7 +16,7 @@
+   var colourRev = "";
+   var bank = null;
+   var lastCapLine = "";
+-  var WORKLET_VER = 37;
++  var WORKLET_VER = 38;
+   var COLOUR_CAP = 192;
+   var ROUTE_LEN = 326;
+ 
+diff -ruN -x __pycache__ -x .pytest_cache -x renders -x .venv -x '*.wasm' -x '*.orig' -x presets snapshot_2026-10-01_1550/software/tests/test_live_stereo.py snapshot_2026-10-01_2210/software/tests/test_live_stereo.py
+--- snapshot_2026-10-01_1550/software/tests/test_live_stereo.py	2026-10-01 11:34:17.000000000 +0100
++++ snapshot_2026-10-01_2210/software/tests/test_live_stereo.py	2026-10-01 21:32:11.000000000 +0100
+@@ -598,9 +598,9 @@
+     work = (ROOT / "static" / "js" / "fdn_worklet.js").read_text(encoding="utf-8")
+     page = (ROOT / "static" / "index.html").read_text(encoding="utf-8")
+     assert "createConvolver" not in live
+-    assert "WORKLET_VER = 37" in live
++    assert "WORKLET_VER = 38" in live
+     assert "LANES = 4" in text
+-    assert "live_fdn.js?v=37" in page
++    assert "live_fdn.js?v=38" in page
+     assert "MAX_SOS" in text
+     assert "design_sos" in text
+     assert "LS_DC" in text
+diff -ruN -x __pycache__ -x .pytest_cache -x renders -x .venv -x '*.wasm' -x '*.orig' -x presets snapshot_2026-10-01_1550/software/tests/test_mic_colour_relative.py snapshot_2026-10-01_2210/software/tests/test_mic_colour_relative.py
+--- snapshot_2026-10-01_1550/software/tests/test_mic_colour_relative.py	2026-10-01 11:45:50.000000000 +0100
++++ snapshot_2026-10-01_2210/software/tests/test_mic_colour_relative.py	2026-10-01 21:32:11.000000000 +0100
+@@ -938,8 +938,8 @@
+     assert "apply_mic=True" not in pipe
+     assert "mic_one_pole_coeff" not in pipe
+     stereo = (SOFTWARE / "engine" / "live_stereo.c").read_text(encoding="utf-8")
+-    assert "WORKLET_VER = 37" in live_js
+-    assert "live_fdn.js?v=37" in page
++    assert "WORKLET_VER = 38" in live_js
++    assert "live_fdn.js?v=38" in page
+     assert "MAX_IRS = 192" in stereo
+     assert "var MAX_IRS = 192" in work
+     assert "Mic colour is OFF:" in live_js

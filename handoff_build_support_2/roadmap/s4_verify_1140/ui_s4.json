@@ -1,0 +1,1690 @@
+{
+ "console": [
+  [
+   "warning",
+   "Scripts \"build/three.js\" and \"build/three.min.js\" are deprecated with r150+, and will be removed with r160. Please use ES Modules or alternatives: https://threejs.org/docs/index.html#manual/en/introduction/Installation"
+  ],
+  [
+   "error",
+   "Failed to load resource: the server responded with a status of 404 (Not Found)"
+  ]
+ ],
+ "steps": {
+  "tabs": [
+   "Room",
+   "Source",
+   "Mic",
+   "Mix",
+   "Lattice",
+   "Paths",
+   "Colour",
+   "Surfaces",
+   "Polar 3D"
+  ],
+  "controls_by_tab": {
+   "edit": {
+    "surface_cards": 0,
+    "solo_btns": 0,
+    "mute_btns": 0,
+    "material_chips": 0,
+    "smear": false,
+    "tail_dif": false,
+    "sidebar_panels": [
+     "panelRoom",
+     "panelPreview",
+     "panelAdvanced"
+    ]
+   },
+   "source": {
+    "surface_cards": 0,
+    "solo_btns": 0,
+    "mute_btns": 0,
+    "material_chips": 0,
+    "smear": false,
+    "tail_dif": false,
+    "sidebar_panels": [
+     "panelRoom",
+     "panelPreview",
+     "panelAdvanced"
+    ]
+   },
+   "mic": {
+    "surface_cards": 0,
+    "solo_btns": 0,
+    "mute_btns": 0,
+    "material_chips": 0,
+    "smear": false,
+    "tail_dif": false,
+    "sidebar_panels": [
+     "panelRoom",
+     "panelListen",
+     "panelAdvanced"
+    ]
+   },
+   "mix": {
+    "surface_cards": 0,
+    "solo_btns": 4,
+    "mute_btns": 0,
+    "material_chips": 0,
+    "smear": false,
+    "tail_dif": false,
+    "sidebar_panels": [
+     "panelRoom",
+     "panelMix",
+     "panelPreview",
+     "panelAdvanced"
+    ]
+   },
+   "lattice": {
+    "surface_cards": 0,
+    "solo_btns": 0,
+    "mute_btns": 0,
+    "material_chips": 0,
+    "smear": false,
+    "tail_dif": false,
+    "sidebar_panels": [
+     "panelRoom",
+     "panelListen",
+     "panelMix",
+     "panelPreview",
+     "panelAdvanced"
+    ]
+   },
+   "paths": {
+    "surface_cards": 0,
+    "solo_btns": 0,
+    "mute_btns": 0,
+    "material_chips": 0,
+    "smear": false,
+    "tail_dif": false,
+    "sidebar_panels": [
+     "panelRoom",
+     "panelListen",
+     "panelMix",
+     "panelPreview",
+     "panelAdvanced"
+    ]
+   },
+   "colour": {
+    "surface_cards": 6,
+    "solo_btns": 6,
+    "mute_btns": 6,
+    "material_chips": 15,
+    "smear": true,
+    "tail_dif": true,
+    "sidebar_panels": [
+     "panelRoom",
+     "panelMix",
+     "panelPreview",
+     "panelAdvanced"
+    ]
+   },
+   "surfaces": {
+    "surface_cards": 6,
+    "solo_btns": 6,
+    "mute_btns": 6,
+    "material_chips": 15,
+    "smear": true,
+    "tail_dif": true,
+    "sidebar_panels": [
+     "panelRoom",
+     "panelMix",
+     "panelPreview",
+     "panelAdvanced"
+    ]
+   },
+   "polar": {
+    "surface_cards": 6,
+    "solo_btns": 6,
+    "mute_btns": 6,
+    "material_chips": 15,
+    "smear": true,
+    "tail_dif": true,
+    "sidebar_panels": [
+     "panelRoom",
+     "panelListen",
+     "panelMix",
+     "panelPreview",
+     "panelAdvanced"
+    ]
+   }
+  },
+  "first_body": {
+   "surfaces_solo": null,
+   "surfaces_mute": {
+    "A": false,
+    "B": false,
+    "C": false,
+    "D": false,
+    "E": false,
+    "F": false
+   },
+   "A": {
+    "absorb": [
+     0.05,
+     0.06,
+     0.08,
+     0.1,
+     0.14,
+     0.18,
+     0.22
+    ],
+    "jitter_D": 0.15,
+    "structure_dif": 0.15,
+    "diffusion": 0.15,
+    "material": null,
+    "honesty": null
+   },
+   "E": {
+    "absorb": [
+     0.05,
+     0.06,
+     0.08,
+     0.1,
+     0.14,
+     0.18,
+     0.22
+    ],
+    "material": null
+   },
+   "F": {
+    "absorb": [
+     0.05,
+     0.06,
+     0.08,
+     0.1,
+     0.14,
+     0.18,
+     0.22
+    ],
+    "material": null
+   },
+   "B": {
+    "absorb": [
+     0.05,
+     0.06,
+     0.08,
+     0.1,
+     0.14,
+     0.18,
+     0.22
+    ],
+    "material": null
+   }
+  },
+  "first_body_full": {
+   "W": 6,
+   "H": 3,
+   "L": 8,
+   "sx": 2.6,
+   "sz": 4.75,
+   "mcx": 3,
+   "mcz": 1.5,
+   "my": 1.5,
+   "sy": 1.2,
+   "link_heights": false,
+   "space": 0.17,
+   "diverg": -1.4198621771937625,
+   "toe_half_deg": 55,
+   "car_omni": 1,
+   "pattern_l": "cardioid",
+   "pattern_c": "cardioid",
+   "pattern_r": "cardioid",
+   "family_l": "cardioid",
+   "family_c": "cardioid",
+   "family_r": "cardioid",
+   "polar_l": 0.5,
+   "polar_c": 0.5,
+   "polar_r": 0.5,
+   "yaw_l_deg": -55,
+   "yaw_c_deg": 0,
+   "yaw_r_deg": 55,
+   "centre_dz": 0,
+   "align_horizontal": true,
+   "link_lr_yaw": true,
+   "mic_hp_on": false,
+   "mic_hp_hz": 40,
+   "mic_response_hz": 10000,
+   "mic_proximity": 0.25,
+   "capsule_mm": 17,
+   "ms_decode": false,
+   "colour_mode": "MEASURED_SHELF",
+   "colour_impl": "sos",
+   "mic_preset_l": "ShureSM57",
+   "mic_preset_c": "ShureSM57",
+   "mic_preset_r": "ShureSM57",
+   "mic_hpf_engaged": false,
+   "mic_hpf_sides": false,
+   "mic_hpf_centre": false,
+   "preset_owns_pattern": false,
+   "mic_setup": "ortf",
+   "head_yaw_deg": 0,
+   "binaural_preset": "SADIE2_KU100",
+   "early_wet": 1,
+   "fdn_wet": 1,
+   "direct_wet": 1,
+   "dry_gain": 0,
+   "fdn_g": 1,
+   "ir_length_ms": 1500,
+   "decay_s": 1.8,
+   "decay_lock": true,
+   "solo_direct": false,
+   "solo_fdn": false,
+   "solo_early": false,
+   "solo_dry": false,
+   "stereo_mic": false,
+   "natural_bus": false,
+   "fader_l": 0.5,
+   "fader_c": 0.5,
+   "fader_r": 0.5,
+   "fader_direct": 0,
+   "fader_fdn": 0.5,
+   "fader_early": 0,
+   "fader_dry": 0,
+   "trim_l": 0,
+   "trim_c": 0,
+   "trim_r": 0,
+   "trim_direct": 0,
+   "trim_fdn": 0,
+   "trim_early": 0,
+   "trim_dry": 0,
+   "pan_l": -1,
+   "pan_c": 0,
+   "pan_r": 1,
+   "mute_l": false,
+   "mute_c": false,
+   "mute_r": false,
+   "mute_direct": false,
+   "mute_fdn": false,
+   "mute_early": false,
+   "mute_dry": false,
+   "phase_l": 1,
+   "phase_c": 1,
+   "phase_r": 1,
+   "humidity": 0.35,
+   "air_lp": 0,
+   "air_shelf": 1,
+   "air_climate": "studio_20C_50RH",
+   "diffusion_master": -0.25,
+   "reaktor_parity": false,
+   "live_drag_render": false,
+   "two_sources": false,
+   "mirror_b": true,
+   "source_balance": 0,
+   "source_radiation": "omni",
+   "source_yaw": 0,
+   "source_pitch": 0,
+   "source_radiation_b": null,
+   "source_yaw_b": null,
+   "source_pitch_b": null,
+   "sx_b": 3.4,
+   "sy_b": 1.2,
+   "sz_b": 4.75,
+   "path_on": false,
+   "path_preset": "still",
+   "ellipse_rate": 1,
+   "ellipse_rx": 0.42,
+   "ellipse_rz": 0.35,
+   "hadamard_n": 32,
+   "diffusion_seed": 0,
+   "lambda_ref": 0.02,
+   "surfaces_solo": null,
+   "surfaces_mute": {
+    "A": false,
+    "B": false,
+    "C": false,
+    "D": false,
+    "E": false,
+    "F": false
+   },
+   "surfaces": {
+    "A": {
+     "letter": "A",
+     "label": "Left wall (Sides)",
+     "hint": "\u2212X; Sides panel, A vs C split ASSUMED",
+     "absorb_hz": [
+      125,
+      250,
+      500,
+      1000,
+      2000,
+      4000,
+      8000
+     ],
+     "absorb": [
+      0.05,
+      0.06,
+      0.08,
+      0.1,
+      0.14,
+      0.18,
+      0.22
+     ],
+     "eq": {
+      "low_shelf_hz": 200,
+      "low_shelf_db": 0,
+      "high_shelf_hz": 5000,
+      "high_shelf_db": 0,
+      "peak_hz": 1000,
+      "peak_db": 0,
+      "peak_q": 1
+     },
+     "jitter_D": 0.15,
+     "structure_dif": 0.15,
+     "diffusion": 0.15,
+     "assumed": true
+    },
+    "B": {
+     "letter": "B",
+     "label": "Front / Ahead",
+     "hint": "+Z; panel name VERIFIED",
+     "absorb_hz": [
+      125,
+      250,
+      500,
+      1000,
+      2000,
+      4000,
+      8000
+     ],
+     "absorb": [
+      0.05,
+      0.06,
+      0.08,
+      0.1,
+      0.14,
+      0.18,
+      0.22
+     ],
+     "eq": {
+      "low_shelf_hz": 200,
+      "low_shelf_db": 0,
+      "high_shelf_hz": 5000,
+      "high_shelf_db": 0,
+      "peak_hz": 1000,
+      "peak_db": 0,
+      "peak_q": 1
+     },
+     "jitter_D": 0.15,
+     "structure_dif": 0.15,
+     "diffusion": 0.15,
+     "assumed": true
+    },
+    "C": {
+     "letter": "C",
+     "label": "Right wall (Sides)",
+     "hint": "+X; Sides panel, A vs C split ASSUMED",
+     "absorb_hz": [
+      125,
+      250,
+      500,
+      1000,
+      2000,
+      4000,
+      8000
+     ],
+     "absorb": [
+      0.05,
+      0.06,
+      0.08,
+      0.1,
+      0.14,
+      0.18,
+      0.22
+     ],
+     "eq": {
+      "low_shelf_hz": 200,
+      "low_shelf_db": 0,
+      "high_shelf_hz": 5000,
+      "high_shelf_db": 0,
+      "peak_hz": 1000,
+      "peak_db": 0,
+      "peak_q": 1
+     },
+     "jitter_D": 0.15,
+     "structure_dif": 0.15,
+     "diffusion": 0.15,
+     "assumed": true
+    },
+    "D": {
+     "letter": "D",
+     "label": "Back / Behind",
+     "hint": "\u2212Z; panel name VERIFIED",
+     "absorb_hz": [
+      125,
+      250,
+      500,
+      1000,
+      2000,
+      4000,
+      8000
+     ],
+     "absorb": [
+      0.05,
+      0.06,
+      0.08,
+      0.1,
+      0.14,
+      0.18,
+      0.22
+     ],
+     "eq": {
+      "low_shelf_hz": 200,
+      "low_shelf_db": 0,
+      "high_shelf_hz": 5000,
+      "high_shelf_db": 0,
+      "peak_hz": 1000,
+      "peak_db": 0,
+      "peak_q": 1
+     },
+     "jitter_D": 0.15,
+     "structure_dif": 0.15,
+     "diffusion": 0.15,
+     "assumed": true
+    },
+    "E": {
+     "letter": "E",
+     "label": "Floor",
+     "hint": "\u2212Y; panel name VERIFIED",
+     "absorb_hz": [
+      125,
+      250,
+      500,
+      1000,
+      2000,
+      4000,
+      8000
+     ],
+     "absorb": [
+      0.05,
+      0.06,
+      0.08,
+      0.1,
+      0.14,
+      0.18,
+      0.22
+     ],
+     "eq": {
+      "low_shelf_hz": 200,
+      "low_shelf_db": 0,
+      "high_shelf_hz": 5000,
+      "high_shelf_db": 0,
+      "peak_hz": 1000,
+      "peak_db": 0,
+      "peak_q": 1
+     },
+     "jitter_D": 0.15,
+     "structure_dif": 0.15,
+     "diffusion": 0.15,
+     "assumed": true
+    },
+    "F": {
+     "letter": "F",
+     "label": "Ceiling",
+     "hint": "+Y; panel name VERIFIED",
+     "absorb_hz": [
+      125,
+      250,
+      500,
+      1000,
+      2000,
+      4000,
+      8000
+     ],
+     "absorb": [
+      0.05,
+      0.06,
+      0.08,
+      0.1,
+      0.14,
+      0.18,
+      0.22
+     ],
+     "eq": {
+      "low_shelf_hz": 200,
+      "low_shelf_db": 0,
+      "high_shelf_hz": 5000,
+      "high_shelf_db": 0,
+      "peak_hz": 1000,
+      "peak_db": 0,
+      "peak_q": 1
+     },
+     "jitter_D": 0.15,
+     "structure_dif": 0.15,
+     "diffusion": 0.15,
+     "assumed": true
+    }
+   },
+   "sox": 0.43333333333333335,
+   "soz": 0.5,
+   "mz": 6.5,
+   "mics": [
+    "C"
+   ]
+  },
+  "default": {
+   "cards": [
+    {
+     "L": "A",
+     "muted": false,
+     "solo": false,
+     "solo_on": "false",
+     "mute_on": "false"
+    },
+    {
+     "L": "B",
+     "muted": false,
+     "solo": false,
+     "solo_on": "false",
+     "mute_on": "false"
+    },
+    {
+     "L": "C",
+     "muted": false,
+     "solo": false,
+     "solo_on": "false",
+     "mute_on": "false"
+    },
+    {
+     "L": "D",
+     "muted": false,
+     "solo": false,
+     "solo_on": "false",
+     "mute_on": "false"
+    },
+    {
+     "L": "E",
+     "muted": false,
+     "solo": false,
+     "solo_on": "false",
+     "mute_on": "false"
+    },
+    {
+     "L": "F",
+     "muted": false,
+     "solo": false,
+     "solo_on": "false",
+     "mute_on": "false"
+    }
+   ],
+   "solo_off": "true",
+   "title": "Surface A \u00b7 Left",
+   "honesty": "No material preset on this face yet.",
+   "smear": "0.15",
+   "tail": "0.15"
+  },
+  "chips_on_A": [
+   [
+    "plaster_smooth",
+    false
+   ],
+   [
+    "gypsum_painted",
+    false
+   ],
+   [
+    "brick_unglazed",
+    false
+   ],
+   [
+    "concrete_painted",
+    false
+   ],
+   [
+    "wood_parquet",
+    true
+   ],
+   [
+    "plywood_panel",
+    false
+   ],
+   [
+    "carpet_on_concrete",
+    true
+   ],
+   [
+    "carpet_on_foam",
+    true
+   ],
+   [
+    "glass_window",
+    false
+   ],
+   [
+    "acoustic_ceiling_tile",
+    true
+   ],
+   [
+    "absorber_panel_2in",
+    false
+   ],
+   [
+    "heavy_curtain",
+    false
+   ],
+   [
+    "absorber_panel_1in_gap1in",
+    false
+   ],
+   [
+    "absorber_panel_2in_gap2in",
+    false
+   ],
+   [
+    "absorber_panel_4in_gap4in",
+    false
+   ]
+  ],
+  "chips_on_E": [
+   [
+    "plaster_smooth",
+    true
+   ],
+   [
+    "gypsum_painted",
+    true
+   ],
+   [
+    "brick_unglazed",
+    true
+   ],
+   [
+    "concrete_painted",
+    false
+   ],
+   [
+    "wood_parquet",
+    false
+   ],
+   [
+    "plywood_panel",
+    true
+   ],
+   [
+    "carpet_on_concrete",
+    false
+   ],
+   [
+    "carpet_on_foam",
+    false
+   ],
+   [
+    "glass_window",
+    true
+   ],
+   [
+    "acoustic_ceiling_tile",
+    true
+   ],
+   [
+    "absorber_panel_2in",
+    true
+   ],
+   [
+    "heavy_curtain",
+    true
+   ],
+   [
+    "absorber_panel_1in_gap1in",
+    true
+   ],
+   [
+    "absorber_panel_2in_gap2in",
+    true
+   ],
+   [
+    "absorber_panel_4in_gap4in",
+    true
+   ]
+  ],
+  "chips_on_F": [
+   [
+    "plaster_smooth",
+    false
+   ],
+   [
+    "gypsum_painted",
+    false
+   ],
+   [
+    "brick_unglazed",
+    true
+   ],
+   [
+    "concrete_painted",
+    false
+   ],
+   [
+    "wood_parquet",
+    true
+   ],
+   [
+    "plywood_panel",
+    true
+   ],
+   [
+    "carpet_on_concrete",
+    true
+   ],
+   [
+    "carpet_on_foam",
+    true
+   ],
+   [
+    "glass_window",
+    true
+   ],
+   [
+    "acoustic_ceiling_tile",
+    false
+   ],
+   [
+    "absorber_panel_2in",
+    true
+   ],
+   [
+    "heavy_curtain",
+    true
+   ],
+   [
+    "absorber_panel_1in_gap1in",
+    false
+   ],
+   [
+    "absorber_panel_2in_gap2in",
+    false
+   ],
+   [
+    "absorber_panel_4in_gap4in",
+    false
+   ]
+  ],
+  "chip_titles": [
+   [
+    "plaster_smooth",
+    "Plaster (smooth)\nASSUMED_TEXTBOOK\nAllowed: wall, ceiling\nBanned: floor"
+   ],
+   [
+    "gypsum_painted",
+    "Gypsum board (painted)\nASSUMED_TEXTBOOK\nAllowed: wall, ceiling\nBanned: floor"
+   ],
+   [
+    "brick_unglazed",
+    "Brick (unglazed)\nASSUMED_TEXTBOOK\nAllowed: wall\nBanned: floor, ceiling"
+   ],
+   [
+    "concrete_painted",
+    "Concrete (painted)\nASSUMED_TEXTBOOK\nAllowed: floor, wall, ceiling\nBanned: none"
+   ],
+   [
+    "wood_parquet",
+    "Wood parquet\nASSUMED_TEXTBOOK\nAllowed: floor\nBanned: wall, ceiling"
+   ],
+   [
+    "plywood_panel",
+    "Plywood panel\nASSUMED_TEXTBOOK\nAllowed: wall\nBanned: floor, ceiling"
+   ],
+   [
+    "carpet_on_concrete",
+    "Carpet on concrete\nASSUMED_TEXTBOOK\nAllowed: floor\nBanned: wall, ceiling"
+   ],
+   [
+    "carpet_on_foam",
+    "Carpet on foam\nASSUMED_TEXTBOOK\nAllowed: floor\nBanned: wall, ceiling"
+   ],
+   [
+    "glass_window",
+    "Glass window\nASSUMED_TEXTBOOK\nAllowed: wall\nBanned: floor, ceiling"
+   ],
+   [
+    "acoustic_ceiling_tile",
+    "Acoustic ceiling tile\nASSUMED_TEXTBOOK\nAllowed: ceiling\nBanned: floor, wall"
+   ],
+   [
+    "absorber_panel_2in",
+    "Absorber panel (2 in fiberglass)\nASSUMED_TEXTBOOK\nAllowed: wall\nBanned: floor, ceiling"
+   ],
+   [
+    "heavy_curtain",
+    "Heavy curtain\nASSUMED_TEXTBOOK\nAllowed: wall\nBanned: floor, ceiling"
+   ],
+   [
+    "absorber_panel_1in_gap1in",
+    "Absorber panel (1 in, 1 in gap)\nMODELLED (Miki 1990 + Paris; sigma=15 kPa s/m2 ASSUMED)\nAllowed: wall, ceiling\nBanned: floor"
+   ],
+   [
+    "absorber_panel_2in_gap2in",
+    "Absorber panel (2 in, 2 in gap)\nMODELLED (Miki 1990 + Paris; sigma=15 kPa s/m2 ASSUMED)\nAllowed: wall, ceiling\nBanned: floor"
+   ],
+   [
+    "absorber_panel_4in_gap4in",
+    "Absorber panel (4 in, 4 in gap)\nMODELLED (Miki 1990 + Paris; sigma=15 kPa s/m2 ASSUMED)\nAllowed: wall, ceiling\nBanned: floor"
+   ]
+  ],
+  "after_curtain_A": {
+   "state": {
+    "cards": [
+     {
+      "L": "A",
+      "muted": false,
+      "solo": false,
+      "solo_on": "false",
+      "mute_on": "false"
+     },
+     {
+      "L": "B",
+      "muted": false,
+      "solo": false,
+      "solo_on": "false",
+      "mute_on": "false"
+     },
+     {
+      "L": "C",
+      "muted": false,
+      "solo": false,
+      "solo_on": "false",
+      "mute_on": "false"
+     },
+     {
+      "L": "D",
+      "muted": false,
+      "solo": false,
+      "solo_on": "false",
+      "mute_on": "false"
+     },
+     {
+      "L": "E",
+      "muted": false,
+      "solo": false,
+      "solo_on": "false",
+      "mute_on": "false"
+     },
+     {
+      "L": "F",
+      "muted": false,
+      "solo": false,
+      "solo_on": "false",
+      "mute_on": "false"
+     }
+    ],
+    "solo_off": "true",
+    "title": "Surface A \u00b7 Heavy curtain",
+    "honesty": "Heavy curtain \u2014 ASSUMED_TEXTBOOK",
+    "smear": "0.15",
+    "tail": "0.15"
+   },
+   "body": {
+    "surfaces_solo": null,
+    "surfaces_mute": {
+     "A": false,
+     "B": false,
+     "C": false,
+     "D": false,
+     "E": false,
+     "F": false
+    },
+    "A": {
+     "absorb": [
+      0.14,
+      0.35,
+      0.55,
+      0.72,
+      0.7,
+      0.65,
+      0.68
+     ],
+     "jitter_D": 0.15,
+     "structure_dif": 0.15,
+     "diffusion": 0.15,
+     "material": "heavy_curtain",
+     "honesty": "ASSUMED_TEXTBOOK"
+    },
+    "E": {
+     "absorb": [
+      0.05,
+      0.06,
+      0.08,
+      0.1,
+      0.14,
+      0.18,
+      0.22
+     ],
+     "material": null
+    },
+    "F": {
+     "absorb": [
+      0.05,
+      0.06,
+      0.08,
+      0.1,
+      0.14,
+      0.18,
+      0.22
+     ],
+     "material": null
+    },
+    "B": {
+     "absorb": [
+      0.05,
+      0.06,
+      0.08,
+      0.1,
+      0.14,
+      0.18,
+      0.22
+     ],
+     "material": null
+    }
+   },
+   "new_posts": [
+    "images"
+   ]
+  },
+  "E_curtain_disabled": [
+   true
+  ],
+  "after_force_click_curtain_on_E": {
+   "absorb": [
+    0.05,
+    0.06,
+    0.08,
+    0.1,
+    0.14,
+    0.18,
+    0.22
+   ],
+   "material": null
+  },
+  "after_shift_curtain": {
+   "A": "heavy_curtain",
+   "B": "heavy_curtain",
+   "C": "heavy_curtain",
+   "D": "heavy_curtain",
+   "E": null,
+   "F": null
+  },
+  "after_shift_carpet": {
+   "A": "heavy_curtain",
+   "B": "heavy_curtain",
+   "C": "heavy_curtain",
+   "D": "heavy_curtain",
+   "E": "carpet_on_concrete",
+   "F": null
+  },
+  "porous_on_F": [
+   [
+    "absorber_panel_2in",
+    true
+   ],
+   [
+    "absorber_panel_1in_gap1in",
+    false
+   ],
+   [
+    "absorber_panel_2in_gap2in",
+    false
+   ],
+   [
+    "absorber_panel_4in_gap4in",
+    false
+   ]
+  ],
+  "after_gap_on_F": {
+   "state": {
+    "cards": [
+     {
+      "L": "A",
+      "muted": false,
+      "solo": false,
+      "solo_on": "false",
+      "mute_on": "false"
+     },
+     {
+      "L": "B",
+      "muted": false,
+      "solo": false,
+      "solo_on": "false",
+      "mute_on": "false"
+     },
+     {
+      "L": "C",
+      "muted": false,
+      "solo": false,
+      "solo_on": "false",
+      "mute_on": "false"
+     },
+     {
+      "L": "D",
+      "muted": false,
+      "solo": false,
+      "solo_on": "false",
+      "mute_on": "false"
+     },
+     {
+      "L": "E",
+      "muted": false,
+      "solo": false,
+      "solo_on": "false",
+      "mute_on": "false"
+     },
+     {
+      "L": "F",
+      "muted": false,
+      "solo": false,
+      "solo_on": "false",
+      "mute_on": "false"
+     }
+    ],
+    "solo_off": "true",
+    "title": "Surface F \u00b7 Absorber panel (2 in, 2 in gap)",
+    "honesty": "Absorber panel (2 in, 2 in gap) \u2014 MODELLED (Miki 1990 + Paris; sigma=15 kPa s/m2 ASSUMED)",
+    "smear": "0.15",
+    "tail": "0.15"
+   },
+   "F_absorb": [
+    0.218016,
+    0.51263,
+    0.813532,
+    0.917383,
+    0.925783,
+    0.953178,
+    0.960881
+   ]
+  },
+  "paintall_on_chips_F": [
+   [
+    "plaster_smooth",
+    false
+   ],
+   [
+    "gypsum_painted",
+    false
+   ],
+   [
+    "brick_unglazed",
+    false
+   ],
+   [
+    "concrete_painted",
+    false
+   ],
+   [
+    "wood_parquet",
+    false
+   ],
+   [
+    "plywood_panel",
+    false
+   ],
+   [
+    "carpet_on_concrete",
+    false
+   ],
+   [
+    "carpet_on_foam",
+    false
+   ],
+   [
+    "glass_window",
+    false
+   ],
+   [
+    "acoustic_ceiling_tile",
+    false
+   ],
+   [
+    "absorber_panel_2in",
+    false
+   ],
+   [
+    "heavy_curtain",
+    false
+   ],
+   [
+    "absorber_panel_1in_gap1in",
+    false
+   ],
+   [
+    "absorber_panel_2in_gap2in",
+    false
+   ],
+   [
+    "absorber_panel_4in_gap4in",
+    false
+   ]
+  ],
+  "after_paintall_plaster": {
+   "A": "plaster_smooth",
+   "B": "plaster_smooth",
+   "C": "plaster_smooth",
+   "D": "plaster_smooth",
+   "E": "carpet_on_concrete",
+   "F": "plaster_smooth"
+  },
+  "after_smear_0.6": {
+   "absorb": [
+    0.02,
+    0.02,
+    0.03,
+    0.04,
+    0.05,
+    0.05,
+    0.05
+   ],
+   "jitter_D": 0.6,
+   "structure_dif": 0.15,
+   "diffusion": 0.15,
+   "material": "plaster_smooth",
+   "honesty": "ASSUMED_TEXTBOOK"
+  },
+  "after_tail_0.4": {
+   "absorb": [
+    0.02,
+    0.02,
+    0.03,
+    0.04,
+    0.05,
+    0.05,
+    0.05
+   ],
+   "jitter_D": 0.6,
+   "structure_dif": 0.4,
+   "diffusion": 0.15,
+   "material": "plaster_smooth",
+   "honesty": "ASSUMED_TEXTBOOK"
+  },
+  "solo_E": {
+   "state": {
+    "cards": [
+     {
+      "L": "A",
+      "muted": true,
+      "solo": false,
+      "solo_on": "false",
+      "mute_on": "false"
+     },
+     {
+      "L": "B",
+      "muted": true,
+      "solo": false,
+      "solo_on": "false",
+      "mute_on": "false"
+     },
+     {
+      "L": "C",
+      "muted": true,
+      "solo": false,
+      "solo_on": "false",
+      "mute_on": "false"
+     },
+     {
+      "L": "D",
+      "muted": true,
+      "solo": false,
+      "solo_on": "false",
+      "mute_on": "false"
+     },
+     {
+      "L": "E",
+      "muted": false,
+      "solo": true,
+      "solo_on": "true",
+      "mute_on": "false"
+     },
+     {
+      "L": "F",
+      "muted": true,
+      "solo": false,
+      "solo_on": "false",
+      "mute_on": "false"
+     }
+    ],
+    "solo_off": "false",
+    "title": "Surface E \u00b7 Carpet on concrete",
+    "honesty": "Carpet on concrete \u2014 ASSUMED_TEXTBOOK",
+    "smear": "0.15",
+    "tail": "0.15"
+   },
+   "body": {
+    "surfaces_solo": "E",
+    "surfaces_mute": {
+     "A": false,
+     "B": false,
+     "C": false,
+     "D": false,
+     "E": false,
+     "F": false
+    }
+   }
+  },
+  "solo_C_after_E": {
+   "state": {
+    "cards": [
+     {
+      "L": "A",
+      "muted": true,
+      "solo": false,
+      "solo_on": "false",
+      "mute_on": "false"
+     },
+     {
+      "L": "B",
+      "muted": true,
+      "solo": false,
+      "solo_on": "false",
+      "mute_on": "false"
+     },
+     {
+      "L": "C",
+      "muted": false,
+      "solo": true,
+      "solo_on": "true",
+      "mute_on": "false"
+     },
+     {
+      "L": "D",
+      "muted": true,
+      "solo": false,
+      "solo_on": "false",
+      "mute_on": "false"
+     },
+     {
+      "L": "E",
+      "muted": true,
+      "solo": false,
+      "solo_on": "false",
+      "mute_on": "false"
+     },
+     {
+      "L": "F",
+      "muted": true,
+      "solo": false,
+      "solo_on": "false",
+      "mute_on": "false"
+     }
+    ],
+    "solo_off": "false",
+    "title": "Surface C \u00b7 Plaster (smooth)",
+    "honesty": "Plaster (smooth) \u2014 ASSUMED_TEXTBOOK",
+    "smear": "0.15",
+    "tail": "0.15"
+   },
+   "body": {
+    "surfaces_solo": "C",
+    "surfaces_mute": {
+     "A": false,
+     "B": false,
+     "C": false,
+     "D": false,
+     "E": false,
+     "F": false
+    }
+   }
+  },
+  "mute_A_C": {
+   "state": {
+    "cards": [
+     {
+      "L": "A",
+      "muted": true,
+      "solo": false,
+      "solo_on": "false",
+      "mute_on": "true"
+     },
+     {
+      "L": "B",
+      "muted": false,
+      "solo": false,
+      "solo_on": "false",
+      "mute_on": "false"
+     },
+     {
+      "L": "C",
+      "muted": true,
+      "solo": false,
+      "solo_on": "false",
+      "mute_on": "true"
+     },
+     {
+      "L": "D",
+      "muted": false,
+      "solo": false,
+      "solo_on": "false",
+      "mute_on": "false"
+     },
+     {
+      "L": "E",
+      "muted": false,
+      "solo": false,
+      "solo_on": "false",
+      "mute_on": "false"
+     },
+     {
+      "L": "F",
+      "muted": false,
+      "solo": false,
+      "solo_on": "false",
+      "mute_on": "false"
+     }
+    ],
+    "solo_off": "true",
+    "title": "Surface C \u00b7 Plaster (smooth)",
+    "honesty": "Plaster (smooth) \u2014 ASSUMED_TEXTBOOK",
+    "smear": "0.15",
+    "tail": "0.15"
+   },
+   "body": {
+    "surfaces_solo": null,
+    "surfaces_mute": {
+     "A": true,
+     "B": false,
+     "C": true,
+     "D": false,
+     "E": false,
+     "F": false
+    }
+   }
+  },
+  "solo_on_muted_A": {
+   "state": {
+    "cards": [
+     {
+      "L": "A",
+      "muted": false,
+      "solo": true,
+      "solo_on": "true",
+      "mute_on": "false"
+     },
+     {
+      "L": "B",
+      "muted": true,
+      "solo": false,
+      "solo_on": "false",
+      "mute_on": "false"
+     },
+     {
+      "L": "C",
+      "muted": true,
+      "solo": false,
+      "solo_on": "false",
+      "mute_on": "true"
+     },
+     {
+      "L": "D",
+      "muted": true,
+      "solo": false,
+      "solo_on": "false",
+      "mute_on": "false"
+     },
+     {
+      "L": "E",
+      "muted": true,
+      "solo": false,
+      "solo_on": "false",
+      "mute_on": "false"
+     },
+     {
+      "L": "F",
+      "muted": true,
+      "solo": false,
+      "solo_on": "false",
+      "mute_on": "false"
+     }
+    ],
+    "solo_off": "false",
+    "title": "Surface A \u00b7 Plaster (smooth)",
+    "honesty": "Plaster (smooth) \u2014 ASSUMED_TEXTBOOK",
+    "smear": "0.6",
+    "tail": "0.4"
+   },
+   "body": {
+    "surfaces_solo": "A",
+    "surfaces_mute": {
+     "A": false,
+     "B": false,
+     "C": true,
+     "D": false,
+     "E": false,
+     "F": false
+    }
+   }
+  },
+  "mute_on_soloed_A": {
+   "state": {
+    "cards": [
+     {
+      "L": "A",
+      "muted": true,
+      "solo": false,
+      "solo_on": "false",
+      "mute_on": "true"
+     },
+     {
+      "L": "B",
+      "muted": false,
+      "solo": false,
+      "solo_on": "false",
+      "mute_on": "false"
+     },
+     {
+      "L": "C",
+      "muted": true,
+      "solo": false,
+      "solo_on": "false",
+      "mute_on": "true"
+     },
+     {
+      "L": "D",
+      "muted": false,
+      "solo": false,
+      "solo_on": "false",
+      "mute_on": "false"
+     },
+     {
+      "L": "E",
+      "muted": false,
+      "solo": false,
+      "solo_on": "false",
+      "mute_on": "false"
+     },
+     {
+      "L": "F",
+      "muted": false,
+      "solo": false,
+      "solo_on": "false",
+      "mute_on": "false"
+     }
+    ],
+    "solo_off": "true",
+    "title": "Surface A \u00b7 Plaster (smooth)",
+    "honesty": "Plaster (smooth) \u2014 ASSUMED_TEXTBOOK",
+    "smear": "0.6",
+    "tail": "0.4"
+   },
+   "body": {
+    "surfaces_solo": null,
+    "surfaces_mute": {
+     "A": true,
+     "B": false,
+     "C": true,
+     "D": false,
+     "E": false,
+     "F": false
+    }
+   }
+  },
+  "paint_B_while_solo_E": {
+   "body": {
+    "surfaces_solo": "E",
+    "surfaces_mute": {
+     "A": true,
+     "B": false,
+     "C": true,
+     "D": false,
+     "E": false,
+     "F": false
+    },
+    "B": {
+     "absorb": [
+      0.03,
+      0.03,
+      0.03,
+      0.04,
+      0.05,
+      0.07,
+      0.08
+     ],
+     "material": "brick_unglazed"
+    }
+   }
+  },
+  "button_sizes": [
+   [
+    "All legal faces",
+    103,
+    32
+   ],
+   [
+    "Heavy curtain",
+    102,
+    32
+   ],
+   [
+    "Solo off",
+    68,
+    32
+   ],
+   [
+    "Solo",
+    72,
+    32
+   ],
+   [
+    "Mute",
+    72,
+    32
+   ]
+  ],
+  "after_hall": {
+   "surfaces_solo": null,
+   "surfaces_mute": {
+    "A": false,
+    "B": false,
+    "C": false,
+    "D": false,
+    "E": false,
+    "F": false
+   },
+   "dif": {
+    "A": {
+     "jitter_D": 0.16,
+     "structure_dif": 0.16,
+     "diffusion": 0.16,
+     "material": null
+    },
+    "B": {
+     "jitter_D": 0.25,
+     "structure_dif": 0.25,
+     "diffusion": 0.25,
+     "material": null
+    },
+    "C": {
+     "jitter_D": 0.16,
+     "structure_dif": 0.16,
+     "diffusion": 0.16,
+     "material": null
+    },
+    "D": {
+     "jitter_D": 0.33,
+     "structure_dif": 0.33,
+     "diffusion": 0.33,
+     "material": null
+    },
+    "E": {
+     "jitter_D": 0.27,
+     "structure_dif": 0.27,
+     "diffusion": 0.27,
+     "material": null
+    },
+    "F": {
+     "jitter_D": 0.65,
+     "structure_dif": 0.65,
+     "diffusion": 0.65,
+     "material": null
+    }
+   },
+   "reaktor_parity": true,
+   "W": 57
+  },
+  "after_hall_state": {
+   "cards": [
+    {
+     "L": "A",
+     "muted": false,
+     "solo": false,
+     "solo_on": "false",
+     "mute_on": "false"
+    },
+    {
+     "L": "B",
+     "muted": false,
+     "solo": false,
+     "solo_on": "false",
+     "mute_on": "false"
+    },
+    {
+     "L": "C",
+     "muted": false,
+     "solo": false,
+     "solo_on": "false",
+     "mute_on": "false"
+    },
+    {
+     "L": "D",
+     "muted": false,
+     "solo": false,
+     "solo_on": "false",
+     "mute_on": "false"
+    },
+    {
+     "L": "E",
+     "muted": false,
+     "solo": false,
+     "solo_on": "false",
+     "mute_on": "false"
+    },
+    {
+     "L": "F",
+     "muted": false,
+     "solo": false,
+     "solo_on": "false",
+     "mute_on": "false"
+    }
+   ],
+   "solo_off": "true",
+   "title": "Surface B \u00b7 Front",
+   "honesty": "No material preset on this face yet.",
+   "smear": "0.25",
+   "tail": "0.25"
+  }
+ },
+ "shots": [
+  "ui1140_01_tab_edit.png",
+  "ui1140_01_tab_surfaces.png",
+  "ui1140_02_surfaces_A_default.png",
+  "ui1140_03_curtain_on_A.png",
+  "ui1140_04_floor_selected_curtain_grey.png",
+  "ui1140_05_gap2in_on_F.png",
+  "ui1140_06_smear_tail_split.png",
+  "ui1140_07_solo_E.png",
+  "ui1140_08_mute_A_C.png",
+  "ui1140_09_paint_while_solo.png",
+  "ui1140_10_after_hall.png"
+ ],
+ "posts_count": {
+  "source_preview": 1,
+  "polar": 2,
+  "images": 41,
+  "live_params": 1
+ }
+}

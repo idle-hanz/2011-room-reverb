@@ -1,0 +1,8 @@
+...xxxxx                                                                 [100%]
+=========================== short test summary info ============================
+XFAIL tests/test_binaural_play_and_gaps.py::test_gap_hrtf_tables_vendored_in_software - BINAURAL gap: HRTF tables/licences not vendored in software/ (depends on ../handoff_binaural)
+XFAIL tests/test_binaural_play_and_gaps.py::test_gap_floor_head_rotate_handle - BINAURAL gap: no head-yaw rotate handle on the Floor view (only a look arrow)
+XFAIL tests/test_binaural_play_and_gaps.py::test_gap_head_with_ears_drawing_and_3d - BINAURAL gap: no head-with-ears drawing (room_3d.js / mic_desk.js have no binaural branch)
+XFAIL tests/test_binaural_play_and_gaps.py::test_gap_hrtf_polar_and_ild_panel - BINAURAL gap: no HRTF polar / ILD panel
+XFAIL tests/test_binaural_play_and_gaps.py::test_gap_play_shows_unsupported_rate_notice - BINAURAL gap: Play does not display colour_notice (e.g. 96 kHz device: colour OFF silently)
+3 passed, 5 xfailed in 3.47s

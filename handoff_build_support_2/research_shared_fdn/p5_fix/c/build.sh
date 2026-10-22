@@ -1,0 +1,4 @@
+#!/bin/bash
+# usage: build.sh src.c out.wasm [extra -D flags]
+src=$1; out=$2; shift 2
+/workspace/scratch_er_dropout/venv/lib/python3.13/site-packages/ziglang/zig cc -target wasm32-freestanding -O3 -msimd128 -nostdlib -ffreestanding -Wl,--no-entry -Wl,--export-memory -Wl,--export=live_bind -Wl,--export=live_blob_ptr -Wl,--export=live_bytes -Wl,--export=live_force_delay -Wl,--export=live_ic_ptr -Wl,--export=live_in_l -Wl,--export=live_in_r -Wl,--export=live_ir_ptr -Wl,--export=live_len_ptr -Wl,--export=live_load_ic -Wl,--export=live_load_irs -Wl,--export=live_load_room -Wl,--export=live_load_route -Wl,--export=live_out_l -Wl,--export=live_out_r -Wl,--export=live_probe -Wl,--export=live_route_ptr -Wl,--export=live_soft -Wl,--export=live_stereo  -Wl,--max-memory=1073741824 "$@" -o "$out" "$src"

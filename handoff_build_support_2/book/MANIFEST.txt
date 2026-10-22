@@ -1,0 +1,25 @@
+# book/ manifest, generated 2026-10-05 07:37 BST; bytes  path
+3594  00_outline.md
+14063  01_purpose_and_history.md
+21839  02_signal_flow.md
+13984  03_play_vs_render.md
+12864  04_decisions_and_gates.md
+25193  05_fdn_and_early.md
+37217  06_surfaces_and_panels.md
+14596  07_mics_and_mixer.md
+13130  08_testing_and_goldens.md
+3447  09_nonrectangular_rooms.md
+4994  10_studio_one_shared_room.md
+3203  11_variants_and_export.md
+3399  12_handover_to_ben.md
+21263  99_glossary.md
+3191  HOW_TO_READ.md
+3764  README.md
+3021  STATUS.md
+160440  figures/D1_branch_tree.png
+193806  figures/D3_counts.png
+102214  figures/natural_decay_T30.png
+159035  figures/signal_order.png
+225530  figures/surfaces_in_loop_overview.png
+164238  figures/surfaces_in_loop_rooms.png
+780  MANIFEST.txt (this file)

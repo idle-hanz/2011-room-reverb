@@ -1,0 +1,58 @@
+{
+  "schema": "mic_fitter.preset.v3",
+  "mic_id": "RodeNT2ACardioid",
+  "display_name": "R\u00f8de NT2-A Cardioid",
+  "honesty": "MEASURED",
+  "family": "ldc_cardioid",
+  "source": "Franco et al. Zenodo 10.5281/zenodo.4633508 (Raw_IRs, 5m, 24-bit, selected angles)",
+  "model": "dual_shelf_plus_soft_one_pole",
+  "angle_law": "0.5*(1-cos(theta))^p",
+  "params": {
+    "f0": 312.04226563580175,
+    "depth_max_db": -18.07525078667601,
+    "shelf_slope": 1.4597338003514664,
+    "f_lo": 218.3223106603378,
+    "depth_lo_db": 0.12823876576253299,
+    "res_hz": 1500.0025442486706,
+    "lp_mix": 0.2769423278359476,
+    "fc_floor": 5257.740786945445,
+    "p": 0.6783597959965227
+  },
+  "metrics": {
+    "train_rmse_db": 3.5996881665161,
+    "holdout_rmse_db": 4.100012759505153,
+    "train_mse_db": 12.957754896156041,
+    "holdout_mse_db": 16.810104628105066,
+    "n_train_angles": 8,
+    "n_holdout_angles": 2,
+    "train_angles_deg": [
+      0.0,
+      15.0,
+      30.0,
+      60.0,
+      90.0,
+      120.0,
+      150.0,
+      180.0
+    ],
+    "holdout_angles_deg": [
+      45.0,
+      135.0
+    ],
+    "freq_range_hz": [
+      20.0,
+      16000.0
+    ]
+  },
+  "switches": {
+    "hpf_hz": 80.0,
+    "hpf_slope": 12,
+    "hpf_engaged": false,
+    "manufacturer_note": "NT2-A HPF switch flat/40/80 Hz; default doc 80"
+  },
+  "notes": "Structure LP / room engine path is SEPARATE \u2014 these presets are off-axis magnitude colour only. Fits are ASSUMED when honesty=ASSUMED. v3: freer shelf_slope (0.6\u201312.0); optional HPF switches are manufacturer defaults only \u2014 NOT fitted from Zenodo (apply_hpf when engaged).",
+  "fit": {
+    "success": true,
+    "message": "DE success=False nit=70 fun=13.130401; LS success=True cost=3359.664325"
+  }
+}
