@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>2011 Room Reverb</title>
   <link rel="icon" href="/static/favicon.svg" type="image/svg+xml" />
-  <link rel="stylesheet" href="/static/css/app.css?v=35" />
+  <link rel="stylesheet" href="/static/css/app.css?v=36" />
   <link rel="stylesheet" href="/static/css/sl_room_result.css?v=1" />
   <link rel="stylesheet" href="/static/css/rr_controls.css?v=1" />
 </head>
@@ -319,6 +319,59 @@
           </label>
           <p class="hint" id="physReadout" hidden></p>
           <p class="hint" id="mixHint">0 dB is the calibrated send. L and R choose the speakers; click again for Ø. Stereo mic gangs Left and Right. Natural sets Direct and FDN to 0 dB and gangs them. Solo leaves the faders put.</p>
+          <section class="panel bloom-panel" id="bloomPanel">
+            <div class="panel-head">
+              <h2>Bloom</h2>
+            </div>
+            <div class="bloom-grid">
+              <label class="check" id="bloomOnRow">
+                <input type="checkbox" id="bloom_on" />
+                <span>On</span>
+              </label>
+              <label class="ctrl ctrl-select">
+                <span>Preset</span>
+                <select id="bloom_menu" aria-label="Bloom preset">
+                  <option value="natural">Natural</option>
+                  <option value="glue">Glue</option>
+                  <option value="room_crush">Room Crush</option>
+                  <option value="nuke">Nuke</option>
+                  <option value="swell">Swell</option>
+                  <option value="neve1073">Neve</option>
+                  <option value="u610a">610-A</option>
+                </select>
+              </label>
+              <label class="ctrl" id="bloomAmountRow">
+                <span id="bloomAmountLabel">Amount</span>
+                <input type="range" id="bloom_amount" min="0" max="100" step="1" value="0" aria-label="Bloom amount" />
+                <output id="bloom_amount_out">0</output>
+              </label>
+            </div>
+            <div class="bloom-extra" id="bloomExtra">
+              <label class="check" id="bloomColourRow">
+                <input type="checkbox" id="bloom_colour" />
+                <span>Colour</span>
+              </label>
+              <label class="check" id="glueColourRow" hidden>
+                <input type="checkbox" id="glue_colour" />
+                <span>Glue colour</span>
+              </label>
+              <label class="ctrl" id="predelayRow">
+                <span>Predelay <em>ms</em></span>
+                <input type="range" id="predelay_ms" min="0" max="100" step="1" value="0" aria-label="Bloom predelay" />
+                <output id="predelay_ms_out">0</output>
+              </label>
+              <label class="ctrl" id="bloomAttackRow">
+                <span>Attack</span>
+                <input type="range" id="bloom_attack_scale" min="0.25" max="4" step="0.01" value="1" aria-label="Bloom attack scale" />
+                <output id="bloom_attack_scale_out">1.00</output>
+              </label>
+              <label class="ctrl" id="bloomReleaseRow">
+                <span>Release</span>
+                <input type="range" id="bloom_release_scale" min="0.25" max="4" step="0.01" value="1" aria-label="Bloom release scale" />
+                <output id="bloom_release_scale_out">1.00</output>
+              </label>
+            </div>
+          </section>
         </div>
 
         <div id="imageViews" class="panel image-panel" hidden>
@@ -973,7 +1026,8 @@
   <script src="/static/js/ms_presets.js?v=2"></script>
   <script src="/static/js/drag_model.js?v=2"></script>
   <script src="/static/js/room_window_math.js?v=1"></script>
-  <script src="/static/js/app.js?v=64"></script>
+  <script src="/static/js/bloom_scene.js?v=1"></script>
+  <script src="/static/js/app.js?v=65"></script>
   <script>window.RR_SL_STAGE = 3;</script>
   <script src="/static/js/sl_room_result.js?v=3"></script>
   <script src="/static/js/rr_controls.js?v=1"></script>

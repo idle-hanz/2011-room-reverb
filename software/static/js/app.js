@@ -127,6 +127,10 @@
     early_wet: 1.0, fdn_wet: 1, direct_wet: 1, dry_gain: 0, fdn_g: 1, ir_length_ms: 1500,
     decay_s: 1.8, decay_lock: true, smooth: true, movement: 0, phys_ceiling: true,
     sub_hp: true,
+    /* Bloom stays off until the Mix tick. UI names are not engine keys. */
+    bloom_on: false, bloom_menu: "natural",
+    bloom_amount_ui: 0, bloom_colour_ui: false, glue_colour_ui: false,
+    pre_drive_ui: 0, predelay_ui: 0, bloom_attack_ui: 1, bloom_release_ui: 1,
     solo_direct: false, solo_fdn: false, solo_early: false, solo_dry: false,
     solo_l: false, solo_c: false, solo_r: false,
     stereo_mic: false, natural_bus: false,
@@ -638,6 +642,18 @@
       o.dry_gain = 0;
       o.early_wet = ewEnable * (earlyFader > 0 ? earlyFader : 1);
     }
+    /* Off omits every Bloom key. On posts only the keys the engine already reads. */
+    var bloomUi = [
+      "bloom_on", "bloom_menu", "bloom_amount_ui", "bloom_colour_ui",
+      "glue_colour_ui", "pre_drive_ui", "predelay_ui",
+      "bloom_attack_ui", "bloom_release_ui",
+      "bloom_preset", "bloom_amount", "bloom_colour", "glue_colour",
+      "pre_colour", "pre_drive_db", "predelay_ms",
+      "bloom_attack_scale", "bloom_release_scale"
+    ];
+    var bi;
+    for (bi = 0; bi < bloomUi.length; bi++) delete o[bloomUi[bi]];
+    if (src.bloom_on && window.RRBloom && RRBloom.scene) Object.assign(o, RRBloom.scene(src));
     return o;
   }
 
@@ -2961,6 +2977,7 @@
     paintDesk();
     paintRoomReads(geo);
     paintDecayHint();
+    paintBloom();
     syncBinauralChrome();
     syncPatternChrome();
     syncMicEach();
@@ -3319,6 +3336,96 @@
       syncUI();
     });
   }
+  function paintBloom() {
+    var menu = document.getElementById("bloom_menu");
+    var choice = state.bloom_menu || "natural";
+    var pre = choice === "neve1073" || choice === "u610a";
+    var glue = choice === "glue";
+    var onBox = document.getElementById("bloom_on");
+    if (onBox) onBox.checked = !!state.bloom_on;
+    if (menu && document.activeElement !== menu) menu.value = choice;
+    var amt = document.getElementById("bloom_amount");
+    var amtOut = document.getElementById("bloom_amount_out");
+    if (amt) {
+      if (pre) {
+        amt.min = "0";
+        amt.max = "12";
+        amt.step = "0.5";
+        if (document.activeElement !== amt) amt.value = String(state.pre_drive_ui || 0);
+        if (amtOut) amtOut.textContent = Number(amt.value).toFixed(1) + " dB";
+      } else {
+        amt.min = "0";
+        amt.max = "100";
+        amt.step = "1";
+        if (document.activeElement !== amt) amt.value = String(state.bloom_amount_ui || 0);
+        if (amtOut) amtOut.textContent = String(Math.round(Number(amt.value)));
+      }
+    }
+    function show(id, yes) {
+      var el = document.getElementById(id);
+      if (el) el.hidden = !yes;
+    }
+    show("bloomColourRow", !pre && !glue);
+    show("glueColourRow", glue);
+    show("bloomAttackRow", !pre);
+    show("bloomReleaseRow", !pre);
+    var col = document.getElementById("bloom_colour");
+    if (col) col.checked = !!state.bloom_colour_ui;
+    var gcol = document.getElementById("glue_colour");
+    if (gcol) gcol.checked = !!state.glue_colour_ui;
+    function paintRange(id, key, digits) {
+      var el = document.getElementById(id);
+      var out = document.getElementById(id + "_out");
+      if (!el) return;
+      if (document.activeElement !== el) el.value = state[key];
+      if (out) out.textContent = Number(el.value).toFixed(digits);
+    }
+    paintRange("predelay_ms", "predelay_ui", 0);
+    paintRange("bloom_attack_scale", "bloom_attack_ui", 2);
+    paintRange("bloom_release_scale", "bloom_release_ui", 2);
+  }
+
+  function bindBloom() {
+    var onBox = document.getElementById("bloom_on");
+    if (onBox) onBox.addEventListener("change", function (e) {
+      state.bloom_on = !!e.target.checked;
+      syncUI();
+    });
+    var menu = document.getElementById("bloom_menu");
+    if (menu) menu.addEventListener("change", function (e) {
+      state.bloom_menu = e.target.value;
+      syncUI();
+    });
+    var amt = document.getElementById("bloom_amount");
+    if (amt) amt.addEventListener("input", function (e) {
+      var pre = state.bloom_menu === "neve1073" || state.bloom_menu === "u610a";
+      if (pre) state.pre_drive_ui = Number(e.target.value);
+      else state.bloom_amount_ui = Number(e.target.value);
+      syncUI();
+    });
+    function bindNum(id, key) {
+      var el = document.getElementById(id);
+      if (!el) return;
+      el.addEventListener("input", function (e) {
+        state[key] = Number(e.target.value);
+        syncUI();
+      });
+    }
+    bindNum("predelay_ms", "predelay_ui");
+    bindNum("bloom_attack_scale", "bloom_attack_ui");
+    bindNum("bloom_release_scale", "bloom_release_ui");
+    var col = document.getElementById("bloom_colour");
+    if (col) col.addEventListener("change", function (e) {
+      state.bloom_colour_ui = !!e.target.checked;
+      syncUI();
+    });
+    var gcol = document.getElementById("glue_colour");
+    if (gcol) gcol.addEventListener("change", function (e) {
+      state.glue_colour_ui = !!e.target.checked;
+      syncUI();
+    });
+  }
+
   function bindCheck(id, key) {
     var el = document.getElementById(id);
     if (!el) return;
@@ -3986,6 +4093,7 @@
   }
 
   bindDesk();
+  bindBloom();
   applyMicPreset(state.mic_setup || "ortf", false);
   migrateRoomState(state);
   snapshotBoot();

@@ -387,6 +387,16 @@ select.cap-pattern:focus {
 }
 .check input { margin-top: 2px; accent-color: var(--accent); }
 
+/* Mix-page Bloom. Desktop row. No phone layout. */
+.bloom-panel { margin-top: 12px; }
+.bloom-grid, .bloom-extra {
+  display: flex; flex-wrap: wrap; gap: 8px 16px; align-items: flex-end;
+}
+.bloom-extra { margin-top: 8px; }
+.bloom-panel .check { align-items: center; padding-bottom: 8px; }
+.bloom-panel .ctrl-select { flex: 1 1 180px; max-width: 280px; }
+.bloom-panel .ctrl { flex: 1 1 180px; max-width: 280px; margin-bottom: 0; }
+
 .advanced { cursor: default; }
 .advanced summary {
   cursor: pointer; color: var(--muted); font-size: 0.74rem; font-weight: 650;

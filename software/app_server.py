@@ -1068,6 +1068,30 @@ def api_source_preview(body: dict):
         return JSONResponse({"ok": False, "error": f"source_preview: {e}"}, status_code=500)
 
 
+_BLOOM_RENDER_KEYS = (
+    "bloom_amount", "bloom_preset", "bloom_colour", "glue_colour",
+    "pre_colour", "pre_drive_db", "predelay_ms",
+    "bloom_attack_scale", "bloom_release_scale",
+)
+
+
+def _bloom_render_kw(p: dict) -> dict:
+    """Forward Bloom only when the body carried a Bloom key. Absent stays the render default."""
+    if not any(k in p for k in _BLOOM_RENDER_KEYS):
+        return {}
+    return {
+        "bloom_preset": str(p.get("bloom_preset") or "natural"),
+        "bloom_amount": float(p.get("bloom_amount") or 0.0),
+        "bloom_attack_scale": float(p.get("bloom_attack_scale") if p.get("bloom_attack_scale") is not None else 1.0),
+        "bloom_release_scale": float(p.get("bloom_release_scale") if p.get("bloom_release_scale") is not None else 1.0),
+        "predelay_ms": float(p.get("predelay_ms") or 0.0),
+        "bloom_colour": bool(p.get("bloom_colour")),
+        "glue_colour": bool(p.get("glue_colour")),
+        "pre_colour": str(p.get("pre_colour") or "off"),
+        "pre_drive_db": float(p.get("pre_drive_db") or 0.0),
+    }
+
+
 def _render_impl(
     file: UploadFile,
     params_json: str,
@@ -1190,6 +1214,7 @@ def _render_impl(
             prox_l=bool(p.get("prox_l", True)),
             prox_c=bool(p.get("prox_c", True)),
             prox_r=bool(p.get("prox_r", True)),
+            **_bloom_render_kw(p),
         )
         out = default_out_path()
         meta = write_wav_stereo(str(out), Lch, Rch, sr)

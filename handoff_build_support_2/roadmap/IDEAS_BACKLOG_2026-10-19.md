@@ -194,3 +194,7 @@ The page has no Bloom panel, so browser Play stays bloom-off until something pos
 610-A at 0 dBFS has a known 9 kHz spike (untrimmed H1 into the flux cubic). It stays 8x. Do not fix it in a Bloom run.
 
 2026-10-22 process review, not investigated: full pytest deletes the pinned 86 MB render stamp `software\renders\out_20261013_115900.wav`; backups should leave `software\renders\*.wav` out.
+
+2026-10-22: Mix page Bloom panel landed, default off. `HANDOVER.md` still says there is no Bloom panel and still says `app.js?v=64`.
+2026-10-22: Bloom pre-drive slider stops at 12 dB. The engine reads `pre_drive_db` with no clamp.
+2026-10-22: `listen_report.json` records Room Crush amount 100 and glue_colour false. It does not record bloom_colour, so the panel posts the engine default false.
