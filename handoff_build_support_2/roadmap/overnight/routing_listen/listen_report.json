@@ -1,0 +1,12 @@
+{
+  "wav": "array_neve_glue_room_610_crush.wav",
+  "seconds": 5.79,
+  "peak": 0.9999999999999987,
+  "guitar_seconds": 3,
+  "array": "Neve 6 dB then Glue 100",
+  "room": "610-A 6 dB then Room Crush 100",
+  "master": "off",
+  "room_mic": "centre, place_c room, spot 3.0 / 1.8 / 6.5, yaw 180",
+  "spike_9k_db_above_7_11k_median": 15.64,
+  "mode": "still"
+}

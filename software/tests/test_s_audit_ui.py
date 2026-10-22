@@ -501,6 +501,17 @@ _UI_ONLY_IDS = {
     # UI-TIDY-1. Save downloads JSON. The Room mic link only calls setView("mic").
     "saveSetupBtn",
     "roomMicSetupLink",
+    # ROUTING R1. Array and room inserts are Render only. Play does not post them.
+    # Master comp at amount 0 stays off, so the menu alone does not post.
+    "route_array_pre",
+    "route_array_drive",
+    "route_array_comp",
+    "route_array_amount",
+    "route_room_pre",
+    "route_room_drive",
+    "route_room_comp",
+    "route_room_amount",
+    "route_master_comp",
 }
 
 

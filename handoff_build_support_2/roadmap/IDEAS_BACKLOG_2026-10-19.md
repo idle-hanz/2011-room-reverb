@@ -198,3 +198,10 @@ The page has no Bloom panel, so browser Play stays bloom-off until something pos
 2026-10-22: Mix page Bloom panel landed, default off. `HANDOVER.md` still says there is no Bloom panel and still says `app.js?v=64`.
 2026-10-22: Bloom pre-drive slider stops at 12 dB. The engine reads `pre_drive_db` with no clamp.
 2026-10-22: `listen_report.json` records Room Crush amount 100 and glue_colour false. It does not record bloom_colour, so the panel posts the engine default false.
+
+- 2026-10-22 ROUTING (Idle): Neve/610-A preamps go on the mics (or at least before the compressors); the room mic can take a different compressor from the mic array; studio-style routing with per-bus inserts (array bus, room-mic bus, master) and the preamp before the comp on each. This is an audio-law change, so it gets its own run.
+- 2026-10-22 ROUTING DECISION (Idle): full routing with all three buses (array, room mic, master), each with preamp then comp. R1 is Render only plus the panel; R2 is Play, lean within 2.40 ms. The default scene stays bit-exact.
+- 2026-10-22: the Routing panel does not post predelay, attack, release, bloom colour, or glue colour. A saved scene keeps the master preset and amount only.
+- 2026-10-22: routing inserts run only on the 32-line driven FDN path.
+- 2026-10-22: a strip with both a preamp and a compressor is two bloom_dsp calls, preamp then compressor. Bloom's own call runs the compressor then the preamp. The old panel never posted both.
+- 2026-10-22: the routing listen (room bus 610-A at 6 dB) shows the known 9 kHz spike, 15.6 dB above the 7–11 kHz median. Not fixed. Needs Idle's OK.

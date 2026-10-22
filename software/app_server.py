@@ -721,6 +721,20 @@ def params_from_body(body: dict) -> dict:
         out["predelay_ms"] = _f(body.get("predelay_ms"), 0.0)
         out["bloom_attack_scale"] = _f(body.get("bloom_attack_scale"), 1.0)
         out["bloom_release_scale"] = _f(body.get("bloom_release_scale"), 1.0)
+    for _ch in ("l", "c", "r"):
+        _pk = "place_" + _ch
+        if _pk in body and body.get(_pk) not in (None, ""):
+            out[_pk] = "room" if str(body.get(_pk)).strip().lower() == "room" else "array"
+    _route_keys = (
+        "array_amount", "array_preset", "array_pre", "array_drive_db",
+        "room_amount", "room_preset", "room_pre", "room_drive_db",
+    )
+    if any(k in body for k in _route_keys):
+        for _prefix in ("array", "room"):
+            out[_prefix + "_preset"] = str(body.get(_prefix + "_preset") or "natural")
+            out[_prefix + "_amount"] = _f(body.get(_prefix + "_amount"), 0.0)
+            out[_prefix + "_pre"] = str(body.get(_prefix + "_pre") or "off")
+            out[_prefix + "_drive_db"] = _f(body.get(_prefix + "_drive_db"), 0.0)
     return out
 
 
@@ -1075,6 +1089,31 @@ _BLOOM_RENDER_KEYS = (
 )
 
 
+_ROUTE_RENDER_KEYS = (
+    "array_amount", "array_preset", "array_pre", "array_drive_db",
+    "room_amount", "room_preset", "room_pre", "room_drive_db",
+)
+
+
+def _routing_render_kw(p: dict) -> dict:
+    """Array and room inserts. Absent stays off. Master stays the Bloom keys."""
+    if not any(k in p for k in _ROUTE_RENDER_KEYS):
+        return {}
+
+    def side(prefix: str) -> dict:
+        return {
+            prefix + "_preset": str(p.get(prefix + "_preset") or "natural"),
+            prefix + "_amount": float(p.get(prefix + "_amount") or 0.0),
+            prefix + "_pre": str(p.get(prefix + "_pre") or "off"),
+            prefix + "_drive_db": float(p.get(prefix + "_drive_db") or 0.0),
+        }
+
+    out = {}
+    out.update(side("array"))
+    out.update(side("room"))
+    return out
+
+
 def _bloom_render_kw(p: dict) -> dict:
     """Forward Bloom only when the body carried a Bloom key. Absent stays the render default."""
     if not any(k in p for k in _BLOOM_RENDER_KEYS):
@@ -1215,6 +1254,7 @@ def _render_impl(
             prox_c=bool(p.get("prox_c", True)),
             prox_r=bool(p.get("prox_r", True)),
             **_bloom_render_kw(p),
+            **_routing_render_kw(p),
         )
         out = default_out_path()
         meta = write_wav_stereo(str(out), Lch, Rch, sr)

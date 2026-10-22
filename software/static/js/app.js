@@ -127,10 +127,10 @@
     early_wet: 1.0, fdn_wet: 1, direct_wet: 1, dry_gain: 0, fdn_g: 1, ir_length_ms: 1500,
     decay_s: 1.8, decay_lock: true, smooth: true, movement: 0, phys_ceiling: true,
     sub_hp: true,
-    /* Bloom stays off until the Mix tick. UI names are not engine keys. */
-    bloom_on: false, bloom_menu: "natural",
-    bloom_amount_ui: 0, bloom_colour_ui: false, glue_colour_ui: false,
-    pre_drive_ui: 0, predelay_ui: 0, bloom_attack_ui: 1, bloom_release_ui: 1,
+    /* Routing. UI names are not engine keys. Off posts nothing. */
+    route_array_pre: "none", route_array_drive: 0, route_array_comp: "off", route_array_amount: 0,
+    route_room_pre: "none", route_room_drive: 0, route_room_comp: "off", route_room_amount: 0,
+    route_master_pre: "none", route_master_drive: 0, route_master_comp: "off", route_master_amount: 0,
     solo_direct: false, solo_fdn: false, solo_early: false, solo_dry: false,
     solo_l: false, solo_c: false, solo_r: false,
     stereo_mic: false, natural_bus: false,
@@ -560,6 +560,7 @@
   }
 
   function migrateRoomState(s) {
+    if (window.RRRouting && RRRouting.migrate) RRRouting.migrate(s);
     if (!window.RRDrag || !RRDrag.migrateRoomSpots) return s;
     Object.assign(s, RRDrag.migrateRoomSpots(s));
     return s;
@@ -642,18 +643,23 @@
       o.dry_gain = 0;
       o.early_wet = ewEnable * (earlyFader > 0 ? earlyFader : 1);
     }
-    /* Off omits every Bloom key. On posts only the keys the engine already reads. */
-    var bloomUi = [
+    /* Play posts the master strip only, on the Bloom keys. Array and room stay out. */
+    var routeUi = [
       "bloom_on", "bloom_menu", "bloom_amount_ui", "bloom_colour_ui",
       "glue_colour_ui", "pre_drive_ui", "predelay_ui",
       "bloom_attack_ui", "bloom_release_ui",
       "bloom_preset", "bloom_amount", "bloom_colour", "glue_colour",
       "pre_colour", "pre_drive_db", "predelay_ms",
-      "bloom_attack_scale", "bloom_release_scale"
+      "bloom_attack_scale", "bloom_release_scale",
+      "route_array_pre", "route_array_drive", "route_array_comp", "route_array_amount",
+      "route_room_pre", "route_room_drive", "route_room_comp", "route_room_amount",
+      "route_master_pre", "route_master_drive", "route_master_comp", "route_master_amount",
+      "array_preset", "array_amount", "array_pre", "array_drive_db",
+      "room_preset", "room_amount", "room_pre", "room_drive_db"
     ];
     var bi;
-    for (bi = 0; bi < bloomUi.length; bi++) delete o[bloomUi[bi]];
-    if (src.bloom_on && window.RRBloom && RRBloom.scene) Object.assign(o, RRBloom.scene(src));
+    for (bi = 0; bi < routeUi.length; bi++) delete o[routeUi[bi]];
+    if (window.RRRouting && RRRouting.masterScene) Object.assign(o, RRRouting.masterScene(src));
     return o;
   }
 
@@ -2977,7 +2983,7 @@
     paintDesk();
     paintRoomReads(geo);
     paintDecayHint();
-    paintBloom();
+    paintRouting();
     syncBinauralChrome();
     syncPatternChrome();
     syncMicEach();
@@ -3336,94 +3342,45 @@
       syncUI();
     });
   }
-  function paintBloom() {
-    var menu = document.getElementById("bloom_menu");
-    var choice = state.bloom_menu || "natural";
-    var pre = choice === "neve1073" || choice === "u610a";
-    var glue = choice === "glue";
-    var onBox = document.getElementById("bloom_on");
-    if (onBox) onBox.checked = !!state.bloom_on;
-    if (menu && document.activeElement !== menu) menu.value = choice;
-    var amt = document.getElementById("bloom_amount");
-    var amtOut = document.getElementById("bloom_amount_out");
-    if (amt) {
-      if (pre) {
-        amt.min = "0";
-        amt.max = "12";
-        amt.step = "0.5";
-        if (document.activeElement !== amt) amt.value = String(state.pre_drive_ui || 0);
-        if (amtOut) amtOut.textContent = Number(amt.value).toFixed(1) + " dB";
-      } else {
-        amt.min = "0";
-        amt.max = "100";
-        amt.step = "1";
-        if (document.activeElement !== amt) amt.value = String(state.bloom_amount_ui || 0);
+  function paintRouting() {
+    ["array", "room", "master"].forEach(function (name) {
+      var pre = document.getElementById("route_" + name + "_pre");
+      var drive = document.getElementById("route_" + name + "_drive");
+      var driveOut = document.getElementById("route_" + name + "_drive_out");
+      var comp = document.getElementById("route_" + name + "_comp");
+      var amt = document.getElementById("route_" + name + "_amount");
+      var amtOut = document.getElementById("route_" + name + "_amount_out");
+      var preVal = state["route_" + name + "_pre"] || "none";
+      var compVal = state["route_" + name + "_comp"] || "off";
+      if (pre && document.activeElement !== pre) pre.value = preVal;
+      if (comp && document.activeElement !== comp) comp.value = compVal;
+      if (drive) {
+        if (document.activeElement !== drive) drive.value = String(state["route_" + name + "_drive"] || 0);
+        drive.disabled = preVal === "none";
+        if (driveOut) driveOut.textContent = Number(drive.value).toFixed(1);
+      }
+      if (amt) {
+        if (document.activeElement !== amt) amt.value = String(state["route_" + name + "_amount"] || 0);
+        amt.disabled = compVal === "off";
         if (amtOut) amtOut.textContent = String(Math.round(Number(amt.value)));
       }
-    }
-    function show(id, yes) {
-      var el = document.getElementById(id);
-      if (el) el.hidden = !yes;
-    }
-    show("bloomColourRow", !pre && !glue);
-    show("glueColourRow", glue);
-    show("bloomAttackRow", !pre);
-    show("bloomReleaseRow", !pre);
-    var col = document.getElementById("bloom_colour");
-    if (col) col.checked = !!state.bloom_colour_ui;
-    var gcol = document.getElementById("glue_colour");
-    if (gcol) gcol.checked = !!state.glue_colour_ui;
-    function paintRange(id, key, digits) {
-      var el = document.getElementById(id);
-      var out = document.getElementById(id + "_out");
-      if (!el) return;
-      if (document.activeElement !== el) el.value = state[key];
-      if (out) out.textContent = Number(el.value).toFixed(digits);
-    }
-    paintRange("predelay_ms", "predelay_ui", 0);
-    paintRange("bloom_attack_scale", "bloom_attack_ui", 2);
-    paintRange("bloom_release_scale", "bloom_release_ui", 2);
+    });
   }
 
-  function bindBloom() {
-    var onBox = document.getElementById("bloom_on");
-    if (onBox) onBox.addEventListener("change", function (e) {
-      state.bloom_on = !!e.target.checked;
+  function bindRouting() {
+    var panel = document.getElementById("routingPanel");
+    if (!panel || panel._routeBound) return;
+    panel._routeBound = true;
+    function onRoute(e) {
+      var id = e.target && e.target.id;
+      if (!id || id.indexOf("route_") !== 0) return;
+      var v = e.target.value;
+      if (id.indexOf("_drive") > 0 || id.indexOf("_amount") > 0) state[id] = Number(v);
+      else state[id] = v;
       syncUI();
-    });
-    var menu = document.getElementById("bloom_menu");
-    if (menu) menu.addEventListener("change", function (e) {
-      state.bloom_menu = e.target.value;
-      syncUI();
-    });
-    var amt = document.getElementById("bloom_amount");
-    if (amt) amt.addEventListener("input", function (e) {
-      var pre = state.bloom_menu === "neve1073" || state.bloom_menu === "u610a";
-      if (pre) state.pre_drive_ui = Number(e.target.value);
-      else state.bloom_amount_ui = Number(e.target.value);
-      syncUI();
-    });
-    function bindNum(id, key) {
-      var el = document.getElementById(id);
-      if (!el) return;
-      el.addEventListener("input", function (e) {
-        state[key] = Number(e.target.value);
-        syncUI();
-      });
     }
-    bindNum("predelay_ms", "predelay_ui");
-    bindNum("bloom_attack_scale", "bloom_attack_ui");
-    bindNum("bloom_release_scale", "bloom_release_ui");
-    var col = document.getElementById("bloom_colour");
-    if (col) col.addEventListener("change", function (e) {
-      state.bloom_colour_ui = !!e.target.checked;
-      syncUI();
-    });
-    var gcol = document.getElementById("glue_colour");
-    if (gcol) gcol.addEventListener("change", function (e) {
-      state.glue_colour_ui = !!e.target.checked;
-      syncUI();
-    });
+    panel.addEventListener("change", onRoute);
+    panel.addEventListener("input", onRoute);
   }
 
   function bindCheck(id, key) {
@@ -3735,7 +3692,9 @@
     if (statusEl) statusEl.textContent = "Rendering… FDN " + (fdnMs / 1000).toFixed(2) + " s";
     var fd = new FormData();
     fd.append("file", wavFile, wavFile.name);
-    fd.append("params_json", JSON.stringify(heardMix(state)));
+    var mix = heardMix(state);
+    if (window.RRRouting && RRRouting.renderScene) Object.assign(mix, RRRouting.renderScene(state));
+    fd.append("params_json", JSON.stringify(mix));
     try {
       var res = await fetch("/api/render", { method: "POST", body: fd });
       noteHttp(res);
@@ -4093,7 +4052,7 @@
   }
 
   bindDesk();
-  bindBloom();
+  bindRouting();
   applyMicPreset(state.mic_setup || "ortf", false);
   migrateRoomState(state);
   snapshotBoot();

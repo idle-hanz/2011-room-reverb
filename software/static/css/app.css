@@ -387,15 +387,16 @@ select.cap-pattern:focus {
 }
 .check input { margin-top: 2px; accent-color: var(--accent); }
 
-/* Mix-page Bloom. Desktop row. No phone layout. */
-.bloom-panel { margin-top: 12px; }
-.bloom-grid, .bloom-extra {
-  display: flex; flex-wrap: wrap; gap: 8px 16px; align-items: flex-end;
+/* Mix-page routing. Desktop row. No phone layout. */
+.routing-panel { margin-top: 12px; }
+.routing-strips { display: flex; flex-wrap: wrap; gap: 12px 18px; align-items: flex-start; }
+.routing-strip { flex: 1 1 200px; max-width: 280px; }
+.routing-strip h3 {
+  margin: 0 0 6px; font-size: 0.72rem; font-weight: 650; letter-spacing: 0.06em;
+  text-transform: uppercase; color: var(--muted);
 }
-.bloom-extra { margin-top: 8px; }
-.bloom-panel .check { align-items: center; padding-bottom: 8px; }
-.bloom-panel .ctrl-select { flex: 1 1 180px; max-width: 280px; }
-.bloom-panel .ctrl { flex: 1 1 180px; max-width: 280px; margin-bottom: 0; }
+.routing-strip .ctrl { margin-bottom: 6px; }
+.routing-note { margin: 4px 0 0; font-size: 0.72rem; color: var(--muted); }
 
 .advanced { cursor: default; }
 .advanced summary {

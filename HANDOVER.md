@@ -11,15 +11,17 @@ If the user says **read handover** / **continue**, this file is the entire start
 
 ---
 
-## Current pin (2026-10-22) — BLOOM. This block wins
+## Current pin (2026-10-22) — ROUTING R1. This block wins
 
-Bloom is on the raw FDN bus sum, before room makeup and before the fold. Direct and early stay unbloomed. Colour runs before makeup. `ls_ln` masks the exponent with 2047. Play is a rough preview and must fit 2.40 ms. Render has no CPU ceiling. 610-A stays 8x on both engines. There is no Bloom panel on the page.
+Render routes three buses (array, room mic, master). Each insert is the existing Bloom preamp, then the existing Bloom compressor. Direct and early stay outside the inserts. Play posts only the master strip, on the Bloom keys it already reads. Array and room inserts are Render only. The Mix page Routing panel replaces the Bloom panel. All three buses default off. Wasm, `live_stereo.c`, and `bloom_live.inc` are unchanged. 610-A stays 8x. Do not chase its 9 kHz spike.
+
+Bloom is on the raw FDN bus sum, before room makeup and before the fold. Direct and early stay unbloomed. Colour runs before makeup. `ls_ln` masks the exponent with 2047. Play is a rough preview and must fit 2.40 ms. Render has no CPU ceiling.
 
 Play / Render oversampling: Natural 2 / 2, Glue ADAA 1 / ADAA 1, Room Crush 1 / 2, Nuke ADAA 1 / ADAA 1, Swell 2 / 2, Neve 1 / 8, 610-A 8 / 8.
 
 Decay-8 cube, two sources, amount 100, colour on, Neve drive 24 dB, predelay 100 ms. Natural median 2.226 ms, p90 2.255 ms, silence-late 2.222 ms. Room Crush median 2.163 ms, p90 2.184 ms, silence-late 2.359 ms. Spikes 0.
 
-`WORKLET_VER` 60. `live_fdn.js?v=60`. `app.js?v=64`. `pack_room.js?v=53`. Wasm sha1 `e0692ef3ac8dcf0193dd463ea0695e67cfa3df46` (370549 bytes). Off path held: empty MD5 `b6c55d429fa63d6d0d3cd1fcc7d23e88`, centre `b3e6bcd9dfa13ad737d2b15d561f7d30`, GOLDEN_META `a362cf5e490089807b39346ba207633b88511548`. Listens in `roadmap/overnight/bloom_listen/`.
+`WORKLET_VER` 60. `live_fdn.js?v=60`. `app.js?v=66`. `app.css?v=37`. `routing_scene.js?v=1`. `pack_room.js?v=53`. Wasm sha1 `e0692ef3ac8dcf0193dd463ea0695e67cfa3df46` (370549 bytes). Off path held: empty MD5 `b6c55d429fa63d6d0d3cd1fcc7d23e88`, centre `b3e6bcd9dfa13ad737d2b15d561f7d30`, GOLDEN_META `a362cf5e490089807b39346ba207633b88511548`. Routing listen in `roadmap/overnight/routing_listen/`. Bloom listens stay in `roadmap/overnight/bloom_listen/`.
 
 ## Previous pin (2026-10-22) — UI-TIDY-1. The BLOOM pin wins
 
