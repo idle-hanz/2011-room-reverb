@@ -643,7 +643,7 @@
       o.dry_gain = 0;
       o.early_wet = ewEnable * (earlyFader > 0 ? earlyFader : 1);
     }
-    /* Play posts the master strip only, on the Bloom keys. Array and room stay out. */
+    /* Play posts the master strip, and an array or room strip only while it is on. */
     var routeUi = [
       "bloom_on", "bloom_menu", "bloom_amount_ui", "bloom_colour_ui",
       "glue_colour_ui", "pre_drive_ui", "predelay_ui",
@@ -660,6 +660,7 @@
     var bi;
     for (bi = 0; bi < routeUi.length; bi++) delete o[routeUi[bi]];
     if (window.RRRouting && RRRouting.masterScene) Object.assign(o, RRRouting.masterScene(src));
+    if (window.RRRouting && RRRouting.renderScene) Object.assign(o, RRRouting.renderScene(src));
     return o;
   }
 

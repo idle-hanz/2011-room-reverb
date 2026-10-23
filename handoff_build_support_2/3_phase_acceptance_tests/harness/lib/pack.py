@@ -142,6 +142,9 @@ def pack_room(d):
     pre_c = d.get('pre_colour')
     if isinstance(pre_c, (list, tuple)) and len(pre_c) >= 16:
         parts.append((12, [num(v, 0) for v in list(pre_c)[:32]]))
+    side = d.get('side')
+    if isinstance(side, (list, tuple)) and len(side) >= 217:
+        parts.append((13, [num(v, 0) for v in list(side)[:217]]))
     nsec = len(parts)
     off = 5 + 4 * nsec
     directory = []

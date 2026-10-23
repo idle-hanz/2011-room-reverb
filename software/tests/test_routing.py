@@ -106,6 +106,17 @@ def test_off_body_keeps_the_empty_md5_and_routes_nothing():
 
 
 def test_array_keys_stay_out_of_the_live_dict():
+    off = {
+        "array_preset": "glue",
+        "array_amount": 0,
+        "array_pre": "off",
+        "place_c": "room",
+    }
+    off_blob = A.live_fdn_params(A.params_from_body(off))
+    assert "side" not in off_blob
+    assert "array_preset" not in off_blob
+    assert "place_c" not in off_blob
+    assert _md5(off) == EMPTY
     body = {
         "array_preset": "glue",
         "array_amount": 100,
@@ -115,11 +126,16 @@ def test_array_keys_stay_out_of_the_live_dict():
         "place_c": "array",
         "place_r": "array",
     }
-    assert _md5(body) == EMPTY
     p = A.params_from_body(body)
     blob = A.live_fdn_params(p)
     assert "array_preset" not in blob
     assert "room_preset" not in blob
+    assert "place_c" not in blob
+    side = blob["side"]
+    assert len(side) == 217
+    assert side[85] == 2.0
+    assert side[86] == 1.0
+    assert _md5(body) != EMPTY
     kw = A._routing_render_kw(p)
     assert kw["array_preset"] == "glue"
     assert kw["array_pre"] == "neve1073"

@@ -63,6 +63,7 @@ function msgFrom(p, over) {
   if (p.bloom && p.bloom.length >= 26) m.bloom = p.bloom;
   if (p.predelay_n > 0) m.predelay_n = p.predelay_n;
   if (p.pre_colour && p.pre_colour.length >= 16) m.pre_colour = p.pre_colour;
+  if (p.side && p.side.length >= 217) m.side = p.side;
   return Object.assign(m, over);
 }
 (async () => {

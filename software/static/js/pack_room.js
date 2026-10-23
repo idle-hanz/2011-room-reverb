@@ -170,6 +170,11 @@ function packRoom(data) {
     for (pi = 0; pi < pn; pi++) pc.push(num(data.pre_colour[pi], 0));
     parts.push([12, pc]);
   }
+  if (data && data.side && data.side.length >= 217) {
+    var sd = [], si;
+    for (si = 0; si < 217; si++) sd.push(num(data.side[si], 0));
+    parts.push([13, sd]);
+  }
   var nsec = parts.length;
   var off = 5 + 4 * nsec;
   var dir = [];

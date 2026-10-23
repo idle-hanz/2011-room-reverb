@@ -53,7 +53,7 @@ def test_b2_formula_fade_and_label():
     assert 'id="ir_length_ms" min="50" max="2000" step="10" value="1500"' in html
     app = (SW / "static" / "js" / "app.js").read_text(encoding="utf-8")
     assert "Rendering… FDN " in app
-    assert 'app.js?v=68' in html
+    assert 'app.js?v=69' in html
 
 
 def _t30(x: np.ndarray) -> float:

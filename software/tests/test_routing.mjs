@@ -181,3 +181,24 @@ test("master room crush reaches the worklet as section 10", () => {
   assert.equal(section(packRoom(off), 10), null);
   assert.equal(section(packRoom(off), 12), null);
 });
+
+test("an on array strip reaches the worklet as section 13", () => {
+  const packRoom = loadPackRoom();
+  const side = Array(217).fill(0);
+  side[3] = 1;
+  side[85] = 2;
+  side[86] = 1;
+  const on = pushMessage({ ok: true, g: 0.5, side: side });
+  const packed = section(packRoom(on), 13);
+  assert.ok(packed);
+  assert.equal(packed.length, 217);
+  assert.equal(packed[85], 2);
+  assert.equal(packed[86], 1);
+  const off = pushMessage({ ok: true, g: 0.5 });
+  assert.equal(section(packRoom(off), 13), null);
+  const app = fs.readFileSync(path.join(HERE, "../static/js/app.js"), "utf8");
+  const start = app.indexOf("function heardMix");
+  const end = app.indexOf("function liveRequestBody", start);
+  const body = app.slice(start, end);
+  assert.match(body, /RRRouting\.renderScene/);
+});

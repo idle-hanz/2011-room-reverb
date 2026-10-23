@@ -3375,6 +3375,50 @@ def live_fdn_params(
             pre = _bloom.pack_pre(spec, play=True)
             if pre:
                 out["pre_colour"] = pre
+    # Section 13. One field, only while an array or room strip is on.
+    # Place lives inside that field. An off strip adds nothing.
+
+    def _side_row(prefix):
+        body = {
+            "bloom_preset": str(p.get(prefix + "_preset") or "natural"),
+            "bloom_amount": float(p.get(prefix + "_amount") or 0.0),
+            "pre_colour": str(p.get(prefix + "_pre") or "off"),
+            "pre_drive_db": float(p.get(prefix + "_drive_db") or 0.0),
+        }
+        if not _bloom.bloom_is_on(body):
+            return None
+        spec = _bloom.design(body, rate)
+        if spec is None:
+            return None
+        comp = _bloom.pack_coeffs(spec, play=True) if float(spec.get("amount_db") or 0.0) > 0.0 else None
+        pre = _bloom.pack_pre(spec, play=True)
+        if not comp and not pre:
+            return None
+        return comp, pre
+
+    def _side_pad(src, n):
+        row = [0.0] * n
+        if src:
+            for i, v in enumerate(list(src)[:n]):
+                row[i] = float(v)
+        return row
+
+    def _side_emit(row):
+        if not row:
+            return [0.0] + [0.0] * 80 + [0.0] + [0.0] * 25
+        comp, pre = row
+        return [1.0 if comp else 0.0] + _side_pad(comp, 80) + [1.0 if pre else 0.0] + _side_pad(pre, 25)
+
+    array_row = _side_row("array")
+    room_row = _side_row("room")
+    if array_row or room_row:
+        def _place_flag(ch):
+            return 1.0 if str(p.get("place_" + ch) or "array").strip().lower() == "room" else 0.0
+        out["side"] = (
+            [_place_flag("l"), _place_flag("c"), _place_flag("r")]
+            + _side_emit(array_row)
+            + _side_emit(room_row)
+        )
     return out
 
 

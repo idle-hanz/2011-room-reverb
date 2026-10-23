@@ -66,6 +66,11 @@
  *     40 floats plus 5 per EQ biquad, capped at 96. Missing section is off.
  *   11 PREDELAY one float, samples, usable 1..4799. Missing section is 0.
  *   12 PRE colour, 25 floats, capped at 32. Missing section is off.
+ *   13 SIDE inserts. 217 floats, only when an array or room strip is on.
+ *     3 place flags (1 = room, otherwise array), then array and room.
+ *     Each strip is a comp flag, 80 comp coeffs, a pre flag, and 25 pre
+ *     coeffs. Pre runs, then the comp. The master chain is sections 10
+ *     and 12 and stays one coeff set. Missing section is off.
  * Route (int), in order: fdn[3][32], early L/R [2][32], early B L/R [2][32],
  * direct[3], direct B[3], fdn B[3][32]. -1 is a wire. < -1 is silent.
  */
@@ -403,6 +408,23 @@ struct LiveStereo {
     double prS[3][9];
     float prHb[3][4][2][46];
     float pdMem[3][2][N][4800];
+    /* Section 13. sideHot 0 is not read on the sample path. */
+    int sideHot;
+    int sidePlace[3];
+    int sideComp[2];
+    int sidePre[2];
+    double sideC[2][80];
+    double sideP[2][25];
+    double sideG[2][PART];
+    int sMode[2];
+    int sIdle[2];
+    int sCnt[2];
+    int sQuiet[2];
+    double sSc[2], sU[2], sFa[2], sSa[2], sRf[2], sRs[2], sWdet[2], sM[2];
+    double sV1[2], sV2[2], sF[2], sS[2], sGv[2], sGdet[2], sVc[2], sVu[2];
+    double sHold[2];
+    double sPr[3][9];
+    float sPrHb[3][4][2][46];
 };
 
 static LS_ALIGN16 float g_wre[FFTN];
@@ -1747,8 +1769,12 @@ void live_load_room(LiveStereo *st, int n) {
     int prevShared;
     unsigned prevSig;
     if (!st || st->magic != 0x2011 || n < 16) return;
-    /* Absent section 9 is off. Magic 1 returns before the section walk. */
+    /* Absent section 9 is off. Absent section 13 is off. Magic 1 returns early. */
     st->subHpOn = 0;
+    st->sideHot = 0;
+    st->sideComp[0] = st->sideComp[1] = 0;
+    st->sidePre[0] = st->sidePre[1] = 0;
+    st->sidePlace[0] = st->sidePlace[1] = st->sidePlace[2] = 0;
     prevShared = st->shared;
     prevSig = st->delaySig;
     if (n > MAX_BLOB) n = MAX_BLOB;
@@ -1871,6 +1897,12 @@ void live_load_room(LiveStereo *st, int n) {
             }
         }
         bloom_arm(st, has10, c10, n10, has11, pd, has12, c12, n12);
+    }
+    for (s = 0; s < nsec; s++) {
+        /* Section 13. One side-insert block. Absent stays off. */
+        if (id[s] != 13) continue;
+        if (ln[s] < 217 || off[s] < 0 || off[s] + ln[s] > n) continue;
+        load_side_section(st, off[s]);
     }
     finish_shared(st, prevShared, prevSig);
     st->icOn = 0;
@@ -3478,7 +3510,9 @@ static void bloom_colour_bus(LiveStereo *st, int b, double sl, double sr,
         double raw = yRawSum[t] + rawIdent[t];
         double full = yFullSum[t] + ident[t];
         double early = full - w * raw;
-        double x = bloom_apply(st, b, t, raw);
+        double x = raw;
+        if (st->sideHot) x = side_apply(st, b, t, x);
+        if (bloom_hot(st)) x = bloom_apply(st, b, t, x);
         fdnPre[t] = x * w + early;
     }
     for (t = 0; t < PART; t++) directA[t] = st->daBlk[b][t];
@@ -3532,6 +3566,7 @@ static void mix_partition(LiveStereo *st, float *outL, float *outR) {
                     if (!st->icOn) {
                         for (i = 0; i < N; i++) sumY += st->yBlk[b][i][t] + st->yBlkB[b][i][t];
                     }
+                    if (st->sideHot && !st->icOn) sumY = side_apply(st, b, t, sumY);
                     if (bloom_hot(st) && !st->icOn) sumY = bloom_apply(st, b, t, sumY);
                     direct = st->daBlk[b][t] + st->dbBlk[b][t];
                     gl = st->rampBlk[RG_W + 2 * b][t];
@@ -3549,6 +3584,7 @@ static void mix_partition(LiveStereo *st, float *outL, float *outR) {
                     if (!st->icOn) {
                         for (i = 0; i < N; i++) sumY += st->yBlk[b][i][t] + st->yBlkB[b][i][t];
                     }
+                    if (st->sideHot && !st->icOn) sumY = side_apply(st, b, t, sumY);
                     if (bloom_hot(st) && !st->icOn) sumY = bloom_apply(st, b, t, sumY);
                     direct = st->daBlk[b][t] + st->dbBlk[b][t];
                     wet = st->direct_wet * DIRECT_FOLD * direct
@@ -3559,7 +3595,7 @@ static void mix_partition(LiveStereo *st, float *outL, float *outR) {
             }
             continue;
         }
-        if (bloom_hot(st) && !st->icOn) {
+        if ((bloom_hot(st) || st->sideHot) && !st->icOn) {
             bloom_colour_bus(st, b, sl, sr, accL, accR, keep);
         } else
         {
@@ -3659,10 +3695,16 @@ static void mix_partition(LiveStereo *st, float *outL, float *outR) {
     if (st->icOn) {
         double oL[PART], oR[PART];
         ic_apply(st, icA, icB, oL, oR);
-        if (bloom_hot(st)) {
+        if (bloom_hot(st) || st->sideHot) {
             for (t = 0; t < PART; t++) {
-                oL[t] = bloom_apply(st, 0, t, oL[t]);
-                oR[t] = bloom_apply(st, 2, t, oR[t]);
+                if (st->sideHot) {
+                    oL[t] = side_apply(st, 0, t, oL[t]);
+                    oR[t] = side_apply(st, 2, t, oR[t]);
+                }
+                if (bloom_hot(st)) {
+                    oL[t] = bloom_apply(st, 0, t, oL[t]);
+                    oR[t] = bloom_apply(st, 2, t, oR[t]);
+                }
             }
         }
         if (st->rampUse) {
@@ -3733,6 +3775,7 @@ static void run_partition(LiveStereo *st, const float *inL, const float *inR, fl
     FwhtFn doFwht;
     DiffuseFn doDiff;
     bloom_fill(st);
+    side_prepare(st, inL, inR);
     fill_ramp_block(st);
     {
         int e = st->micG[BUS_C] == 0.0;

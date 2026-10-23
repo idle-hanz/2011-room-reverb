@@ -70,9 +70,9 @@ def test_live_md5s_match_a7():
 def test_cache_pins():
     live = (SW / "static" / "js" / "live_fdn.js").read_text(encoding="utf-8")
     page = (SW / "static" / "index.html").read_text(encoding="utf-8")
-    assert "WORKLET_VER = 61" in live
-    assert "live_fdn.js?v=61" in page
-    assert "app.js?v=68" in page
+    assert "WORKLET_VER = 62" in live
+    assert "live_fdn.js?v=62" in page
+    assert "app.js?v=69" in page
 
 
 def test_geometric_level_is_inverse_distance():

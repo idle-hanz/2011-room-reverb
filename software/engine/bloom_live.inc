@@ -338,21 +338,20 @@ static double bloom_nclip(double v, const double *p, double *mem) {
     return d;
 }
 
-static double bloom_pre(LiveStereo *st, int bus, double x) {
-    const double *p = st->pC;
+static double bloom_pre_at(const double *p, double *prS, float (*hb)[2][46], double x) {
     double drive = ls_from_db(p[2]);
     double v = x * drive;
     double h1, ue, u, d, y;
     int os;
     /* H1 */
-    h1 = p[15] * v + st->prS[bus][0];
-    st->prS[bus][0] = p[16] * v - p[18] * h1 + st->prS[bus][1];
-    st->prS[bus][1] = p[17] * v - p[19] * h1;
+    h1 = p[15] * v + prS[0];
+    prS[0] = p[16] * v - p[18] * h1 + prS[1];
+    prS[1] = p[17] * v - p[19] * h1;
     v = h1;
     if (p[7] > 0.5) {
         double a = p[8], g = p[9], s1;
-        s1 = a * st->prS[bus][2] + (1.0 - a) * v;
-        st->prS[bus][2] = s1;
+        s1 = a * prS[2] + (1.0 - a) * v;
+        prS[2] = s1;
         ue = v + (g - 1.0) * s1;
     } else ue = v;
     u = ue / (p[3] > 1.0e-12 ? p[3] : 1.0);
@@ -362,7 +361,7 @@ static double bloom_pre(LiveStereo *st, int bus, double x) {
     if (os > 1) hb_init();
     d = 0.0;
     if (os == 1) {
-        d = p[3] * bloom_nclip(u, p, &st->prS[bus][3]);
+        d = p[3] * bloom_nclip(u, p, &prS[3]);
     } else {
         /* Cascaded halfband. The last downsampled sample is this input's return. */
         double cur[16];
@@ -376,18 +375,18 @@ static double bloom_pre(LiveStereo *st, int bus, double x) {
         for (stage = 0; stage < nstage; stage++) {
             nup = 0;
             for (k = 0; k < ncur; k++) {
-                nxt[nup++] = hb_dot(st->prHb[bus][stage][0], cur[k], 1);
-                if (nup < 16) nxt[nup++] = hb_dot(st->prHb[bus][stage][0], 0.0, 1);
+                nxt[nup++] = hb_dot(hb[stage][0], cur[k], 1);
+                if (nup < 16) nxt[nup++] = hb_dot(hb[stage][0], 0.0, 1);
             }
             ncur = nup;
             for (k = 0; k < ncur; k++) cur[k] = nxt[k];
         }
-        for (k = 0; k < ncur; k++) cur[k] = bloom_nclip(cur[k], p, &st->prS[bus][3]);
+        for (k = 0; k < ncur; k++) cur[k] = bloom_nclip(cur[k], p, &prS[3]);
         for (stage = nstage - 1; stage >= 0; stage--) {
             nup = 0;
             for (k = 0; k < ncur; k += 2) {
-                double a = hb_dot(st->prHb[bus][stage][1], cur[k], 0);
-                double b = (k + 1 < ncur) ? hb_dot(st->prHb[bus][stage][1], cur[k + 1], 0) : a;
+                double a = hb_dot(hb[stage][1], cur[k], 0);
+                double b = (k + 1 < ncur) ? hb_dot(hb[stage][1], cur[k + 1], 0) : a;
                 nxt[nup++] = b;
                 (void)a;
             }
@@ -398,36 +397,40 @@ static double bloom_pre(LiveStereo *st, int bus, double x) {
     }
     if (p[7] > 0.5) {
         double a = p[8], g = p[9];
-        double yi = (d - (g - 1.0) * a * st->prS[bus][4]) / (1.0 + (g - 1.0) * (1.0 - a));
-        st->prS[bus][4] = a * st->prS[bus][4] + (1.0 - a) * yi;
+        double yi = (d - (g - 1.0) * a * prS[4]) / (1.0 + (g - 1.0) * (1.0 - a));
+        prS[4] = a * prS[4] + (1.0 - a) * yi;
         d = yi;
     }
     {
         double af = p[10];
         double Vphi = p[11];
         double cphi = p[12];
-        double s1 = af * st->prS[bus][5] + (1.0 - af) * v;
+        double s1 = af * prS[5] + (1.0 - af) * v;
         double e, fd;
-        st->prS[bus][5] = s1;
+        prS[5] = s1;
         e = s1 / (Vphi > 1.0e-12 ? Vphi : 1.0);
         e = e * e * e;
-        fd = cphi * Vphi * (e - af * st->prS[bus][6]) / (1.0 - af > 1.0e-12 ? 1.0 - af : 1.0e-12);
-        st->prS[bus][6] = e;
+        fd = cphi * Vphi * (e - af * prS[6]) / (1.0 - af > 1.0e-12 ? 1.0 - af : 1.0e-12);
+        prS[6] = e;
         d += fd;
     }
     /* H2 on the sum of the linear path and the distortion. Linear path is H1(v)
        already in v. Distortion is d. Small-signal d is ~0, so the shelf stays. */
     y = v + d;
     {
-        double o = p[20] * y + st->prS[bus][7];
-        st->prS[bus][7] = p[21] * y - p[23] * o + st->prS[bus][8];
-        st->prS[bus][8] = p[22] * y - p[24] * o;
+        double o = p[20] * y + prS[7];
+        prS[7] = p[21] * y - p[23] * o + prS[8];
+        prS[8] = p[22] * y - p[24] * o;
         y = o;
     }
     /* Section C. H2 is packed already divided by the 1 kHz cascade gain.
        Drive must not change that linear level. */
     if (p[2] != 0.0 && drive > 1.0e-12) y /= drive;
     return y;
+}
+
+static double bloom_pre(LiveStereo *st, int bus, double x) {
+    return bloom_pre_at(st->pC, st->prS[bus], st->prHb[bus], x);
 }
 
 static void bloom_sample(LiveStereo *st, double x, int t) {
@@ -510,6 +513,31 @@ static void bloom_scrub(LiveStereo *st) {
     ls_zero(st->prS, (int)sizeof(st->prS));
     ls_zero(st->prHb, (int)sizeof(st->prHb));
     ls_zero(st->pdMem, (int)sizeof(st->pdMem));
+    /* Side inserts stay armed. Only the follower and the pre memory reset. */
+    ls_zero(st->sPr, (int)sizeof(st->sPr));
+    ls_zero(st->sPrHb, (int)sizeof(st->sPrHb));
+    ls_zero(st->sideG, (int)sizeof(st->sideG));
+    st->sMode[0] = st->sMode[1] = 0;
+    st->sIdle[0] = st->sIdle[1] = 1;
+    st->sCnt[0] = st->sCnt[1] = 0;
+    st->sQuiet[0] = st->sQuiet[1] = 0;
+    st->sSc[0] = st->sSc[1] = 0.0;
+    st->sU[0] = st->sU[1] = 0.0;
+    st->sFa[0] = st->sFa[1] = 0.0;
+    st->sSa[0] = st->sSa[1] = 0.0;
+    st->sRf[0] = st->sRf[1] = 0.0;
+    st->sRs[0] = st->sRs[1] = 0.0;
+    st->sWdet[0] = st->sWdet[1] = 0.0;
+    st->sM[0] = st->sM[1] = 0.0;
+    st->sV1[0] = st->sV1[1] = 0.0;
+    st->sV2[0] = st->sV2[1] = 0.0;
+    st->sF[0] = st->sF[1] = 0.0;
+    st->sS[0] = st->sS[1] = 0.0;
+    st->sGv[0] = st->sGv[1] = 0.0;
+    st->sGdet[0] = st->sGdet[1] = 0.0;
+    st->sVc[0] = st->sVc[1] = 0.0;
+    st->sVu[0] = st->sVu[1] = 0.0;
+    st->sHold[0] = st->sHold[1] = 1.0;
 }
 
 static void bloom_arm(LiveStereo *st, int has10, const float *c10, int n10,
@@ -600,4 +628,189 @@ static void bloom_fill(LiveStereo *st) {
     }
     st->bMixCur = st->bMixAt[PART - 1];
     st->pMixCur = st->pMixAt[PART - 1];
+}
+
+/* Section 13. One block, omitted when both side strips are off.
+   Place is 1 for room. Each strip is comp flag, 80 coeffs, pre flag, 25 coeffs.
+   Pre runs, then the comp. Colour stays off: the comp is a gain multiply. */
+
+static void load_side_section(LiveStereo *st, int off) {
+    const float *b = st->blob + off;
+    int bus, slot, i, base;
+    for (bus = 0; bus < 3; bus++) st->sidePlace[bus] = b[bus] > 0.5f ? 1 : 0;
+    for (slot = 0; slot < 2; slot++) {
+        base = 3 + slot * 107;
+        st->sideComp[slot] = b[base] > 0.5f ? 1 : 0;
+        for (i = 0; i < 80; i++) st->sideC[slot][i] = (double)b[base + 1 + i];
+        st->sidePre[slot] = b[base + 81] > 0.5f ? 1 : 0;
+        for (i = 0; i < 25; i++) st->sideP[slot][i] = (double)b[base + 82 + i];
+    }
+    st->sideHot = 1;
+}
+
+static double side_apply(LiveStereo *st, int bus, int t, double sum) {
+    int slot;
+    double y;
+    if (!st->sideHot) return sum;
+    if (bus < 0) bus = 0;
+    if (bus > 2) bus = 2;
+    slot = st->sidePlace[bus] ? 1 : 0;
+    y = sum;
+    if (st->sidePre[slot]) y = bloom_pre_at(st->sideP[slot], st->sPr[bus], st->sPrHb[bus], y);
+    if (st->sideComp[slot]) y *= st->sideG[slot][t];
+    return y;
+}
+
+typedef struct BloomSwap {
+    int bloomOn;
+    int dMode, dIdle, dCnt, dQuiet;
+    double dSc, dU, dFa, dSa, dRf, dRs, dWdet, dM;
+    double dV1, dV2, dF, dS, dGv, dG, dVc, dVu, bHold;
+    double bC[80];
+    double bG[PART];
+    double bGR[PART];
+} BloomSwap;
+
+static void side_det_save(const LiveStereo *st, BloomSwap *w) {
+    int i;
+    w->bloomOn = st->bloomOn;
+    w->dMode = st->dMode;
+    w->dIdle = st->dIdle;
+    w->dCnt = st->dCnt;
+    w->dQuiet = st->dQuiet;
+    w->dSc = st->dSc;
+    w->dU = st->dU;
+    w->dFa = st->dFa;
+    w->dSa = st->dSa;
+    w->dRf = st->dRf;
+    w->dRs = st->dRs;
+    w->dWdet = st->dWdet;
+    w->dM = st->dM;
+    w->dV1 = st->dV1;
+    w->dV2 = st->dV2;
+    w->dF = st->dF;
+    w->dS = st->dS;
+    w->dGv = st->dGv;
+    w->dG = st->dG;
+    w->dVc = st->dVc;
+    w->dVu = st->dVu;
+    w->bHold = st->bHold;
+    for (i = 0; i < 80; i++) w->bC[i] = st->bC[i];
+    for (i = 0; i < PART; i++) {
+        w->bG[i] = st->bG[i];
+        w->bGR[i] = st->bGR[i];
+    }
+}
+
+static void side_det_load(LiveStereo *st, const BloomSwap *w) {
+    int i;
+    st->bloomOn = w->bloomOn;
+    st->dMode = w->dMode;
+    st->dIdle = w->dIdle;
+    st->dCnt = w->dCnt;
+    st->dQuiet = w->dQuiet;
+    st->dSc = w->dSc;
+    st->dU = w->dU;
+    st->dFa = w->dFa;
+    st->dSa = w->dSa;
+    st->dRf = w->dRf;
+    st->dRs = w->dRs;
+    st->dWdet = w->dWdet;
+    st->dM = w->dM;
+    st->dV1 = w->dV1;
+    st->dV2 = w->dV2;
+    st->dF = w->dF;
+    st->dS = w->dS;
+    st->dGv = w->dGv;
+    st->dG = w->dG;
+    st->dVc = w->dVc;
+    st->dVu = w->dVu;
+    st->bHold = w->bHold;
+    for (i = 0; i < 80; i++) st->bC[i] = w->bC[i];
+    for (i = 0; i < PART; i++) {
+        st->bG[i] = w->bG[i];
+        st->bGR[i] = w->bGR[i];
+    }
+}
+
+static void side_install(LiveStereo *st, int slot) {
+    int i;
+    st->bloomOn = 1;
+    st->dMode = st->sMode[slot];
+    st->dIdle = st->sIdle[slot];
+    st->dCnt = st->sCnt[slot];
+    st->dQuiet = st->sQuiet[slot];
+    st->dSc = st->sSc[slot];
+    st->dU = st->sU[slot];
+    st->dFa = st->sFa[slot];
+    st->dSa = st->sSa[slot];
+    st->dRf = st->sRf[slot];
+    st->dRs = st->sRs[slot];
+    st->dWdet = st->sWdet[slot];
+    st->dM = st->sM[slot];
+    st->dV1 = st->sV1[slot];
+    st->dV2 = st->sV2[slot];
+    st->dF = st->sF[slot];
+    st->dS = st->sS[slot];
+    st->dGv = st->sGv[slot];
+    st->dG = st->sGdet[slot];
+    st->dVc = st->sVc[slot];
+    st->dVu = st->sVu[slot];
+    st->bHold = st->sHold[slot];
+    for (i = 0; i < 80; i++) st->bC[i] = st->sideC[slot][i];
+}
+
+static void side_store(LiveStereo *st, int slot) {
+    int i;
+    st->sMode[slot] = st->dMode;
+    st->sIdle[slot] = st->dIdle;
+    st->sCnt[slot] = st->dCnt;
+    st->sQuiet[slot] = st->dQuiet;
+    st->sSc[slot] = st->dSc;
+    st->sU[slot] = st->dU;
+    st->sFa[slot] = st->dFa;
+    st->sSa[slot] = st->dSa;
+    st->sRf[slot] = st->dRf;
+    st->sRs[slot] = st->dRs;
+    st->sWdet[slot] = st->dWdet;
+    st->sM[slot] = st->dM;
+    st->sV1[slot] = st->dV1;
+    st->sV2[slot] = st->dV2;
+    st->sF[slot] = st->dF;
+    st->sS[slot] = st->dS;
+    st->sGv[slot] = st->dGv;
+    st->sGdet[slot] = st->dG;
+    st->sVc[slot] = st->dVc;
+    st->sVu[slot] = st->dVu;
+    st->sHold[slot] = st->bHold;
+    for (i = 0; i < PART; i++) st->sideG[slot][i] = st->bG[i];
+}
+
+static double side_det_of(const LiveStereo *st, double xL, double xR) {
+    if (st->two) {
+        double xA = xL * st->gain_a;
+        double xB = xR * st->gain_b;
+        double aa = xA < 0.0 ? -xA : xA;
+        double bb = xB < 0.0 ? -xB : xB;
+        return aa > bb ? aa : bb;
+    }
+    {
+        double x = 0.5 * (xL + xR);
+        return x < 0.0 ? -x : x;
+    }
+}
+
+static void side_prepare(LiveStereo *st, const float *inL, const float *inR) {
+    BloomSwap saved;
+    int slot, t;
+    if (!st->sideHot || (!st->sideComp[0] && !st->sideComp[1])) return;
+    side_det_save(st, &saved);
+    for (slot = 0; slot < 2; slot++) {
+        if (!st->sideComp[slot]) continue;
+        side_install(st, slot);
+        for (t = 0; t < PART; t++)
+            bloom_sample(st, side_det_of(st, (double)inL[t], (double)inR[t]), t);
+        side_store(st, slot);
+    }
+    side_det_load(st, &saved);
 }

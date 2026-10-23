@@ -4,11 +4,11 @@ Read this instead of `HANDOVER.md`. The Current pin in `HANDOVER.md` still wins 
 
 ## Pins
 
-ROUTING R1 landed 2026-10-22 (Render only). `WORKLET_VER` 61. `live_fdn.js?v=61`. `app.js?v=68`. `pack_room.js?v=53`. `app.css?v=37`. `routing_scene.js?v=2`. Wasm sha1 `e0692ef3ac8dcf0193dd463ea0695e67cfa3df46` (370549 bytes). `live_stereo.c` sha1 `b367464f82c37e7a17d217588e906f00ff5a47e7`. `bloom_live.inc` sha1 `57052071b6bdd2d72f1eae7204a2232afa4cd733`.
+ROUTING R2 landed 2026-10-23 (Play array and room). `WORKLET_VER` 62. `live_fdn.js?v=62`. `app.js?v=69`. `pack_room.js?v=54`. `app.css?v=37`. `routing_scene.js?v=2`. Wasm sha1 `c1b86fcbe1c930bc312e291f7279e78787c00076` (380643 bytes). `live_stereo.c` sha1 `7b7ce352100e5e9a65d597decb764cf3714158b5`. `bloom_live.inc` sha1 `a3b508245f026fad9a222c07894145ff8f5ea765`.
 
 Off path held: empty MD5 `b6c55d429fa63d6d0d3cd1fcc7d23e88`, centre MD5 `b3e6bcd9dfa13ad737d2b15d561f7d30`, `GOLDEN_META` `a362cf5e490089807b39346ba207633b88511548`. Five golden sha1s are in `software\tests\test_quick_pins.py`.
 
-Play / Render oversampling: Natural 2/2, Glue ADAA 1/1, Room Crush 1/2, Nuke ADAA 1/1, Swell 2/2, Neve 1/8, 610-A 8/8. The Mix page Routing panel (array, room, master) replaces the Bloom panel. Play posts the master strip only. Array and room inserts are Render only. All three default off. Python is `software\.venv\Scripts\python.exe`.
+Play / Render oversampling: Natural 2/2, Glue ADAA 1/1, Room Crush 1/2, Nuke ADAA 1/1, Swell 2/2, Neve 1/8, 610-A 8/8. The Mix page Routing panel (array, room, master) replaces the Bloom panel. Play posts the master strip, and an array or room strip only while that strip is on. All three default off. Python is `software\.venv\Scripts\python.exe`.
 
 ## Play lean, Render perfect
 

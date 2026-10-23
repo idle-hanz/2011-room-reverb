@@ -1,6 +1,6 @@
 /* Routing panel keys. Browser: window.RRRouting. Node: module.exports. No DOM.
-   Master posts the Bloom keys Play already reads. Array and room are
-   Render-only and stay out of the Play body. Off posts nothing. */
+   Master posts the Bloom keys Play already reads. Array and room post
+   the same names only while that strip is on. Off posts nothing. */
 (function (root, factory) {
   var api = factory();
   if (typeof module === "object" && module.exports) module.exports = api;
