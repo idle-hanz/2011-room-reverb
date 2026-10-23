@@ -146,7 +146,7 @@ def test_preset_loader_and_pattern_map():
     assert "NeumannU87AiCardioid" in ids
     assert "proxy_fig8_ribbon" in ids
     assert not any("2200" in i or "se2200" in i.lower() for i in ids)
-    assert resolve_preset_id(None) == "ShureSM57"
+    assert resolve_preset_id(None) == "NeumannU87AiCardioid"
     assert resolve_preset_id("SM57") == "ShureSM57"
     assert resolve_preset_id("Royer") == "RoyerR121"
     royer = capsule_law(store.family_of("RoyerR121"))
@@ -166,14 +166,14 @@ def test_server_defaults_do_not_move_the_desk():
     missing = params_from_body({})
     assert missing["colour_mode"] == "MEASURED_SHELF"
     assert missing["colour_impl"] == "sos"
-    assert missing["mic_preset_l"] == missing["mic_preset_c"] == missing["mic_preset_r"] == "ShureSM57"
+    assert missing["mic_preset_l"] == missing["mic_preset_c"] == missing["mic_preset_r"] == "NeumannU87AiCardioid"
     assert missing["pattern_l"] == "cardioid"
     assert missing["yaw_l_deg"] is None
     assert abs(missing["space"] - 0.25) < 1e-9
     assert missing["mic_hpf_engaged"] is False
     kept = params_from_body({"pattern_l": "omni", "polar_l": 0.0, "yaw_l_deg": -55.0, "space": 0.17})
     assert kept["pattern_l"] == "omni"
-    assert kept["mic_preset_l"] == "ShureSM57"
+    assert kept["mic_preset_l"] == "NeumannU87AiCardioid"
     assert kept["yaw_l_deg"] == -55.0
     assert abs(kept["space"] - 0.17) < 1e-9
     loaded = params_from_body({
@@ -541,6 +541,7 @@ def test_polar_uses_fitter_radius_not_lf_morph():
     assert abs(_at(u87["C"], 1000.0, 0.0, centres) - 1.0) < 0.05
     sm_hpf = pf.compute_polar_field(
         **room, colour_mode="MEASURED_SHELF", mic_hpf_engaged=True,
+        mic_preset_l="ShureSM57", mic_preset_c="ShureSM57", mic_preset_r="ShureSM57",
     )
     assert sm_hpf["presets"]["L"]["hpf_hz"] is None
     assert abs(_at(sm_hpf["C"], 20.0, 0.0, centres) - 1.0) < 1e-6
@@ -841,9 +842,9 @@ def test_live_colour_parity():
     assert measured["colour"]["on"] is True and measured["colour"]["sr"] == 48000
     assert toys["colour"]["on"] is False and bypass["colour"]["on"] is False
     assert measured["colour_mode"] == "MEASURED_SHELF"
-    assert measured["mic_preset_l"] == "ShureSM57"
-    assert measured["mic_preset_c"] == "ShureSM57"
-    assert measured["mic_preset_r"] == "ShureSM57"
+    assert measured["mic_preset_l"] == "NeumannU87AiCardioid"
+    assert measured["mic_preset_c"] == "NeumannU87AiCardioid"
+    assert measured["mic_preset_r"] == "NeumannU87AiCardioid"
     assert measured["mic_hpf_sides"] is False and measured["mic_hpf_centre"] is False
     g = 1.0 / 32.0
     # D-SRC-DIST-LEVEL. Play makeup is ir_rms of the reference-source injects.
@@ -882,7 +883,7 @@ def test_live_colour_parity():
     assert bank["direct"]["c"] == -1
     assert bank["direct"]["l"] >= 0 and bank["direct"]["r"] >= 0
     ir_l = _decode_ir(bank["irs"][bank["direct"]["l"]])
-    colour = MicColour("MEASURED_SHELF", "ShureSM57", "ShureSM57", "ShureSM57", 48000)
+    colour = MicColour("MEASURED_SHELF", "NeumannU87AiCardioid", "NeumannU87AiCardioid", "NeumannU87AiCardioid", 48000)
     expect = colour.payload_for(direct.theta_l, "l")
     assert expect is not None
     assert ir_l.shape == expect.shape
@@ -895,7 +896,7 @@ def test_live_colour_parity():
     err = float(np.max(np.abs(sos_db(sos, f, 48000) - ana)))
     assert err < 0.5, err
     sos44 = unpack_record(MicColour(
-        "MEASURED_SHELF", "ShureSM57", "ShureSM57", "ShureSM57", 44100,
+        "MEASURED_SHELF", "NeumannU87AiCardioid", "NeumannU87AiCardioid", "NeumannU87AiCardioid", 44100,
     ).payload_for(direct.theta_l, "l"))
     assert sos44 is not None
     assert not np.allclose(sos, sos44, atol=1e-5)
@@ -915,7 +916,7 @@ def test_live_colour_parity():
     assert abs(again["buses"]["l"]["inject"][di] - bare_l) < 1e-9
 
     other = {}
-    for name in ("NeumannU87AiCardioid", "RoyerR121"):
+    for name in ("ShureSM57", "RoyerR121"):
         got = live_fdn_params(_live_scene(
             mic_preset_l=name, mic_preset_c=name, mic_preset_r=name,
         ))
@@ -925,7 +926,7 @@ def test_live_colour_parity():
         assert idx >= 0
         other[name] = _decode_ir(got["colour"]["irs"][idx])
         assert not np.allclose(other[name], ir_l)
-    assert not np.allclose(other["NeumannU87AiCardioid"], other["RoyerR121"])
+    assert not np.allclose(other["ShureSM57"], other["RoyerR121"])
 
     u87 = live_fdn_params(_live_scene(
         mic_preset_l="NeumannU87AiCardioid",
@@ -943,20 +944,27 @@ def test_live_colour_parity():
     ))
     assert u87["mic_hpf_sides"] is True and u87["mic_hpf_centre"] is False
     side_ir = _decode_ir(u87["colour"]["irs"][u87["colour"]["direct"]["l"]])
-    assert int(side_ir[1]) > int(other["NeumannU87AiCardioid"][1])
+    assert int(side_ir[1]) > int(ir_l[1])
     assert u87["colour"]["direct"]["c"] == -1
     assert u87_c["colour"]["direct"]["c"] >= 0
     side_plain = _decode_ir(u87_c["colour"]["irs"][u87_c["colour"]["direct"]["l"]])
     centre_hpf = _decode_ir(u87_c["colour"]["irs"][u87_c["colour"]["direct"]["c"]])
-    assert np.allclose(side_plain, other["NeumannU87AiCardioid"], atol=1e-5)
+    assert np.allclose(side_plain, ir_l, atol=1e-5)
     sos_c = unpack_record(centre_hpf)
     assert sos_c is not None
     mag_50 = float(sos_db(sos_c, [50.0], 48000)[0])
     assert mag_50 < -3.0, mag_50
 
-    sm_hpf = live_fdn_params(_live_scene(mic_hpf_sides=True, mic_hpf_centre=True))
+    sm_plain = live_fdn_params(_live_scene(
+        mic_preset_l="ShureSM57", mic_preset_c="ShureSM57", mic_preset_r="ShureSM57",
+    ))
+    sm_hpf = live_fdn_params(_live_scene(
+        mic_preset_l="ShureSM57", mic_preset_c="ShureSM57", mic_preset_r="ShureSM57",
+        mic_hpf_sides=True, mic_hpf_centre=True,
+    ))
     sm_ir = _decode_ir(sm_hpf["colour"]["irs"][sm_hpf["colour"]["direct"]["l"]])
-    assert np.allclose(sm_ir, ir_l, atol=1e-5)
+    sm_ref = _decode_ir(sm_plain["colour"]["irs"][sm_plain["colour"]["direct"]["l"]])
+    assert np.allclose(sm_ir, sm_ref, atol=1e-5)
     assert sm_hpf["colour"]["direct"]["c"] == -1
 
     two = live_fdn_params(_live_scene(
@@ -1000,7 +1008,7 @@ def test_live_colour_parity():
     fir_l = _decode_ir(fir["colour"]["irs"][fir["colour"]["direct"]["l"]])
     assert abs(float(fir_l[0]) + 2011.0) > 1.0
     expect_fir = MicColour(
-        "MEASURED_SHELF", "ShureSM57", "ShureSM57", "ShureSM57", 48000,
+        "MEASURED_SHELF", "NeumannU87AiCardioid", "NeumannU87AiCardioid", "NeumannU87AiCardioid", 48000,
         colour_impl="fir",
     ).ir_for(direct.theta_l, "l")
     assert np.allclose(fir_l, expect_fir, atol=1e-5)

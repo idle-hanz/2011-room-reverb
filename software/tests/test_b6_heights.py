@@ -42,7 +42,7 @@ FC = [125, 250, 500, 1000, 2000, 3150, 4000, 5000, 6300, 8000, 10000, 12500, 160
 # Empty-body live hash. TLAW 1/r (Idle 2026-10-10) moved it off the T4c hash
 # 4bd18877a1a80396108bcafd17d4d762. The blob diff is inject levels, makeup,
 # and the unwired direct_makeup field. Delays, g, and the direct fold stay.
-_DEFAULT_LIVE_MD5 = "b6c55d429fa63d6d0d3cd1fcc7d23e88"
+_DEFAULT_LIVE_MD5 = "b20cf5dc675f613992aa6a31c2cd74f4"
 
 
 def _live(body):
@@ -140,9 +140,9 @@ def _render(body, ms, desk=True):
         colour_mode=p.get("colour_mode") or "MEASURED_SHELF",
         colour_impl=p.get("colour_impl") or "sos",
         sub_hp=bool(p.get("sub_hp")),
-        mic_preset_l=p.get("mic_preset_l") or "ShureSM57",
-        mic_preset_c=p.get("mic_preset_c") or "ShureSM57",
-        mic_preset_r=p.get("mic_preset_r") or "ShureSM57",
+        mic_preset_l=p.get("mic_preset_l") or "NeumannU87AiCardioid",
+        mic_preset_c=p.get("mic_preset_c") or "NeumannU87AiCardioid",
+        mic_preset_r=p.get("mic_preset_r") or "NeumannU87AiCardioid",
         source_radiation=str(p.get("source_radiation") or "omni"),
         source_yaw=float(p.get("source_yaw") or 0.0),
         source_pitch=float(p.get("source_pitch") or 0.0),

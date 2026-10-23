@@ -10,12 +10,14 @@ from pathlib import Path
 
 from mic_colour.model import model_from_params, model_name, param_names, repo_root
 
-DEFAULT_PRESET_ID = "ShureSM57"
+# D-UI38. Idle 2026-10-23. A missing id is the U87 Ai cardioid.
+# SM57 stays its own preset.
+DEFAULT_PRESET_ID = "NeumannU87AiCardioid"
 
 _ALIASES = {
-    "sm57": DEFAULT_PRESET_ID,
-    "shuresm57": DEFAULT_PRESET_ID,
-    "shure_sm57": DEFAULT_PRESET_ID,
+    "sm57": "ShureSM57",
+    "shuresm57": "ShureSM57",
+    "shure_sm57": "ShureSM57",
     "u87": "NeumannU87AiCardioid",
     "u87cardioid": "NeumannU87AiCardioid",
     "neumannu87aicardioid": "NeumannU87AiCardioid",
@@ -140,7 +142,7 @@ def get_store() -> PresetStore:
 
 
 def resolve_preset_id(raw, *, explicit: bool = False) -> str:
-    """Missing → ShureSM57 (SM57). An explicit unknown id raises."""
+    """Missing → Neumann U87 Ai Cardioid. An explicit unknown id raises."""
     if raw is None:
         return DEFAULT_PRESET_ID
     text = str(raw).strip()

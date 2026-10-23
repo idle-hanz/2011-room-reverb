@@ -29,8 +29,8 @@ from poly_room import (  # noqa: E402
 )
 from render_pipeline import live_fdn_params  # noqa: E402
 
-EMPTY = "b6c55d429fa63d6d0d3cd1fcc7d23e88"
-CENTRE = "b3e6bcd9dfa13ad737d2b15d561f7d30"
+EMPTY = "b20cf5dc675f613992aa6a31c2cd74f4"
+CENTRE = "ba1bbc6d386ed75bf484156f08043f37"
 ROOM = (6.0, 3.0, 8.0)
 SRC = (2.2, 1.3, 3.4)
 MIC = (3.2, 1.4, 4.2)

@@ -757,7 +757,7 @@ def _explicit_field(body: dict, key: str) -> bool:
 
 
 def _mic_colour_fields(body: dict, cap: dict) -> dict:
-    """Missing preset/mode → SM57 × 3 and MEASURED_SHELF.
+    """Missing preset/mode → U87 Ai Cardioid × 3 and MEASURED_SHELF.
 
     An explicit preset id sets that capsule's pattern, family, and polar.
     Yaw, space, and mic_setup are left as the desk sent them.
@@ -1148,6 +1148,7 @@ def _render_impl(
         return JSONResponse({"ok": False, "error": "Invalid params JSON"}, status_code=400)
 
     p = params_from_body(body)
+    from mic_colour.preset_store import DEFAULT_PRESET_ID
     suffix = Path(file.filename or "in.wav").suffix or ".wav"
     with tempfile.NamedTemporaryFile(suffix=suffix, delete=False) as tmp:
         shutil.copyfileobj(file.file, tmp)
@@ -1234,9 +1235,9 @@ def _render_impl(
             dry_r=dry_r,
             colour_mode=p.get("colour_mode") or "MEASURED_SHELF",
             colour_impl=p.get("colour_impl") or "sos",
-            mic_preset_l=p.get("mic_preset_l") or "ShureSM57",
-            mic_preset_c=p.get("mic_preset_c") or "ShureSM57",
-            mic_preset_r=p.get("mic_preset_r") or "ShureSM57",
+            mic_preset_l=p.get("mic_preset_l") or DEFAULT_PRESET_ID,
+            mic_preset_c=p.get("mic_preset_c") or DEFAULT_PRESET_ID,
+            mic_preset_r=p.get("mic_preset_r") or DEFAULT_PRESET_ID,
             mic_hpf_engaged=bool(p.get("mic_hpf_engaged")),
             mic_hpf_sides=p.get("mic_hpf_sides"),
             mic_hpf_centre=p.get("mic_hpf_centre"),
@@ -1585,6 +1586,7 @@ def api_colour(body: dict):
 @app.post("/api/polar")
 def api_polar(body: dict):
     """ASSUMED mic polar × frequency in mic–source plane (L/C/R + Sum)."""
+    from mic_colour.preset_store import DEFAULT_PRESET_ID
     p = params_from_body(body)
     n_az = int(body.get("n_az") or 72)
     n_az = max(24, min(180, n_az))
@@ -1614,9 +1616,9 @@ def api_polar(body: dict):
         polar_l=p.get("polar_l"), polar_c=p.get("polar_c"), polar_r=p.get("polar_r"),
         centre_dz=p.get("centre_dz") or 0.0,
         colour_mode=p.get("colour_mode") or "MEASURED_SHELF",
-        mic_preset_l=p.get("mic_preset_l") or "ShureSM57",
-        mic_preset_c=p.get("mic_preset_c") or "ShureSM57",
-        mic_preset_r=p.get("mic_preset_r") or "ShureSM57",
+        mic_preset_l=p.get("mic_preset_l") or DEFAULT_PRESET_ID,
+        mic_preset_c=p.get("mic_preset_c") or DEFAULT_PRESET_ID,
+        mic_preset_r=p.get("mic_preset_r") or DEFAULT_PRESET_ID,
         mic_hpf_engaged=bool(p.get("mic_hpf_engaged")),
         mic_hpf_sides=p.get("mic_hpf_sides"),
         mic_hpf_centre=p.get("mic_hpf_centre"),

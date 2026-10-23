@@ -57,7 +57,7 @@ Checked against: `HANDOVER.md` (Current pin 2026-10-18), `roadmap\BUILD_RUN_LOG.
 
 | # | Item | What it is | Status | Files | Blocking | Order |
 |---|---|---|---|---|---|---|
-| 3.1 | ⚠ **U87 Ai as the default mics** (D-UI30 / D-UI38) | Idle asked on 4 Oct for Neumann cardioids instead of SM57s. It was locked but tied to the SL7b switch, which never ran. The early A/B listen (T5) was never rendered. | Decided; prompt written (T5); **never done** | `thursday_prompts\T05_u87_ab_render.md`, `research\R05_T5_T6_u87.md`, `SL7a/SL7b` prompts | Re-scope with 2.4; T5 A/B is a box job with no Build usage | 1-2 |
+| 3.1 | **U87 Ai as the default mics** (D-UI38) | Idle asked on 4 Oct for Neumann cardioids instead of SM57s. Landed 2026-10-23: a missing id is Neumann U87 Ai cardioid on L, C and R. Explicit SM57 stays Shure SM57. | Landed 2026-10-23. Listens in `roadmap/u87_listen/`. | `thursday_prompts\T05_u87_ab_render.md`, `research\R05_T5_T6_u87.md` | — | — |
 | 3.2 | Off-axis tail colour | see Q3 | Queued | | | Q3 |
 | 3.3 | Colour module | see Q4 | Queued | | | Q4 |
 | 3.4 | Height-aware mic colour | Use 3-D polar data (e.g. DirPat) so mic colour changes with height/elevation. | Researched (rank 3); not queued | `MIC_CHARACTER_RESEARCH.md`, `DECISION_OFFAXIS_QUEUE_2026-10-18.md` "Not queued"; `mic_fitter_polar3d.tar.gz` on the Desktop | Needs a 3-D data source | 3 |
@@ -116,7 +116,7 @@ Checked against: `HANDOVER.md` (Current pin 2026-10-18), `roadmap\BUILD_RUN_LOG.
 | 6.13 | ⚠ Old 28 Sep leftovers (N16) | Confirm the 1.8 s decay by ear; trim direct/early (+1.61 dB); the K2 distance unit after 2011 captures. | `THURSDAY_LIST.md` N16, L3 | — |
 | 6.14 | What may a preset chip touch? (fault F5) | Rule needed: should a chip ever move mics / room spots? | `OPEN_FAULTS_2026-10-10.md` F5 | F5 |
 | 6.15 | Reflection selection (U9), audit Q3 / Q4 / Q6, direct level ST-4 / D22 | | sections 1, 3, 5 | — |
-| 6.16 | Re-scope SL7a/SL7b after PHYSDEFAULT | What remains of the "one default switch" (Surfaces default? U87? real materials?) now that the physics decay is default. | 2.4 | 2.4, 3.1 |
+| 6.16 | Re-scope SL7a/SL7b after PHYSDEFAULT | What remains of the "one default switch" (Surfaces default? real materials?) now that the physics decay is default. U87 default landed 2026-10-23 (D-UI38). | 2.4 | 2.4 |
 | 6.17 | Bloom: preset-driven Predelay; new name for the "Natural" preset | | 4.4, 4.5 | Bloom |
 
 ## 7. Open faults
@@ -157,7 +157,7 @@ Checked against: `HANDOVER.md` (Current pin 2026-10-18), `roadmap\BUILD_RUN_LOG.
 ---
 
 ## 9. Looks forgotten (mentioned, never followed up)
-1. **U87 default mics + the T5 A/B listen** (3.1): asked for 4 Oct, locked, never rendered.
+1. **U87 default mics** (3.1): landed 2026-10-23 (D-UI38). Listens in `roadmap/u87_listen/`.
 2. **Save / load scenes, undo, autosave** (5.5): nothing is kept across a reload.
 3. **Movement re-bench** (2.5): the CPU problem that parked it may be gone.
 4. **P-D7 small-room re-measure** (F-D7): never run.
@@ -171,7 +171,7 @@ Checked against: `HANDOVER.md` (Current pin 2026-10-18), `roadmap\BUILD_RUN_LOG.
 2. **F4 + F5 preset-chip investigation** (read-only, one session) and Idle's rule for what a chip may touch: these are bugs Idle reported himself on 10 Oct.
 3. **Movement re-bench** with the tank skip in place; if it fits under 2.40 ms, a small session to un-force it and listen.
 4. **Non-rectangular rooms stage 1** (Render-only, three convex presets, Box bit-exact) once Idle answers D-NR1-D-NR8. Stage 2 is A/B renders for him.
-5. **Defaults re-scope**: one review that decides what is left of SL4-SL7b, including the U87 default (render the T5 A/B first; it costs no Build usage).
+5. **Defaults re-scope**: one review that decides what is left of SL4-SL7b. The U87 default landed 2026-10-23 (D-UI38).
 Then: Sustain (Bloom Part 3), save/load scenes, T8b wall drag + T9b, S-OUT auto level, book update pass.
 
 ## Count

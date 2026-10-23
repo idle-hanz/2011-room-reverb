@@ -42,9 +42,9 @@ G2 = 10.0 ** (2.0 / 20.0)
 G6 = 10.0 ** (-6.0 / 20.0)
 GOLDEN_SHA1 = {
     "play_std_lock18_byp.f32": "d011bafca80f4e46ae768db40becd762e78dcada",
-    "play_std_lock18_col.f32": "d9470bfad67211180fedc1a07cd2352eaf4b14c7",
+    "play_std_lock18_col.f32": "80d86ec23022d09fdb0653298ad322ca539e5bb5",
     "play_std_unlocked_byp.f32": "91738c70220b4edce512aebe3548dfdbd894cc41",
-    "play_std_unlocked_col.f32": "a0ae72d9fb690cb7b3bbd54632abc466cefa0d24",
+    "play_std_unlocked_col.f32": "171a1450978742a7fc1f3cb77739d202d80f48a9",
     "render_std_unlocked_byp.f32": "2a806e334e06cc475868d4c3da3fc78431c9a0aa",
 }
 

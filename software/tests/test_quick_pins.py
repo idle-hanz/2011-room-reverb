@@ -30,14 +30,14 @@ pytestmark = pytest.mark.quick
 
 TLAW_SHA1 = {
     "play_std_lock18_byp.f32": "d011bafca80f4e46ae768db40becd762e78dcada",
-    "play_std_lock18_col.f32": "d9470bfad67211180fedc1a07cd2352eaf4b14c7",
+    "play_std_lock18_col.f32": "80d86ec23022d09fdb0653298ad322ca539e5bb5",
     "play_std_unlocked_byp.f32": "91738c70220b4edce512aebe3548dfdbd894cc41",
-    "play_std_unlocked_col.f32": "a0ae72d9fb690cb7b3bbd54632abc466cefa0d24",
+    "play_std_unlocked_col.f32": "171a1450978742a7fc1f3cb77739d202d80f48a9",
     "render_std_unlocked_byp.f32": "2a806e334e06cc475868d4c3da3fc78431c9a0aa",
 }
-GOLDEN_META_SHA1 = "a362cf5e490089807b39346ba207633b88511548"
-EMPTY_MD5 = "b6c55d429fa63d6d0d3cd1fcc7d23e88"
-CENTRE_MD5 = "b3e6bcd9dfa13ad737d2b15d561f7d30"
+GOLDEN_META_SHA1 = "52bfce749715e335d8fa2418a16e8593e9a54040"
+EMPTY_MD5 = "b20cf5dc675f613992aa6a31c2cd74f4"
+CENTRE_MD5 = "ba1bbc6d386ed75bf484156f08043f37"
 DISTANCES = (0.3, 1.0, 2.5, 7.0, 40.0)
 
 
@@ -72,7 +72,7 @@ def test_cache_pins():
     page = (SW / "static" / "index.html").read_text(encoding="utf-8")
     assert "WORKLET_VER = 63" in live
     assert "live_fdn.js?v=63" in page
-    assert "app.js?v=71" in page
+    assert "app.js?v=72" in page
 
 
 def test_geometric_level_is_inverse_distance():

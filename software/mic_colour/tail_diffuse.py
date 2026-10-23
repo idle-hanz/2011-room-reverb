@@ -232,7 +232,7 @@ def design_pack(ids, sr: float, polars=None) -> list:
     row = list(ids)
     pols = list(polars) if polars is not None else [None, None, None]
     while len(row) < 3:
-        row.append(row[-1] if row else "ShureSM57")
+        row.append(row[-1] if row else "NeumannU87AiCardioid")
     while len(pols) < 3:
         pols.append(None)
     out = []

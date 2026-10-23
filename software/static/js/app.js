@@ -69,6 +69,8 @@
   };
 
   var BINAURAL_SPACE_M = { SADIE2_KU100: 0.18, SADIE2_KEMAR: 0.18, THK_KU100_FF: 0.175 };
+  /* D-UI38. Idle 2026-10-23. L, C, and R boot on the U87 Ai cardioid. */
+  var DEFAULT_MIC = "NeumannU87AiCardioid";
 
   function rrMsBuilt(id) {
     var api = window.RRMS;
@@ -115,7 +117,7 @@
     capsule_mm: 17, ms_decode: false,
     colour_mode: "MEASURED_SHELF",
     colour_impl: "sos",
-    mic_preset_l: "ShureSM57", mic_preset_c: "ShureSM57", mic_preset_r: "ShureSM57",
+    mic_preset_l: DEFAULT_MIC, mic_preset_c: DEFAULT_MIC, mic_preset_r: DEFAULT_MIC,
     mic_hpf_engaged: false,
     mic_hpf_sides: false,
     mic_hpf_centre: false,
@@ -1900,7 +1902,7 @@
   }
 
   function capsuleOf(id) {
-    var row = micCatalogue[id || "ShureSM57"];
+    var row = micCatalogue[id || DEFAULT_MIC];
     return row && row.capsule ? row.capsule : null;
   }
 
@@ -1912,7 +1914,7 @@
   /* B4: a figure-8 Side in Measured must not stay on a cardioid model. */
   function ensureFig8Model(slot) {
     if (state["family_" + slot] !== "bi") return;
-    var id = state["mic_preset_" + slot] || "ShureSM57";
+    var id = state["mic_preset_" + slot] || DEFAULT_MIC;
     var row = micCatalogue[id];
     var fam = row && row.capsule ? row.capsule.family : "";
     if (fam === "bi") return;
@@ -1930,7 +1932,7 @@
     ensureFig8Side();
     var ready = catalogueReady();
     ["l", "c", "r"].forEach(function (slot) {
-      var id = state["mic_preset_" + slot] || "ShureSM57";
+      var id = state["mic_preset_" + slot] || DEFAULT_MIC;
       var law = capsuleOf(id);
       if (!law) {
         if (!ready) return;
@@ -1990,10 +1992,10 @@
   }
 
   function presetShort(id) {
-    var row = micCatalogue[id || "ShureSM57"];
-    var name = row && row.display_name ? String(row.display_name) : "Shure SM57";
+    var row = micCatalogue[id || DEFAULT_MIC];
+    var name = row && row.display_name ? String(row.display_name) : "Neumann U87 Ai Cardioid";
     var cut = name.split("\u2014")[0].split("\u2013")[0].split(" - ")[0].trim();
-    return cut || "Shure SM57";
+    return cut || "Neumann U87 Ai Cardioid";
   }
 
   function presetLawPhrase(id) {
@@ -2005,7 +2007,7 @@
   }
 
   function presetOwnPhrase() {
-    var l = state.mic_preset_l || "ShureSM57";
+    var l = state.mic_preset_l || DEFAULT_MIC;
     var r = state.mic_preset_r || l;
     var bits = [presetLawPhrase(l)];
     if (splitOn() && r !== l) bits.push(presetLawPhrase(r));
@@ -2512,7 +2514,7 @@
     var centreSel = document.getElementById("mic_preset_centre");
     var mode = document.getElementById("colour_mode");
     var badge = document.getElementById("micHonestyBadge");
-    var sideId = state.mic_preset_l || "ShureSM57";
+    var sideId = state.mic_preset_l || DEFAULT_MIC;
     var centreId = state.mic_preset_c || sideId;
     function setSel(sel, id) {
       if (!sel || document.activeElement === sel) return;
@@ -2702,10 +2704,10 @@
         });
         if (id && micCatalogue[id]) sel.value = id;
       }
-      fill(document.getElementById("mic_preset_side"), state.mic_preset_l || "ShureSM57");
-      fill(document.getElementById("mic_preset_l"), state.mic_preset_l || "ShureSM57");
-      fill(document.getElementById("mic_preset_r"), state.mic_preset_r || state.mic_preset_l || "ShureSM57");
-      fill(document.getElementById("mic_preset_centre"), state.mic_preset_c || "ShureSM57");
+      fill(document.getElementById("mic_preset_side"), state.mic_preset_l || DEFAULT_MIC);
+      fill(document.getElementById("mic_preset_l"), state.mic_preset_l || DEFAULT_MIC);
+      fill(document.getElementById("mic_preset_r"), state.mic_preset_r || state.mic_preset_l || DEFAULT_MIC);
+      fill(document.getElementById("mic_preset_centre"), state.mic_preset_c || DEFAULT_MIC);
       if (patternFromPreset()) applyPresetLaw();
       paintMicModel();
       syncPatternChrome();
@@ -4030,7 +4032,7 @@
     });
   }
 
-  // Default Mic setup = ORTF ±55°. Colour preset is SM57 and does not move yaw.
+  // Default Mic setup = ORTF ±55°. Colour preset is the U87 Ai cardioid and does not move yaw.
   var saveSetupBtn = document.getElementById("saveSetupBtn");
   if (saveSetupBtn) saveSetupBtn.addEventListener("click", downloadSetup);
   var loadSetupFile = document.getElementById("loadSetupFile");

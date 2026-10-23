@@ -4,9 +4,9 @@ Read this instead of `HANDOVER.md`. The Current pin in `HANDOVER.md` still wins 
 
 ## Pins
 
-ROUTING R2 landed 2026-10-23 (Play array and room). Off-axis tail colour landed 2026-10-23, key `offaxis_tail`, default off. Movement un-forced 2026-10-23. The Room knob is visible. Default stays 0. Shared-off at knob 100 measured 1.876 ms. `WORKLET_VER` 63. `live_fdn.js?v=63`. `app.js?v=71`. `pack_room.js?v=55`. `app.css?v=37`. `routing_scene.js?v=3`. `room_editor.js?v=20`. Wasm sha1 `555414f1cf3df653f285f1bacdc7f68022594124` (393117 bytes). `live_stereo.c` sha1 `c7bdd7949885bbcefac3c073900a10c24114dc88`. `bloom_live.inc` sha1 `a3b508245f026fad9a222c07894145ff8f5ea765`.
+ROUTING R2 landed 2026-10-23 (Play array and room). Off-axis tail colour landed 2026-10-23, key `offaxis_tail`, default off. Movement un-forced 2026-10-23. The Room knob is visible. Default stays 0. Shared-off at knob 100 measured 1.876 ms. `WORKLET_VER` 63. `live_fdn.js?v=63`. `app.js?v=72`. `pack_room.js?v=55`. `app.css?v=37`. `routing_scene.js?v=3`. `room_editor.js?v=20`. Wasm sha1 `555414f1cf3df653f285f1bacdc7f68022594124` (393117 bytes). `live_stereo.c` sha1 `c7bdd7949885bbcefac3c073900a10c24114dc88`. `bloom_live.inc` sha1 `a3b508245f026fad9a222c07894145ff8f5ea765`.
 
-Off path held: empty MD5 `b6c55d429fa63d6d0d3cd1fcc7d23e88`, centre MD5 `b3e6bcd9dfa13ad737d2b15d561f7d30`, `GOLDEN_META` `a362cf5e490089807b39346ba207633b88511548`. Five golden sha1s are in `software\tests\test_quick_pins.py`.
+D-UI38 (2026-10-23): a missing mic id is Neumann U87 Ai cardioid on L, C and R. Empty MD5 `b20cf5dc675f613992aa6a31c2cd74f4`, centre MD5 `ba1bbc6d386ed75bf484156f08043f37`, two-source key-absent `0e11f5ce3415eb555a61655c6c0e6737`, two-source explicit false `8ea544b008a4677b94a3a553c6a2f39b`, `GOLDEN_META` `52bfce749715e335d8fa2418a16e8593e9a54040`. Coloured Play goldens moved. Bypass Play goldens and the Render BYPASS golden held. Five golden sha1s are in `software\tests\test_quick_pins.py`. Explicit SM57 still hashes to the old empty and centre MD5s.
 
 Non-rectangular rooms stage 1 landed 2026-10-23. Key `room_shape`. Absent or `box` is the shoebox. Presets `splay`, `lede`, `live` are Render only. Play does not read the key.
 
