@@ -3,6 +3,8 @@ from __future__ import annotations
 
 import hashlib
 import json
+import shutil
+import subprocess
 import sys
 from pathlib import Path
 
@@ -161,3 +163,35 @@ def test_master_room_crush_live_params_are_preset_two():
     off = A.live_fdn_params(A.params_from_body({}))
     assert "bloom" not in off
     assert "pre_colour" not in off
+
+
+def _run(cmd):
+    r = subprocess.run(cmd, capture_output=True, text=True)
+    if r.returncode != 0:
+        raise AssertionError((r.stderr or r.stdout)[-800:])
+
+
+def test_array_glue_moves_a_play_sample(tmp_path):
+    """Shipped wasm. Array Glue at 100, preamp off, changes the left channel."""
+    root = SW.parent
+    lib = root / "handoff_build_support_2" / "3_phase_acceptance_tests" / "harness" / "lib"
+    node = shutil.which("node")
+    assert node, "node is required"
+    off_json = tmp_path / "side_off.json"
+    on_json = tmp_path / "side_on.json"
+    off_f = tmp_path / "side_off.f32"
+    on_f = tmp_path / "side_on.f32"
+    on_body = json.dumps({"array_preset": "glue", "array_amount": 100, "array_pre": "off"})
+    colour = json.dumps({"colour_on": False})
+    _run([sys.executable, str(lib / "dump_params.py"), str(SW), "{}", str(off_json), "48000"])
+    _run([sys.executable, str(lib / "dump_params.py"), str(SW), on_body, str(on_json), "48000"])
+    side = json.loads(on_json.read_text(encoding="utf-8"))["side"]
+    assert len(side) == 217
+    assert side[3] == 1.0
+    _run([node, str(lib / "wasm_run.js"), str(SW), str(off_json), colour, "ir", "0.25", str(off_f)])
+    _run([node, str(lib / "wasm_run.js"), str(SW), str(on_json), colour, "ir", "0.25", str(on_f)])
+    off = np.fromfile(off_f, dtype=np.float32)
+    on = np.fromfile(on_f, dtype=np.float32)
+    n = min(off.size, on.size)
+    left = float(np.max(np.abs(on[:n:2].astype(np.float64) - off[:n:2].astype(np.float64))))
+    assert left > 0.0, left
