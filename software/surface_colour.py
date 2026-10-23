@@ -444,6 +444,37 @@ def materials_public() -> List[Dict[str, Any]]:
     return rows
 
 
+def load_material_sets() -> List[Dict[str, Any]]:
+    """Named face assignments. They do not replace default_surfaces()."""
+    path = _preset_dir() / "sets.json"
+    if not path.is_file():
+        return []
+    try:
+        data = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        return []
+    out = []
+    for row in data.get("sets") or []:
+        if not isinstance(row, dict):
+            continue
+        faces = row.get("faces") if isinstance(row.get("faces"), dict) else {}
+        clean = {}
+        for letter in SURFACE_LETTERS:
+            mid = faces.get(letter)
+            if isinstance(mid, str) and mid in MATERIAL_PRESETS:
+                clean[letter] = mid
+        if len(clean) != len(SURFACE_LETTERS):
+            continue
+        out.append({
+            "id": str(row.get("id") or ""),
+            "display_name": str(row.get("display_name") or row.get("id") or ""),
+            "honesty": str(row.get("honesty") or "ASSUMED_TEXTBOOK"),
+            "note": str(row.get("note") or ""),
+            "faces": clean,
+        })
+    return out
+
+
 def image_in_early(n: Tuple[int, int, int], solo_l: Optional[str], mute_s: set) -> bool:
     """D16 / D15. True when this image stays in the early field.
 

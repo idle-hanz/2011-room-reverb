@@ -1,0 +1,19 @@
+{
+  "schema": "surfaces.material_set.v1",
+  "sets": [
+    {
+      "id": "plaster_parquet",
+      "display_name": "Plaster + parquet",
+      "honesty": "ASSUMED_TEXTBOOK",
+      "note": "D-SL8 library set (proto2 real_default). Walls and ceiling are smooth plaster. The floor is wood parquet. A new scene still starts on the plaster-ish cards.",
+      "faces": {
+        "A": "plaster_smooth",
+        "B": "plaster_smooth",
+        "C": "plaster_smooth",
+        "D": "plaster_smooth",
+        "E": "wood_parquet",
+        "F": "plaster_smooth"
+      }
+    }
+  ]
+}

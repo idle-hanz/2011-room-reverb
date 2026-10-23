@@ -498,6 +498,13 @@ _UI_ONLY_IDS = {
     # SL3. #slMode_surfaces posts /api/live_params (decay_mode) as well as /api/room_result.
     "slTogBand",
     "slTogEbu",
+    # SL5. The porous menu and the tuned-panel frequency only choose the next row.
+    # + Porous and + Tuned panel post /api/live_params.
+    # + Room shell repeats the rows the Surfaces chip already added on enter,
+    # so this click leaves the posted scene unchanged.
+    "slPorousSel",
+    "slPanelF0",
+    "slAddShell",
     # UI-TIDY-1. Save downloads JSON. The Room mic link only calls setView("mic").
     "saveSetupBtn",
     "roomMicSetupLink",
@@ -650,8 +657,9 @@ def test_a12_visible_controls_post_or_are_ui_only(audit_server):
                   controls.push(el);
                 });
               });
-              async function settle() {
+              async function settle(waitForPost) {
                 let last = posts.length;
+                const started = posts.length;
                 let stable = 0;
                 const deadline = Date.now() + 2500;
                 const earliest = Date.now() + 200;
@@ -659,7 +667,7 @@ def test_a12_visible_controls_post_or_are_ui_only(audit_server):
                   await new Promise(r => setTimeout(r, 30));
                   if (posts.length === last) stable += 1;
                   else { last = posts.length; stable = 0; }
-                  if (Date.now() >= earliest && stable >= 3) break;
+                  if (Date.now() >= earliest && stable >= 3 && (!waitForPost || posts.length > started)) break;
                 }
                 return posts.length ? posts[posts.length - 1] : '';
               }
@@ -705,7 +713,7 @@ def test_a12_visible_controls_post_or_are_ui_only(audit_server):
                   el.dispatchEvent(new Event('input', { bubbles: true }));
                   el.dispatchEvent(new Event('change', { bubbles: true }));
                 }
-                const body = await settle();
+                const body = await settle(el.id === 'slAddPanel');
                 const mat = el.getAttribute && el.getAttribute('data-material');
                 if (mat && body !== prev) materialPosted = true;
                 if (body === prev && !uiOnly(el)) quiet.push(labelOf(el));

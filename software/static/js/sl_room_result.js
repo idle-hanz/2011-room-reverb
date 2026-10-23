@@ -56,9 +56,10 @@
       if (m[0] === "surfaces" && SL_STAGE >= 3) b.title = "Surfaces in Play";
       b.addEventListener("click", function () {
         var s = st(); if (!s || b.disabled) return;
+        var enter = m[0] === "surfaces" && s.decay_mode !== "surfaces";
         s.decay_mode = m[0];
         s.surf_directional = m[0] === "surfaces";
-        paintMode(); schedule();
+        paintMode(enter); schedule();
         if (window.RRPushLive) window.RRPushLive();
       });
       mode.appendChild(b);
@@ -121,7 +122,22 @@
     if (typeof orig2 === "function") c.setSurfaces = function () { var r = orig2.apply(this, arguments); schedule(); return r; };
   }
 
-  function paintMode() {
+  function pushRows() {
+    paintRows();
+    schedule();
+    if (window.RRPushLive) window.RRPushLive();
+  }
+
+  function addRoomShell() {
+    ["A", "B", "C", "D"].forEach(function (w) {
+      if (rows().some(function (r) { return r.type === "shell" && r.face === w; })) return;
+      var room = MAX_COVER - faceCover(w); if (room < 0.05) return;
+      rows().push({ id: "shell_" + w, face: w, type: "shell", f0: 90, q: 1, amax: 0.35, coverage: Math.min(0.3, room), on: true, assumed: true, build: "room shell (doors, glazing, stud walls)" });
+    });
+  }
+
+  function paintMode(entered) {
+    if (entered && SL_STAGE >= 5) { addRoomShell(); paintRows(); }
     var s = st(); var m = (s && s.decay_mode) || "flat";
     Array.prototype.forEach.call(document.querySelectorAll("#slDecayMode button"), function (b) {
       if (!b.dataset.mode) return;
@@ -149,7 +165,7 @@
     line.dataset.id = r.id;
     if (!suggested) {
       var on = el("input"); on.type = "checkbox"; on.checked = r.on !== false; on.title = "On / off"; on.className = "sl-on";
-      on.addEventListener("change", function () { r.on = on.checked; paintRows(); schedule(); });
+      on.addEventListener("change", function () { r.on = on.checked; pushRows(); });
       line.appendChild(on);
     } else line.appendChild(el("span", "sl-face", r.face));
     line.appendChild(el("span", "sl-kind", rowLabel(r)));
@@ -162,13 +178,13 @@
       var lim = Math.max(0, MAX_COVER - other);
       r.coverage = Math.round(Math.min(want, lim) * 1000) / 1000;
       if (want > lim + 1e-9) flash("Face " + r.face + " can hold at most 90 % treatment.");
-      paintRows(); schedule();
+      pushRows();
     });
     line.appendChild(cov); line.appendChild(el("span", "sl-unit", "%"));
     line.appendChild(el("span", "sl-area", (Number(r.coverage) * A).toFixed(1) + " m\u00b2"));
     if (!suggested) {
       var x = el("button", "chip sl-x", "\u00d7"); x.type = "button"; x.title = "Remove row";
-      x.addEventListener("click", function () { var L = rows(); var i = L.indexOf(r); if (i >= 0) L.splice(i, 1); paintRows(); schedule(); });
+      x.addEventListener("click", function () { var L = rows(); var i = L.indexOf(r); if (i >= 0) L.splice(i, 1); pushRows(); });
       line.appendChild(x);
     } else {
       var acc = el("button", "chip", "Accept"); acc.type = "button";
@@ -201,7 +217,7 @@
       if (k === "E") { flash("Porous panels are wall and ceiling only (library rule)."); return; }
       var room = MAX_COVER - faceCover(k); if (room < 0.01) { flash("Face " + k + " is full (90 %)."); return; }
       rows().push({ id: uid("por"), face: k, type: "porous", material: sel.value, coverage: Math.round(Math.min(0.25, room) * 1000) / 1000, on: true, build: sel.options[sel.selectedIndex].text });
-      paintRows(); schedule();
+      pushRows();
     });
     var f0 = el("input"); f0.type = "number"; f0.min = "30"; f0.max = "299"; f0.step = "1"; f0.value = "125"; f0.id = "slPanelF0";
     var bt = el("button", "chip", "+ Tuned panel"); bt.type = "button"; bt.id = "slAddPanel";
@@ -212,18 +228,14 @@
         var r = d.row; r.face = k; r.suggested = false; r.id = uid("pan");
         var room = MAX_COVER - faceCover(k); r.coverage = Math.round(Math.min(r.coverage, room) * 1000) / 1000;
         if (r.coverage <= 0) { flash("Face " + k + " is full (90 %)."); return; }
-        rows().push(r); paintRows(); schedule();
+        rows().push(r); pushRows();
       }).catch(function (e) { flash(String(e)); });
     });
     var bs = el("button", "chip", "+ Room shell (walls)"); bs.type = "button"; bs.id = "slAddShell";
     bs.title = "D-SL6: doors, glazing, stud walls as a 90 Hz membrane on 30 % of each wall (ASSUMED)";
     bs.addEventListener("click", function () {
-      ["A", "B", "C", "D"].forEach(function (w) {
-        if (rows().some(function (r) { return r.type === "shell" && r.face === w; })) return;
-        var room = MAX_COVER - faceCover(w); if (room < 0.05) return;
-        rows().push({ id: "shell_" + w, face: w, type: "shell", f0: 90, q: 1, amax: 0.35, coverage: Math.min(0.3, room), on: true, assumed: true, build: "room shell (doors, glazing, stud walls)" });
-      });
-      paintRows(); schedule();
+      addRoomShell();
+      pushRows();
     });
     add.appendChild(sel); add.appendChild(bp); add.appendChild(f0); add.appendChild(el("span", "sl-unit", "Hz")); add.appendChild(bt); add.appendChild(bs);
     box.appendChild(add);
@@ -249,7 +261,7 @@
       if (c > 0) { var rr = JSON.parse(JSON.stringify(r)); rr.suggested = false; rr.coverage = Math.round(c * 1000) / 1000; rr.id = uid("acc"); rows().push(rr); }
       var i = L.indexOf(r); if (i >= 0) L.splice(i, 1);
     });
-    paintSuggest(); paintRows(); schedule();
+    paintSuggest(); pushRows();
   }
   function paintSuggest() {
     var box = document.getElementById("slSuggest"); if (!box) return;

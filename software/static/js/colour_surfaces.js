@@ -1100,6 +1100,52 @@
     this.onChange();
   };
 
+  /** Paints one library set onto the six faces. Does not change the boot cards. */
+  ColourSurfaces.prototype.applySet = function (id) {
+    var set = null;
+    var sets = this.materialSets || [];
+    var i;
+    for (i = 0; i < sets.length; i++) if (sets[i].id === id) set = sets[i];
+    if (!set || !set.faces) return;
+    var surfs = this.surfaces();
+    var self = this;
+    LETTERS.forEach(function (L) {
+      var mat = self._materialById(set.faces[L]);
+      if (!mat || !self._legal(mat, L) || !surfs[L]) return;
+      var card = surfs[L];
+      card.absorb = (mat.absorb || []).slice();
+      card.material = mat.id;
+      card.material_name = mat.display_name || mat.id;
+      card.honesty = mat.honesty || "";
+      if (card.eq) {
+        card.eq.low_shelf_db = 0;
+        card.eq.high_shelf_db = 0;
+        card.eq.peak_db = 0;
+      }
+      card.assumed = true;
+    });
+    this.select(this.selected);
+    this.onChange();
+  };
+
+  ColourSurfaces.prototype._buildSetChips = function () {
+    var host = document.getElementById("materialSets");
+    if (!host) return;
+    host.querySelectorAll("[data-set]").forEach(function (n) { n.remove(); });
+    var self = this;
+    (this.materialSets || []).forEach(function (set) {
+      var btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "chip";
+      btn.setAttribute("data-set", set.id);
+      btn.textContent = set.display_name || set.id;
+      btn.title = (set.display_name || set.id) + "\n" + (set.honesty || "") +
+        "\n" + (set.note || "Paints every face. A new scene still starts on the plaster-ish cards.");
+      btn.addEventListener("click", function () { self.applySet(set.id); });
+      host.appendChild(btn);
+    });
+  };
+
   ColourSurfaces.prototype._buildMaterialChips = function () {
     var host = document.getElementById("materialChips");
     if (!host) return;
@@ -1126,8 +1172,10 @@
     var self = this;
     fetch("/api/surface_materials").then(function (r) { return r.json(); }).then(function (data) {
       self.materials = (data && data.materials) || [];
+      self.materialSets = (data && data.sets) || [];
       if (data && data.letter_role) self.letterRole = data.letter_role;
       self._buildMaterialChips();
+      if (typeof self._buildSetChips === "function") self._buildSetChips();
     }).catch(function () {});
   };
 

@@ -46,6 +46,7 @@ from surface_colour import (
     DEFAULT_LAMBDA_REF_M,
     colour_from_stereo,
     default_surfaces,
+    load_material_sets,
     materials_public,
     mute_flags,
     parse_diffusion_seed,
@@ -1400,6 +1401,7 @@ def api_surface_materials():
         "ok": True,
         "letter_role": LETTER_ROLE,
         "materials": materials_public(),
+        "sets": load_material_sets(),
     }
 
 
@@ -1425,6 +1427,23 @@ def api_room_result(body: dict):
     out["face_alpha"] = face_alpha
     out["ok"] = True
     return out
+
+
+@app.post("/api/make_panel")
+def api_make_panel(body: dict):
+    """SL5. One tuned row for the Treatment list. Below 300 Hz, else null.
+
+    The page puts the row on the selected face. Helmholtz stays on the
+    formula f0 and Q 3.
+    """
+    import surf_autotreat as _AT
+    p = params_from_body(body or {})
+    try:
+        f0 = float((body or {}).get("f0"))
+    except (TypeError, ValueError):
+        raise BadParam("f0")
+    accepted = [r for r in (p.get("surf_treatment") or []) if not r.get("suggested")]
+    return {"ok": True, "row": _AT.make_it_a_panel(f0, p["W"], p["H"], p["L"], accepted)}
 
 
 def _impulse_render(p: dict, **over):
