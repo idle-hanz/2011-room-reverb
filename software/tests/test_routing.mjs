@@ -101,8 +101,25 @@ test("master menu from off to room crush arms amount 100", () => {
   const stored = { ...off, route_master_comp: "room_crush", route_master_amount: 0 };
   assert.deepEqual(R.masterScene(stored), {});
   const array = { ...off, route_array_comp: "glue", route_array_amount: 0 };
-  R.armMaster(array, "off");
-  assert.equal(array.route_array_amount, 0);
+  R.armStrip(array, "array", "off");
+  assert.equal(array.route_array_amount, 100);
+  const arrayScene = R.renderScene(array);
+  assert.equal(arrayScene.array_preset, "glue");
+  assert.equal(arrayScene.array_amount, 100);
+  const storedArray = { ...off, route_array_comp: "glue", route_array_amount: 0 };
+  R.armStrip(storedArray, "array", "glue");
+  assert.equal(storedArray.route_array_amount, 0);
+  assert.deepEqual(R.renderScene(storedArray), {});
+  const room = { ...off, route_room_comp: "room_crush", route_room_amount: 0 };
+  R.armStrip(room, "room", "off");
+  assert.equal(room.route_room_amount, 100);
+  const roomScene = R.renderScene(room);
+  assert.equal(roomScene.room_preset, "room_crush");
+  assert.equal(roomScene.room_amount, 100);
+  const storedRoom = { ...off, route_room_comp: "room_crush", route_room_amount: 0 };
+  R.armStrip(storedRoom, "room", "room_crush");
+  assert.equal(storedRoom.route_room_amount, 0);
+  assert.deepEqual(R.renderScene(storedRoom), {});
   const pre = { ...off, route_master_pre: "neve1073", route_master_drive: 6, route_master_comp: "off" };
   R.armMaster(pre, "off");
   assert.equal(pre.route_master_amount, 0);
@@ -135,6 +152,19 @@ test("a route_master change posts live params", () => {
   assert.equal(state.route_master_amount, 100);
   assert.equal(R.masterScene(state).bloom_preset, "room_crush");
   assert.equal(R.masterScene(state).bloom_amount, 100);
+  onRoute({ target: { id: "route_array_comp", value: "glue" } });
+  assert.equal(state.route_array_amount, 100);
+  assert.equal(R.renderScene(state).array_preset, "glue");
+  assert.equal(R.renderScene(state).array_amount, 100);
+  assert.equal(state.route_master_amount, 100);
+  onRoute({ target: { id: "route_room_comp", value: "nuke" } });
+  assert.equal(state.route_room_amount, 100);
+  assert.equal(R.renderScene(state).room_preset, "nuke");
+  assert.equal(R.renderScene(state).room_amount, 100);
+  onRoute({ target: { id: "route_array_pre", value: "neve1073" } });
+  assert.equal(state.route_array_drive, 0);
+  assert.equal(R.renderScene(state).array_pre, "neve1073");
+  assert.equal(R.renderScene(state).array_drive_db, 0);
 });
 
 function loadPackRoom() {

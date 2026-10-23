@@ -3379,7 +3379,12 @@
       var prev = state[id];
       if (id.indexOf("_drive") > 0 || id.indexOf("_amount") > 0) state[id] = Number(v);
       else state[id] = v;
-      if (id === "route_master_comp" && window.RRRouting && RRRouting.armMaster) {
+      var armName = id === "route_array_comp" ? "array"
+        : id === "route_room_comp" ? "room"
+        : id === "route_master_comp" ? "master" : "";
+      if (armName && window.RRRouting && RRRouting.armStrip) {
+        RRRouting.armStrip(state, armName, prev);
+      } else if (id === "route_master_comp" && window.RRRouting && RRRouting.armMaster) {
         RRRouting.armMaster(state, prev);
       }
       syncUI();

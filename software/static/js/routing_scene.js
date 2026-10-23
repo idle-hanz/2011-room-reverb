@@ -71,16 +71,21 @@
     return src;
   }
 
-  function armMaster(src, prevComp) {
-    /* Menu change only. A stored Amount 0 is left alone unless the
-       master comp moves from Off onto a preset. */
+  function armStrip(src, name, prevComp) {
+    /* Menu change only. A stored Amount 0 stays 0 unless this strip's
+       comp moves from Off onto a preset. */
     if (!src) return src;
+    if (name !== "array" && name !== "room" && name !== "master") return src;
     var prev = compName(prevComp);
-    var next = compName(src.route_master_comp);
-    if (prev === "off" && next !== "off" && num(src.route_master_amount, 0) <= 0) {
-      src.route_master_amount = 100;
+    var next = compName(src["route_" + name + "_comp"]);
+    if (prev === "off" && next !== "off" && num(src["route_" + name + "_amount"], 0) <= 0) {
+      src["route_" + name + "_amount"] = 100;
     }
     return src;
+  }
+
+  function armMaster(src, prevComp) {
+    return armStrip(src, "master", prevComp);
   }
 
   function masterScene(src) {
@@ -116,5 +121,5 @@
     return o;
   }
 
-  return { migrate: migrate, armMaster: armMaster, masterScene: masterScene, renderScene: renderScene };
+  return { migrate: migrate, armMaster: armMaster, armStrip: armStrip, masterScene: masterScene, renderScene: renderScene };
 });

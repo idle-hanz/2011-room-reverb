@@ -4,7 +4,7 @@ Read this instead of `HANDOVER.md`. The Current pin in `HANDOVER.md` still wins 
 
 ## Pins
 
-ROUTING R2 landed 2026-10-23 (Play array and room). `WORKLET_VER` 62. `live_fdn.js?v=62`. `app.js?v=69`. `pack_room.js?v=54`. `app.css?v=37`. `routing_scene.js?v=2`. Wasm sha1 `c1b86fcbe1c930bc312e291f7279e78787c00076` (380643 bytes). `live_stereo.c` sha1 `7b7ce352100e5e9a65d597decb764cf3714158b5`. `bloom_live.inc` sha1 `a3b508245f026fad9a222c07894145ff8f5ea765`.
+ROUTING R2 landed 2026-10-23 (Play array and room). `WORKLET_VER` 62. `live_fdn.js?v=62`. `app.js?v=70`. `pack_room.js?v=54`. `app.css?v=37`. `routing_scene.js?v=3`. Wasm sha1 `c1b86fcbe1c930bc312e291f7279e78787c00076` (380643 bytes). `live_stereo.c` sha1 `7b7ce352100e5e9a65d597decb764cf3714158b5`. `bloom_live.inc` sha1 `a3b508245f026fad9a222c07894145ff8f5ea765`.
 
 Off path held: empty MD5 `b6c55d429fa63d6d0d3cd1fcc7d23e88`, centre MD5 `b3e6bcd9dfa13ad737d2b15d561f7d30`, `GOLDEN_META` `a362cf5e490089807b39346ba207633b88511548`. Five golden sha1s are in `software\tests\test_quick_pins.py`.
 
