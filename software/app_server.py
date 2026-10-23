@@ -650,7 +650,7 @@ def params_from_body(body: dict) -> dict:
         ),
         "surf_treatment": _surf_treatment(body.get("surf_treatment")),
         "surf_cal": _surf_cal(body.get("surf_cal")),
-        # SL2 is room average. Directional (D-SL2) belongs to SL4.
+        # Missing stays room average. Surfaces mode posts true (D-SL2).
         "surf_directional": _b(body.get("surf_directional") if "surf_directional" in body else False, False),
         # Missing key is ON. Parity, flat, mirror/null, and direct-only store off.
         "smooth": bool(smooth_on),
@@ -1258,8 +1258,8 @@ def _render_impl(
             room_shape=p.get("room_shape"),
             surf_treatment=p.get("surf_treatment"),
             surf_cal=p.get("surf_cal"),
-            # This session is room average. A posted True waits for SL4.
-            surf_directional=False,
+            # SL4. Missing or false stays room average. Surfaces-only.
+            surf_directional=bool(p.get("surf_directional")),
             prox_l=bool(p.get("prox_l", True)),
             prox_c=bool(p.get("prox_c", True)),
             prox_r=bool(p.get("prox_r", True)),
@@ -1425,6 +1425,70 @@ def api_room_result(body: dict):
     out["face_alpha"] = face_alpha
     out["ok"] = True
     return out
+
+
+def _impulse_render(p: dict, **over):
+    """One-sample Render of a scene. Same kwargs the slow SL tests use."""
+    import inspect
+    import numpy as np
+    dry = np.zeros(1, dtype=np.float64)
+    dry[0] = 1.0
+    kw = {n: p[n] for n in inspect.signature(render).parameters if n not in ("dry", "sr") and n in p}
+    kw["desk"] = p
+    kw.update(over)
+    yl, yr, info = render(dry, 48000, **kw)
+    ir = np.stack([np.asarray(yl, float), np.asarray(yr, float)], 1)
+    return ir, info
+
+
+@app.post("/api/surf_calibrate")
+def api_surf_calibrate(body: dict):
+    """D-SL4. One impulse Render, T20 per octave, factors, a second Render.
+
+    Surfaces only. Stores nothing itself: the page keeps surf_cal on the scene
+    and Play posts that list. Factors stay inside 0.6-1.6. A band that gets
+    more than 10 points worse is refused and the factors are not returned.
+    """
+    import numpy as np
+    import surf_loop as _SL
+    if not _render_lock.acquire(blocking=False):
+        return JSONResponse({"ok": False, "error": "render busy"}, status_code=409)
+    try:
+        p = params_from_body(body or {})
+        if str(p.get("decay_mode") or "flat").lower() != "surfaces":
+            return {"ok": False, "error": "Calibrate is Surfaces only"}
+        directional = bool(p.get("surf_directional"))
+        ir0, info0 = _impulse_render(p, surf_directional=directional, surf_cal=None)
+        surf0 = info0.get("surf") or {}
+        target = surf0.get("target_T_oct")
+        if not target:
+            return {"ok": False, "error": "no Surfaces target"}
+        t20_before = _SL.t20_per_octave(ir0.sum(1))
+        cal = _SL.calibration_factors(t20_before, target)
+        ir1, info1 = _impulse_render(p, surf_directional=directional, surf_cal=cal)
+        t20_after = _SL.t20_per_octave(ir1.sum(1))
+        tgt = np.asarray(target, float)
+        before = np.abs(np.asarray(t20_before, float) / tgt - 1.0)
+        after = np.abs(np.asarray(t20_after, float) / tgt - 1.0)
+        finite = np.isfinite(before) & np.isfinite(after)
+        if finite.any() and bool(np.any(after[finite] > before[finite] + 0.10)):
+            return {"ok": False, "error": "calibration made a band worse by more than 10 points"}
+        bands = [int(x) for x in _SL.OCT]
+        n_ok = int(np.sum(finite & (after <= 0.10))) if finite.any() else 0
+        return {
+            "ok": True,
+            "surf_cal": cal,
+            "surf_directional": directional,
+            "rendered_t20": {"f": bands, "t20": [None if not np.isfinite(x) else round(float(x), 4) for x in t20_after]},
+            "n_within_10": n_ok,
+            "n_bands": int(len(tgt)),
+        }
+    except BadParam:
+        raise
+    except Exception as e:
+        return JSONResponse({"ok": False, "error": f"Calibrate failed: {e}"}, status_code=500)
+    finally:
+        _render_lock.release()
 
 
 @app.post("/api/phys_preview")

@@ -2,7 +2,9 @@
    Auto-treat suggestions (Accept / Discard). Standalone; talks to /api/room_result, /api/auto_treat,
    /api/make_panel. Needs window.RRState (app.js state) and window.RRColourSurfaces (the Surfaces tab
    instance): in the box copy one hook line in app.js syncUINow() sets both.
-   State it owns: state.decay_mode ("flat" | "surfaces"), state.surf_treatment (rows, suggested:false),
+   State it owns: state.decay_mode ("flat" | "surfaces"), state.surf_directional,
+   state.surf_cal (seven factors from Calibrate; Play posts the same list),
+   state.surf_treatment (rows, suggested:false),
    state.surf_suggestions (rows, suggested:true, never posted as treatment). */
 (function () {
   "use strict";
@@ -54,11 +56,18 @@
       if (m[0] === "surfaces" && SL_STAGE >= 3) b.title = "Surfaces in Play";
       b.addEventListener("click", function () {
         var s = st(); if (!s || b.disabled) return;
-        s.decay_mode = m[0]; paintMode(); schedule();
+        s.decay_mode = m[0];
+        s.surf_directional = m[0] === "surfaces";
+        paintMode(); schedule();
         if (window.RRPushLive) window.RRPushLive();
       });
       mode.appendChild(b);
     });
+    var cal = el("button", "chip", "Calibrate"); cal.type = "button"; cal.id = "slCalibrate";
+    cal.title = "Render an impulse, measure T20, scale the band losses once, Render again. Play reuses the factors.";
+    cal.hidden = true;
+    cal.addEventListener("click", function () { calibrate(); });
+    mode.appendChild(cal);
     mode.appendChild(el("span", "hint", SL_STAGE < 3
       ? "Surfaces = the materials and treatment set the decay per band. Render only. Play: Render only until SL3."
       : "Surfaces = the materials and treatment set the decay per band. Surfaces in Play."));
@@ -115,8 +124,11 @@
   function paintMode() {
     var s = st(); var m = (s && s.decay_mode) || "flat";
     Array.prototype.forEach.call(document.querySelectorAll("#slDecayMode button"), function (b) {
+      if (!b.dataset.mode) return;
       b.setAttribute("aria-pressed", b.dataset.mode === m ? "true" : "false"); b.classList.toggle("on", b.dataset.mode === m);
     });
+    var cal = document.getElementById("slCalibrate");
+    if (cal) cal.hidden = SL_STAGE < 4 || m !== "surfaces";
     var p = document.getElementById("slRoomResult"); if (p) p.classList.toggle("sl-flat", m === "flat");
   }
   function paintToggles() {
@@ -261,6 +273,26 @@
   }
 
   /* ---------------------------------------------------------------- Room result */
+  function calibrate() {
+    var s = st();
+    if (!s || s.decay_mode !== "surfaces") { flash("Calibrate is Surfaces only"); return; }
+    if (view.calBusy) return;
+    view.calBusy = true;
+    var btn = document.getElementById("slCalibrate");
+    if (btn) btn.disabled = true;
+    s.surf_directional = true;
+    post("/api/surf_calibrate").then(function (d) {
+      if (!d || !d.ok) { flash((d && d.error) || "Calibrate failed"); return; }
+      s.surf_cal = d.surf_cal;
+      if (d.rendered_t20) s.surf_rendered_t20 = d.rendered_t20;
+      if (window.RRPushLive) window.RRPushLive();
+      draw();
+      var n = (d.n_within_10 != null) ? (d.n_within_10 + "/" + d.n_bands + " within \u00b110 %") : "stored";
+      flash("Calibrated \u00b7 " + n);
+    }).catch(function (e) { flash(String(e)); })
+      .then(function () { view.calBusy = false; if (btn) btn.disabled = false; });
+  }
+
   function schedule() {
     clearTimeout(view.timer);
     view.timer = setTimeout(refresh, 120);

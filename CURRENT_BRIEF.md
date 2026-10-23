@@ -1,10 +1,12 @@
 # Current brief (2026-10-23)
 
-Read this instead of `HANDOVER.md`. The Current pin in `HANDOVER.md` still wins if this page and that pin disagree. Prompts live in `handoff_build_support_2\roadmap\thursday_prompts\`. Next run: `BACKLOG_F_SURFACES_RESCOPE_RUN.md`. One goal per run. `RUN_RULES.md` in that folder.
+Read this instead of `HANDOVER.md`. The Current pin in `HANDOVER.md` still wins if this page and that pin disagree. Prompts live in `handoff_build_support_2\roadmap\thursday_prompts\`. Next run: `SL5_treatment_rows.md` (already written). One goal per run. `RUN_RULES.md` in that folder.
 
 ## Pins
 
 ROUTING R2 landed 2026-10-23 (Play array and room). Off-axis tail colour landed 2026-10-23, key `offaxis_tail`, default off. Movement un-forced 2026-10-23. The Room knob is visible. Default stays 0. Shared-off at knob 100 measured 1.876 ms. `WORKLET_VER` 63. `live_fdn.js?v=63`. `app.js?v=72`. `pack_room.js?v=55`. `app.css?v=37`. `routing_scene.js?v=3`. `room_editor.js?v=20`. Wasm sha1 `555414f1cf3df653f285f1bacdc7f68022594124` (393117 bytes). `live_stereo.c` sha1 `c7bdd7949885bbcefac3c073900a10c24114dc88`. `bloom_live.inc` sha1 `a3b508245f026fad9a222c07894145ff8f5ea765`.
+
+SL4 (2026-10-23): Surfaces posts `surf_directional`. Calibrate (`POST /api/surf_calibrate`) stores seven `surf_cal` factors on the scene. Play reuses that list and the face hits. Flat, and a missing flag, stay room average. `sl_room_result.js?v=4`. `RR_SL_STAGE` 4. s′ stays 0.5. The untreated-plaster EDT/T30 gap vs Flat still fails the 0.15 rule at 2 kHz, 4 kHz and 8 kHz (xfail). A/B 3 and 4 already put directional against room average at ≤ 1 dB, so directional ships. `software\proof\sl4_directional_results.json`.
 
 D-UI38 (2026-10-23): a missing mic id is Neumann U87 Ai cardioid on L, C and R. Empty MD5 `b20cf5dc675f613992aa6a31c2cd74f4`, centre MD5 `ba1bbc6d386ed75bf484156f08043f37`, two-source key-absent `0e11f5ce3415eb555a61655c6c0e6737`, two-source explicit false `8ea544b008a4677b94a3a553c6a2f39b`, `GOLDEN_META` `52bfce749715e335d8fa2418a16e8593e9a54040`. Coloured Play goldens moved. Bypass Play goldens and the Render BYPASS golden held. Five golden sha1s are in `software\tests\test_quick_pins.py`. Explicit SM57 still hashes to the old empty and centre MD5s.
 
@@ -18,7 +20,7 @@ Play is a rough preview and must fit 2.40 ms. It may use lower Bloom and preamp 
 
 ## Do not touch
 
-Do not retune 1/r, the 0.55 Direct fold, the desk, makeup freeze, source-distance makeup, Smooth, the limiter, or the decay lock. Do not force Play and Render onto one decay-lock `g`. Do not retune 610-A or chase its 9 kHz spike. Do not re-pin the five goldens on a bare continue. Do not start Phase 4, SL4, T9b, S-OUT, scatter, smear, or CPU fallbacks (c) and (d). Do not retune the Movement curve. The knob default stays 0. `c` stays 340. Do not flip L/R or floor X. Do not fold B into A's tank. Do not edit the original `.ens` files. Do not wire A–F bit tables into the audio path.
+Do not retune 1/r, the 0.55 Direct fold, the desk, makeup freeze, source-distance makeup, Smooth, the limiter, or the decay lock. Do not force Play and Render onto one decay-lock `g`. Do not retune 610-A or chase its 9 kHz spike. Do not re-pin the five goldens on a bare continue. Do not start Phase 4, T9b, S-OUT, scatter, smear, or CPU fallbacks (c) and (d). Do not retune the Movement curve. The knob default stays 0. `c` stays 340. Do not flip L/R or floor X. Do not fold B into A's tank. Do not edit the original `.ens` files. Do not wire A–F bit tables into the audio path.
 
 2026-10-23 Idle: routing preamps and compressors are shelved. Preamps distort badly and the compressors don't sound nice. Leave the code as is, default off, and no runs touch it until Idle asks.
 
@@ -33,7 +35,7 @@ From `software\`:
 ```
 .\.venv\Scripts\python.exe -m pytest tests\test_quick_pins.py -q -p no:cacheprovider
 .\.venv\Scripts\python.exe engine\selfcheck.py
-node --test *.mjs
+node --test (Get-ChildItem tests\*.mjs | % FullName)
 ```
 
 Add `pytest` for the test file you touched. Leave `test_b2_render_length.py` out.

@@ -2663,8 +2663,9 @@ def _render_ceiling(*args, **kw):
     """Flat (2011) calls _render_core unchanged.
 
     decay_mode "surfaces" designs per-line attenuation sections and passes
-    them to every FDN bus. SL2 is room average (surf_directional False).
-    Directional rates are SL4 and stay off unless the caller passes True.
+    them to every FDN bus. A missing surf_directional stays room average.
+    True uses per-line face hits with s' at least 0.5 (D-SL2). surf_cal is
+    the one Render pass (D-SL4), seven factors, Play reuses the stored list.
 
     phys_ceiling uses that same section path. The server default is on.
     This pop stays False for a direct caller that omits the key. The pack is
@@ -2862,7 +2863,18 @@ def _sos_from_spec(spec, room, taps, rate, n_had, line_t60, peaking, taps_b=None
                 dtype=np.float64,
             )
             peaks = [line_peak(i) for i in range(n_had)]
-            hits = [[] for _ in range(n_had)]
+            if spec.get("directional"):
+                from surface_colour import surfaces_hit_by_n
+                n_t = len(tapset) if tapset else 0
+                hits = []
+                for i in range(n_had):
+                    if n_t:
+                        n = getattr(tapset[i % n_t], "n", (0, 0, 0))
+                        hits.append(surfaces_hit_by_n(n))
+                    else:
+                        hits.append([])
+            else:
+                hits = [[] for _ in range(n_had)]
             rates = np.asarray(spec["rates_for"](dly, rate, hits), dtype=np.float64)
             res = _SLP.design_bus(dly, rate, lg, peaks, rates, spec.get("struct", "S1P2"))
             for g in res.get("guard") or []:
@@ -2925,16 +2937,16 @@ def _ceiling_spec(p, room, surfaces, line_t60):
     return _SLP.phys_ceiling_pack(
         W, H, L, cards, float(line_t60), True, mode,
         float(p.get("humidity") or 0.0),
-        directional=False,
-        cal=p.get("surf_cal"),
+        directional=bool(p.get("surf_directional")) if mode else False,
+        cal=p.get("surf_cal") if mode else None,
     )
 
 
 def _live_surf_pack(p, room, surfaces, taps, rate, n_had, line_t60, peaking, taps_b=None):
     """SL3. Per-bus S1P2 for Play. Flat, lock-off, and N other than 32 return None.
 
-    Room average only (directional False). A posted True waits for SL4.
-    D-SL3 keeps an axis whose mode is under 30 Hz. Loop gain at or above 0 dB
+    Directional only when the scene posts it (D-SL2). Flat stays the room
+    pack with empty hits. D-SL3 keeps an axis whose mode is under 30 Hz. Loop gain at or above 0 dB
     leaves Surfaces off. That guard is not the C Jury check.
 
     phys_ceiling on, lock armed, N 32: the same designer, fed by
@@ -2961,7 +2973,7 @@ def _live_surf_pack(p, room, surfaces, taps, rate, n_had, line_t60, peaking, tap
         hum = float(p.get("humidity") or 0.0)
         spec = _SLP.make_spec(
             W, H, L, cards, hum, float(line_t60),
-            directional=False,
+            directional=bool(p.get("surf_directional")),
             cal=p.get("surf_cal"),
         )
         return _sos_from_spec(
