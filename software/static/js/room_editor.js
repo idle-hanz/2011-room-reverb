@@ -139,6 +139,17 @@
 
     function floorLayout(geo) {
       const W = geo.state.W, L = geo.state.L, pad = 52;
+      const held = drag && drag.kind === "wall" && drag.ctx && drag.ctx.lay;
+      if (held) {
+        const l = drag.ctx.lay;
+        const ox = drag.view ? drag.view.ox : l.ox;
+        const oy = drag.view ? drag.view.oy : l.oy;
+        return {
+          W: W, L: L, scale: l.scale,
+          ox: ox, oy: oy,
+          rw: W * l.scale, rh: L * l.scale,
+        };
+      }
       const cw = floorCanvas.width, ch = floorCanvas.height;
       const scale = Math.min((cw - pad * 2) / W, (ch - pad * 2) / L);
       const rw = W * scale, rh = L * scale;
@@ -150,6 +161,16 @@
     }
     function elevLayout(geo) {
       const L = geo.state.L, H = geo.state.H, padX = 52, padY = 28;
+      const held = drag && drag.kind === "ceiling" && drag.ctx && drag.ctx.lay;
+      if (held) {
+        const l = drag.ctx.lay;
+        const oy = drag.view ? drag.view.oy : l.oy;
+        return {
+          L: L, H: H, scale: l.scale,
+          ox: l.ox, oy: oy,
+          rw: L * l.scale, rh: H * l.scale,
+        };
+      }
       const cw = elevCanvas.width, ch = elevCanvas.height;
       const scale = Math.min((cw - padX * 2) / L, (ch - padY * 2) / H);
       const rw = L * scale, rh = H * scale;
@@ -158,6 +179,22 @@
         ox: (cw - rw) / 2, oy: (ch - rh) / 2,
         rw: rw, rh: rh,
       };
+    }
+    /* Keep grabbed walls under the pointer while scale stays at pointer-down.
+       x0 shifts ox; z1 and the ceiling shift oy. x1 and z0 already stay put. */
+    function viewForPatch(lay, s0, patch) {
+      let ox = lay.ox, oy = lay.oy;
+      const sc = lay.scale;
+      if (patch.sx != null && s0.sx != null && isFinite(patch.sx) && isFinite(s0.sx)) {
+        ox = lay.ox + (s0.sx - patch.sx) * sc;
+      }
+      if (patch.L != null && s0.L != null && patch.sz == null) {
+        oy = lay.oy - (patch.L - s0.L) * sc;
+      }
+      if (patch.H != null && s0.H != null) {
+        oy = lay.oy - (patch.H - s0.H) * sc;
+      }
+      return { ox: ox, oy: oy };
     }
     function toPx(x, z, lay) {
       /* Ceiling view: +X right, +Z up the page (Front at top). Mic near Back/bottom. */
@@ -927,6 +964,12 @@
       if (was) onDragEnd();
     }
 
+    function mergePatch(patch) {
+      const st = Object.assign({}, getState(), patch);
+      setState(RoomMath.clampRoom(st));
+      onChange();
+    }
+
     floorCanvas.addEventListener("pointerdown", function (evt) {
       const geo = RoomMath.compute(getState());
       fl = floorLayout(geo);
@@ -941,6 +984,20 @@
         return;
       }
       const onHandle = !!hitFloor(p.x, p.y, geo);
+      const wallHit = (!onHandle && global.RRDrag && global.RRDrag.hitWall)
+        ? global.RRDrag.hitWall(p.x, p.y, fl) : null;
+      if (wallHit) {
+        drag = {
+          kind: "wall",
+          canvas: "floor",
+          ctx: global.RRDrag.beginWallDrag(getState(), wallHit, fl, p.x, p.y)
+        };
+        floorCanvas.classList.add("dragging");
+        try { floorCanvas.setPointerCapture(evt.pointerId); } catch (e) {}
+        redraw();
+        evt.preventDefault();
+        return;
+      }
       let kind = pickFloorKind(p.x, p.y, geo);
       if (evt.altKey) {
         const near = nearestSrc(p.x, p.y, geo, "floor");
@@ -981,6 +1038,13 @@
       const p = canvasPos(floorCanvas, evt);
       if (drag && drag.canvas === "floor") {
         const st0 = getState();
+        if (drag.kind === "wall" && global.RRDrag && drag.ctx) {
+          const res = global.RRDrag.wallDragTo(drag.ctx, p.x, p.y, { shift: !!evt.shiftKey, mode: "stop" });
+          drag.view = viewForPatch(drag.ctx.lay, drag.ctx.s0, res.patch);
+          mergePatch(res.patch);
+          redraw();
+          return;
+        }
         if (drag.kind === "room" && global.RRDrag) {
           const spot = roomSpotOf(st0, drag.roomCap);
           const dot = toPx(spot.x, spot.z, fl);
@@ -1037,7 +1101,12 @@
       const h = roomHover
         ? (roomHover.part === "aim" ? "roomAim:" + roomHover.cap : "room:" + roomHover.cap)
         : hitFloor(p.x, p.y, geo);
-      floorCanvas.style.cursor = (h === "srcYaw" || h === "srcBYaw" || (typeof h === "string" && h.indexOf("roomAim:") === 0)) ? "all-scroll" : "";
+      let floorCursor = (h === "srcYaw" || h === "srcBYaw" || (typeof h === "string" && h.indexOf("roomAim:") === 0)) ? "all-scroll" : "";
+      if (!floorCursor && !h && global.RRDrag && global.RRDrag.hitWall) {
+        const wh = global.RRDrag.hitWall(p.x, p.y, fl);
+        if (wh) floorCursor = global.RRDrag.cursorFor(wh) || "";
+      }
+      floorCanvas.style.cursor = floorCursor;
       if (h !== hover) {
         hover = h;
         redraw();
@@ -1058,6 +1127,20 @@
         return;
       }
       const onHandle = !!hitElev(p.x, p.y, geo);
+      const ceilHit = (!onHandle && global.RRDrag && global.RRDrag.hitCeiling)
+        ? global.RRDrag.hitCeiling(p.x, p.y, el) : null;
+      if (ceilHit) {
+        drag = {
+          kind: "ceiling",
+          canvas: "elev",
+          ctx: global.RRDrag.beginWallDrag(getState(), ceilHit, el, p.x, p.y)
+        };
+        elevCanvas.classList.add("dragging");
+        try { elevCanvas.setPointerCapture(evt.pointerId); } catch (e) {}
+        redraw();
+        evt.preventDefault();
+        return;
+      }
       const kind = pickElevKind(p.x, p.y, geo);
       lastDragged = (kind === "srcBHeight" || kind === "srcBPitch") ? "sourceB"
         : (kind === "srcHeight" || kind === "srcPitch") ? "source" : "mic";
@@ -1092,6 +1175,13 @@
       el = elevLayout(geo);
       const p = canvasPos(elevCanvas, evt);
       if (drag && drag.canvas === "elev") {
+        if (drag.kind === "ceiling" && global.RRDrag && drag.ctx) {
+          const res = global.RRDrag.ceilingDragTo(drag.ctx, p.x, p.y, el, { shift: !!evt.shiftKey });
+          drag.view = viewForPatch(drag.ctx.lay, drag.ctx.s0, res.patch);
+          mergePatch(res.patch);
+          redraw();
+          return;
+        }
         if (drag.kind === "room" && global.RRDrag && global.RRDrag.roomHeightDragTo) {
           const hm = eM(p.x, p.y, el);
           setState(global.RRDrag.roomHeightDragTo(getState(), drag.roomCap, hm.y));
@@ -1135,7 +1225,12 @@
       }
       const roomHover = pickRoomHit(roomHitsElev(p.x, p.y, geo));
       const h = roomHover ? "roomH:" + roomHover.cap : hitElev(p.x, p.y, geo);
-      elevCanvas.style.cursor = (h === "srcPitch" || h === "srcBPitch") ? "all-scroll" : "";
+      let elevCursor = (h === "srcPitch" || h === "srcBPitch") ? "all-scroll" : "";
+      if (!elevCursor && !h && global.RRDrag && global.RRDrag.hitCeiling) {
+        const chit = global.RRDrag.hitCeiling(p.x, p.y, el);
+        if (chit) elevCursor = global.RRDrag.cursorFor(chit) || "ns-resize";
+      }
+      elevCanvas.style.cursor = elevCursor;
       if (h !== hover) {
         hover = h;
         redraw();
