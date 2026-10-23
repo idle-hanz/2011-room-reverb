@@ -4,6 +4,8 @@ Open this folder as the workspace.
 
 If the user says **read handover**, **continue**, or **read HANDOVER.md**, that is the entire start: read **`HANDOVER.md`** first (the Current pin wins over later version numbers), then the skill. Read `findings/INDEX.md` only when the job is Structure or audio. Do not restart from screenshot 191.
 
+If the user names **RUN_RULES.md** or **CURRENT_BRIEF.md**, start there. Do not open `HANDOVER.md` for that run.
+
 1. Read **`HANDOVER.md`** first (Current pin, locks, wet path, what not to reshoot).
 2. Read **`.grok/skills/2011-room-reverb/SKILL.md`**.
 3. Read **`findings/INDEX.md`** only for Structure or audio.

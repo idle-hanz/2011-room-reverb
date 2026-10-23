@@ -19,3 +19,11 @@
 14. FULL tier (once, at the end): pytest WITHOUT test_b2, harness t03 + t04 (they re-render the goldens; a golden hash alone only proves the file wasn't edited), CPU delta bench. Harness t05, the acceptance pytest (and --slow) and extra CPU benches are OFF unless the prompt asks.
 15. Prompts: about 40 lines, one gate, real paths under handoff_build_support_2\roadmap\, a paste-ready QUICK command, a 20-line report. If the gate is not yet scored, the run scores it and stops.
 16. Never two audio laws in one run.
+
+## Added 2026-10-23 (Idle). Heard faults were becoming a second investigation.
+17. Two heard faults in one prompt is invalid. The builder replies in five lines and stops. The prompt bot splits the file before the next run. This replaces "do the first and stop" for a heard fault.
+18. A listen complaint is one session when the change is wiring (a key not posted, a guard, a missing forward). Read the path, quote one number from a file that already exists, and land that fix in the same session. Stop for Idle only when the change is an audio law (a makeup formula, the 610 trim, a new gain).
+19. Do not list hypotheses. One suspected cause. If a report or a wav already has the number, do not re-render to get it again.
+20. Do not ask for the app, a logged request body, and a render in one prompt. Prove keys with the node test and one render() call. Open the app only after that passes and Idle still hears nothing.
+21. Start from CURRENT_BRIEF.md. Do not reconcile HANDOVER.md or the long memory note at the start of a Thursday run.
+22. Plan mode and Step 0 stay off for a heard fault whose cause is already a backlog line. Step 0 stays on for a new numeric gate or an edit in live_stereo.c, render_pipeline.py, surf_loop.py, or the bloom DSP.

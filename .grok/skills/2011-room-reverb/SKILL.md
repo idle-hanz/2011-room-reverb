@@ -14,6 +14,8 @@ Canonical root: the folder that contains `HANDOVER.md`, `ensemble\`, `software\`
 
 ## First reads (in order)
 
+A Thursday prompt (it names `RUN_RULES.md` or `CURRENT_BRIEF.md`) starts at `CURRENT_BRIEF.md` and the prompt. Do not open `HANDOVER.md` for that run.
+
 1. `HANDOVER.md` — the **Current pin** is the live tree. Stop there if the user said continue / UI / mics / walls. A later section’s `WORKLET_VER` is that landing.
 2. `findings/INDEX.md` — only if they asked Structure or audio
 3. `findings/instrument-path-map.md` — 2011 wet spine (Structure only)

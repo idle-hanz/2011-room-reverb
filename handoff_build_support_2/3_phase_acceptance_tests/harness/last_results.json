@@ -1,56 +1,59 @@
 {
  "meta": {
   "sw": "C:\\Users\\IdleHanz\\Desktop\\2011 Room Reverb\\software",
-  "when": "2026-10-22 13:38:51",
+  "when": "2026-10-23 09:50:05",
   "node": "C:\\Users\\IdleHanz\\AppData\\Local\\Microsoft\\WinGet\\Packages\\OpenJS.NodeJS_Microsoft.Winget.Source_8wekyb3d8bbwe\\node-v26.7.0-win-x64\\node.EXE",
   "python": "C:\\Users\\IdleHanz\\Desktop\\2011 Room Reverb\\software\\.venv\\Scripts\\python.exe",
   "sha1": {
-   "engine/live_stereo.c": "b367464f82c3",
-   "static/wasm/live_stereo.wasm": "b75e2af1b171",
+   "engine/live_stereo.c": "7b7ce352100e",
+   "static/wasm/live_stereo.wasm": "c1b86fcbe1c9",
    "static/js/fdn_worklet.js": "b39ccd9178c7",
-   "render_pipeline.py": "ab478f3b435d",
+   "render_pipeline.py": "f19900a118ea",
    "engine/fdn.py": "0cc01f6a10b6"
   }
  },
  "results": [
   {
-   "test": "t03_golden_play_features_off",
+   "test": "t19_two_source_radiation_cpu",
    "status": "PASS",
-   "secs": 10.9,
+   "secs": 42.4,
    "detail": {
-    "std_unlocked_byp": {
-     "null_db": -3008.2,
-     "max_abs_diff": 0.0,
-     "tol_db": -100.0
+    "play_mean_ms": 1.642,
+    "play_median_ms": 1.636,
+    "play_p90_ms": 1.661,
+    "silence_late_mean_ms": 1.655,
+    "silence_late_median_ms": 1.646,
+    "play_spikes": 0,
+    "limit_ms": 2.4,
+    "shared_on": {
+     "play_mean_ms": 1.81,
+     "play_median_ms": 1.803,
+     "play_p90_ms": 1.837,
+     "silence_late_mean_ms": 1.822,
+     "silence_late_median_ms": 1.812,
+     "play_spikes": 0,
+     "limit_ms": 2.133
     },
-    "std_unlocked_col": {
-     "null_db": -3005.6,
-     "max_abs_diff": 0.0,
-     "tol_db": -100.0
+    "surfaces": {
+     "play_mean_ms": 1.628,
+     "play_median_ms": 1.622,
+     "play_p90_ms": 1.648,
+     "silence_late_mean_ms": 1.636,
+     "silence_late_median_ms": 1.628,
+     "play_spikes": 0,
+     "limit_ms": 2.4
     },
-    "std_lock18_byp": {
-     "null_db": -3004.6,
-     "max_abs_diff": 0.0,
-     "tol_db": -100.0
-    },
-    "std_lock18_col": {
-     "null_db": -3001.7,
-     "max_abs_diff": 0.0,
-     "tol_db": -100.0
+    "surfaces_shared_on": {
+     "play_mean_ms": 1.807,
+     "play_median_ms": 1.796,
+     "play_p90_ms": 1.835,
+     "silence_late_mean_ms": 1.808,
+     "silence_late_median_ms": 1.794,
+     "play_spikes": 0,
+     "limit_ms": 2.133
     }
    },
-   "doc": "Play IR with new features off equals the golden baseline (null <= -100 dB)."
-  },
-  {
-   "test": "t04_golden_render_features_off",
-   "status": "PASS",
-   "secs": 13.2,
-   "detail": {
-    "null_db": -3007.0,
-    "max_abs_diff": 0.0,
-    "tol_db": -100.0
-   },
-   "doc": "Render IR (BYPASS colour, 0.5 s) equals the golden baseline (null <= -100 dB)."
+   "doc": "Two directional sources, colour on. D-S5c-2 ceilings. BUDGET_MS is unchanged.\n\nShared off: one bench, ceiling 0.90 * BUDGET_MS (2.40 ms). The 12-round\npaired A/B against the pre-S5 wasm is the acceptance measurement; this\ncheck is that ceiling on one bench. Shared on: one bench, ceiling\n0.80 * BUDGET_MS (2.133 ms). Silence-late stays within 1.3x the play\nmedian and within that run's ceiling. talking_head plus trumpet_byu,\nboth SRC_RAD filters live."
   }
  ]
 }
