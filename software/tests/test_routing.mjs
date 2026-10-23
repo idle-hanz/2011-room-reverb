@@ -1,7 +1,10 @@
 // node --test test_routing.mjs
 import test from "node:test";
 import assert from "node:assert/strict";
+import fs from "node:fs";
+import path from "node:path";
 import { createRequire } from "node:module";
+import { fileURLToPath } from "node:url";
 
 const R = createRequire(import.meta.url)("../static/js/routing_scene.js");
 
@@ -102,4 +105,31 @@ test("master menu from off to room crush arms amount 100", () => {
   assert.equal(pre.route_master_amount, 0);
   assert.equal(R.masterScene(pre).pre_colour, "neve1073");
   assert.equal(R.masterScene(pre).bloom_amount, 0);
+});
+
+test("a route_master change posts live params", () => {
+  const app = fs.readFileSync(
+    path.join(path.dirname(fileURLToPath(import.meta.url)), "../static/js/app.js"),
+    "utf8"
+  );
+  const start = app.indexOf("function onRoute(e)");
+  const end = app.indexOf('panel.addEventListener("change", onRoute)', start);
+  assert.ok(start > 0 && end > start);
+  const state = { ...off };
+  const calls = [];
+  const onRoute = new Function(
+    "state", "syncUI", "scheduleLiveParams", "window", "RRRouting",
+    app.slice(start, end) + "\nreturn onRoute;"
+  )(
+    state,
+    () => calls.push("sync"),
+    () => calls.push("live"),
+    { RRRouting: R },
+    R
+  );
+  onRoute({ target: { id: "route_master_comp", value: "room_crush" } });
+  assert.deepEqual(calls, ["sync", "live"]);
+  assert.equal(state.route_master_amount, 100);
+  assert.equal(R.masterScene(state).bloom_preset, "room_crush");
+  assert.equal(R.masterScene(state).bloom_amount, 100);
 });

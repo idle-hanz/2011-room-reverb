@@ -3382,6 +3382,7 @@
         RRRouting.armMaster(state, prev);
       }
       syncUI();
+      scheduleLiveParams();
     }
     panel.addEventListener("change", onRoute);
     panel.addEventListener("input", onRoute);
