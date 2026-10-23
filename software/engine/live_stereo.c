@@ -71,6 +71,9 @@
  *     Each strip is a comp flag, 80 comp coeffs, a pre flag, and 25 pre
  *     coeffs. Pre runs, then the comp. The master chain is sections 10
  *     and 12 and stays one coeff set. Missing section is off.
+ *   14 OFFAXIS tail. 45 floats: L, C, R, each three biquads b0 b1 b2 a1 a2.
+ *     One SOS on the FDN bus sum, after side and Bloom, before fdn_wet.
+ *     Early and direct keep today's filters. Missing section is off.
  * Route (int), in order: fdn[3][32], early L/R [2][32], early B L/R [2][32],
  * direct[3], direct B[3], fdn B[3][32]. -1 is a wire. < -1 is silent.
  */
@@ -425,6 +428,11 @@ struct LiveStereo {
     double sHold[2];
     double sPr[3][9];
     float sPrHb[3][4][2][46];
+    /* Section 14. tailOn 0 is not read on the sample path.
+       3 buses x 3 biquads x 5. L then C then R. */
+    int tailOn;
+    double tailC[3][15];
+    double tailZ[3][3][2];
 };
 
 static LS_ALIGN16 float g_wre[FFTN];
@@ -1769,8 +1777,10 @@ void live_load_room(LiveStereo *st, int n) {
     int prevShared;
     unsigned prevSig;
     if (!st || st->magic != 0x2011 || n < 16) return;
-    /* Absent section 9 is off. Absent section 13 is off. Magic 1 returns early. */
+    /* Absent section 9 is off. Absent section 13 is off. Absent section 14 is off. */
     st->subHpOn = 0;
+    st->tailOn = 0;
+    ls_zero(st->tailZ, (int)sizeof(st->tailZ));
     st->sideHot = 0;
     st->sideComp[0] = st->sideComp[1] = 0;
     st->sidePre[0] = st->sidePre[1] = 0;
@@ -1903,6 +1913,14 @@ void live_load_room(LiveStereo *st, int n) {
         if (id[s] != 13) continue;
         if (ln[s] < 217 || off[s] < 0 || off[s] + ln[s] > n) continue;
         load_side_section(st, off[s]);
+    }
+    for (s = 0; s < nsec; s++) {
+        /* Section 14. 45 floats or the tail stays off. */
+        int k;
+        if (id[s] != 14) continue;
+        if (ln[s] != 45 || off[s] < 0 || off[s] + ln[s] > n) continue;
+        for (k = 0; k < 45; k++) st->tailC[k / 15][k % 15] = (double)st->blob[off[s] + k];
+        st->tailOn = 1;
     }
     finish_shared(st, prevShared, prevSig);
     st->icOn = 0;
@@ -2958,6 +2976,7 @@ static void scrub(LiveStereo *st) {
     ls_zero(st->slZ, (int)sizeof(st->slZ));
     ls_zero(st->harmZ, (int)sizeof(st->harmZ));
     ls_zero(st->subZ, (int)sizeof(st->subZ));
+    ls_zero(st->tailZ, (int)sizeof(st->tailZ));
     prox_scrub(st);
     zero_filts(st);
     bloom_scrub(st);
@@ -3542,6 +3561,159 @@ static void bloom_colour_bus(LiveStereo *st, int b, double sl, double sr,
     }
 }
 
+static void tail_sos_part(LiveStereo *st, int b, double *x) {
+    int sec, t;
+    double *c = st->tailC[b];
+    for (sec = 0; sec < 3; sec++) {
+        double b0 = c[5 * sec], b1 = c[5 * sec + 1], b2 = c[5 * sec + 2];
+        double a1 = c[5 * sec + 3], a2 = c[5 * sec + 4];
+        double z1 = st->tailZ[b][sec][0], z2 = st->tailZ[b][sec][1];
+        for (t = 0; t < PART; t++) {
+            double xv = x[t];
+            double y = b0 * xv + z1;
+            z1 = b1 * xv - a1 * y + z2;
+            z2 = b2 * xv - a2 * y;
+            x[t] = y;
+        }
+        if (z1 < 1.0e-30 && z1 > -1.0e-30) z1 = 0;
+        if (z2 < 1.0e-30 && z2 > -1.0e-30) z2 = 0;
+        st->tailZ[b][sec][0] = z1;
+        st->tailZ[b][sec][1] = z2;
+    }
+}
+
+/* tailOn only. FDN lines sum, then side, Bloom, one SOS, then fdn_wet.
+   Early and direct stay on today's filters. icOn does not call this. */
+static void mix_offaxis_bus(LiveStereo *st, int b, double sl, double sr,
+    double *accL, double *accR, int *keep) {
+    int i, t, slot;
+    double sumY[PART];
+    for (t = 0; t < PART; t++) {
+        double acc = 0.0;
+        for (i = 0; i < N; i++) acc += st->yBlk[b][i][t] + st->yBlkB[b][i][t];
+        sumY[t] = acc;
+    }
+    for (t = 0; t < PART; t++) {
+        double x = sumY[t];
+        if (st->sideHot) x = side_apply(st, b, t, x);
+        if (bloom_hot(st)) x = bloom_apply(st, b, t, x);
+        sumY[t] = x;
+    }
+    tail_sos_part(st, b, sumY);
+    if (st->rampUse) {
+        for (t = 0; t < PART; t++) sumY[t] *= st->rampBlk[RG_FDN][t];
+    } else {
+        for (t = 0; t < PART; t++) sumY[t] *= st->fdn_wet;
+    }
+    if (!st->colour_on) {
+        if (st->rampUse) {
+            for (t = 0; t < PART; t++) {
+                double direct = st->daBlk[b][t] + st->dbBlk[b][t];
+                double gl = st->rampBlk[RG_W + 2 * b][t];
+                double gr = st->rampBlk[RG_W + 2 * b + 1][t];
+                double wet = st->rampBlk[RG_DIR][t] * DIRECT_FOLD * direct
+                    + st->rampBlk[RG_MK][t] * (sumY[t] + st->rampBlk[RG_EARLY][t] * st->esBlk[b][t]);
+                accL[t] += gl * wet;
+                accR[t] += gr * wet;
+            }
+        } else {
+            for (t = 0; t < PART; t++) {
+                double direct = st->daBlk[b][t] + st->dbBlk[b][t];
+                double wet = st->direct_wet * DIRECT_FOLD * direct
+                    + st->makeup * (sumY[t] + st->early_wet * st->esBlk[b][t]);
+                accL[t] += sl * wet;
+                accR[t] += sr * wet;
+            }
+        }
+        return;
+    }
+    {
+        double directA[PART], directB[PART];
+        double ident[PART], earlyAcc[PART];
+        int map[MAX_IRS];
+        int eiBase = (b == BUS_L) ? 0 : 1;
+        for (i = 0; i < MAX_IRS; i++) map[i] = -1;
+        for (t = 0; t < PART; t++) { ident[t] = 0; earlyAcc[t] = 0; }
+        for (slot = 0; slot < MAX_FILT; slot++) {
+            for (t = 0; t < PART; t++) st->firIn[slot][t] = 0;
+        }
+        if (b != BUS_C) {
+            for (i = 0; i < N; i++) {
+                int tgt = early_target(st->fdnIdx[b], i, st->earlyIdx[eiBase][i]);
+                int tgtB = st->two ? early_target(st->fdnIdxB[b], i, st->earlyBIdx[eiBase][i]) : -2;
+                int u = usable_ir(st, tgt);
+                int uB = usable_ir(st, tgtB);
+                if (u >= 0) {
+                    int s = ensure_mapped(st, b, map, keep, u);
+                    if (s >= 0) {
+                        if (st->rampUse) {
+                            for (t = 0; t < PART; t++) st->firIn[s][t] += (float)(st->rampBlk[RG_EARLY][t] * st->eaBlk[b][i][t]);
+                        } else {
+                            for (t = 0; t < PART; t++) st->firIn[s][t] += (float)(st->early_wet * st->eaBlk[b][i][t]);
+                        }
+                    }
+                } else if (u == -1) {
+                    if (st->rampUse) {
+                        for (t = 0; t < PART; t++) ident[t] += st->rampBlk[RG_EARLY][t] * st->eaBlk[b][i][t];
+                    } else {
+                        for (t = 0; t < PART; t++) ident[t] += st->early_wet * st->eaBlk[b][i][t];
+                    }
+                }
+                if (uB >= 0) {
+                    int s = ensure_mapped(st, b, map, keep, uB);
+                    if (s >= 0) {
+                        if (st->rampUse) {
+                            for (t = 0; t < PART; t++) st->firIn[s][t] += (float)(st->rampBlk[RG_EARLY][t] * st->ebBlk[b][i][t]);
+                        } else {
+                            for (t = 0; t < PART; t++) st->firIn[s][t] += (float)(st->early_wet * st->ebBlk[b][i][t]);
+                        }
+                    }
+                } else if (uB == -1) {
+                    if (st->rampUse) {
+                        for (t = 0; t < PART; t++) ident[t] += st->rampBlk[RG_EARLY][t] * st->ebBlk[b][i][t];
+                    } else {
+                        for (t = 0; t < PART; t++) ident[t] += st->early_wet * st->ebBlk[b][i][t];
+                    }
+                }
+            }
+        }
+        for (slot = 0; slot < MAX_FILT; slot++) {
+            if (!keep[slot] || !st->filt[slot].used || st->filt[slot].bus != b || st->filt[slot].kind != 0) continue;
+            {
+                float y[PART];
+                run_fir(st, &st->filt[slot], st->firIn[slot], y);
+                for (t = 0; t < PART; t++) earlyAcc[t] += (double)y[t];
+            }
+        }
+        for (t = 0; t < PART; t++) earlyAcc[t] += ident[t];
+        for (t = 0; t < PART; t++) directA[t] = st->daBlk[b][t];
+        fir_or_wire(st, b, 1, st->directIdx[b], directA, directA);
+        if (st->two) {
+            for (t = 0; t < PART; t++) directB[t] = st->dbBlk[b][t];
+            fir_or_wire(st, b, 2, st->directBIdx[b], directB, directB);
+        } else {
+            for (t = 0; t < PART; t++) directB[t] = 0;
+        }
+        if (st->rampUse) {
+            for (t = 0; t < PART; t++) {
+                double earlyC = (b == BUS_C) ? st->rampBlk[RG_EARLY][t] * st->esBlk[b][t] : 0.0;
+                double wet = st->rampBlk[RG_DIR][t] * DIRECT_FOLD * (directA[t] + directB[t])
+                    + st->rampBlk[RG_MK][t] * (sumY[t] + earlyAcc[t] + earlyC);
+                accL[t] += st->rampBlk[RG_W + 2 * b][t] * wet;
+                accR[t] += st->rampBlk[RG_W + 2 * b + 1][t] * wet;
+            }
+        } else {
+            for (t = 0; t < PART; t++) {
+                double earlyC = (b == BUS_C) ? st->early_wet * st->esBlk[b][t] : 0.0;
+                double wet = st->direct_wet * DIRECT_FOLD * (directA[t] + directB[t])
+                    + st->makeup * (sumY[t] + earlyAcc[t] + earlyC);
+                accL[t] += sl * wet;
+                accR[t] += sr * wet;
+            }
+        }
+    }
+}
+
 static void mix_partition(LiveStereo *st, float *outL, float *outR) {
     int b, t, i, slot;
     double accL[PART], accR[PART];
@@ -3554,9 +3726,13 @@ static void mix_partition(LiveStereo *st, float *outL, float *outR) {
     }
 
     for (b = 0; b < 3; b++) {
-        double sl, sr;
+        double sl = 0.0, sr = 0.0;
         if (b == BUS_C && (st->cEmpty || st->cSkip)) continue;
         if (!st->rampUse) side(st, b, &sl, &sr);
+        if (st->tailOn && !st->icOn) {
+            mix_offaxis_bus(st, b, sl, sr, accL, accR, keep);
+            continue;
+        }
         if (!st->colour_on) {
             if (st->icOn) ic_collect(st, b, icA, icB);
             if (st->rampUse) {

@@ -145,6 +145,9 @@ def pack_room(d):
     side = d.get('side')
     if isinstance(side, (list, tuple)) and len(side) >= 217:
         parts.append((13, [num(v, 0) for v in list(side)[:217]]))
+    tail = d.get('offaxis_tail')
+    if isinstance(tail, (list, tuple)) and len(tail) == 45:
+        parts.append((14, [num(v, 0) for v in tail]))
     nsec = len(parts)
     off = 5 + 4 * nsec
     directory = []

@@ -90,6 +90,9 @@ if p.get('sub_hp'):
 # phys_ceiling is popped by render() the same way. A truthy key is on.
 if p.get('phys_ceiling'):
     kw['phys_ceiling'] = True
+# Off-axis tail. Missing or false stays off. A posted true reaches Render.
+if p.get('offaxis_tail'):
+    kw['offaxis_tail'] = True
 # H-1: the page posts the whole body as desk, including my_l / my_r / my_c.
 # An idle desk leaves XZ alone. Absent heights leave hy unset.
 if 'desk' in _sig:

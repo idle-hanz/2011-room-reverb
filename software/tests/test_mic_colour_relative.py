@@ -986,8 +986,8 @@ def test_live_colour_parity():
     assert "apply_mic=True" not in pipe
     assert "mic_one_pole_coeff" not in pipe
     stereo = (SOFTWARE / "engine" / "live_stereo.c").read_text(encoding="utf-8")
-    assert "WORKLET_VER = 62" in live_js
-    assert "live_fdn.js?v=62" in page
+    assert "WORKLET_VER = 63" in live_js
+    assert "live_fdn.js?v=63" in page
     assert "MAX_IRS = 192" in stereo
     assert "var MAX_IRS = 192" in work
     assert "Mic colour is OFF:" in live_js

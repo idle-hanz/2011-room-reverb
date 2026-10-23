@@ -1,14 +1,14 @@
 {
  "meta": {
   "sw": "C:\\Users\\IdleHanz\\Desktop\\2011 Room Reverb\\software",
-  "when": "2026-10-23 09:50:05",
+  "when": "2026-10-23 14:26:35",
   "node": "C:\\Users\\IdleHanz\\AppData\\Local\\Microsoft\\WinGet\\Packages\\OpenJS.NodeJS_Microsoft.Winget.Source_8wekyb3d8bbwe\\node-v26.7.0-win-x64\\node.EXE",
   "python": "C:\\Users\\IdleHanz\\Desktop\\2011 Room Reverb\\software\\.venv\\Scripts\\python.exe",
   "sha1": {
-   "engine/live_stereo.c": "7b7ce352100e",
-   "static/wasm/live_stereo.wasm": "c1b86fcbe1c9",
+   "engine/live_stereo.c": "c7bdd7949885",
+   "static/wasm/live_stereo.wasm": "555414f1cf3d",
    "static/js/fdn_worklet.js": "b39ccd9178c7",
-   "render_pipeline.py": "f19900a118ea",
+   "render_pipeline.py": "3f3d9f4dc7ad",
    "engine/fdn.py": "0cc01f6a10b6"
   }
  },
@@ -16,39 +16,39 @@
   {
    "test": "t19_two_source_radiation_cpu",
    "status": "PASS",
-   "secs": 42.4,
+   "secs": 43.5,
    "detail": {
-    "play_mean_ms": 1.642,
-    "play_median_ms": 1.636,
-    "play_p90_ms": 1.661,
-    "silence_late_mean_ms": 1.655,
-    "silence_late_median_ms": 1.646,
+    "play_mean_ms": 1.645,
+    "play_median_ms": 1.635,
+    "play_p90_ms": 1.677,
+    "silence_late_mean_ms": 1.723,
+    "silence_late_median_ms": 1.682,
     "play_spikes": 0,
     "limit_ms": 2.4,
     "shared_on": {
-     "play_mean_ms": 1.81,
-     "play_median_ms": 1.803,
-     "play_p90_ms": 1.837,
-     "silence_late_mean_ms": 1.822,
-     "silence_late_median_ms": 1.812,
+     "play_mean_ms": 1.846,
+     "play_median_ms": 1.83,
+     "play_p90_ms": 1.922,
+     "silence_late_mean_ms": 1.905,
+     "silence_late_median_ms": 1.854,
      "play_spikes": 0,
      "limit_ms": 2.133
     },
     "surfaces": {
-     "play_mean_ms": 1.628,
-     "play_median_ms": 1.622,
-     "play_p90_ms": 1.648,
-     "silence_late_mean_ms": 1.636,
-     "silence_late_median_ms": 1.628,
+     "play_mean_ms": 1.655,
+     "play_median_ms": 1.645,
+     "play_p90_ms": 1.691,
+     "silence_late_mean_ms": 1.741,
+     "silence_late_median_ms": 1.683,
      "play_spikes": 0,
      "limit_ms": 2.4
     },
     "surfaces_shared_on": {
-     "play_mean_ms": 1.807,
-     "play_median_ms": 1.796,
-     "play_p90_ms": 1.835,
-     "silence_late_mean_ms": 1.808,
-     "silence_late_median_ms": 1.794,
+     "play_mean_ms": 1.805,
+     "play_median_ms": 1.794,
+     "play_p90_ms": 1.841,
+     "silence_late_mean_ms": 1.897,
+     "silence_late_median_ms": 1.849,
      "play_spikes": 0,
      "limit_ms": 2.133
     }

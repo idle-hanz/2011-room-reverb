@@ -641,6 +641,8 @@ def params_from_body(body: dict) -> dict:
         "phys_ceiling": (_b(body["phys_ceiling"], True) if "phys_ceiling" in body else True),
         # Missing key is ON. An explicit false adds no live-dict field.
         "sub_hp": _b(body["sub_hp"], True) if "sub_hp" in body else True,
+        # Missing or explicit false stays off. Only a true reaches the live dict.
+        "offaxis_tail": _b(body["offaxis_tail"], False) if "offaxis_tail" in body else False,
         "surf_treatment": _surf_treatment(body.get("surf_treatment")),
         "surf_cal": _surf_cal(body.get("surf_cal")),
         # SL2 is room average. Directional (D-SL2) belongs to SL4.
@@ -1246,6 +1248,7 @@ def _render_impl(
             decay_mode=p.get("decay_mode") or "flat",
             phys_ceiling=bool(p.get("phys_ceiling")),
             sub_hp=bool(p.get("sub_hp")),
+            offaxis_tail=bool(p.get("offaxis_tail")),
             surf_treatment=p.get("surf_treatment"),
             surf_cal=p.get("surf_cal"),
             # This session is room average. A posted True waits for SL4.
@@ -1523,6 +1526,14 @@ def api_colour(body: dict):
     delays = fdn_delays_from_taps(taps, sr=sr, c=c, n=n_had)
     early_ms = min(90.0, float(p["ir_length_ms"]))
     fdn_ms = max(early_ms, min(float(p["ir_length_ms"]), 1000.0))
+    tail_sos = None
+    if p.get("offaxis_tail"):
+        from mic_colour.tail_diffuse import design_pack
+        tail_sos = design_pack(
+            (p.get("mic_preset_l"), p.get("mic_preset_c"), p.get("mic_preset_r")),
+            sr,
+            (p.get("polar_l"), p.get("polar_c"), p.get("polar_r")),
+        )
     ir_L, ir_R = combined_ir(
         taps, room, sr, c, wall_cache, ap_cache, delays,
         early_ms=early_ms, fdn_ms=fdn_ms, fdn_g=float(np.clip(p["fdn_g"], 1e-6, 0.999)),
@@ -1549,6 +1560,7 @@ def api_colour(body: dict):
         makeup_source=prep.source,
         makeup_grid=grid,
         makeup_shelf=mic_colour.include_offaxis_shelf,
+        tail_sos=tail_sos,
     )
     ref_mode = str((body or {}).get("ref_mode") or "peak")
     colour = colour_from_stereo(ir_L, ir_R, sr, ref_mode=ref_mode)

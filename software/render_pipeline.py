@@ -1203,6 +1203,7 @@ def render_fdn_ir(
     array_spec=None,
     room_spec=None,
     bus_place=None,
+    tail_sos=None,
 ):
     """2011 wet: L / C / R Diffuser Delay loops + Hadamard feedback + Mixer fold.
 
@@ -1316,7 +1317,7 @@ def render_fdn_ir(
         # Headroom decision 6. F2 applies while line absorption is on.
         # D3b: the F3 row applies on Render too, same total trim as Play.
         poly *= loop_level_trim_lin("render", float(line_t60) > 0.05)
-        if colour is not None and colour.measured and n_t:
+        if tail_sos is None and colour is not None and colour.measured and n_t:
             for i in range(n_lines):
                 col = poly[:, i]
                 y = colour.apply(col, _bus_theta(taps[i % n_t], ch), ch)
@@ -1333,9 +1334,20 @@ def render_fdn_ir(
             _route_buses(buses, det, array_spec, room_spec, bus_place)
         if bloom_spec is not None:
             _apply_chain(buses, det, bloom_spec)
+    if tail_sos is not None:
+        _apply_tail_buses(buses, tail_sos)
     if weights is None:
         return mixer_lcr_fold(buses["l"], buses["r"], buses["c"])
     return apply_capsule_weights(buses["l"], buses["c"], buses["r"], weights)
+
+
+def _apply_tail_buses(buses, pack) -> None:
+    """One K=3 SOS per mic bus, after routing and Bloom, before the fold."""
+    from mic_colour.tail_diffuse import apply_sos_df1
+
+    rows = np.asarray(pack, dtype=np.float64).reshape(3, 3, 5)
+    for i, ch in enumerate("lcr"):
+        buses[ch][:] = apply_sos_df1(buses[ch], rows[i])
 
 
 def _fft_conv_head(x: np.ndarray, h: np.ndarray) -> np.ndarray:
@@ -1600,6 +1612,7 @@ def combined_ir(
     makeup_shelf=None,
     include_fdn: bool = True,
     prox_g=None,
+    tail_sos=None,
 ):
     weights, mk_w, _desk_w = _mix_pair(
         desk,
@@ -1658,6 +1671,7 @@ def combined_ir(
             src_diffuse=None if src_plan is None else src_plan.diffuse,
             reaktor_parity=bool(reaktor_parity),
             smooth=bool(smooth),
+            tail_sos=tail_sos,
         )
     n = max(len(Le), len(Lf), len(Ld))
     def _pad(a):
@@ -1856,6 +1870,7 @@ def _render_core(
     room_amount: float = 0.0,
     room_pre: str = "off",
     room_drive_db: float = 0.0,
+    offaxis_tail: bool = False,
 ) -> Tuple[np.ndarray, np.ndarray, dict]:
     """Render dry mono through early-field (+ optional FDN) with optional motion.
 
@@ -1873,6 +1888,15 @@ def _render_core(
         hpf_l=mic_hpf_l,
         hpf_r=mic_hpf_r,
     )
+    tail_pack = None
+    if offaxis_tail:
+        from mic_colour.tail_diffuse import design_pack as _tail_design
+
+        tail_pack = _tail_design(
+            (mic_preset_l, mic_preset_c, mic_preset_r),
+            int(sr),
+            (polar_l, polar_c, polar_r),
+        )
     surfaces = parse_surfaces(surfaces) if surfaces is not None else default_surfaces()
     smooth_on = smooth_active(
         {
@@ -2133,6 +2157,7 @@ def _render_core(
                         src_diffuse=None if src_plan is None else src_plan.diffuse,
                         reaktor_parity=bool(reaktor_parity),
                         smooth=bool(smooth_on),
+                        tail_sos=tail_pack,
                     )
                     return float(fdn_wet) * mk * left, float(fdn_wet) * mk * right
 
@@ -2181,6 +2206,7 @@ def _render_core(
                         array_spec=array_spec,
                         room_spec=room_spec,
                         bus_place=bus_place,
+                        tail_sos=tail_pack,
                     )
                     return float(fdn_wet) * mk * left, float(fdn_wet) * mk * right
 
@@ -2318,6 +2344,7 @@ def _render_core(
                 makeup_grid=grid,
                 makeup_shelf=mic_colour.include_offaxis_shelf,
                 prox_g=_prox_of(prep),
+                tail_sos=tail_pack,
             )
             yL = fft_convolve(dry, ir_L)
             yR = fft_convolve(dry, ir_R)
@@ -2407,6 +2434,7 @@ def _render_core(
                 array_spec=array_spec,
                 room_spec=room_spec,
                 bus_place=bus_place,
+                tail_sos=tail_pack,
             )
             scale = float(fdn_wet) * mk
             n_y = max(len(yL), len(yR), len(fL), len(fR))
@@ -2543,6 +2571,7 @@ def _render_core(
             makeup_grid=grid,
             makeup_shelf=mic_colour.include_offaxis_shelf,
             prox_g=_prox_of(last_prep),
+            tail_sos=tail_pack,
         )
         end = min(start + frame, n_dry)
         block = np.zeros(frame, dtype=np.float64)
@@ -3419,6 +3448,19 @@ def live_fdn_params(
             + _side_emit(array_row)
             + _side_emit(room_row)
         )
+    # Present only when the key is on. An absent field keeps the live MD5.
+    if bool(p.get("offaxis_tail")):
+        from mic_colour.tail_diffuse import design_pack as _tail_design
+
+        out["offaxis_tail"] = _tail_design(
+            (
+                mic_colour.preset_ids["l"],
+                mic_colour.preset_ids["c"],
+                mic_colour.preset_ids["r"],
+            ),
+            rate,
+            (p.get("polar_l"), p.get("polar_c"), p.get("polar_r")),
+        )
     return out
 
 
@@ -3576,6 +3618,9 @@ def pack_blob_v2(params: dict) -> list:
     hp = d.get("sub_hp")
     if isinstance(hp, (list, tuple)) and len(hp) == 5:
         parts.append((9, [_pb_num(v, 0.0) for v in hp]))
+    tail = d.get("offaxis_tail")
+    if isinstance(tail, (list, tuple)) and len(tail) == 45:
+        parts.append((14, [_pb_num(v, 0.0) for v in tail]))
     off = 5 + 4 * len(parts)
     directory: list = []
     body: list = []

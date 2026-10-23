@@ -17,7 +17,7 @@
   var colourRev = "";
   var bank = null;
   var lastCapLine = "";
-  var WORKLET_VER = 62;
+  var WORKLET_VER = 63;
   var COLOUR_CAP = 192;
   var ROUTE_LEN = 326;
   var RMS_QUIET = 1e-5;

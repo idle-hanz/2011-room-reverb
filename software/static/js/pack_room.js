@@ -175,6 +175,11 @@ function packRoom(data) {
     for (si = 0; si < 217; si++) sd.push(num(data.side[si], 0));
     parts.push([13, sd]);
   }
+  if (data && data.offaxis_tail && data.offaxis_tail.length === 45) {
+    var ot = [], oi;
+    for (oi = 0; oi < 45; oi++) ot.push(num(data.offaxis_tail[oi], 0));
+    parts.push([14, ot]);
+  }
   var nsec = parts.length;
   var off = 5 + 4 * nsec;
   var dir = [];
