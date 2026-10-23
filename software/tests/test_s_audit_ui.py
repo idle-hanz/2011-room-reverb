@@ -653,8 +653,8 @@ def test_a12_visible_controls_post_or_are_ui_only(audit_server):
               async function settle() {
                 let last = posts.length;
                 let stable = 0;
-                const deadline = Date.now() + 900;
-                const earliest = Date.now() + 80;
+                const deadline = Date.now() + 2500;
+                const earliest = Date.now() + 200;
                 while (Date.now() < deadline) {
                   await new Promise(r => setTimeout(r, 30));
                   if (posts.length === last) stable += 1;

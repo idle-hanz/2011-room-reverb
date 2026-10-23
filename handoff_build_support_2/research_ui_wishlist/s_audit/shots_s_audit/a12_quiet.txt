@@ -1,5 +1,1 @@
-n=194 posts=125
-link_heights
-H
-L
-smooth
+n=194 posts=130
