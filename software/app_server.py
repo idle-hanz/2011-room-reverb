@@ -643,6 +643,11 @@ def params_from_body(body: dict) -> dict:
         "sub_hp": _b(body["sub_hp"], True) if "sub_hp" in body else True,
         # Missing or explicit false stays off. Only a true reaches the live dict.
         "offaxis_tail": _b(body["offaxis_tail"], False) if "offaxis_tail" in body else False,
+        # Absent is the shoebox. Play never reads this. Render does.
+        "room_shape": (
+            str(body.get("room_shape") or "box").strip().lower()
+            if "room_shape" in body else None
+        ),
         "surf_treatment": _surf_treatment(body.get("surf_treatment")),
         "surf_cal": _surf_cal(body.get("surf_cal")),
         # SL2 is room average. Directional (D-SL2) belongs to SL4.
@@ -1249,6 +1254,7 @@ def _render_impl(
             phys_ceiling=bool(p.get("phys_ceiling")),
             sub_hp=bool(p.get("sub_hp")),
             offaxis_tail=bool(p.get("offaxis_tail")),
+            room_shape=p.get("room_shape"),
             surf_treatment=p.get("surf_treatment"),
             surf_cal=p.get("surf_cal"),
             # This session is room average. A posted True waits for SL4.

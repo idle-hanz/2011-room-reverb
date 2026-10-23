@@ -1,12 +1,14 @@
 # Current brief (2026-10-23)
 
-Read this instead of `HANDOVER.md`. The Current pin in `HANDOVER.md` still wins if this page and that pin disagree. Prompts live in `handoff_build_support_2\roadmap\thursday_prompts\`. Next run: `BACKLOG_D_ROOMS_RUN.md`. One goal per run. `RUN_RULES.md` in that folder.
+Read this instead of `HANDOVER.md`. The Current pin in `HANDOVER.md` still wins if this page and that pin disagree. Prompts live in `handoff_build_support_2\roadmap\thursday_prompts\`. Next run: `BACKLOG_E_MOVEMENT_BENCH_RUN.md`. One goal per run. `RUN_RULES.md` in that folder.
 
 ## Pins
 
 ROUTING R2 landed 2026-10-23 (Play array and room). Off-axis tail colour landed 2026-10-23, key `offaxis_tail`, default off. `WORKLET_VER` 63. `live_fdn.js?v=63`. `app.js?v=70`. `pack_room.js?v=55`. `app.css?v=37`. `routing_scene.js?v=3`. `room_editor.js?v=20`. Wasm sha1 `555414f1cf3df653f285f1bacdc7f68022594124` (393117 bytes). `live_stereo.c` sha1 `c7bdd7949885bbcefac3c073900a10c24114dc88`. `bloom_live.inc` sha1 `a3b508245f026fad9a222c07894145ff8f5ea765`.
 
 Off path held: empty MD5 `b6c55d429fa63d6d0d3cd1fcc7d23e88`, centre MD5 `b3e6bcd9dfa13ad737d2b15d561f7d30`, `GOLDEN_META` `a362cf5e490089807b39346ba207633b88511548`. Five golden sha1s are in `software\tests\test_quick_pins.py`.
+
+Non-rectangular rooms stage 1 landed 2026-10-23. Key `room_shape`. Absent or `box` is the shoebox. Presets `splay`, `lede`, `live` are Render only. Play does not read the key.
 
 Play / Render oversampling: Natural 2/2, Glue ADAA 1/1, Room Crush 1/2, Nuke ADAA 1/1, Swell 2/2, Neve 1/8, 610-A 8/8. The Mix page Routing panel (array, room, master) replaces the Bloom panel. Play posts the master strip, and an array or room strip only while that strip is on. All three default off. Python is `software\.venv\Scripts\python.exe`.
 

@@ -38,6 +38,7 @@ if str(_ENGINE) not in sys.path:
 _SURF_CTX: "_cv.ContextVar[Optional[dict]]" = _cv.ContextVar("rr_surf_ctx", default=None)
 _SUB_HP: "_cv.ContextVar[Optional[tuple]]" = _cv.ContextVar("rr_sub_hp", default=None)
 
+from poly_room import compute_poly_taps, poly_on  # noqa: E402
 from early_field import (  # noqa: E402
     DEFAULT_HADAMARD_N,
     SAMPLE_RATE_HZ,
@@ -1519,6 +1520,7 @@ def makeup_at_stand(
     ir_length_ms,
     sr,
     weights,
+    room_shape=None,
 ):
     """Mixer makeup from a stand-distance second pass.
 
@@ -1546,12 +1548,19 @@ def makeup_at_stand(
             float(placed.cy) + (boot_src[1] - boot_stand[1]),
             float(placed.cz) + (boot_src[2] - boot_stand[2]),
         )
-    taps = compute_taps(
-        room, mk_source, placed, c=c, grid=grid, origin="corner",
-        z_face_4l=False, hadamard_n=hadamard_n,
-        include_offaxis_shelf=include_offaxis_shelf,
-        reaktor_parity=bool(reaktor_parity),
-    )
+    if poly_on(room_shape):
+        taps = compute_poly_taps(
+            room, mk_source, placed, room_shape,
+            c=c, n=hadamard_n,
+            include_offaxis_shelf=include_offaxis_shelf,
+        )
+    else:
+        taps = compute_taps(
+            room, mk_source, placed, c=c, grid=grid, origin="corner",
+            z_face_4l=False, hadamard_n=hadamard_n,
+            include_offaxis_shelf=include_offaxis_shelf,
+            reaktor_parity=bool(reaktor_parity),
+        )
     inj_l, inj_c, inj_r = _inject_levels(taps, hadamard_n, surfaces)
     return ir_rms_makeup_from_inject(
         inj_l, inj_c, inj_r, g, hadamard_n, ir_length_ms, sr,
@@ -1613,6 +1622,7 @@ def combined_ir(
     include_fdn: bool = True,
     prox_g=None,
     tail_sos=None,
+    room_shape=None,
 ):
     weights, mk_w, _desk_w = _mix_pair(
         desk,
@@ -1693,6 +1703,7 @@ def combined_ir(
             reaktor_parity=bool(reaktor_parity),
             surfaces=surfaces, g=fdn_g, ir_length_ms=fdn_ms, sr=sr,
             weights=mk_w,
+            room_shape=room_shape,
         )
     else:
         inj_l, inj_c, inj_r = _inject_levels(taps, hadamard_n, surfaces)
@@ -1871,6 +1882,7 @@ def _render_core(
     room_pre: str = "off",
     room_drive_db: float = 0.0,
     offaxis_tail: bool = False,
+    room_shape: Optional[str] = None,
 ) -> Tuple[np.ndarray, np.ndarray, dict]:
     """Render dry mono through early-field (+ optional FDN) with optional motion.
 
@@ -1986,6 +1998,12 @@ def _render_core(
 
     def _placed_taps(prep, place_desk):
         stand = _place_stand(_unplaced_stand(prep), place_desk)
+        if poly_on(room_shape):
+            return compute_poly_taps(
+                room, prep.source, stand, room_shape,
+                c=c, n=n_had,
+                include_offaxis_shelf=mic_colour.include_offaxis_shelf,
+            )
         return compute_taps(
             room, prep.source, stand, c=c, grid=grid, origin="corner",
             z_face_4l=False, hadamard_n=n_had,
@@ -2073,6 +2091,7 @@ def _render_core(
                 reaktor_parity=reaktor_parity,
                 surfaces=surfaces, g=g_split, ir_length_ms=fdn_ms, sr=sr,
                 weights=mk_w,
+                room_shape=room_shape,
             )
             plan_a = _source_plan(
                 source_radiation, source_yaw, source_pitch, taps, prep, sr, source_size_m,
@@ -2345,6 +2364,7 @@ def _render_core(
                 makeup_shelf=mic_colour.include_offaxis_shelf,
                 prox_g=_prox_of(prep),
                 tail_sos=tail_pack,
+                room_shape=room_shape,
             )
             yL = fft_convolve(dry, ir_L)
             yR = fft_convolve(dry, ir_R)
@@ -2395,6 +2415,7 @@ def _render_core(
                 makeup_shelf=mic_colour.include_offaxis_shelf,
                 include_fdn=False,
                 prox_g=_prox_of(prep),
+                room_shape=room_shape,
             )
             yL = fft_convolve(dry, ir_L)
             yR = fft_convolve(dry, ir_R)
@@ -2412,6 +2433,7 @@ def _render_core(
                 reaktor_parity=bool(reaktor_parity),
                 surfaces=surfaces, g=g, ir_length_ms=fdn_ms, sr=sr,
                 weights=mk_w,
+                room_shape=room_shape,
             )
             fL, fR = render_fdn_ir(
                 taps, room, sr, c, fdn_ms, g_loop, DEFAULT_DEPTH, delays,
@@ -2572,6 +2594,7 @@ def _render_core(
             makeup_shelf=mic_colour.include_offaxis_shelf,
             prox_g=_prox_of(last_prep),
             tail_sos=tail_pack,
+            room_shape=room_shape,
         )
         end = min(start + frame, n_dry)
         block = np.zeros(frame, dtype=np.float64)
