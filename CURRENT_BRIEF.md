@@ -1,6 +1,6 @@
 # Current brief (2026-10-22)
 
-Read this instead of `HANDOVER.md`. The Current pin in `HANDOVER.md` still wins if this page and that pin disagree. Prompts live in `handoff_build_support_2\roadmap\thursday_prompts\`. One goal per run. `RUN_RULES.md` in that folder.
+Read this instead of `HANDOVER.md`. The Current pin in `HANDOVER.md` still wins if this page and that pin disagree. Prompts live in `handoff_build_support_2\roadmap\thursday_prompts\`. Next run: `BACKLOG_C_OFFAXIS_RUN.md`. One goal per run. `RUN_RULES.md` in that folder.
 
 ## Pins
 
