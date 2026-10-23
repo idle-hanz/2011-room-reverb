@@ -214,3 +214,4 @@ The page has no Bloom panel, so browser Play stays bloom-off until something pos
 - 2026-10-23: Master comp menu from Off onto a preset with Amount 0 now sets Amount to 100 (`armMaster`). A stored Amount 0 still posts nothing. Array and room unchanged. `app.js?v=67`, `routing_scene.js?v=2`.
 - 2026-10-23 DECISION (Idle): leave the 610-A as is for now; no flux or trim fix, and runs must not touch it. Avoid 610-A in listens.
 - 2026-10-23 FAULT (Idle): the Master strip is still silent in Play after the arm fix. Likely cause: bindRouting onRoute in app.js calls syncUI() but never scheduleLiveParams(), so routing changes never reach the live engine (other controls call both). Wiring fix, rule 18.
+- 2026-10-23 Idle: routing preamps and compressors are shelved. Preamps distort badly and the compressors don't sound nice. Leave the code as is, default off, and no runs touch it until Idle asks.

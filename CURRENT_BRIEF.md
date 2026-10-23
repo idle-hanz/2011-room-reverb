@@ -18,6 +18,8 @@ Play is a rough preview and must fit 2.40 ms. It may use lower Bloom and preamp 
 
 Do not retune 1/r, the 0.55 Direct fold, the desk, makeup freeze, source-distance makeup, Smooth, the limiter, or the decay lock. Do not force Play and Render onto one decay-lock `g`. Do not retune 610-A or chase its 9 kHz spike. Do not re-pin the five goldens on a bare continue. Do not start Phase 4, SL4, T9b, S-OUT, scatter, smear, or CPU fallbacks (c) and (d). Movement stays forced off. `c` stays 340. Do not flip L/R or floor X. Do not fold B into A's tank. Do not edit the original `.ens` files. Do not wire A–F bit tables into the audio path.
 
+2026-10-23 Idle: routing preamps and compressors are shelved. Preamps distort badly and the compressors don't sound nice. Leave the code as is, default off, and no runs touch it until Idle asks.
+
 ## Where files live
 
 Canonical root is this folder (`HANDOVER.md`, `ensemble\`, `software\`, `findings\`). Live app: `software\Launch Tweak App.bat` at `http://127.0.0.1:7860`. Goldens: `handoff_build_support_2\3_phase_acceptance_tests\harness\golden\`. Backlog: `handoff_build_support_2\roadmap\IDEAS_BACKLOG_2026-10-19.md`. Pinned listen wav: `software\renders\out_20261013_115900.wav`. Screenshots stay in `C:\Users\IdleHanz\Pictures\Screenshots\`. Do not treat `2011-Room-Reverb-publish\`, Desktop zips, or `docs-*-tmp\` as the live tree.
