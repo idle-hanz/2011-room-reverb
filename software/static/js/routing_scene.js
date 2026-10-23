@@ -71,6 +71,18 @@
     return src;
   }
 
+  function armMaster(src, prevComp) {
+    /* Menu change only. A stored Amount 0 is left alone unless the
+       master comp moves from Off onto a preset. */
+    if (!src) return src;
+    var prev = compName(prevComp);
+    var next = compName(src.route_master_comp);
+    if (prev === "off" && next !== "off" && num(src.route_master_amount, 0) <= 0) {
+      src.route_master_amount = 100;
+    }
+    return src;
+  }
+
   function masterScene(src) {
     if (!src) return {};
     var row = strip(src, "master");
@@ -104,5 +116,5 @@
     return o;
   }
 
-  return { migrate: migrate, masterScene: masterScene, renderScene: renderScene };
+  return { migrate: migrate, armMaster: armMaster, masterScene: masterScene, renderScene: renderScene };
 });

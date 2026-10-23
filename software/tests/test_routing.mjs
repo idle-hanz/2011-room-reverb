@@ -84,3 +84,22 @@ test("a comp at amount 0 stays off", () => {
   const src = { ...off, route_master_comp: "glue", route_master_amount: 0 };
   assert.deepEqual(R.masterScene(src), {});
 });
+
+test("master menu from off to room crush arms amount 100", () => {
+  const src = { ...off, route_master_comp: "room_crush", route_master_amount: 0 };
+  R.armMaster(src, "off");
+  assert.equal(src.route_master_amount, 100);
+  const scene = R.masterScene(src);
+  assert.equal(scene.bloom_preset, "room_crush");
+  assert.equal(scene.bloom_amount, 100);
+  const stored = { ...off, route_master_comp: "room_crush", route_master_amount: 0 };
+  assert.deepEqual(R.masterScene(stored), {});
+  const array = { ...off, route_array_comp: "glue", route_array_amount: 0 };
+  R.armMaster(array, "off");
+  assert.equal(array.route_array_amount, 0);
+  const pre = { ...off, route_master_pre: "neve1073", route_master_drive: 6, route_master_comp: "off" };
+  R.armMaster(pre, "off");
+  assert.equal(pre.route_master_amount, 0);
+  assert.equal(R.masterScene(pre).pre_colour, "neve1073");
+  assert.equal(R.masterScene(pre).bloom_amount, 0);
+});

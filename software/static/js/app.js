@@ -3375,8 +3375,12 @@
       var id = e.target && e.target.id;
       if (!id || id.indexOf("route_") !== 0) return;
       var v = e.target.value;
+      var prev = state[id];
       if (id.indexOf("_drive") > 0 || id.indexOf("_amount") > 0) state[id] = Number(v);
       else state[id] = v;
+      if (id === "route_master_comp" && window.RRRouting && RRRouting.armMaster) {
+        RRRouting.armMaster(state, prev);
+      }
       syncUI();
     }
     panel.addEventListener("change", onRoute);
