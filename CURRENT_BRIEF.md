@@ -4,7 +4,7 @@ Read this instead of `HANDOVER.md`. The Current pin in `HANDOVER.md` still wins 
 
 ## Pins
 
-ROUTING R2 landed 2026-10-23 (Play array and room). Off-axis tail colour landed 2026-10-23, key `offaxis_tail`, default off. `WORKLET_VER` 63. `live_fdn.js?v=63`. `app.js?v=70`. `pack_room.js?v=55`. `app.css?v=37`. `routing_scene.js?v=3`. `room_editor.js?v=20`. Wasm sha1 `555414f1cf3df653f285f1bacdc7f68022594124` (393117 bytes). `live_stereo.c` sha1 `c7bdd7949885bbcefac3c073900a10c24114dc88`. `bloom_live.inc` sha1 `a3b508245f026fad9a222c07894145ff8f5ea765`.
+ROUTING R2 landed 2026-10-23 (Play array and room). Off-axis tail colour landed 2026-10-23, key `offaxis_tail`, default off. Movement un-forced 2026-10-23. The Room knob is visible. Default stays 0. Shared-off at knob 100 measured 1.876 ms. `WORKLET_VER` 63. `live_fdn.js?v=63`. `app.js?v=71`. `pack_room.js?v=55`. `app.css?v=37`. `routing_scene.js?v=3`. `room_editor.js?v=20`. Wasm sha1 `555414f1cf3df653f285f1bacdc7f68022594124` (393117 bytes). `live_stereo.c` sha1 `c7bdd7949885bbcefac3c073900a10c24114dc88`. `bloom_live.inc` sha1 `a3b508245f026fad9a222c07894145ff8f5ea765`.
 
 Off path held: empty MD5 `b6c55d429fa63d6d0d3cd1fcc7d23e88`, centre MD5 `b3e6bcd9dfa13ad737d2b15d561f7d30`, `GOLDEN_META` `a362cf5e490089807b39346ba207633b88511548`. Five golden sha1s are in `software\tests\test_quick_pins.py`.
 
@@ -18,7 +18,7 @@ Play is a rough preview and must fit 2.40 ms. It may use lower Bloom and preamp 
 
 ## Do not touch
 
-Do not retune 1/r, the 0.55 Direct fold, the desk, makeup freeze, source-distance makeup, Smooth, the limiter, or the decay lock. Do not force Play and Render onto one decay-lock `g`. Do not retune 610-A or chase its 9 kHz spike. Do not re-pin the five goldens on a bare continue. Do not start Phase 4, SL4, T9b, S-OUT, scatter, smear, or CPU fallbacks (c) and (d). Movement stays forced off. `c` stays 340. Do not flip L/R or floor X. Do not fold B into A's tank. Do not edit the original `.ens` files. Do not wire A–F bit tables into the audio path.
+Do not retune 1/r, the 0.55 Direct fold, the desk, makeup freeze, source-distance makeup, Smooth, the limiter, or the decay lock. Do not force Play and Render onto one decay-lock `g`. Do not retune 610-A or chase its 9 kHz spike. Do not re-pin the five goldens on a bare continue. Do not start Phase 4, SL4, T9b, S-OUT, scatter, smear, or CPU fallbacks (c) and (d). Do not retune the Movement curve. The knob default stays 0. `c` stays 340. Do not flip L/R or floor X. Do not fold B into A's tank. Do not edit the original `.ens` files. Do not wire A–F bit tables into the audio path.
 
 2026-10-23 Idle: routing preamps and compressors are shelved. Preamps distort badly and the compressors don't sound nice. Leave the code as is, default off, and no runs touch it until Idle asks.
 

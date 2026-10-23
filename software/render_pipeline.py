@@ -807,10 +807,11 @@ def smooth_active(p, surfaces=None) -> bool:
     return True
 
 
-# G2 miss, 2026-10-10. Movement 100 shared-off median 2.718 ms (max 2.735),
-# ceiling 2.40 ms. Shared-on at 100% was 1.893 ms and Movement 0 passed both
-# ceilings. The curve below stays. The knob is hidden. Do not retune the tank.
-MOVEMENT_FORCED_OFF = True
+# Un-forced 2026-10-23. Shared-off knob 100 median 1.876 ms, under 2.40 ms.
+# The 2026-10-10 miss was 2.718 ms on an older wasm. The curve below stays.
+# Knob default is 0, so a default body still skips the allpass.
+# Do not retune the tank.
+MOVEMENT_FORCED_OFF = False
 
 
 def movement_peak_ms(p, surfaces=None) -> float:
@@ -821,8 +822,8 @@ def movement_peak_ms(p, surfaces=None) -> float:
     Parity, flat cards, mirror/null, and a direct-only body force 0,
     the same cases as smooth_active. Unlike Smooth, missing is not on.
 
-    MOVEMENT_FORCED_OFF returns 0 before that curve, so Play, Render and the
-    blob cannot reach the allpass.
+    MOVEMENT_FORCED_OFF returns 0 before that curve. The flag is false, so
+    Play, Render and the blob follow the knob. A missing key and 0 stay off.
     """
     if MOVEMENT_FORCED_OFF:
         return 0.0
