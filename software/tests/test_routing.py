@@ -133,3 +133,15 @@ def test_page_room_crush_still_forwards_as_master_bloom():
     assert kw["bloom_amount"] == 100.0
     assert kw["pre_colour"] == "off"
     assert A._routing_render_kw(p) == {}
+
+
+def test_master_room_crush_live_params_are_preset_two():
+    """The Play body for Master Room Crush is the 40-float section the worklet arms."""
+    on = A.live_fdn_params(A.params_from_body(PAGE))
+    bloom = on["bloom"]
+    assert len(bloom) >= 40
+    assert bloom[0] == 2.0
+    assert bloom[1] > 0.0
+    off = A.live_fdn_params(A.params_from_body({}))
+    assert "bloom" not in off
+    assert "pre_colour" not in off

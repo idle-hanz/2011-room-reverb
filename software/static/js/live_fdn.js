@@ -17,7 +17,7 @@
   var colourRev = "";
   var bank = null;
   var lastCapLine = "";
-  var WORKLET_VER = 60;
+  var WORKLET_VER = 61;
   var COLOUR_CAP = 192;
   var ROUTE_LEN = 326;
   var RMS_QUIET = 1e-5;
@@ -400,6 +400,9 @@
       prox: (params.prox && params.prox.length === 199) ? Float64Array.from(params.prox) : null,
       harm: (params.harm && params.harm.length === 243) ? Float64Array.from(params.harm) : null,
       sub_hp: (params.sub_hp && params.sub_hp.length === 5) ? params.sub_hp : null,
+      bloom: (params.bloom && params.bloom.length >= 26) ? params.bloom : null,
+      predelay_n: (Number(params.predelay_n) > 0) ? Number(params.predelay_n) : 0,
+      pre_colour: (params.pre_colour && params.pre_colour.length >= 16) ? params.pre_colour : null,
       peaking: params.peaking,
       two_sources: !!params.two_sources && !monoFile,
       gain_a: params.gain_a,
