@@ -18,6 +18,7 @@ Honesty tags
 
 from __future__ import annotations
 
+import copy
 import hashlib
 import json
 import math
@@ -171,6 +172,38 @@ def default_surface(letter: str) -> Dict[str, Any]:
 
 def default_surfaces() -> Dict[str, Dict[str, Any]]:
     return {L: default_surface(L) for L in SURFACE_LETTERS}
+
+
+# Acoustic fields only. C keeps its own letter, label, and hint.
+_SIDE_MIRROR_KEYS = (
+    "absorb",
+    "material",
+    "material_name",
+    "honesty",
+    "jitter_D",
+    "structure_dif",
+    "diffusion",
+    "assumed",
+)
+
+
+def mirror_left_to_right(surfaces: Dict[str, Dict[str, Any]]) -> None:
+    """Copy wall A's material onto C. Front, back, floor, and ceiling stay put."""
+    if not isinstance(surfaces, dict):
+        return
+    src = surfaces.get("A")
+    dst = surfaces.get("C")
+    if not isinstance(src, dict) or not isinstance(dst, dict) or src is dst:
+        return
+    for key in _SIDE_MIRROR_KEYS:
+        if key in src:
+            val = src[key]
+            dst[key] = copy.deepcopy(val) if isinstance(val, (list, dict)) else val
+        elif key in ("material", "material_name", "honesty"):
+            dst.pop(key, None)
+    eq = src.get("eq")
+    if isinstance(eq, dict):
+        dst["eq"] = copy.deepcopy(eq)
 
 
 def _clamp01(x: float) -> float:

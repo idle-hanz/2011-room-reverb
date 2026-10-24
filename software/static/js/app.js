@@ -131,6 +131,8 @@
     sub_hp: true, offaxis_tail: false,
     /* Box posts the key. The server keeps the shoebox bytes. */
     room_shape: "box",
+    /* Box only. Off leaves left and right independent. Splay ignores this and stays paired. */
+    mirror_lr: false,
     /* Routing. UI names are not engine keys. Off posts nothing. */
     route_array_pre: "none", route_array_drive: 0, route_array_comp: "off", route_array_amount: 0,
     route_room_pre: "none", route_room_drive: 0, route_room_comp: "off", route_room_amount: 0,
@@ -674,6 +676,8 @@
     o.offaxis_tail = !!state.offaxis_tail;
     /* Polygon preset. Box is posted and stays the shoebox. */
     if (state.room_shape) o.room_shape = String(state.room_shape);
+    /* Surfaces Mirror L/R. Off posts false and the server leaves A and C alone. */
+    o.mirror_lr = !!state.mirror_lr;
     if (window.LiveFDN) {
       var rate = LiveFDN.rate ? LiveFDN.rate() : 0;
       var rev = LiveFDN.colourRev ? LiveFDN.colourRev() : "";
@@ -3729,6 +3733,7 @@
     fd.append("file", wavFile, wavFile.name);
     var mix = heardMix(state);
     if (state.room_shape) mix.room_shape = String(state.room_shape);
+    mix.mirror_lr = !!state.mirror_lr;
     if (window.RRRouting && RRRouting.renderScene) Object.assign(mix, RRRouting.renderScene(state));
     fd.append("params_json", JSON.stringify(mix));
     try {
@@ -3855,12 +3860,30 @@
       btn.classList.toggle("active", on);
       btn.setAttribute("aria-pressed", on ? "true" : "false");
     });
+    var splay = name === "splay";
+    var mirrorRow = document.getElementById("mirrorLrRow");
+    var mirrorBox = document.getElementById("mirrorLr");
+    if (mirrorRow) mirrorRow.hidden = splay;
+    if (mirrorBox) {
+      mirrorBox.checked = splay || !!state.mirror_lr;
+      mirrorBox.disabled = splay;
+    }
     if (colourSurfaces && colourSurfaces.syncWallList && paintRoomShape._shown !== name) {
       paintRoomShape._shown = name;
       colourSurfaces.syncWallList();
     }
   }
   paintRoomShape._shown = "box";
+
+  var mirrorLr = document.getElementById("mirrorLr");
+  if (mirrorLr) {
+    mirrorLr.addEventListener("change", function (e) {
+      state.mirror_lr = !!e.target.checked;
+      if (colourSurfaces && colourSurfaces.syncWallList) colourSurfaces.syncWallList();
+      syncUI();
+      scheduleLiveParams();
+    });
+  }
 
   document.querySelectorAll("#roomShapeRow [data-room-shape]").forEach(function (btn) {
     btn.addEventListener("click", function () {
@@ -3998,6 +4021,7 @@
     });
     Object.keys(data).forEach(function (k) { state[k] = data[k]; });
     if (!state.room_shape) state.room_shape = "box";
+    if (state.mirror_lr == null) state.mirror_lr = false;
     migrateRoomState(state);
     if (state.surfaces && colourSurfaces && colourSurfaces.setSurfaces) {
       colourSurfaces.setSurfaces(state.surfaces);

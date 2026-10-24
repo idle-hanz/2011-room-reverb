@@ -52,6 +52,7 @@ from surface_colour import (
     parse_diffusion_seed,
     parse_solo,
     parse_lambda_ref,
+    mirror_left_to_right,
     parse_surfaces,
     surfaces_payload,
     third_octave_levels,
@@ -176,6 +177,19 @@ def _phase(v: Any) -> float:
         return -1.0 if float(v) < 0.0 else 1.0
     except (TypeError, ValueError):
         return 1.0
+
+
+def _sides_mirrored(body: Any) -> bool:
+    """Splay is always one pair. Box copies left onto right only when Mirror L/R is on."""
+    if not isinstance(body, dict):
+        return False
+    from poly_room import normalize_shape
+    shape = normalize_shape(body.get("room_shape")) if "room_shape" in body else "box"
+    if shape == "splay":
+        return True
+    if "mirror_lr" not in body:
+        return False
+    return _b(body.get("mirror_lr"), False)
 
 
 def _b(v: Any, default: bool = False) -> bool:
@@ -554,6 +568,9 @@ def params_from_body(body: dict) -> dict:
     if preset_id not in ("SADIE2_KU100", "SADIE2_KEMAR", "THK_KU100_FF"):
         preset_id = DEFAULTS["binaural_preset"]
     surfaces = parse_surfaces(body.get("surfaces"))
+    # Absent or false on a box leaves A and C alone, so the live MD5 stays.
+    if _sides_mirrored(body):
+        mirror_left_to_right(surfaces)
     early_wet = _f(body.get("early_wet") if "early_wet" in body else 1.0, 1.0)
     fdn_wet = _f(body.get("fdn_wet"), DEFAULTS["fdn_wet"])
     smooth_on = smooth_active(

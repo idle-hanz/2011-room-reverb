@@ -356,11 +356,18 @@
     this._paintRoomNetSparks();
   };
 
+  ColourSurfaces.prototype._sidesLinked = function () {
+    var st = this.getState() || {};
+    if (global.RoomShape && RoomShape.normalize(st.room_shape) === "splay") return true;
+    return !!st.mirror_lr;
+  };
+
   ColourSurfaces.prototype._wallRows = function () {
-    var shape = this.getState() && this.getState().room_shape;
-    if (global.RoomShape && RoomShape.wallRows) return RoomShape.wallRows(shape);
+    var st = this.getState() || {};
+    if (global.RoomShape && RoomShape.wallRows) return RoomShape.wallRows(st.room_shape, !!st.mirror_lr);
     return [
-      { id: "sides", letters: ["A", "C"], shared: true, label: "Left / Right", facing: "\u2212X / +X" },
+      { id: "left", letters: ["A"], shared: false, label: "Left", facing: "\u2212X" },
+      { id: "right", letters: ["C"], shared: false, label: "Right", facing: "+X" },
       { id: "front", letters: ["B"], shared: false, label: "Front", facing: "+Z" },
       { id: "back", letters: ["D"], shared: false, label: "Back", facing: "\u2212Z" },
       { id: "floor", letters: ["E"], shared: false, label: "Floor", facing: "\u2212Y" },
@@ -384,24 +391,45 @@
     dst.assumed = src.assumed;
   };
 
-  /* Left and right are one material. Front, back, floor and ceiling stay put. */
+  /* While the sides are one pair, left's material is the one that is posted. */
   ColourSurfaces.prototype._shareSides = function () {
+    if (!this._sidesLinked()) return;
     if (this.selected === "C") this._copyCard("C", "A");
-    else if (this.selected === "A") this._copyCard("A", "C");
+    this._copyCard("A", "C");
   };
 
   ColourSurfaces.prototype._forceSides = function () {
+    if (!this._sidesLinked()) return;
     this._copyCard("A", "C");
+  };
+
+  ColourSurfaces.prototype._paintMirrorToggle = function () {
+    var st = this.getState() || {};
+    var splay = !!(global.RoomShape && RoomShape.normalize(st.room_shape) === "splay");
+    var row = document.getElementById("mirrorLrRow");
+    var box = document.getElementById("mirrorLr");
+    if (row) row.hidden = splay;
+    if (box) {
+      box.checked = splay || !!st.mirror_lr;
+      box.disabled = splay;
+    }
   };
 
   ColourSurfaces.prototype.syncWallList = function () {
     var keep = this.selected || "A";
+    if (this._sidesLinked()) this._copyCard("A", "C");
     this._buildCards();
-    this.select(keep);
+    if (this._sidesLinked() && (keep === "A" || keep === "C")) this.select("A");
+    else this.select(keep);
+  };
+
+  ColourSurfaces.prototype.linkSides = function () {
+    this.syncWallList();
   };
 
   ColourSurfaces.prototype._buildCards = function () {
     var self = this;
+    this._paintMirrorToggle();
     var host = this.els.cards;
     if (!host) return;
     host.innerHTML = "";
@@ -1152,8 +1180,7 @@
       }
       card.assumed = true;
     });
-    if (letters.indexOf("C") >= 0 && letters.indexOf("A") < 0) this._copyCard("C", "A");
-    else if (letters.indexOf("A") >= 0) this._copyCard("A", "C");
+    this._forceSides();
     this.select(this.selected);
     this.onChange();
   };

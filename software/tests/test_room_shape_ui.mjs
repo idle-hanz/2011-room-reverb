@@ -44,8 +44,8 @@ test("the picker posts room_shape", () => {
   assert.equal(play.room_shape, "splay");
   const boxed = liveRequestBodyFrom({ room_shape: "box" });
   assert.equal(boxed.room_shape, "box");
-  assert.match(page, /room_shape\.js\?v=1/);
-  assert.match(page, /app\.js\?v=78/);
+  assert.match(page, /room_shape\.js\?v=2/);
+  assert.match(page, /app\.js\?v=79/);
 });
 
 test("box draws the same outline as now", () => {
@@ -83,7 +83,18 @@ test("box draws the same outline as now", () => {
     assert.equal(r.shared, false);
     assert.equal(r.letters.length, 1);
   });
-  assert.equal(RS.wallRows("box")[0].label, "Left / Right");
+  const boxRows = RS.wallRows("box");
+  assert.deepEqual(boxRows.map(function (r) { return r.id; }), ["left", "right", "front", "back", "floor", "ceiling"]);
+  assert.equal(boxRows[0].shared, false);
+  assert.equal(boxRows[1].shared, false);
+  assert.deepEqual(boxRows[0].letters, ["A"]);
+  assert.deepEqual(boxRows[1].letters, ["C"]);
+  const linked = RS.wallRows("box", true);
+  assert.equal(linked[0].shared, true);
+  assert.deepEqual(linked[0].letters, ["A", "C"]);
+  assert.equal(linked[0].label, "Left / Right");
+  assert.equal(RS.showMirrorToggle("box"), true);
+  assert.equal(RS.showMirrorToggle("splay"), false);
   assert.match(surfaces, /_shareSides/);
   assert.match(surfaces, /Left and right share one material/);
 });

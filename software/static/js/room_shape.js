@@ -102,22 +102,32 @@
     return Math.max(0, 2 * Math.min(Number(mcx) - lim.lo, lim.hi - Number(mcx)));
   }
 
-  /* Every real wall. Left and right are one mirrored pair. The other four stay independent. */
-  function wallRows(shape) {
+  /* Splay sides are always one pair. Box sides link only while Mirror L/R is on. */
+  function showMirrorToggle(shape) {
+    return normalize(shape) !== "splay";
+  }
+
+  function wallRows(shape, mirror) {
     var splay = normalize(shape) === "splay";
-    return [
-      {
+    var shared = splay || !!mirror;
+    var rows = [];
+    if (shared) {
+      rows.push({
         id: "sides",
         letters: ["A", "C"],
         shared: true,
         label: splay ? "Splayed sides" : "Left / Right",
         facing: splay ? "angled" : "\u2212X / +X"
-      },
-      { id: "front", letters: ["B"], shared: false, label: "Front", facing: "+Z" },
-      { id: "back", letters: ["D"], shared: false, label: "Back", facing: "\u2212Z" },
-      { id: "floor", letters: ["E"], shared: false, label: "Floor", facing: "\u2212Y" },
-      { id: "ceiling", letters: ["F"], shared: false, label: "Ceiling", facing: "+Y" }
-    ];
+      });
+    } else {
+      rows.push({ id: "left", letters: ["A"], shared: false, label: "Left", facing: "\u2212X" });
+      rows.push({ id: "right", letters: ["C"], shared: false, label: "Right", facing: "+X" });
+    }
+    rows.push({ id: "front", letters: ["B"], shared: false, label: "Front", facing: "+Z" });
+    rows.push({ id: "back", letters: ["D"], shared: false, label: "Back", facing: "\u2212Z" });
+    rows.push({ id: "floor", letters: ["E"], shared: false, label: "Floor", facing: "\u2212Y" });
+    rows.push({ id: "ceiling", letters: ["F"], shared: false, label: "Ceiling", facing: "+Y" });
+    return rows;
   }
 
   return {
@@ -129,6 +139,7 @@
     ceilingAt: ceilingAt,
     clampInside: clampInside,
     maxSpace: maxSpace,
+    showMirrorToggle: showMirrorToggle,
     wallRows: wallRows
   };
 });
