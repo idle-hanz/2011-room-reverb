@@ -453,7 +453,7 @@
             <div class="panel surfaces-panel" id="surfacesPanel">
               <div class="panel-head">
                 <h2>Surfaces <span class="assumed-tag">ASSUMED</span></h2>
-                <span class="hint">A–F absorb · EQ · seeded path-length jitter · not Structure-locked wall EQ</span>
+                <span class="hint">Every wall · left and right share one material · front, back, floor and ceiling stay independent</span>
               </div>
               <p class="assumed-banner" id="surfacesBanner">
                 Pick a material for the selected face. Curtain stays on walls. Carpet stays on the floor.
@@ -486,7 +486,7 @@
                 <button type="button" class="chip" id="surfacesSoloOff">Solo off</button>
                 <span class="hint">Solo hears one face. Mute drops that face. The direct sound stays.</span>
               </div>
-              <div class="surface-cards" id="surfaceCards" role="listbox" aria-label="Surfaces A–F list"></div>
+              <div class="surface-cards" id="surfaceCards" role="listbox" aria-label="Room walls"></div>
               <div class="surface-detail" id="surfaceDetail">
                 <div class="surface-detail-head">
                   <h3 id="surfaceDetailTitle">Surface A</h3>
@@ -643,6 +643,10 @@
             <button type="button" class="chip" data-place="hall">Hall</button>
           </div>
           <p class="hint" id="placeHint">A place chip resets size, the starting source and mic, and Mix, Surfaces and colour. Hall is the 2011 dump.</p>
+          <div class="place-row" id="roomShapeRow" role="group" aria-label="Room shape">
+            <button type="button" class="chip active" data-room-shape="box" aria-pressed="true">Box</button>
+            <button type="button" class="chip" data-room-shape="splay" aria-pressed="false">Splay</button>
+          </div>
           <button type="button" class="chip" id="roomMicSetupLink">Mic setup ›</button>
           <label class="ctrl"><span>Width <em>m</em></span><input type="range" id="W" min="1" max="80" step="0.1" value="6" /><output id="W_out">6.0</output></label>
           <label class="ctrl"><span>Ceiling <em>m</em></span><input type="range" id="H" min="1" max="40" step="0.1" value="3" /><output id="H_out">3.0</output></label>
@@ -1056,14 +1060,15 @@
     <div id="toast" class="toast" hidden role="status"></div>
   </div>
   <script src="/static/js/vendor/three.min.js"></script>
-  <script src="/static/js/room_math.js?v=17"></script>
+  <script src="/static/js/room_shape.js?v=1"></script>
+  <script src="/static/js/room_math.js?v=18"></script>
   <script src="/static/js/spectrum_colors.js?v=1"></script>
   <script src="/static/js/freq_palette.js?v=2"></script>
   <script src="/static/js/room_view_pose.js?v=1"></script>
   <script src="/static/js/room_3d.js?v=21"></script>
-  <script src="/static/js/room_editor.js?v=20"></script>
+  <script src="/static/js/room_editor.js?v=21"></script>
   <script src="/static/js/image_views.js?v=17"></script>
-  <script src="/static/js/colour_surfaces.js?v=5"></script>
+  <script src="/static/js/colour_surfaces.js?v=6"></script>
   <script src="/static/js/polar_field.js?v=7"></script>
   <script src="/static/js/mic_desk.js?v=19"></script>
   <script src="/static/js/source_desk.js?v=4"></script>
@@ -1074,7 +1079,7 @@
   <script src="/static/js/drag_model.js?v=2"></script>
   <script src="/static/js/room_window_math.js?v=1"></script>
   <script src="/static/js/routing_scene.js?v=3"></script>
-  <script src="/static/js/app.js?v=76"></script>
+  <script src="/static/js/app.js?v=77"></script>
   <script>window.RR_SL_STAGE = 5;</script>
   <script src="/static/js/sl_room_result.js?v=5"></script>
   <script src="/static/js/rr_controls.js?v=1"></script>

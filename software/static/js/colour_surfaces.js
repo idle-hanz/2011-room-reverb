@@ -356,28 +356,78 @@
     this._paintRoomNetSparks();
   };
 
+  ColourSurfaces.prototype._wallRows = function () {
+    var shape = this.getState() && this.getState().room_shape;
+    if (global.RoomShape && RoomShape.wallRows) return RoomShape.wallRows(shape);
+    return [
+      { id: "sides", letters: ["A", "C"], shared: true, label: "Left / Right", facing: "\u2212X / +X" },
+      { id: "front", letters: ["B"], shared: false, label: "Front", facing: "+Z" },
+      { id: "back", letters: ["D"], shared: false, label: "Back", facing: "\u2212Z" },
+      { id: "floor", letters: ["E"], shared: false, label: "Floor", facing: "\u2212Y" },
+      { id: "ceiling", letters: ["F"], shared: false, label: "Ceiling", facing: "+Y" }
+    ];
+  };
+
+  ColourSurfaces.prototype._copyCard = function (from, to) {
+    var surfs = this.surfaces();
+    var src = surfs[from];
+    var dst = surfs[to];
+    if (!src || !dst || src === dst) return;
+    dst.absorb = (src.absorb || []).slice();
+    dst.material = src.material;
+    dst.material_name = src.material_name;
+    dst.honesty = src.honesty;
+    if (src.eq) dst.eq = JSON.parse(JSON.stringify(src.eq));
+    dst.jitter_D = src.jitter_D;
+    dst.structure_dif = src.structure_dif;
+    dst.diffusion = src.diffusion;
+    dst.assumed = src.assumed;
+  };
+
+  /* Left and right are one material. Front, back, floor and ceiling stay put. */
+  ColourSurfaces.prototype._shareSides = function () {
+    if (this.selected === "C") this._copyCard("C", "A");
+    else if (this.selected === "A") this._copyCard("A", "C");
+  };
+
+  ColourSurfaces.prototype._forceSides = function () {
+    this._copyCard("A", "C");
+  };
+
+  ColourSurfaces.prototype.syncWallList = function () {
+    var keep = this.selected || "A";
+    this._buildCards();
+    this.select(keep);
+  };
+
   ColourSurfaces.prototype._buildCards = function () {
     var self = this;
     var host = this.els.cards;
     if (!host) return;
     host.innerHTML = "";
-    LETTERS.forEach(function (L) {
+    this._wallRows().forEach(function (row) {
+      var L = row.letters[0];
       var m = META[L];
       var card = document.createElement("div");
       card.className = "surface-card";
       card.setAttribute("role", "option");
       card.setAttribute("tabindex", "0");
       card.setAttribute("data-letter", L);
+      card.setAttribute("data-wall", row.id);
+      if (row.letters.length > 1) card.setAttribute("data-pair", row.letters[1]);
+      var mark = row.shared ? row.letters.join("\u00b7") : L;
       card.innerHTML =
-        '<span class="sc-letter" style="color:' + m.color + '">' + L + "</span>" +
-        '<span class="sc-label">' + m.short + "</span>" +
-        '<span class="sc-facing">' + m.arrow + " " + m.facing + "</span>" +
+        '<span class="sc-letter" style="color:' + m.color + '">' + mark + "</span>" +
+        '<span class="sc-label">' + row.label + "</span>" +
+        '<span class="sc-facing">' + row.facing + "</span>" +
         '<span class="sc-tag">ASSUMED</span>' +
         '<div class="sc-audition">' +
           '<button type="button" class="chip" data-solo="' + L + '">Solo</button>' +
           '<button type="button" class="chip" data-mute="' + L + '">Mute</button>' +
         "</div>";
-      card.title = m.label + " · faces " + m.facing + " (" + m.compass + ")";
+      card.title = row.shared
+        ? "Left and right share one material"
+        : (row.label + " stays independent");
       card.addEventListener("click", function (ev) {
         if (ev.target.closest("button")) return;
         self.select(L);
@@ -396,7 +446,9 @@
       });
       card.querySelector("[data-mute]").addEventListener("click", function (ev) {
         ev.stopPropagation();
-        self._setMute(L);
+        self.select(L);
+        if (row.shared) self._setPairMute(row.letters);
+        else self._setMute(L);
       });
       host.appendChild(card);
     });
@@ -406,7 +458,8 @@
     this.selected = letter;
     var cards = this.els.cards ? this.els.cards.querySelectorAll(".surface-card") : [];
     cards.forEach(function (c) {
-      c.classList.toggle("active", c.getAttribute("data-letter") === letter);
+      var on = c.getAttribute("data-letter") === letter || c.getAttribute("data-pair") === letter;
+      c.classList.toggle("active", on);
     });
     this._syncOrientationUI(letter);
     this._buildAbsorbSliders();
@@ -439,6 +492,7 @@
       input.addEventListener("input", function () {
         var v = parseFloat(input.value);
         self._current().absorb[i] = v;
+        self._shareSides();
         out.textContent = v.toFixed(2);
         self.drawSurfaceGraphs();
         self._paintRoomNetSparks();
@@ -479,6 +533,7 @@
       input.addEventListener("input", function () {
         var v = parseFloat(input.value);
         eq[sp.key] = v;
+        self._shareSides();
         out.textContent = sp.key.indexOf("hz") >= 0 ? String(Math.round(v)) : v.toFixed(1);
         self.drawSurfaceGraphs();
         self._paintRoomNetSparks();
@@ -498,6 +553,7 @@
         var v = parseFloat(el.value);
         var card = migrateCard(self._current());
         card[key] = v;
+        self._shareSides();
         if (out) out.textContent = v.toFixed(2);
         self.onChange();
       });
@@ -1096,6 +1152,8 @@
       }
       card.assumed = true;
     });
+    if (letters.indexOf("C") >= 0 && letters.indexOf("A") < 0) this._copyCard("C", "A");
+    else if (letters.indexOf("A") >= 0) this._copyCard("A", "C");
     this.select(this.selected);
     this.onChange();
   };
@@ -1124,6 +1182,7 @@
       }
       card.assumed = true;
     });
+    this._forceSides();
     this.select(this.selected);
     this.onChange();
   };
@@ -1252,6 +1311,18 @@
     var on = !st.surfaces_mute[letter];
     st.surfaces_mute[letter] = on;
     if (on && st.surfaces_solo === letter) st.surfaces_solo = null;
+    this._refreshAudition();
+    this.onChange();
+  };
+
+  ColourSurfaces.prototype._setPairMute = function (letters) {
+    var st = this.getState();
+    this.surfaces();
+    var on = !st.surfaces_mute[letters[0]];
+    letters.forEach(function (L) {
+      st.surfaces_mute[L] = on;
+      if (on && st.surfaces_solo === L) st.surfaces_solo = null;
+    });
     this._refreshAudition();
     this.onChange();
   };

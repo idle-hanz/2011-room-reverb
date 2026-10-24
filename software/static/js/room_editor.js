@@ -203,6 +203,53 @@
     function toM(px, py, lay) {
       return { x: (px - lay.ox) / lay.scale, z: lay.L - (py - lay.oy) / lay.scale };
     }
+    function floorOutlinePx(st, lay) {
+      if (global.RoomShape) return RoomShape.floorPx(st.room_shape, st.W, st.L, lay);
+      return [
+        { px: lay.ox, py: lay.oy + lay.rh },
+        { px: lay.ox + lay.rw, py: lay.oy + lay.rh },
+        { px: lay.ox + lay.rw, py: lay.oy },
+        { px: lay.ox, py: lay.oy }
+      ];
+    }
+    function elevOutlinePx(st, lay) {
+      if (global.RoomShape) return RoomShape.elevPx(st.room_shape, st.H, st.L, lay);
+      return [
+        { px: lay.ox, py: lay.oy + lay.rh },
+        { px: lay.ox + lay.rw, py: lay.oy + lay.rh },
+        { px: lay.ox + lay.rw, py: lay.oy },
+        { px: lay.ox, py: lay.oy }
+      ];
+    }
+    function traceClosed(ctx, pts) {
+      ctx.beginPath();
+      var i;
+      for (i = 0; i < pts.length; i++) {
+        if (i === 0) ctx.moveTo(pts[i].px, pts[i].py);
+        else ctx.lineTo(pts[i].px, pts[i].py);
+      }
+      ctx.closePath();
+    }
+    function splayOn(st) {
+      return !!(global.RoomShape && RoomShape.normalize(st && st.room_shape) === "splay");
+    }
+    /* Room-mic drag uses the box margin. Splay then pulls the spot inside the outline. */
+    function clampRoomSpotPatch(st, cap, patch) {
+      if (!splayOn(st) || !patch) return patch;
+      var xk = "room_" + cap + "_x";
+      var yk = "room_" + cap + "_y";
+      var zk = "room_" + cap + "_z";
+      var x = patch[xk] != null ? patch[xk] : st[xk];
+      var y = patch[yk] != null ? patch[yk] : st[yk];
+      var z = patch[zk] != null ? patch[zk] : st[zk];
+      if (y == null || !isFinite(Number(y))) y = st.my;
+      if (x == null || z == null || !isFinite(Number(x)) || !isFinite(Number(z))) return patch;
+      var c = RoomShape.clampInside(Number(x), Number(y), Number(z), st.W, st.H, st.L);
+      if (patch[xk] != null) patch[xk] = c.x;
+      if (patch[yk] != null) patch[yk] = c.y;
+      if (patch[zk] != null) patch[zk] = c.z;
+      return patch;
+    }
     function ePx(z, y, lay) {
       return { px: lay.ox + z * lay.scale, py: lay.oy + (lay.H - y) * lay.scale };
     }
@@ -617,14 +664,20 @@
       ctx.clearRect(0, 0, cw, ch);
       ctx.fillStyle = "#0a0b0e";
       ctx.fillRect(0, 0, cw, ch);
+      const outline = floorOutlinePx(geo.state, fl);
       ctx.fillStyle = "#12141a";
       ctx.strokeStyle = "#3a4155";
       ctx.lineWidth = 2;
-      ctx.beginPath();
-      ctx.rect(fl.ox, fl.oy, fl.rw, fl.rh);
+      traceClosed(ctx, outline);
       ctx.fill();
       ctx.stroke();
 
+      const clipSplay = splayOn(geo.state);
+      if (clipSplay) {
+        ctx.save();
+        traceClosed(ctx, outline);
+        ctx.clip();
+      }
       ctx.strokeStyle = "rgba(255,255,255,0.04)";
       ctx.lineWidth = 1;
       const step = Math.max(0.5, Math.round(Math.min(geo.state.W, geo.state.L) / 8 * 2) / 2);
@@ -645,6 +698,7 @@
         ctx.lineTo(b.px, b.py);
         ctx.stroke();
       }
+      if (clipSplay) ctx.restore();
 
       if (geo.state.reaktor_parity) {
         a = toPx(geo.state.W * 0.5, 0, fl);
@@ -760,8 +814,7 @@
       ctx.fillStyle = "#12141a";
       ctx.strokeStyle = "#3a4155";
       ctx.lineWidth = 2;
-      ctx.beginPath();
-      ctx.rect(el.ox, el.oy, el.rw, el.rh);
+      traceClosed(ctx, elevOutlinePx(geo.state, el));
       ctx.fill();
       ctx.stroke();
 
@@ -1056,7 +1109,7 @@
             const rm = toM(p.x, p.y, fl);
             patch = global.RRDrag.roomFloorDragTo(st0, drag.roomCap, rm.x, rm.z);
           }
-          setState(patch);
+          setState(clampRoomSpotPatch(st0, drag.roomCap, patch));
           onChange();
           redraw();
           return;
@@ -1184,7 +1237,10 @@
         }
         if (drag.kind === "room" && global.RRDrag && global.RRDrag.roomHeightDragTo) {
           const hm = eM(p.x, p.y, el);
-          setState(global.RRDrag.roomHeightDragTo(getState(), drag.roomCap, hm.y));
+          setState(clampRoomSpotPatch(
+            getState(), drag.roomCap,
+            global.RRDrag.roomHeightDragTo(getState(), drag.roomCap, hm.y)
+          ));
           onChange();
           redraw();
           return;

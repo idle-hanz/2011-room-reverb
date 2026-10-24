@@ -129,6 +129,8 @@
     early_wet: 1.0, fdn_wet: 1, direct_wet: 1, dry_gain: 0, fdn_g: 1, ir_length_ms: 1500,
     decay_s: 1.8, decay_lock: true, smooth: true, movement: 0, phys_ceiling: true,
     sub_hp: true, offaxis_tail: false,
+    /* Box posts the key. The server keeps the shoebox bytes. */
+    room_shape: "box",
     /* Routing. UI names are not engine keys. Off posts nothing. */
     route_array_pre: "none", route_array_drive: 0, route_array_comp: "off", route_array_amount: 0,
     route_room_pre: "none", route_room_drive: 0, route_room_comp: "off", route_room_amount: 0,
@@ -670,7 +672,7 @@
     var o = heardMix(state);
     /* Boolean. On, the server packs the same 45 floats Play already forwards. */
     o.offaxis_tail = !!state.offaxis_tail;
-    /* Polygon preset. Absent stays off this body, so the shoebox bytes hold. */
+    /* Polygon preset. Box is posted and stays the shoebox. */
     if (state.room_shape) o.room_shape = String(state.room_shape);
     if (window.LiveFDN) {
       var rate = LiveFDN.rate ? LiveFDN.rate() : 0;
@@ -3014,6 +3016,7 @@
       }, 120);
     }
     paintPlaceChips();
+    paintRoomShape();
     paintMicSetupLink();
     scheduleSetupSave();
   }
@@ -3715,6 +3718,7 @@
     var fd = new FormData();
     fd.append("file", wavFile, wavFile.name);
     var mix = heardMix(state);
+    if (state.room_shape) mix.room_shape = String(state.room_shape);
     if (window.RRRouting && RRRouting.renderScene) Object.assign(mix, RRRouting.renderScene(state));
     fd.append("params_json", JSON.stringify(mix));
     try {
@@ -3833,6 +3837,29 @@
       btn.classList.toggle("active", btn.getAttribute("data-place") === name);
     });
   }
+
+  function paintRoomShape() {
+    var name = (window.RoomShape && RoomShape.normalize(state.room_shape) === "splay") ? "splay" : "box";
+    document.querySelectorAll("#roomShapeRow [data-room-shape]").forEach(function (btn) {
+      var on = btn.getAttribute("data-room-shape") === name;
+      btn.classList.toggle("active", on);
+      btn.setAttribute("aria-pressed", on ? "true" : "false");
+    });
+    if (colourSurfaces && colourSurfaces.syncWallList && paintRoomShape._shown !== name) {
+      paintRoomShape._shown = name;
+      colourSurfaces.syncWallList();
+    }
+  }
+  paintRoomShape._shown = "box";
+
+  document.querySelectorAll("#roomShapeRow [data-room-shape]").forEach(function (btn) {
+    btn.addEventListener("click", function () {
+      state.room_shape = btn.getAttribute("data-room-shape") === "splay" ? "splay" : "box";
+      if (window.RoomMath && RoomMath.clampRoom) Object.assign(state, RoomMath.clampRoom(state));
+      syncUI();
+      scheduleLiveParams();
+    });
+  });
 
   function paintMicSetupLink() {
     var link = document.getElementById("roomMicSetupLink");
@@ -3960,6 +3987,7 @@
       if (!Object.prototype.hasOwnProperty.call(data, k)) delete state[k];
     });
     Object.keys(data).forEach(function (k) { state[k] = data[k]; });
+    if (!state.room_shape) state.room_shape = "box";
     migrateRoomState(state);
     if (state.surfaces && colourSurfaces && colourSurfaces.setSurfaces) {
       colourSurfaces.setSurfaces(state.surfaces);
