@@ -345,6 +345,77 @@ test("gable roof faces match poly_room and Play's quota", () => {
   assert.match(imageViews, /RoomDraw\.latticeKeys\(mode/);
 });
 
+test("hex faces match poly_room and Play's quota", () => {
+  const code = [
+    "import json, sys",
+    "sys.path.insert(0, 'engine')",
+    "from poly_room import faces_for, collect_audible, quota_pick, clamp_inside, lr_symmetric",
+    "src = (2.6, 1.2, 4.0)",
+    "stand = (3.0, 1.5, 1.5)",
+    "faces = faces_for('hex', 6, 3, 8)",
+    "csrc = clamp_inside(src, faces)",
+    "cstand = clamp_inside(stand, faces)",
+    "images = collect_audible(csrc, faces, cstand, order=4, max_dist=340.0, prune=True)",
+    "chosen = quota_pick(images, cstand, n=32)",
+    "print(json.dumps({",
+    "  'sym': lr_symmetric('hex'),",
+    "  'faces': [{'name': f.name, 'v': [[float(x) for x in p] for p in f.v], 'n': [float(x) for x in f.n]} for f in faces],",
+    "  'pick': [{'seq': list(seq), 'pos': [float(x) for x in pos]} for pos, _order, seq in chosen],",
+    "}))"
+  ].join("\n");
+  const run = spawnSync(join(software, ".venv/Scripts/python.exe"), ["-c", code], {
+    cwd: software,
+    encoding: "utf8"
+  });
+  assert.equal(run.status, 0, run.stderr || run.stdout);
+  const py = JSON.parse(run.stdout);
+  assert.equal(py.sym, true);
+  assert.equal(RD.normalize("Hexagon"), "hex");
+  assert.equal(RD.normalize("box"), "box");
+  const faces = RD.polyFaces("hex", 6, 3, 8);
+  assert.equal(faces.length, py.faces.length);
+  faces.forEach(function (face, i) {
+    assert.equal(face.name, py.faces[i].name);
+    closeVerts(face.v, py.faces[i].v, "hex " + face.name + " " + i);
+    closeVerts([face.n], [py.faces[i].n], "hex n " + i);
+  });
+  assert.deepEqual(faces.map(function (f) { return f.letter; }), ["E", "F", "D", "C", "C", "B", "A", "A"]);
+  const walls = faces.filter(function (f) { return f.name.indexOf("wall") === 0; });
+  assert.equal(walls.length, 6);
+  const floor = faces.filter(function (f) { return f.name === "floor"; });
+  assert.equal(floor.length, 1);
+  assert.equal(floor[0].v.length, 6);
+  const surfaces = {
+    A: { material: "plaster_smooth" },
+    B: { material: "brick_unglazed" },
+    C: { material: "plaster_smooth" },
+    D: { material: "concrete_painted" },
+    E: { material: "wood_parquet" },
+    F: { material: "acoustic_ceiling_tile" }
+  };
+  walls.forEach(function (face) {
+    assert.equal(RD.wallColor(surfaces, face.letter), {
+      A: 0xe7e1d6, C: 0xe7e1d6, B: 0xa34b3a, D: 0xb7b7b2
+    }[face.letter]);
+  });
+  assert.equal(RD.wallColor(surfaces, "E"), 0x8b5a2b);
+  assert.equal(RD.wallColor(surfaces, "F"), 0xd5d8dc);
+  assert.notEqual(RD.wallColor(surfaces, "A"), RD.wallColor(surfaces, "B"));
+  const pack = RD.imageRooms("hex", 6, 3, 8, SRC, [{ id: "C", p: REC }], {
+    order: 4, maxDist: 340, n: 32, stand: [3, 1.5, 1.5]
+  });
+  assert.equal(pack.rooms.length, py.pick.length);
+  assert.equal(pack.rooms.length, 32);
+  pack.rooms.forEach(function (room, i) {
+    assert.equal(room.seq.join("."), py.pick[i].seq.join("."), "hex seq " + i);
+    closeVerts([room.pos], [py.pick[i].pos], "hex pos " + i);
+  });
+  assert.match(room3d, /RoomDraw\.polyFaces/);
+  assert.match(imageViews, /imageRooms\(polyShape\(\)/);
+  assert.match(imageViews, /live && n !== 8 && n !== 16 && n !== 32\) n = 32/);
+  assert.match(imageViews, /RoomDraw\.latticeKeys\(mode/);
+});
+
 test("the page draws box through RoomDraw and splay through the polygon", () => {
   assert.match(room3d, /RoomDraw\.room3dBoxGeometries/);
   assert.match(room3d, /RoomDraw\.wallColor/);
@@ -354,7 +425,7 @@ test("the page draws box through RoomDraw and splay through the polygon", () => 
   assert.match(imageViews, /RoomDraw\.imageBoxGeometries/);
   assert.match(imageViews, /RoomDraw\.imageRooms/);
   assert.match(imageViews, /FADE_MS/);
-  assert.match(page, /room_draw\.js\?v=4/);
+  assert.match(page, /room_draw\.js\?v=5/);
   assert.match(page, /room_3d\.js\?v=23/);
   assert.match(page, /image_views\.js\?v=20/);
   assert.match(page, /app\.js\?v=82/);

@@ -31,18 +31,20 @@ function cornerKey(p) {
 test("the picker posts room_shape", () => {
   const rowStart = page.indexOf('id="roomShapeRow"');
   assert.ok(rowStart > 0);
-  const row = page.slice(rowStart, rowStart + 900);
+  const row = page.slice(rowStart, rowStart + 1100);
   assert.match(row, /data-room-shape="box"/);
   assert.match(row, /aria-pressed="true"/);
   assert.match(row, /data-room-shape="splay"/);
   assert.match(row, /data-room-shape="lede"/);
   assert.match(row, /data-room-shape="live"/);
   assert.match(row, /data-room-shape="gable"/);
+  assert.match(row, /data-room-shape="hex"/);
   assert.match(row, />Box</);
   assert.match(row, />Splay</);
   assert.match(row, />LEDE</);
   assert.match(row, />Live room</);
   assert.match(row, />Gable</);
+  assert.match(row, />Hex</);
   assert.match(app, /room_shape:\s*"box"/);
   assert.match(app, /RoomShape\.normalize\(picked\)/);
   assert.match(app, /mix\.room_shape = String\(state\.room_shape\)/);
@@ -53,7 +55,8 @@ test("the picker posts room_shape", () => {
   assert.equal(liveRequestBodyFrom({ room_shape: "lede" }).room_shape, "lede");
   assert.equal(liveRequestBodyFrom({ room_shape: "live" }).room_shape, "live");
   assert.equal(liveRequestBodyFrom({ room_shape: "gable" }).room_shape, "gable");
-  assert.match(page, /room_shape\.js\?v=5/);
+  assert.equal(liveRequestBodyFrom({ room_shape: "hex" }).room_shape, "hex");
+  assert.match(page, /room_shape\.js\?v=6/);
   assert.match(page, /app\.js\?v=82/);
 });
 
@@ -137,6 +140,30 @@ test("box draws the same outline as now", () => {
   assert.deepEqual(gableRows[4].letters, ["F"]);
   assert.equal(gableRows[5].label, "Right roof");
   assert.deepEqual(gableRows[5].letters, ["F"]);
+  assert.equal(RS.normalize("Hexagon"), "hex");
+  assert.equal(RS.showMirrorToggle("hex"), false);
+  assert.equal(RS.lrSymmetric("hex"), true);
+  assert.equal(RS.sidesLinked("hex", false), true);
+  assert.deepEqual(RS.floorOutline("hex", 6, 8), [
+    [1.5, 0], [4.5, 0], [6, 4], [4.5, 8], [1.5, 8], [0, 4]
+  ]);
+  assert.deepEqual(RS.planGuides("hex", 6, 8), []);
+  assert.deepEqual(RS.elevOutline("hex", 3, 8), [[0, 0], [8, 0], [8, 3], [0, 3]]);
+  const hexRows = RS.wallRows("hex", false);
+  assert.deepEqual(hexRows.map(function (r) { return r.id; }), ["sides", "sides2", "front", "back", "floor", "ceiling"]);
+  hexRows.slice(0, 2).forEach(function (r) {
+    assert.equal(r.shared, true);
+    assert.equal(r.label, "Left + Right (mirrored)");
+    assert.deepEqual(r.letters, ["A", "C"]);
+  });
+  assert.equal(hexRows[2].shared, false);
+  assert.equal(hexRows[2].label, "Front");
+  assert.deepEqual(hexRows[2].letters, ["B"]);
+  assert.equal(hexRows[3].shared, false);
+  assert.equal(hexRows[3].label, "Back");
+  assert.deepEqual(hexRows[3].letters, ["D"]);
+  assert.deepEqual(hexRows[4].letters, ["E"]);
+  assert.deepEqual(hexRows[5].letters, ["F"]);
   assert.match(editor, /RoomShape\.planGuidesPx/);
   assert.match(editor, /RoomShape\.elevGuidesPx/);
   const z1 = (2 / 7) * 8;
@@ -200,4 +227,15 @@ test("splay drag stays inside the outline", () => {
   const gableRidge = RS.clampInside(3, 3, 4, 6, 3, 8, "gable");
   assert.ok(gableRidge.y > 2.99);
   assert.ok(gableRidge.y < 3);
+  const hexKept = RS.clampInside(2.6, 1.2, 4.75, 6, 3, 8, "hex");
+  assert.equal(hexKept.x, 2.6);
+  assert.equal(hexKept.y, 1.2);
+  assert.equal(hexKept.z, 4.75);
+  const hexCorner = RS.clampInside(0.05, 1.2, 0.05, 6, 3, 8, "hex");
+  assert.ok(hexCorner.x > 1.4);
+  assert.ok(hexCorner.x < 1.6);
+  assert.ok(hexCorner.z > 0 && hexCorner.z < 0.06);
+  const hexHigh = RS.clampInside(3, 3, 4, 6, 3, 8, "hex");
+  assert.ok(hexHigh.y > 2.99);
+  assert.ok(hexHigh.y < 3);
 });

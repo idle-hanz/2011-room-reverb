@@ -30,6 +30,7 @@
       key === "nonparallelliveroom"
     ) return "live";
     if (key === "gable" || key === "gableroof") return "gable";
+    if (key === "hex" || key === "hexagon") return "hex";
     return "box";
   }
 
@@ -45,6 +46,17 @@
     if (name === "live") {
       var inset = Math.min(0.25 * W, L * tan6());
       return [[inset, 0], [W - inset, 0], [W, L], [0, L]];
+    }
+    /* Front and back are flat, width W/2, centred. The other walls meet the sides at mid-length. */
+    if (name === "hex") {
+      return [
+        [W / 4, 0],
+        [3 * W / 4, 0],
+        [W, L / 2],
+        [3 * W / 4, L],
+        [W / 4, L],
+        [0, L / 2]
+      ];
     }
     /* Gable floor is the shoebox. The ridge is a plan guide, not an extra wall. */
     return [[0, 0], [W, 0], [W, L], [0, L]];
@@ -139,8 +151,8 @@
     L = Number(L);
     H = Number(H);
     var name = normalize(shape);
-    /* Side view looks along X. The gable ridge runs the full length at H. */
-    if (name === "box" || name === "gable") return [[0, 0], [L, 0], [L, H], [0, H]];
+    /* Side view looks along X. Gable and hex fill the length. Hex's ceiling is flat. */
+    if (name === "box" || name === "gable" || name === "hex") return [[0, 0], [L, 0], [L, H], [0, H]];
     return [
       [0, 0],
       [L, 0],

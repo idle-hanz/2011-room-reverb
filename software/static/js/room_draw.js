@@ -1,6 +1,6 @@
 /* Display geometry for the 3D room and the Space image rooms.
    Box parts are the shoebox meshes the views already drew.
-   Polygon parts are the prism in engine/poly_room.py (splay, lede, live, gable).
+   Polygon parts are the prism in engine/poly_room.py (splay, lede, live, gable, hex).
    Browser: window.RoomDraw. Node: module.exports. Display only. */
 (function (root, factory) {
   var api = factory();
@@ -50,6 +50,7 @@
       key === "nonparallelliveroom"
     ) return "live";
     if (key === "gable" || key === "gableroof") return "gable";
+    if (key === "hex" || key === "hexagon") return "hex";
     return "box";
   }
 
@@ -67,6 +68,16 @@
     if (name === "live") {
       var inset = Math.min(0.25 * W, L * tan6());
       return [[inset, 0], [W - inset, 0], [W, L], [0, L]];
+    }
+    if (name === "hex") {
+      return [
+        [W / 4, 0],
+        [3 * W / 4, 0],
+        [W, L / 2],
+        [3 * W / 4, L],
+        [W / 4, L],
+        [0, L / 2]
+      ];
     }
     return [[0, 0], [W, 0], [W, L], [0, L]];
   }
