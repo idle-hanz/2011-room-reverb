@@ -1429,6 +1429,31 @@ def api_room_result(body: dict):
     return out
 
 
+@app.post("/api/auto_treat")
+def api_auto_treat(body: dict):
+    """SL6. Suggest Treatment rows. Nothing is written onto the scene.
+
+    body.t_mid is seconds or "ebu". Accepted rows count. Suggested rows are
+    ignored. The caller keeps the list until Accept.
+    """
+    import surf_autotreat as _AT
+    p = params_from_body(body or {})
+    W, H, L = p["W"], p["H"], p["L"]
+    t_mid = (body or {}).get("t_mid")
+    if t_mid == "ebu":
+        t_mid = _AT.ebu_preset_t_mid(W, H, L)
+    try:
+        t_mid = float(t_mid if t_mid is not None else (p.get("decay_s") or 0.8))
+    except (TypeError, ValueError):
+        raise BadParam("t_mid")
+    t_mid = min(max(t_mid, 0.15), 6.0)
+    accepted = [r for r in (p.get("surf_treatment") or []) if not r.get("suggested")]
+    out = _AT.auto_treat(W, H, L, p["surfaces"], float(p.get("humidity") or 0.0), t_mid, existing_rows=accepted)
+    out["t_mid"] = round(t_mid, 3)
+    out["ok"] = True
+    return out
+
+
 @app.post("/api/make_panel")
 def api_make_panel(body: dict):
     """SL5. One tuned row for the Treatment list. Below 300 Hz, else null.
