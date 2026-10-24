@@ -26,3 +26,12 @@ Same guitar, same scene, one file each. `room_shape` is the only change: `box`, 
 | live.wav | 0.717199 | 0.059114 |
 
 `splay.wav`, `box_ir.wav`, and `splay_ir.wav` were not rendered again.
+
+## Gable (2026-10-24)
+
+Same guitar, same scene, one file. `room_shape` is `gable`. No gain match. 24-bit stereo, 48 kHz. 709920 frames, 14.79 s. Decay lock still builds the 2790 ms tank. The shape is engine-only: no picker and no 3D view. Box was not rendered again.
+
+| file | peak | RMS |
+| --- | ---: | ---: |
+| box.wav | 0.729355 | 0.063232 |
+| gable.wav | 0.656224 | 0.051748 |

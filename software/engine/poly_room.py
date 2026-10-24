@@ -1,6 +1,6 @@
 """Polygon image sources. Play calls this when ``room_shape`` is a preset.
 
-``room_shape`` absent or ``box`` stays in ``compute_taps``. Three convex presets
+``room_shape`` absent or ``box`` stays in ``compute_taps``. Convex presets
 scale with W / L / H. Order 4, parent-side prune, distance cut. Thirty-two taps
 by the live per-order quota, nearest first, geometry only. FDN lengths are the
 path from the stand centre, the same on L, C, and R.
@@ -49,6 +49,8 @@ def normalize_shape(raw) -> str:
         return "lede"
     if key in ("live", "nonparallel", "nonparallellive", "nonparallelliveroom"):
         return "live"
+    if key in ("gable", "gableroof"):
+        return "gable"
     return "box"
 
 
@@ -203,18 +205,87 @@ def faces_for(shape, W: float, H: float, L: float) -> List[Face]:
             return (H - inset_y) + inset_y * t
 
         return _prism([(inset_x, 0.0), (W - inset_x, 0.0), (W, L), (0.0, L)], h)
+    if name == "gable":
+        return _gable_faces(W, H, L)
     return box_faces(W, H, L)
 
 
+def _gable_faces(W: float, H: float, L: float) -> List[Face]:
+    """Shoebox floor. Ridge along the length at x = W/2, eaves at 0.75*H.
+
+    ``_prism`` emits one ceiling polygon. A ridge is two planes, so the flat
+    eave cap and the flat end walls are replaced after that extrusion. The
+    ridge stays at H, inside the containing box.
+    """
+    eave = 0.75 * H
+    ridge_x = 0.5 * W
+    base = _prism([(0.0, 0.0), (W, 0.0), (W, L), (0.0, L)], lambda x, z: eave)
+    faces = [face for face in base if face.name not in ("ceiling", "wall0", "wall2")]
+    faces.append(
+        Face(
+            "wall0",
+            [
+                (0.0, 0.0, 0.0),
+                (W, 0.0, 0.0),
+                (W, eave, 0.0),
+                (ridge_x, H, 0.0),
+                (0.0, eave, 0.0),
+            ],
+        )
+    )
+    faces.append(
+        Face(
+            "wall2",
+            [
+                (0.0, 0.0, L),
+                (W, 0.0, L),
+                (W, eave, L),
+                (ridge_x, H, L),
+                (0.0, eave, L),
+            ],
+        )
+    )
+    faces.append(
+        Face(
+            "ceiling",
+            [
+                (0.0, eave, 0.0),
+                (ridge_x, H, 0.0),
+                (ridge_x, H, L),
+                (0.0, eave, L),
+            ],
+        )
+    )
+    faces.append(
+        Face(
+            "ceiling",
+            [
+                (ridge_x, H, 0.0),
+                (W, eave, 0.0),
+                (W, eave, L),
+                (ridge_x, H, L),
+            ],
+        )
+    )
+    return orient(faces)
+
+
 def lr_symmetric(shape, W: float = 6.0, L: float = 8.0, H: float = 3.0) -> bool:
-    """True when the floor polygon and the ceiling mirror across x = W/2."""
+    """True when every floor and ceiling vertex mirrors across x = W/2.
+
+    A gable has two ceiling planes. One ceiling polygon is the splay, lede,
+    and live case. Both use the same vertex test.
+    """
     name = normalize_shape(shape)
     if name == "box":
         return True
     W, H, L = float(W), float(H), float(L)
     faces = faces_for(name, W, H, L)
-    floor = next(face for face in faces if face.name == "floor")
-    pts = [(float(v[0]), float(v[2])) for v in floor.v]
+    floors = [face for face in faces if face.name == "floor"]
+    ceils = [face for face in faces if face.name == "ceiling"]
+    if not floors or not ceils:
+        return False
+    pts = [(float(v[0]), float(v[2])) for face in floors for v in face.v]
 
     def near(a, b) -> bool:
         return abs(a[0] - b[0]) <= 1e-6 and abs(a[1] - b[1]) <= 1e-6
@@ -223,11 +294,11 @@ def lr_symmetric(shape, W: float = 6.0, L: float = 8.0, H: float = 3.0) -> bool:
         want = (W - x, z)
         if not any(near(want, q) for q in pts):
             return False
-    ceil = next(face for face in faces if face.name == "ceiling")
-    for v in ceil.v:
+    verts = [v for face in ceils for v in face.v]
+    for v in verts:
         x, y, z = float(v[0]), float(v[1]), float(v[2])
         twin = None
-        for u in ceil.v:
+        for u in verts:
             if abs(float(u[0]) - (W - x)) <= 1e-6 and abs(float(u[2]) - z) <= 1e-6:
                 twin = float(u[1])
                 break

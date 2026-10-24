@@ -29,6 +29,7 @@ from poly_room import (  # noqa: E402
     collect_audible,
     compute_poly_taps,
     faces_for,
+    lr_symmetric,
     normalize_shape,
     poly_on,
 )
@@ -95,6 +96,9 @@ def test_unknown_word_is_the_box():
     assert poly_on("LEDE")
     assert poly_on("non-parallel")
     assert normalize_shape("non-parallel") == "live"
+    assert normalize_shape("gable") == "gable"
+    assert normalize_shape("Gable roof") == "gable"
+    assert poly_on("gable")
 
 
 def _mirror_axis(s: float, size: float, k: int) -> float:
@@ -158,7 +162,7 @@ def test_presets_fill_the_quota_and_freeze_the_stand():
     stand = _stand()
     src = (2.6, 1.2, 4.75)
     stand_pt = (stand.cx, stand.cy, stand.cz)
-    for name in ("splay", "lede", "live"):
+    for name in ("splay", "lede", "live", "gable"):
         taps = compute_poly_taps(ROOM, src, stand, name, n=32)
         assert len(taps) == 32
         counts = [sum(1 for t in taps if t.order == k) for k in range(5)]
@@ -246,6 +250,88 @@ def _play_ir(body, tmp_path, secs: float) -> np.ndarray:
     if run.returncode != 0:
         raise AssertionError((run.stderr or run.stdout)[-800:])
     return np.fromfile(out, dtype=np.float32).reshape(-1, 2).astype(np.float64)
+
+
+def _play_bench(body, tmp_path, burst_s: float = 4.0, total_s: float = 10.0) -> dict:
+    """Listen-scene Play. burst 4 s, total 10 s, same wasm_run bench as t19."""
+    node = shutil.which("node")
+    assert node, "node is required"
+    lib = ROOT / "handoff_build_support_2" / "3_phase_acceptance_tests" / "harness" / "lib"
+    params = tmp_path / "gable_play.json"
+    out = tmp_path / "gable_bench.json"
+    played = live_fdn_params(A.params_from_body(body))
+    n_lines = len(played["buses"]["l"]["delay_ms"])
+    if n_lines != PLAY_TAP_BUDGET:
+        raise AssertionError(
+            f"gable Play tap count {n_lines} is not {PLAY_TAP_BUDGET}"
+        )
+    params.write_text(json.dumps(played), encoding="utf-8")
+    cmd = [
+        node, str(lib / "wasm_run.js"), str(SW), str(params),
+        "{}", "bench", str(burst_s), str(total_s), str(out),
+    ]
+    run = subprocess.run(cmd, capture_output=True, text=True)
+    if run.returncode != 0:
+        raise AssertionError((run.stderr or run.stdout)[-800:])
+    return json.loads(out.read_text(encoding="utf-8"))
+
+
+def test_gable_faces_are_inward_and_play_stays_under_2_40(tmp_path):
+    """Gable: shoebox floor, ridge along the length, eaves at 0.75*H.
+
+    Faces are planar and inward. The shape mirrors across x = W/2.
+    Play keeps 32 taps and the listen-scene median stays under 2.40 ms.
+    Absent and box stay the shoebox live MD5.
+    """
+    W, H, L = 6.0, 3.0, 8.0
+    faces = faces_for("gable", W, H, L)
+    assert lr_symmetric("gable", W, L, H)
+    assert lr_symmetric("splay") and lr_symmetric("lede") and lr_symmetric("live")
+    floor = next(face for face in faces if face.name == "floor")
+    assert len(floor.v) == 4
+    xs = [float(v[0]) for v in floor.v]
+    zs = [float(v[2]) for v in floor.v]
+    assert min(xs) == 0.0 and max(xs) == W
+    assert min(zs) == 0.0 and max(zs) == L
+    assert all(abs(float(v[1])) < 1e-9 for v in floor.v)
+    roofs = [face for face in faces if face.name == "ceiling"]
+    assert len(roofs) == 2
+    roof_v = [v for face in roofs for v in face.v]
+    assert max(float(v[1]) for v in roof_v) == pytest.approx(H)
+    assert min(float(v[1]) for v in roof_v) == pytest.approx(0.75 * H)
+    ridge = [v for v in roof_v if abs(float(v[1]) - H) < 1e-6]
+    assert len(ridge) >= 2
+    assert all(abs(float(v[0]) - (W / 2.0)) < 1e-6 for v in ridge)
+    assert {round(float(v[2]), 6) for v in ridge} >= {0.0, L}
+    for face in faces:
+        for v in face.v:
+            x, y, z = float(v[0]), float(v[1]), float(v[2])
+            assert -1e-8 <= x <= W + 1e-8
+            assert -1e-8 <= y <= H + 1e-8
+            assert -1e-8 <= z <= L + 1e-8
+            assert abs(face.sd(v)) < 1e-6
+    interior = (W / 2.0, 0.5 * H, L / 2.0)
+    under_ridge = (W / 2.0, 0.9 * H, L / 2.0)
+    for point in (interior, under_ridge):
+        for face in faces:
+            assert face.sd(point) > 1e-3
+    outside = (0.02, 0.9 * H, L / 2.0)
+    assert min(face.sd(outside) for face in faces) < 0.0
+    tall = faces_for("gable", 12.0, 6.0, 16.0)
+    tall_roof = [v for face in tall if face.name == "ceiling" for v in face.v]
+    assert max(float(v[1]) for v in tall_roof) == pytest.approx(6.0)
+    assert min(float(v[1]) for v in tall_roof) == pytest.approx(4.5)
+    assert _md5(live_fdn_params(A.params_from_body({}))) == EMPTY
+    assert _md5(live_fdn_params(A.params_from_body({"room_shape": "box"}))) == EMPTY
+    assert _md5(live_fdn_params(A.params_from_body({
+        "third_mic": "centre", "mic_gain_c": 1.0,
+    }))) == CENTRE
+    played = live_fdn_params(A.params_from_body({"room_shape": "gable"}))
+    assert played.get("room_shape") == "gable"
+    assert len(played["buses"]["l"]["delay_ms"]) == PLAY_TAP_BUDGET
+    bench = _play_bench({"room_shape": "gable"}, tmp_path)
+    play_ms = float(bench["play_median_ms"])
+    assert play_ms < 2.40, f"gable Play median {play_ms:.4f} ms is over 2.40"
 
 
 def test_splay_play_early_matches_render(tmp_path):
