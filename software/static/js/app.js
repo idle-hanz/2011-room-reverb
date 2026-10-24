@@ -670,6 +670,8 @@
     var o = heardMix(state);
     /* Boolean. On, the server packs the same 45 floats Play already forwards. */
     o.offaxis_tail = !!state.offaxis_tail;
+    /* Polygon preset. Absent stays off this body, so the shoebox bytes hold. */
+    if (state.room_shape) o.room_shape = String(state.room_shape);
     if (window.LiveFDN) {
       var rate = LiveFDN.rate ? LiveFDN.rate() : 0;
       var rev = LiveFDN.colourRev ? LiveFDN.colourRev() : "";

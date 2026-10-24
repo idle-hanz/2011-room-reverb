@@ -644,7 +644,7 @@ def params_from_body(body: dict) -> dict:
         "sub_hp": _b(body["sub_hp"], True) if "sub_hp" in body else True,
         # Missing or explicit false stays off. Only a true reaches the live dict.
         "offaxis_tail": _b(body["offaxis_tail"], False) if "offaxis_tail" in body else False,
-        # Absent is the shoebox. Play never reads this. Render does.
+        # Absent or box is the shoebox. A polygon word reaches Play and Render.
         "room_shape": (
             str(body.get("room_shape") or "box").strip().lower()
             if "room_shape" in body else None

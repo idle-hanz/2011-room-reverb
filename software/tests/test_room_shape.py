@@ -7,6 +7,8 @@ from __future__ import annotations
 import hashlib
 import inspect
 import json
+import shutil
+import subprocess
 import sys
 from pathlib import Path
 
@@ -34,6 +36,13 @@ from render_pipeline import live_fdn_params, render  # noqa: E402
 
 EMPTY = "b20cf5dc675f613992aa6a31c2cd74f4"
 CENTRE = "ba1bbc6d386ed75bf484156f08043f37"
+# Play packs 32 lines (source_radiation.N_LINES and the worklet early route).
+PLAY_TAP_BUDGET = 32
+# First 50 ms. Shoebox Play-vs-Render early-bus energy on this PC, colour
+# bypass, decay lock off, 80 ms file: 1.66 dB L and 1.98 dB R (2026-10-24).
+# Play rounds the line delay. Render interpolates the capsule delay.
+EARLY_50_TOL_DB = 2.5
+_EARLY_N = 2400
 # First 0.25 s of the default scene, splay walls, posted ir_length_ms 250.
 # Decay lock stays on, so the file is 2790 ms. Scored 27.9 s on 2026-10-24.
 SPLAY_IR_MD5 = "35a944517e970cb5fe6a5d66f2818762"
@@ -61,17 +70,19 @@ def test_absent_or_box_leaves_play_bytes():
     assert "room_shape" not in boxed
     assert _md5(boxed) == EMPTY
     named = live_fdn_params(A.params_from_body({"room_shape": "splay"}))
-    assert "room_shape" not in named
-    assert _md5(named) == EMPTY
+    assert named.get("room_shape") == "splay"
+    assert _md5(named) != EMPTY
+    assert len(named["buses"]["l"]["delay_ms"]) <= PLAY_TAP_BUDGET
     centre = live_fdn_params(A.params_from_body({"third_mic": "centre", "mic_gain_c": 1.0}))
     assert _md5(centre) == CENTRE
     played = live_fdn_params(
         A.params_from_body({"third_mic": "centre", "mic_gain_c": 1.0, "room_shape": "lede"})
     )
-    assert _md5(played) == CENTRE
+    assert played.get("room_shape") == "lede"
+    assert _md5(played) != CENTRE
     src = inspect.getsource(live_fdn_params)
-    assert "poly_on" not in src
-    assert "room_shape" not in src
+    assert "poly_on" in src
+    assert "room_shape" in src
 
 
 def test_unknown_word_is_the_box():
@@ -209,12 +220,67 @@ def _render_impulse(body):
     return ir, info
 
 
+def _energy_db(x) -> float:
+    return 10.0 * np.log10(max(float(np.sum(np.asarray(x, np.float64) ** 2)), 1e-300))
+
+
+def _play_ir(body, tmp_path, secs: float) -> np.ndarray:
+    """Shipped wasm. The JSON is live_fdn_params, the same blob the page posts."""
+    node = shutil.which("node")
+    assert node, "node is required"
+    lib = ROOT / "handoff_build_support_2" / "3_phase_acceptance_tests" / "harness" / "lib"
+    params = tmp_path / "play.json"
+    out = tmp_path / "play.f32"
+    played = live_fdn_params(A.params_from_body(body))
+    n_lines = len(played["buses"]["l"]["delay_ms"])
+    if n_lines > PLAY_TAP_BUDGET:
+        raise AssertionError(
+            f"splay Play tap count {n_lines} is over the {PLAY_TAP_BUDGET}-line pack"
+        )
+    params.write_text(json.dumps(played), encoding="utf-8")
+    cmd = [
+        node, str(lib / "wasm_run.js"), str(SW), str(params),
+        json.dumps({"colour_on": False}), "ir", str(secs), str(out),
+    ]
+    run = subprocess.run(cmd, capture_output=True, text=True)
+    if run.returncode != 0:
+        raise AssertionError((run.stderr or run.stdout)[-800:])
+    return np.fromfile(out, dtype=np.float32).reshape(-1, 2).astype(np.float64)
+
+
+def test_splay_play_early_matches_render(tmp_path):
+    """Splay Play impulse, first 50 ms, against Render's early bus.
+
+    Colour bypass, direct off, tank off, decay lock off, 80 ms file.
+    Each channel's energy stays inside EARLY_50_TOL_DB of Render.
+    """
+    body = {
+        "room_shape": "splay",
+        "colour_mode": "BYPASS",
+        "early_wet": 1.0,
+        "fdn_wet": 0.0,
+        "direct_wet": 0.0,
+        "dry_gain": 0.0,
+        "decay_lock": False,
+        "ir_length_ms": 80,
+        "sample_rate": 48000,
+    }
+    play = _play_ir(body, tmp_path, 0.05)
+    rend, _info = _render_impulse(body)
+    n = min(_EARLY_N, len(play), len(rend))
+    assert n == _EARLY_N
+    assert float(np.max(np.abs(rend[:n]))) > 1e-6
+    for ch, name in ((0, "L"), (1, "R")):
+        gap = _energy_db(play[:n, ch]) - _energy_db(rend[:n, ch])
+        assert abs(gap) <= EARLY_50_TOL_DB, (name, gap)
+
+
 @pytest.mark.slow
 def test_splay_render_impulse_stays_put():
     """Default scene, splay walls, posted length 250 ms.
 
     The decay lock stays on, so the FDN cut is 2790 ms. The pin is the first
-    0.25 s (12000 samples). Play still ignores room_shape.
+    0.25 s (12000 samples). Play reads room_shape, so the splay dict moves.
     """
     assert _md5(live_fdn_params(A.params_from_body({}))) == EMPTY
     assert _md5(live_fdn_params(A.params_from_body({
@@ -222,8 +288,8 @@ def test_splay_render_impulse_stays_put():
     }))) == CENTRE
     posted = {"room_shape": "splay", "ir_length_ms": 250}
     played = live_fdn_params(A.params_from_body(posted))
-    assert "room_shape" not in played
-    assert _md5(played) == EMPTY
+    assert played.get("room_shape") == "splay"
+    assert _md5(played) != EMPTY
     ir, info = _render_impulse(posted)
     assert info["fdn_ms"] == 2790.0
     head = np.ascontiguousarray(ir[:_IR_N])

@@ -1,4 +1,4 @@
-"""Render-only polygon image sources. The shoebox path does not call this.
+"""Polygon image sources. Play calls this when ``room_shape`` is a preset.
 
 ``room_shape`` absent or ``box`` stays in ``compute_taps``. Three convex presets
 scale with W / L / H. Order 4, parent-side prune, distance cut. Thirty-two taps

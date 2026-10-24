@@ -38,7 +38,7 @@ if str(_ENGINE) not in sys.path:
 _SURF_CTX: "_cv.ContextVar[Optional[dict]]" = _cv.ContextVar("rr_surf_ctx", default=None)
 _SUB_HP: "_cv.ContextVar[Optional[tuple]]" = _cv.ContextVar("rr_sub_hp", default=None)
 
-from poly_room import compute_poly_taps, poly_on  # noqa: E402
+from poly_room import compute_poly_taps, normalize_shape, poly_on  # noqa: E402
 from early_field import (  # noqa: E402
     DEFAULT_HADAMARD_N,
     SAMPLE_RATE_HZ,
@@ -2993,6 +2993,9 @@ def live_fdn_params(
     Air 1-pole + shelf run in the worklet (not baked into inject). Play
     honours hadamard_n 8, 16, and 32. 64 and 128 stay on the 32-line network.
     Makeup is running Mixer level (not IR-window RMS).
+    A polygon ``room_shape`` (splay, lede, live) builds the taps with
+    ``compute_poly_taps``, the same call Render uses. Absent or box stays
+    ``compute_taps``, so those live dicts stay the shoebox bytes.
     When p["sample_rate"] is present and at least 8000, delays, the
     decay-lock mean, air, the shelf, and peaking use that integer. Missing
     or below 8000 stays on `sr` (44100 when the caller omits it). Measured
@@ -3081,12 +3084,25 @@ def live_fdn_params(
     stand_for_makeup = copy.copy(stand)
     if not binaural_on:
         stand = _place_stand(stand, p)
-    taps = compute_taps(
-        room, prep.source, stand, c=c, grid=grid, origin="corner",
-        z_face_4l=False, hadamard_n=n_had,
-        include_offaxis_shelf=mic_colour.include_offaxis_shelf,
-        reaktor_parity=parity,
-    )
+    shape = p.get("room_shape")
+
+    def _shape_taps(source, stand_i):
+        # Same call as _placed_taps. The pack is 32 lines. A longer list
+        # would be cut on the way into the worklet.
+        if poly_on(shape):
+            return compute_poly_taps(
+                room, source, stand_i, shape,
+                c=c, n=n_had,
+                include_offaxis_shelf=mic_colour.include_offaxis_shelf,
+            )
+        return compute_taps(
+            room, source, stand_i, c=c, grid=grid, origin="corner",
+            z_face_4l=False, hadamard_n=n_had,
+            include_offaxis_shelf=mic_colour.include_offaxis_shelf,
+            reaktor_parity=parity,
+        )
+
+    taps = _shape_taps(prep.source, stand)
     dff_per_tap = [tap_dff(t.n, surfaces, master=diffusion_master) for t in taps]
     solo_l = parse_solo(p.get("surfaces_solo"))
     mute_s = parse_mute(p.get("surfaces_mute"))
@@ -3166,6 +3182,7 @@ def live_fdn_params(
         reaktor_parity=parity,
         surfaces=surfaces, g=g, ir_length_ms=ir_length_ms, sr=sr,
         weights=mk_w,
+        room_shape=shape,
     )
     dm = direct_listen_gain(
         buses["l"]["inject"][di], buses["c"]["inject"][di], buses["r"]["inject"][di],
@@ -3226,12 +3243,7 @@ def live_fdn_params(
                 capsule_mm=p.get("capsule_mm") or 17.0,
             )
             stand_b = _place_stand(stand_b, p)
-        taps_b = compute_taps(
-            room, prep_b.source, stand_b, c=c, grid=grid, origin="corner",
-            z_face_4l=False, hadamard_n=n_had,
-            include_offaxis_shelf=mic_colour.include_offaxis_shelf,
-            reaktor_parity=parity,
-        )
+        taps_b = _shape_taps(prep_b.source, stand_b)
         dff_b = [tap_dff(t.n, surfaces, master=diffusion_master) for t in taps_b]
         for ch in ("l", "c", "r"):
             dly_b = fdn_delays_from_taps(taps_b, sr=rate, c=c, n=n_had, channel=ch)
@@ -3484,6 +3496,9 @@ def live_fdn_params(
             + _side_emit(array_row)
             + _side_emit(room_row)
         )
+    # Present only for a polygon preset. Absent or box keeps the live MD5.
+    if poly_on(shape):
+        out["room_shape"] = normalize_shape(shape)
     # Present only when the key is on. An absent field keeps the live MD5.
     if bool(p.get("offaxis_tail")):
         from mic_colour.tail_diffuse import design_pack as _tail_design
