@@ -342,41 +342,207 @@
     return out;
   }
 
+  /* Same per-order quota as poly_room.quota_pick. Sums to 32. */
+  var QUOTA = [1, 6, 11, 10, 4];
+
+  function dist3(a, b) {
+    var dx = a[0] - b[0];
+    var dy = a[1] - b[1];
+    var dz = a[2] - b[2];
+    return Math.sqrt(dx * dx + dy * dy + dz * dz);
+  }
+
+  function seqBefore(a, b) {
+    var n = a.length < b.length ? a.length : b.length;
+    var i;
+    for (i = 0; i < n; i++) {
+      if (a[i] < b[i]) return true;
+      if (a[i] > b[i]) return false;
+    }
+    return a.length < b.length;
+  }
+
+  function round6(v) {
+    return Math.round(Number(v) * 1e6) / 1e6;
+  }
+
+  function uniqueImages(list) {
+    var best = Object.create(null);
+    var order = [];
+    var i;
+    for (i = 0; i < list.length; i++) {
+      var im = list[i];
+      var key = round6(im.pos[0]) + "," + round6(im.pos[1]) + "," + round6(im.pos[2]);
+      var prev = best[key];
+      if (!prev) {
+        order.push(key);
+        best[key] = im;
+      } else if (im.order < prev.order || (im.order === prev.order && seqBefore(im.seq, prev.seq))) {
+        best[key] = im;
+      }
+    }
+    var out = [];
+    for (i = 0; i < order.length; i++) out.push(best[order[i]]);
+    return out;
+  }
+
+  function quotaPick(images, receiver, n) {
+    function before(a, b) {
+      var da = dist3(receiver, a.pos);
+      var db = dist3(receiver, b.pos);
+      if (da < db) return -1;
+      if (da > db) return 1;
+      if (seqBefore(a.seq, b.seq)) return -1;
+      if (seqBefore(b.seq, a.seq)) return 1;
+      return 0;
+    }
+    var buckets = [[], [], [], [], []];
+    var i;
+    for (i = 0; i < images.length; i++) {
+      var order = images[i].order;
+      if (order >= 0 && order <= 4) buckets[order].push(images[i]);
+    }
+    for (i = 0; i < buckets.length; i++) buckets[i].sort(before);
+    var picked = [];
+    var cursors = [0, 0, 0, 0, 0];
+    var carry = 0;
+    var k;
+    for (k = 0; k < QUOTA.length; k++) {
+      var need = QUOTA[k] + carry;
+      var got = buckets[k].slice(cursors[k], cursors[k] + need);
+      cursors[k] += got.length;
+      picked = picked.concat(got);
+      carry = need - got.length;
+    }
+    if (picked.length < n) {
+      var left = [];
+      for (k = 0; k < 5; k++) left = left.concat(buckets[k].slice(cursors[k]));
+      left.sort(before);
+      picked = picked.concat(left.slice(0, n - picked.length));
+    }
+    return picked.slice(0, n);
+  }
+
+  function insideMargin(point, faces, margin) {
+    if (!pointInRoom(point, faces)) return false;
+    var m = Infinity;
+    var i;
+    for (i = 0; i < faces.length; i++) {
+      var sd = faces[i].sd(point);
+      if (sd < m) m = sd;
+    }
+    return m > margin;
+  }
+
+  function clampInside(point, faces, margin) {
+    if (margin == null) margin = 0.02;
+    var p = [Number(point[0]), Number(point[1]), Number(point[2])];
+    if (insideMargin(p, faces, margin)) return p;
+    var verts = [];
+    faces.forEach(function (face) {
+      face.v.forEach(function (v) { verts.push(v); });
+    });
+    var centre = mean(verts);
+    if (!pointInRoom(centre, faces)) centre = mean(faces[0].v);
+    var best = centre.slice();
+    var lo = 0;
+    var hi = 1;
+    var s;
+    for (s = 0; s < 24; s++) {
+      var mid = 0.5 * (lo + hi);
+      var trial = [
+        centre[0] + mid * (p[0] - centre[0]),
+        centre[1] + mid * (p[1] - centre[1]),
+        centre[2] + mid * (p[2] - centre[2])
+      ];
+      if (insideMargin(trial, faces, margin)) {
+        best = trial;
+        lo = mid;
+      } else {
+        hi = mid;
+      }
+    }
+    return best;
+  }
+
+  /* Paths and Last legs keep the home shell. The image lattice is Lattice only. */
+  function latticeKeys(mode, keys) {
+    if (mode === "lattice") return keys.slice();
+    var out = [];
+    var i;
+    for (i = 0; i < keys.length; i++) {
+      var k = keys[i];
+      if (k === "home" || k.slice(-5) === ":home") out.push(k);
+    }
+    return out;
+  }
+
+  function hearPaths(nodes, i, src, receivers, faces) {
+    var heard = {};
+    var r;
+    for (r = 0; r < receivers.length; r++) {
+      var hits = audibleHits(nodes, i, receivers[r].p, faces);
+      if (hits === null) continue;
+      var path = [src.slice()];
+      var h;
+      for (h = hits.length - 1; h >= 0; h--) path.push(hits[h].slice());
+      path.push(receivers[r].p.slice());
+      heard[receivers[r].id] = path;
+    }
+    return heard;
+  }
+
+  function roomRecord(nodes, i, src, receivers, faces, home) {
+    var seq = nodes[i].seq;
+    return {
+      key: seq.length ? seq.join(".") : "home",
+      seq: seq.slice(),
+      order: seq.length,
+      pos: nodes[i].pos.slice(),
+      rings: mirrorRings(faces, seq, home),
+      heard: hearPaths(nodes, i, src, receivers, faces)
+    };
+  }
+
   function imageRooms(shape, W, H, L, source, receivers, opts) {
     if (normalize(shape) !== "splay") return null;
     opts = opts || {};
+    receivers = receivers || [];
     var order = opts.order == null ? 4 : opts.order;
     var maxDist = opts.maxDist == null ? 340 : opts.maxDist;
     var faces = splayFaces(W, H, L);
     var src = [Number(source[0]), Number(source[1]), Number(source[2])];
+    var limit = Number(opts.n);
+    var useQuota = isFinite(limit) && limit > 0 && opts.stand && opts.stand.length >= 3;
+    if (useQuota) {
+      src = clampInside(src, faces);
+      var stand = clampInside(opts.stand, faces);
+    }
     var nodes = buildTree(src, faces, order, maxDist);
     var home = cloneRings(faces);
     var rooms = [];
     var i;
-    for (i = 0; i < nodes.length; i++) {
-      var heard = {};
-      var any = false;
-      var r;
-      for (r = 0; r < receivers.length; r++) {
-        var hits = audibleHits(nodes, i, receivers[r].p, faces);
-        if (hits === null) continue;
-        any = true;
-        var path = [src.slice()];
-        var h;
-        for (h = hits.length - 1; h >= 0; h--) path.push(hits[h].slice());
-        path.push(receivers[r].p.slice());
-        heard[receivers[r].id] = path;
+    if (!useQuota) {
+      for (i = 0; i < nodes.length; i++) {
+        var heard = hearPaths(nodes, i, src, receivers, faces);
+        if (!Object.keys(heard).length) continue;
+        rooms.push(roomRecord(nodes, i, src, receivers, faces, home));
       }
-      if (!any) continue;
-      var seq = nodes[i].seq;
-      rooms.push({
-        key: seq.length ? seq.join(".") : "home",
-        seq: seq.slice(),
-        order: seq.length,
+      return { faces: faces, rooms: rooms };
+    }
+    var audible = [];
+    for (i = 0; i < nodes.length; i++) {
+      if (audibleHits(nodes, i, stand, faces) === null) continue;
+      audible.push({
+        i: i,
         pos: nodes[i].pos.slice(),
-        rings: mirrorRings(faces, seq, home),
-        heard: heard
+        order: nodes[i].seq.length,
+        seq: nodes[i].seq.slice()
       });
+    }
+    var picked = quotaPick(uniqueImages(audible), stand, limit);
+    for (i = 0; i < picked.length; i++) {
+      rooms.push(roomRecord(nodes, picked[i].i, src, receivers, faces, home));
     }
     return { faces: faces, rooms: rooms };
   }
@@ -520,6 +686,7 @@
     normalize: normalize,
     splayFaces: splayFaces,
     imageRooms: imageRooms,
+    latticeKeys: latticeKeys,
     wallColor: wallColor,
     colorKey: colorKey,
     fadeGain: fadeGain,

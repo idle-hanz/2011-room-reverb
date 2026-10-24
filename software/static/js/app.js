@@ -1590,9 +1590,10 @@
       imageView.setMode(mode);
       imageView.setData(imagesCache);
       var heard = imageView.drawnCount && imageView.drawnCount();
+      var taps = imageView.tapCount && imageView.tapCount();
       if (heard != null && liveMetresImg) {
         liveMetresImg.textContent =
-          heard + " images · " + (imagesCache.hadamard_n || heard) + " FDN lines · mics " + mics +
+          heard + " images · " + (taps != null ? taps : (imagesCache.hadamard_n || heard)) + " FDN lines · mics " + mics +
           " · c=" + (imagesCache.c || 340) + " m/s" +
           (imagesCache.source_b ? " · two clouds" : "");
       }
@@ -3939,6 +3940,7 @@
         liveBtn.classList.remove("live-on");
         liveBtn.textContent = "Play live";
         syncHadamardUI();
+        if (currentView === "space") applyImageView();
         if (statusEl) statusEl.textContent = "Live FDN stopped.";
         return;
       }
@@ -3971,6 +3973,7 @@
           liveBtn.classList.add("live-on");
           liveBtn.textContent = "Stop live";
           syncHadamardUI();
+          if (currentView === "space") applyImageView();
         }
       } catch (err) {
         if (statusEl) statusEl.textContent = String(err);

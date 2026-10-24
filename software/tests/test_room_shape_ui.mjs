@@ -45,7 +45,7 @@ test("the picker posts room_shape", () => {
   const boxed = liveRequestBodyFrom({ room_shape: "box" });
   assert.equal(boxed.room_shape, "box");
   assert.match(page, /room_shape\.js\?v=2/);
-  assert.match(page, /app\.js\?v=79/);
+  assert.match(page, /app\.js\?v=80/);
 });
 
 test("box draws the same outline as now", () => {

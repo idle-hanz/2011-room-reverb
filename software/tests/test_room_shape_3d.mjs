@@ -167,6 +167,55 @@ test("heard images fade in 15 ms and walls take the surface colour", () => {
   assert.equal(RD.wallColor({ E: { material: "wood_parquet" } }, "E"), 0x8b5a2b);
 });
 
+test("splay shows the hadamard quota Play uses, and paths hide the lattice", () => {
+  const code = [
+    "import json, sys",
+    "sys.path.insert(0, 'engine')",
+    "from poly_room import faces_for, collect_audible, quota_pick, clamp_inside",
+    "faces = faces_for('splay', 6, 3, 8)",
+    "src = clamp_inside((2.6, 1.2, 4.0), faces)",
+    "stand = clamp_inside((3.0, 1.5, 1.5), faces)",
+    "images = collect_audible(src, faces, stand, order=4, max_dist=340.0, prune=True)",
+    "out = {}",
+    "for n in (8, 16, 32, 64, 128):",
+    "    chosen = quota_pick(images, stand, n=n)",
+    "    out[str(n)] = [{'seq': list(seq), 'pos': [float(x) for x in pos]} for pos, _order, seq in chosen]",
+    "print(json.dumps(out))"
+  ].join("\n");
+  const run = spawnSync(join(software, ".venv/Scripts/python.exe"), ["-c", code], {
+    cwd: software,
+    encoding: "utf8"
+  });
+  assert.equal(run.status, 0, run.stderr || run.stdout);
+  const py = JSON.parse(run.stdout);
+  const stand = [3, 1.5, 1.5];
+  [8, 16, 32, 64, 128].forEach(function (n) {
+    const pack = RD.imageRooms("splay", 6, 3, 8, SRC, [{ id: "C", p: REC }], {
+      order: 4, maxDist: 340, n: n, stand: stand
+    });
+    const exp = py[String(n)];
+    assert.equal(pack.rooms.length, exp.length, "count " + n);
+    pack.rooms.forEach(function (room, i) {
+      assert.equal(room.seq.join("."), exp[i].seq.join("."), "seq " + n + " " + i);
+      closeVerts([room.pos], [exp[i].pos], "pos " + n + " " + i);
+    });
+  });
+  assert.equal(py["32"].length, 32);
+  assert.deepEqual(
+    RD.latticeKeys("lattice", ["a:home", "a:1", "b:home"]),
+    ["a:home", "a:1", "b:home"]
+  );
+  assert.deepEqual(
+    RD.latticeKeys("paths", ["a:home", "a:1", "b:2.3", "b:home"]),
+    ["a:home", "b:home"]
+  );
+  assert.deepEqual(RD.latticeKeys("legs", ["a:home", "a:1"]), ["a:home"]);
+  assert.match(imageViews, /RoomDraw\.latticeKeys\(mode/);
+  assert.match(imageViews, /mode !== "lattice" && key !== "a:home"/);
+  assert.match(imageViews, /n: nTap, stand: stand/);
+  assert.match(imageViews, /live && n !== 8 && n !== 16 && n !== 32\) n = 32/);
+});
+
 test("the page draws box through RoomDraw and splay through the polygon", () => {
   assert.match(room3d, /RoomDraw\.room3dBoxGeometries/);
   assert.match(room3d, /RoomDraw\.wallColor/);
@@ -176,9 +225,10 @@ test("the page draws box through RoomDraw and splay through the polygon", () => 
   assert.match(imageViews, /RoomDraw\.imageBoxGeometries/);
   assert.match(imageViews, /RoomDraw\.imageRooms/);
   assert.match(imageViews, /FADE_MS/);
-  assert.match(page, /room_draw\.js\?v=1/);
+  assert.match(page, /room_draw\.js\?v=2/);
   assert.match(page, /room_3d\.js\?v=22/);
-  assert.match(page, /image_views\.js\?v=18/);
-  assert.match(page, /app\.js\?v=79/);
+  assert.match(page, /image_views\.js\?v=19/);
+  assert.match(page, /app\.js\?v=80/);
+  assert.match(app, /imageView\.tapCount\(\)/);
   assert.match(app, /imageView\.drawnCount\(\)/);
 });

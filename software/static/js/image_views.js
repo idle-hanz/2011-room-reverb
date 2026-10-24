@@ -70,6 +70,7 @@
     var fadeRows = {};
     var fadeMats = [];
     var roomCache = {};
+    var shownRooms = [];
     var drawnCount = null;
     var wasFading = false;
 
@@ -263,32 +264,60 @@
       return { selected: selected, receivers: out };
     }
 
+    /* Chip size. Play keeps 8, 16, or 32, the same clamp as live_fdn_params. */
+    function hadamardShown() {
+      var n = 32;
+      if (data && data.hadamard_n != null && data.hadamard_n !== "") n = Number(data.hadamard_n);
+      else {
+        var st = sceneState();
+        if (st && st.hadamard_n != null) n = Number(st.hadamard_n);
+      }
+      if (n !== 8 && n !== 16 && n !== 32 && n !== 64 && n !== 128) n = 32;
+      var live = !!(global.LiveFDN && LiveFDN.isRunning && LiveFDN.isRunning());
+      if (live && n !== 8 && n !== 16 && n !== 32) n = 32;
+      return n;
+    }
+
+    function standPoint() {
+      var st = sceneState() || {};
+      var room = data.room;
+      var x = Number(st.mcx);
+      var y = Number(st.my);
+      var z = Number(st.mcz);
+      if (!isFinite(x)) x = room.W * 0.5;
+      if (!isFinite(y)) y = room.H * 0.5;
+      if (!isFinite(z)) z = room.L * 0.5;
+      return [x, y, z];
+    }
+
     function takeSplay() {
       var room = data.room;
       var ear = splayReceivers();
       var cap = (data.c || 340) * 1;
+      var nTap = hadamardShown();
+      var stand = standPoint();
       var packs = [];
+      shownRooms = [];
       function one(prefix, source) {
         var pack = RoomDraw.imageRooms("splay", room.W, room.H, room.L, source, ear.receivers, {
-          order: 4, maxDist: cap
+          order: 4, maxDist: cap, n: nTap, stand: stand
         });
         (pack.rooms || []).forEach(function (r) {
-          roomCache[prefix + ":" + r.key] = r;
+          var key = prefix + ":" + r.key;
+          roomCache[key] = r;
+          shownRooms.push({ prefix: prefix, key: key, rec: r });
         });
         packs.push({ prefix: prefix, pack: pack });
       }
       one("a", [data.source.x, data.source.y, data.source.z]);
       if (data.source_b) one("b", [data.source_b.x, data.source_b.y, data.source_b.z]);
-      var keys = [];
-      packs.forEach(function (p) {
-        p.pack.rooms.forEach(function (r) { keys.push(p.prefix + ":" + r.key); });
-      });
+      var keys = shownRooms.map(function (row) { return row.key; });
       var now = nowMs();
-      fadeRows = RoomDraw.stepFade(fadeRows, keys, now);
+      fadeRows = RoomDraw.stepFade(fadeRows, RoomDraw.latticeKeys(mode, keys), now);
       Object.keys(roomCache).forEach(function (k) {
-        if (!fadeRows[k]) delete roomCache[k];
+        if (!fadeRows[k] && shownRooms.every(function (row) { return row.key !== k; })) delete roomCache[k];
       });
-      drawnCount = keys.length;
+      drawnCount = (packs[0] && packs[0].pack.rooms) ? packs[0].pack.rooms.length : 0;
       return { packs: packs, now: now, selected: ear.selected, surfaces: (sceneState() || {}).surfaces };
     }
 
@@ -303,6 +332,8 @@
       var got = takeSplay();
       var room = data.room;
       Object.keys(fadeRows).forEach(function (key) {
+        /* Box hides the lattice on Paths and Last legs. One home shell. */
+        if (mode !== "lattice" && key !== "a:home") return;
         var rec = roomCache[key];
         if (!rec) return;
         var force = key.charAt(0) === "b" ? SRC_B : null;
@@ -353,19 +384,27 @@
       var room = data.room;
       var selected = data.selected_mics || ["C"];
       selected.forEach(function (micId) {
-        Object.keys(fadeRows).forEach(function (key) {
-          var rec = roomCache[key];
+        shownRooms.forEach(function (row) {
+          var rec = row.rec;
           if (!rec || !rec.heard[micId]) return;
           var path = rec.heard[micId];
           var ends = lastOnly ? [path[path.length - 2], path[path.length - 1]] : path;
           if (!ends[0] || !ends[1]) return;
-          var force = key.charAt(0) === "b" ? SRC_B : null;
+          var pts = ends.map(function (p) { return { x: p[0], y: p[1], z: p[2] }; });
+          var force = row.prefix === "b" ? SRC_B : null;
           var col = force != null ? force : (rec.key === "home" ? SRC : (rec.order % 2 === 0 ? POL_POS : POL_NEG));
-          var base = rec.key === "home" ? 0.95 : 0.45;
-          var drawn = linePts(ends.map(function (p) { return { x: p[0], y: p[1], z: p[2] }; }), col, base);
-          trackFade(drawn.material, key, base);
-          root.add(drawn);
-          rememberHit({ order: rec.order, is_direct: rec.key === "home", polarity: rec.order % 2 === 0 ? 1 : -1 }, ends, micId);
+          var base = rec.key === "home"
+            ? (lastOnly ? 1 : 0.95)
+            : (lastOnly ? (0.4 + 0.35 / (1 + rec.order)) : (0.35 + 0.4 / (1 + rec.order)));
+          if (force != null && rec.key !== "home") base *= 0.75;
+          root.add(linePts(pts, col, base));
+          if (lastOnly) {
+            var mark = marker(col, 0.045);
+            var tp = mapPt(pts[0], room.L);
+            mark.position.set(tp.x, tp.y, tp.z);
+            root.add(mark);
+          }
+          rememberHit({ order: rec.order, is_direct: rec.key === "home", polarity: rec.order % 2 === 0 ? 1 : -1 }, pts, micId);
         });
       });
     }
@@ -799,6 +838,7 @@
       },
       resetCamera: function () { forceFit(); },
       drawnCount: function () { return drawnCount; },
+      tapCount: function () { return isSplay() ? hadamardShown() : null; },
       cameraState: function () {
         var lim = radiusLimits();
         return {
