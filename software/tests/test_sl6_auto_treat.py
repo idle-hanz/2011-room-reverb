@@ -29,7 +29,7 @@ def test_reproduces_the_box_plan(plan):
     assert got == want
     assert r["porous"] == "absorber_panel_4in_gap4in"
     assert r["coverage"] == BOX["coverage"]
-    assert r["n_within_10pct"] == 20 and r["n_bands"] == 24        # model 20/24. PC: factors off 6/23, room-average calibrated 12/23, directional 13/23
+    assert r["n_within_10pct"] == 20 and r["n_bands"] == 24        # model 20/24. PC: factors off 6/23, octave cal 12/23, bass hold 15/23, through-500 hold 16/23
 
 
 def test_only_suggests(plan):

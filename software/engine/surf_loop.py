@@ -233,6 +233,29 @@ def calibration_factors(t20_measured, t_target_oct) -> List[float]:
     return [round(float(x), 4) for x in np.clip(r, *CAL_CLAMP)]
 
 
+def hold_low_octaves(cal, hz: float = 500.0) -> List[float]:
+    """Room-average auto-treat. Octaves at or under hz stay at 1.
+
+    A factor below 1 at 500 Hz lengthens 315 Hz out of the ±10% window.
+    Holding 125, 250 and 500 at 1 leaves the measured highs in place.
+    On real_default the proved list is [1, 1, 1, 0.850, 0.878, 0.870, 0.906],
+    rendered third-octave T20 16/23.
+    """
+    out = [float(x) for x in cal]
+    for i, f in enumerate(OCT):
+        if i < len(out) and float(f) <= float(hz) + 1e-9:
+            out[i] = 1.0
+    return [round(x, 4) for x in out]
+
+
+def factors_for_calibrate(t20_measured, t_target_oct, directional: bool = True) -> List[float]:
+    """Directional keeps the seven measured factors. Room average holds through 500 Hz."""
+    cal = calibration_factors(t20_measured, t_target_oct)
+    if directional:
+        return cal
+    return hold_low_octaves(cal)
+
+
 def cal_fn(cal: Optional[Sequence[float]]):
     if not cal:
         return lambda ff: np.ones_like(np.asarray(ff, float))

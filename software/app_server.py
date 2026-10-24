@@ -1525,7 +1525,7 @@ def api_surf_calibrate(body: dict):
         if not target:
             return {"ok": False, "error": "no Surfaces target"}
         t20_before = _SL.t20_per_octave(ir0.sum(1))
-        cal = _SL.calibration_factors(t20_before, target)
+        cal = _SL.factors_for_calibrate(t20_before, target, directional)
         ir1, info1 = _impulse_render(p, surf_directional=directional, surf_cal=cal)
         t20_after = _SL.t20_per_octave(ir1.sum(1))
         tgt = np.asarray(target, float)

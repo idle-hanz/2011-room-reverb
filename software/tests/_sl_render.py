@@ -45,6 +45,7 @@ def render_room(room, directional=True, anchor=None, rows=None, cal=None, **over
 def render_calibrated(room, directional=True, anchor=None, rows=None, **over):
     """D-SL4: render, measure T20 per octave, scale band losses by T20/T_target (0.6-1.6), render again."""
     ir0, info0 = render_room(room, directional, anchor, rows, **over)
-    cal = SL.calibration_factors(SL.t20_per_octave(ir0.sum(1)), info0["surf"]["target_T_oct"])
+    cal = SL.factors_for_calibrate(
+        SL.t20_per_octave(ir0.sum(1)), info0["surf"]["target_T_oct"], directional)
     ir1, info1 = render_room(room, directional, anchor, rows, cal=cal, **over)
     return ir0, info0, ir1, info1, cal

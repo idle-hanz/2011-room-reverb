@@ -93,6 +93,10 @@ def test_t20_and_calibration_helpers():
     t20 = SL.t20_per_octave(ir, SR)
     assert np.all(np.abs(np.asarray(t20) - 1.0) < 0.12)
     assert SL.calibration_factors([2.0, 0.1, 1.1, 1, 1, 1, float("nan")], [1.0] * 7) == [1.6, 0.6, 1.1, 1.0, 1.0, 1.0, 1.0]
+    raw = [0.829, 0.782, 0.952, 0.850, 0.878, 0.870, 0.906]
+    assert SL.factors_for_calibrate(raw, [1.0] * 7, directional=True) == raw
+    assert SL.factors_for_calibrate(raw, [1.0] * 7, directional=False) == [1.0, 1.0, 1.0, 0.850, 0.878, 0.870, 0.906]
+    assert raw[2] == 0.952
 
 
 # ---------------------------------------------------------------- renders
