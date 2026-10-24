@@ -128,7 +128,7 @@
     /* K4 (locked): early_wet is the early-bus enable (×fader). 1.0 so raising the early fader works at once. */
     early_wet: 1.0, fdn_wet: 1, direct_wet: 1, dry_gain: 0, fdn_g: 1, ir_length_ms: 1500,
     decay_s: 1.8, decay_lock: true, smooth: true, movement: 0, phys_ceiling: true,
-    sub_hp: true,
+    sub_hp: true, offaxis_tail: false,
     /* Routing. UI names are not engine keys. Off posts nothing. */
     route_array_pre: "none", route_array_drive: 0, route_array_comp: "off", route_array_amount: 0,
     route_room_pre: "none", route_room_drive: 0, route_room_comp: "off", route_room_amount: 0,
@@ -668,6 +668,8 @@
 
   function liveRequestBody() {
     var o = heardMix(state);
+    /* Boolean. On, the server packs the same 45 floats Play already forwards. */
+    o.offaxis_tail = !!state.offaxis_tail;
     if (window.LiveFDN) {
       var rate = LiveFDN.rate ? LiveFDN.rate() : 0;
       var rev = LiveFDN.colourRev ? LiveFDN.colourRev() : "";
@@ -694,6 +696,8 @@
     paintPhysReadout();
     var subBox = document.getElementById("sub_hp");
     if (subBox) subBox.checked = !!state.sub_hp;
+    var tailBox = document.getElementById("offaxis_tail");
+    if (tailBox) tailBox.checked = !!state.offaxis_tail;
   }
 
   var physTimer = null;
@@ -3765,6 +3769,7 @@
   bindCheck("smooth", "smooth");
   bindCheck("phys_ceiling", "phys_ceiling");
   bindCheck("sub_hp", "sub_hp");
+  bindCheck("offaxis_tail", "offaxis_tail");
   var movementSlider = document.getElementById("movement");
   if (movementSlider) {
     movementSlider.addEventListener("input", function (e) {

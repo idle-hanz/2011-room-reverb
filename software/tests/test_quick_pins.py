@@ -72,7 +72,7 @@ def test_cache_pins():
     page = (SW / "static" / "index.html").read_text(encoding="utf-8")
     assert "WORKLET_VER = 63" in live
     assert "live_fdn.js?v=64" in page
-    assert "app.js?v=74" in page
+    assert "app.js?v=75" in page
 
 
 def test_geometric_level_is_inverse_distance():
