@@ -131,7 +131,7 @@
     sub_hp: true, offaxis_tail: false,
     /* Box posts the key. The server keeps the shoebox bytes. */
     room_shape: "box",
-    /* Box only. On links left and right. Splay ignores this and stays paired. */
+    /* Box only. On links left and right. A symmetric polygon stays paired and has no switch. */
     mirror_lr: true,
     /* Routing. UI names are not engine keys. Off posts nothing. */
     route_array_pre: "none", route_array_drive: 0, route_array_comp: "off", route_array_amount: 0,
@@ -3855,19 +3855,19 @@
   }
 
   function paintRoomShape() {
-    var name = (window.RoomShape && RoomShape.normalize(state.room_shape) === "splay") ? "splay" : "box";
+    var name = (window.RoomShape && RoomShape.normalize) ? RoomShape.normalize(state.room_shape) : "box";
     document.querySelectorAll("#roomShapeRow [data-room-shape]").forEach(function (btn) {
       var on = btn.getAttribute("data-room-shape") === name;
       btn.classList.toggle("active", on);
       btn.setAttribute("aria-pressed", on ? "true" : "false");
     });
-    var splay = name === "splay";
+    var hideSwitch = !!(window.RoomShape && RoomShape.showMirrorToggle && !RoomShape.showMirrorToggle(name));
     var mirrorRow = document.getElementById("mirrorLrRow");
     var mirrorBox = document.getElementById("mirrorLr");
-    if (mirrorRow) mirrorRow.hidden = splay;
+    if (mirrorRow) mirrorRow.hidden = hideSwitch;
     if (mirrorBox) {
-      mirrorBox.checked = splay || !!state.mirror_lr;
-      mirrorBox.disabled = splay;
+      mirrorBox.checked = hideSwitch || !!state.mirror_lr;
+      mirrorBox.disabled = hideSwitch;
     }
     if (colourSurfaces && colourSurfaces.syncWallList && paintRoomShape._shown !== name) {
       paintRoomShape._shown = name;
@@ -3888,7 +3888,8 @@
 
   document.querySelectorAll("#roomShapeRow [data-room-shape]").forEach(function (btn) {
     btn.addEventListener("click", function () {
-      state.room_shape = btn.getAttribute("data-room-shape") === "splay" ? "splay" : "box";
+      var picked = btn.getAttribute("data-room-shape");
+      state.room_shape = (window.RoomShape && RoomShape.normalize) ? RoomShape.normalize(picked) : "box";
       if (window.RoomMath && RoomMath.clampRoom) Object.assign(state, RoomMath.clampRoom(state));
       syncUI();
       scheduleLiveParams();

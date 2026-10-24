@@ -76,5 +76,7 @@ def test_splay_mirrors_without_the_toggle():
     got = A.params_from_body(body)
     assert got["surfaces"]["C"]["absorb"][0] == 0.91
     assert got["surfaces"]["B"]["absorb"][0] == 0.33
-    lede = A.params_from_body({"room_shape": "lede", "surfaces": _split()})
-    assert lede["surfaces"]["C"]["absorb"][0] == 0.11
+    for name in ("lede", "live"):
+        shaped = A.params_from_body({"room_shape": name, "surfaces": _split(), "mirror_lr": False})
+        assert shaped["surfaces"]["C"]["absorb"][0] == 0.91
+        assert shaped["surfaces"]["B"]["absorb"][0] == 0.33

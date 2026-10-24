@@ -55,18 +55,19 @@ window.RoomMath = (() => {
     let mcz = clamp(state.mcz, 0, L);
     let mcx = state.reaktor_parity ? W * 0.5 : clamp(state.mcx, 0, W);
     let space = clamp(state.space, 0, maxSpace(W, mcx));
-    const splay = typeof window !== "undefined" && window.RoomShape &&
-      window.RoomShape.normalize(state.room_shape) === "splay";
-    if (splay) {
-      const src = window.RoomShape.clampInside(sx, sy, sz, W, H, L);
+    const shape = state.room_shape;
+    const poly = typeof window !== "undefined" && window.RoomShape &&
+      window.RoomShape.normalize(shape) !== "box";
+    if (poly) {
+      const src = window.RoomShape.clampInside(sx, sy, sz, W, H, L, shape);
       sx = src.x;
       sy = src.y;
       sz = src.z;
-      const mic = window.RoomShape.clampInside(mcx, my, mcz, W, H, L);
+      const mic = window.RoomShape.clampInside(mcx, my, mcz, W, H, L, shape);
       my = mic.y;
       mcz = mic.z;
       if (!state.reaktor_parity) mcx = mic.x;
-      space = clamp(state.space, 0, window.RoomShape.maxSpace(mcx, mcz, W, L));
+      space = clamp(state.space, 0, window.RoomShape.maxSpace(mcx, mcz, W, L, shape));
     }
     let centre_dz = clamp(Number(state.centre_dz) || 0, -CENTRE_DZ_MAX, CENTRE_DZ_MAX);
     if (state.align_horizontal) centre_dz = 0;
@@ -78,8 +79,8 @@ window.RoomMath = (() => {
       sx_b = clamp(W - sx, 0, W);
       sy_b = sy;
       sz_b = sz;
-    } else if (splay) {
-      const b = window.RoomShape.clampInside(sx_b, sy_b, sz_b, W, H, L);
+    } else if (poly) {
+      const b = window.RoomShape.clampInside(sx_b, sy_b, sz_b, W, H, L, shape);
       sx_b = b.x;
       sy_b = b.y;
       sz_b = b.z;

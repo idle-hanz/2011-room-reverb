@@ -31,21 +31,27 @@ function cornerKey(p) {
 test("the picker posts room_shape", () => {
   const rowStart = page.indexOf('id="roomShapeRow"');
   assert.ok(rowStart > 0);
-  const row = page.slice(rowStart, rowStart + 420);
+  const row = page.slice(rowStart, rowStart + 900);
   assert.match(row, /data-room-shape="box"/);
   assert.match(row, /aria-pressed="true"/);
   assert.match(row, /data-room-shape="splay"/);
+  assert.match(row, /data-room-shape="lede"/);
+  assert.match(row, /data-room-shape="live"/);
   assert.match(row, />Box</);
   assert.match(row, />Splay</);
+  assert.match(row, />LEDE</);
+  assert.match(row, />Live room</);
   assert.match(app, /room_shape:\s*"box"/);
-  assert.match(app, /state\.room_shape = btn\.getAttribute\("data-room-shape"\)/);
+  assert.match(app, /RoomShape\.normalize\(picked\)/);
   assert.match(app, /mix\.room_shape = String\(state\.room_shape\)/);
   const play = liveRequestBodyFrom({ room_shape: "splay" });
   assert.equal(play.room_shape, "splay");
   const boxed = liveRequestBodyFrom({ room_shape: "box" });
   assert.equal(boxed.room_shape, "box");
-  assert.match(page, /room_shape\.js\?v=3/);
-  assert.match(page, /app\.js\?v=81/);
+  assert.equal(liveRequestBodyFrom({ room_shape: "lede" }).room_shape, "lede");
+  assert.equal(liveRequestBodyFrom({ room_shape: "live" }).room_shape, "live");
+  assert.match(page, /room_shape\.js\?v=4/);
+  assert.match(page, /app\.js\?v=82/);
 });
 
 test("box draws the same outline as now", () => {
@@ -96,8 +102,36 @@ test("box draws the same outline as now", () => {
   assert.equal(rows[0].label, "Left + Right (mirrored)");
   assert.equal(RS.showMirrorToggle("box"), true);
   assert.equal(RS.showMirrorToggle("splay"), false);
+  assert.equal(RS.showMirrorToggle("lede"), false);
+  assert.equal(RS.showMirrorToggle("live"), false);
+  assert.equal(RS.lrSymmetric("splay"), true);
+  assert.equal(RS.lrSymmetric("lede"), true);
+  assert.equal(RS.lrSymmetric("live"), true);
+  assert.equal(RS.sidesLinked("lede", false), true);
+  assert.equal(RS.sidesLinked("live", false), true);
+  assert.equal(RS.sidesLinked("box", false), false);
+  const z1 = (2 / 7) * 8;
+  assert.deepEqual(RS.floorOutline("lede", 6, 8), [
+    [1.5, 0], [4.5, 0], [6, z1], [6, 8], [0, 8], [0, z1]
+  ]);
+  const inset = Math.min(0.25 * 6, 8 * Math.tan((6 * Math.PI) / 180));
+  assert.deepEqual(RS.floorOutline("live", 6, 8), [
+    [inset, 0], [6 - inset, 0], [6, 8], [0, 8]
+  ]);
+  const ledeRows = RS.wallRows("lede");
+  assert.deepEqual(ledeRows.map(function (r) { return r.id; }), ["sides", "sides2", "front", "back", "floor", "ceiling"]);
+  ledeRows.slice(0, 2).forEach(function (r) {
+    assert.equal(r.shared, true);
+    assert.equal(r.label, "Left + Right (mirrored)");
+    assert.deepEqual(r.letters, ["A", "C"]);
+  });
+  const liveRows = RS.wallRows("live", false);
+  assert.deepEqual(liveRows.map(function (r) { return r.id; }), ["sides", "front", "back", "floor", "ceiling"]);
+  assert.equal(liveRows[0].label, "Left + Right (mirrored)");
+  assert.equal(liveRows[0].shared, true);
   assert.match(surfaces, /_shareSides/);
   assert.match(surfaces, /Left and right share one material/);
+  assert.match(surfaces, /RoomShape\.sidesLinked/);
 });
 
 test("splay drag stays inside the outline", () => {
@@ -112,4 +146,16 @@ test("splay drag stays inside the outline", () => {
   assert.ok(high.y < 0.8125 * 3);
   assert.match(math, /RoomShape\.clampInside/);
   assert.match(editor, /clampRoomSpotPatch/);
+  const ledeKept = RS.clampInside(2.6, 1.2, 4.75, 6, 3, 8, "lede");
+  assert.equal(ledeKept.x, 2.6);
+  assert.equal(ledeKept.z, 4.75);
+  const ledeOut = RS.clampInside(0.05, 1.2, 0.2, 6, 3, 8, "lede");
+  assert.ok(ledeOut.x > 0.2);
+  assert.ok(ledeOut.z > 0 && ledeOut.z < 0.3);
+  const liveKept = RS.clampInside(3, 1.5, 1.5, 6, 3, 8, "live");
+  assert.equal(liveKept.x, 3);
+  assert.equal(liveKept.y, 1.5);
+  const insetY = Math.min(0.45 * 3, 8 * Math.tan((6 * Math.PI) / 180));
+  const liveHigh = RS.clampInside(3, 3, 0, 6, 3, 8, "live");
+  assert.ok(liveHigh.y < (3 - insetY) + 1e-3);
 });

@@ -216,6 +216,58 @@ test("splay shows the hadamard quota Play uses, and paths hide the lattice", () 
   assert.match(imageViews, /live && n !== 8 && n !== 16 && n !== 32\) n = 32/);
 });
 
+test("lede and live faces match poly_room and Play's quota", () => {
+  const code = [
+    "import json, sys",
+    "sys.path.insert(0, 'engine')",
+    "from poly_room import faces_for, collect_audible, quota_pick, clamp_inside, lr_symmetric",
+    "src = (2.6, 1.2, 4.0)",
+    "stand = (3.0, 1.5, 1.5)",
+    "out = {}",
+    "for name in ('lede', 'live'):",
+    "    faces = faces_for(name, 6, 3, 8)",
+    "    csrc = clamp_inside(src, faces)",
+    "    cstand = clamp_inside(stand, faces)",
+    "    images = collect_audible(csrc, faces, cstand, order=4, max_dist=340.0, prune=True)",
+    "    chosen = quota_pick(images, cstand, n=32)",
+    "    out[name] = {",
+    "      'sym': lr_symmetric(name),",
+    "      'faces': [{'name': f.name, 'v': [[float(x) for x in p] for p in f.v], 'n': [float(x) for x in f.n]} for f in faces],",
+    "      'pick': [{'seq': list(seq), 'pos': [float(x) for x in pos]} for pos, _order, seq in chosen],",
+    "    }",
+    "print(json.dumps(out))"
+  ].join("\n");
+  const run = spawnSync(join(software, ".venv/Scripts/python.exe"), ["-c", code], {
+    cwd: software,
+    encoding: "utf8"
+  });
+  assert.equal(run.status, 0, run.stderr || run.stdout);
+  const py = JSON.parse(run.stdout);
+  ["lede", "live"].forEach(function (name) {
+    assert.equal(py[name].sym, true);
+    const faces = RD.polyFaces(name, 6, 3, 8);
+    assert.equal(faces.length, py[name].faces.length);
+    faces.forEach(function (face, i) {
+      assert.equal(face.name, py[name].faces[i].name);
+      closeVerts(face.v, py[name].faces[i].v, name + " " + face.name);
+      closeVerts([face.n], [py[name].faces[i].n], name + " n " + face.name);
+    });
+    const pack = RD.imageRooms(name, 6, 3, 8, SRC, [{ id: "C", p: REC }], {
+      order: 4, maxDist: 340, n: 32, stand: [3, 1.5, 1.5]
+    });
+    const exp = py[name].pick;
+    assert.equal(pack.rooms.length, exp.length, name);
+    pack.rooms.forEach(function (room, i) {
+      assert.equal(room.seq.join("."), exp[i].seq.join("."), name + " seq " + i);
+      closeVerts([room.pos], [exp[i].pos], name + " pos " + i);
+    });
+  });
+  const lede = RD.polyFaces("lede", 6, 3, 8);
+  const letters = lede.filter(function (f) { return f.name.indexOf("wall") === 0; }).map(function (f) { return f.letter; });
+  assert.equal(letters.filter(function (L) { return L === "A"; }).length, 2);
+  assert.equal(letters.filter(function (L) { return L === "C"; }).length, 2);
+});
+
 test("the page draws box through RoomDraw and splay through the polygon", () => {
   assert.match(room3d, /RoomDraw\.room3dBoxGeometries/);
   assert.match(room3d, /RoomDraw\.wallColor/);
@@ -225,10 +277,12 @@ test("the page draws box through RoomDraw and splay through the polygon", () => 
   assert.match(imageViews, /RoomDraw\.imageBoxGeometries/);
   assert.match(imageViews, /RoomDraw\.imageRooms/);
   assert.match(imageViews, /FADE_MS/);
-  assert.match(page, /room_draw\.js\?v=2/);
-  assert.match(page, /room_3d\.js\?v=22/);
-  assert.match(page, /image_views\.js\?v=19/);
-  assert.match(page, /app\.js\?v=81/);
+  assert.match(page, /room_draw\.js\?v=3/);
+  assert.match(page, /room_3d\.js\?v=23/);
+  assert.match(page, /image_views\.js\?v=20/);
+  assert.match(page, /app\.js\?v=82/);
+  assert.match(room3d, /RoomDraw\.polyFaces/);
+  assert.match(imageViews, /imageRooms\(polyShape\(\)/);
   assert.match(app, /imageView\.tapCount\(\)/);
   assert.match(app, /imageView\.drawnCount\(\)/);
 });

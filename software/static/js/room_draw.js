@@ -1,6 +1,6 @@
 /* Display geometry for the 3D room and the Space image rooms.
    Box parts are the shoebox meshes the views already drew.
-   Splay parts are the prism in engine/poly_room.py (faces_for "splay").
+   Polygon parts are the prism in engine/poly_room.py (splay, lede, live).
    Browser: window.RoomDraw. Node: module.exports. Display only. */
 (function (root, factory) {
   var api = factory();
@@ -44,7 +44,66 @@
       key === "splay" || key === "splayed" || key === "rfz" || key === "control" ||
       key === "splayedcontrol" || key === "splayedcontrolroom"
     ) return "splay";
+    if (key === "lede" || key === "ledestyle") return "lede";
+    if (
+      key === "live" || key === "nonparallel" || key === "nonparallellive" ||
+      key === "nonparallelliveroom"
+    ) return "live";
     return "box";
+  }
+
+  function tan6() {
+    return Math.tan(6 * Math.PI / 180);
+  }
+
+  function floorPts(shape, W, L) {
+    var name = normalize(shape);
+    if (name === "splay") return [[W / 6, 0], [5 * W / 6, 0], [W, L], [0, L]];
+    if (name === "lede") {
+      var z1 = (2 / 7) * L;
+      return [[0.25 * W, 0], [0.75 * W, 0], [W, z1], [W, L], [0, L], [0, z1]];
+    }
+    if (name === "live") {
+      var inset = Math.min(0.25 * W, L * tan6());
+      return [[inset, 0], [W - inset, 0], [W, L], [0, L]];
+    }
+    return [[0, 0], [W, 0], [W, L], [0, L]];
+  }
+
+  function heightAt(shape, z, H, L) {
+    var name = normalize(shape);
+    var t = !(L > 0) ? 0 : z / L;
+    if (name === "splay") return H * (0.8125 + 0.1875 * t);
+    if (name === "live") {
+      var insetY = Math.min(0.45 * H, L * tan6());
+      return (H - insetY) + insetY * t;
+    }
+    return H;
+  }
+
+  function edgeLetter(pts, i, W, L) {
+    var n = pts.length;
+    var a = pts[i];
+    var b = pts[(i + 1) % n];
+    var mx = (a[0] + b[0]) * 0.5;
+    var mz = (a[1] + b[1]) * 0.5;
+    var ma = [W - b[0], b[1]];
+    var mb = [W - a[0], a[1]];
+    var pair = -1;
+    var j;
+    for (j = 0; j < n; j++) {
+      var p = pts[j];
+      var q = pts[(j + 1) % n];
+      if (
+        Math.abs(p[0] - ma[0]) <= 1e-6 && Math.abs(p[1] - ma[1]) <= 1e-6 &&
+        Math.abs(q[0] - mb[0]) <= 1e-6 && Math.abs(q[1] - mb[1]) <= 1e-6
+      ) {
+        pair = j;
+        break;
+      }
+    }
+    if (pair === i) return mz <= L * 0.5 ? "D" : "B";
+    return mx >= W * 0.5 ? "C" : "A";
   }
 
   function dot(a, b) {
@@ -198,16 +257,15 @@
   }
 
   function ceilingAt(z, H, L) {
-    var t = !(L > 0) ? 0 : z / L;
-    return H * (0.8125 + 0.1875 * t);
+    return heightAt("splay", z, H, L);
   }
 
-  function splayFaces(W, H, L) {
+  function polyFaces(shape, W, H, L) {
     W = Number(W);
     H = Number(H);
     L = Number(L);
-    var pts = [[W / 6, 0], [5 * W / 6, 0], [W, L], [0, L]];
-    function h(z) { return ceilingAt(z, H, L); }
+    var pts = floorPts(shape, W, L);
+    function h(z) { return heightAt(shape, z, H, L); }
     var floor = pts.map(function (p) { return [p[0], 0, p[1]]; });
     var ceil = pts.map(function (p) { return [p[0], h(p[1]), p[1]]; });
     var faces = [new Face("floor", floor, "E"), new Face("ceiling", ceil, "F")];
@@ -217,14 +275,20 @@
       var z1 = pts[i][1];
       var x2 = pts[(i + 1) % pts.length][0];
       var z2 = pts[(i + 1) % pts.length][1];
+      var letter = edgeLetter(pts, i, W, L);
+      if (normalize(shape) === "splay") letter = WALL_LETTER[i];
       faces.push(new Face("wall" + i, [
         [x1, 0, z1],
         [x2, 0, z2],
         [x2, h(z2), z2],
         [x1, h(z1), z1]
-      ], WALL_LETTER[i]));
+      ], letter));
     }
     return orient(faces);
+  }
+
+  function splayFaces(W, H, L) {
+    return polyFaces("splay", W, H, L);
   }
 
   function aabb(faces) {
@@ -505,12 +569,12 @@
   }
 
   function imageRooms(shape, W, H, L, source, receivers, opts) {
-    if (normalize(shape) !== "splay") return null;
+    if (normalize(shape) === "box") return null;
     opts = opts || {};
     receivers = receivers || [];
     var order = opts.order == null ? 4 : opts.order;
     var maxDist = opts.maxDist == null ? 340 : opts.maxDist;
-    var faces = splayFaces(W, H, L);
+    var faces = polyFaces(shape, W, H, L);
     var src = [Number(source[0]), Number(source[1]), Number(source[2])];
     var limit = Number(opts.n);
     var useQuota = isFinite(limit) && limit > 0 && opts.stand && opts.stand.length >= 3;
@@ -684,6 +748,7 @@
     FADE_MS: FADE_MS,
     LETTER_COLOR: LETTER_COLOR,
     normalize: normalize,
+    polyFaces: polyFaces,
     splayFaces: splayFaces,
     imageRooms: imageRooms,
     latticeKeys: latticeKeys,

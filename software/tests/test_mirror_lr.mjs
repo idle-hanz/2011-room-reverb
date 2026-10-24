@@ -162,3 +162,25 @@ test("splay shows no switch and stays one linked card", () => {
   assert.match(app, /o\.mirror_lr = !!state\.mirror_lr/);
   assert.match(app, /mix\.mirror_lr = !!state\.mirror_lr/);
 });
+
+test("lede and live hide the switch and keep the mirrored card", () => {
+  ["lede", "live"].forEach((shape) => {
+    const { cs, state, nodes } = boot();
+    state.room_shape = shape;
+    state.mirror_lr = false;
+    state.surfaces.A.absorb[0] = 0.42;
+    state.surfaces.C.absorb[0] = 0.07;
+    cs.syncWallList();
+    assert.equal(nodes.mirrorLrRow.hidden, true, shape);
+    assert.equal(nodes.mirrorLr.disabled, true, shape);
+    const linked = cards(nodes);
+    const sides = linked.filter((c) => c.pair === "C");
+    assert.equal(sides.length, shape === "lede" ? 2 : 1, shape);
+    sides.forEach((c) => {
+      assert.equal(c.letter, "A");
+      assert.match(c.html, /Left \+ Right \(mirrored\)/);
+    });
+    assert.equal(linked.some((c) => c.letter === "C"), false);
+    assert.equal(state.surfaces.C.absorb[0], 0.42);
+  });
+});

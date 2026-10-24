@@ -8,9 +8,21 @@ T20 below is on the saved file: hypot(L, R), last 50 ms dropped, Schroeder fit f
 
 | file | T20 s | max-abs |
 | --- | ---: | ---: |
-| box.wav | 17.638 | 0.724533 |
+| box.wav (previous file, replaced below) | 17.638 | 0.724533 |
 | splay.wav | 17.065 | 0.702770 |
 | box_ir.wav | 1.363 | 0.718252 |
 | splay_ir.wav | 1.376 | 0.718930 |
 
-`box.wav` and `splay.wav` are 14.79 s (guitar plus the tank).
+`box.wav` and `splay.wav` were 14.79 s (guitar plus the tank). `box.wav` was rendered again with `lede.wav` and `live.wav`, so the box row above is the earlier file.
+
+## LEDE and Live room (2026-10-24)
+
+Same guitar, same scene, one file each. `room_shape` is the only change: `box`, `lede`, or `live`. No gain match. 24-bit stereo, 48 kHz. 709920 frames, 14.79 s. Decay lock still builds the 2790 ms tank.
+
+| file | peak | RMS |
+| --- | ---: | ---: |
+| box.wav | 0.729355 | 0.063232 |
+| lede.wav | 0.741062 | 0.055638 |
+| live.wav | 0.717199 | 0.059114 |
+
+`splay.wav`, `box_ir.wav`, and `splay_ir.wav` were not rendered again.

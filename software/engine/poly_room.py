@@ -206,6 +206,36 @@ def faces_for(shape, W: float, H: float, L: float) -> List[Face]:
     return box_faces(W, H, L)
 
 
+def lr_symmetric(shape, W: float = 6.0, L: float = 8.0, H: float = 3.0) -> bool:
+    """True when the floor polygon and the ceiling mirror across x = W/2."""
+    name = normalize_shape(shape)
+    if name == "box":
+        return True
+    W, H, L = float(W), float(H), float(L)
+    faces = faces_for(name, W, H, L)
+    floor = next(face for face in faces if face.name == "floor")
+    pts = [(float(v[0]), float(v[2])) for v in floor.v]
+
+    def near(a, b) -> bool:
+        return abs(a[0] - b[0]) <= 1e-6 and abs(a[1] - b[1]) <= 1e-6
+
+    for x, z in pts:
+        want = (W - x, z)
+        if not any(near(want, q) for q in pts):
+            return False
+    ceil = next(face for face in faces if face.name == "ceiling")
+    for v in ceil.v:
+        x, y, z = float(v[0]), float(v[1]), float(v[2])
+        twin = None
+        for u in ceil.v:
+            if abs(float(u[0]) - (W - x)) <= 1e-6 and abs(float(u[2]) - z) <= 1e-6:
+                twin = float(u[1])
+                break
+        if twin is None or abs(twin - y) > 1e-6:
+            return False
+    return True
+
+
 def _aabb(faces):
     verts = np.vstack([face.v for face in faces])
     return verts.min(0), verts.max(0)

@@ -200,8 +200,8 @@
         roomGroup.add(spr);
       }
 
-      if (shape === "splay" && global.RoomDraw) {
-        var faces = RoomDraw.splayFaces(W, H, L);
+      if (shape !== "box" && global.RoomDraw) {
+        var faces = RoomDraw.polyFaces(shape, W, H, L);
         var edgeMatS = new THREE.LineBasicMaterial({
           color: 0x5a6478,
           transparent: true,
@@ -345,7 +345,7 @@
       var first = lastWHL.W < 0;
       lastWHL = { W: W, H: H, L: L };
       lastShell = shape + "|" + W + "|" + H + "|" + L;
-      if (shape === "splay" && global.RoomDraw) lastShell += "|" + RoomDraw.colorKey(surfaces);
+      if (shape !== "box" && global.RoomDraw) lastShell += "|" + RoomDraw.colorKey(surfaces);
       var diag = Math.sqrt(W * W + H * H + L * L);
       var fogFar = Math.max(42, diag * 2.2);
       scene.fog.near = fogFar * 0.4;
@@ -1017,7 +1017,7 @@
       var s = geo.state;
       var shape = global.RoomDraw ? RoomDraw.normalize(s.room_shape) : "box";
       var shell = shape + "|" + s.W + "|" + s.H + "|" + s.L;
-      if (shape === "splay" && global.RoomDraw) shell += "|" + RoomDraw.colorKey(s.surfaces);
+      if (shape !== "box" && global.RoomDraw) shell += "|" + RoomDraw.colorKey(s.surfaces);
       if (shell !== lastShell) {
         rebuildRoom(s.W, s.H, s.L, shape, s.surfaces);
         updateCamera();

@@ -180,13 +180,13 @@ def _phase(v: Any) -> float:
 
 
 def _sides_mirrored(body: Any) -> bool:
-    """Splay is always one pair. Box copies left onto right only when Mirror L/R is on."""
+    """A left/right symmetric polygon is always one pair. Box copies left onto right only when Mirror L/R is on."""
     if not isinstance(body, dict):
         return False
-    from poly_room import normalize_shape
+    from poly_room import lr_symmetric, normalize_shape
     shape = normalize_shape(body.get("room_shape")) if "room_shape" in body else "box"
-    if shape == "splay":
-        return True
+    if shape != "box":
+        return lr_symmetric(shape)
     if "mirror_lr" not in body:
         return False
     return _b(body.get("mirror_lr"), False)

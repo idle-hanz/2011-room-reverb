@@ -358,7 +358,7 @@
 
   ColourSurfaces.prototype._sidesLinked = function () {
     var st = this.getState() || {};
-    if (global.RoomShape && RoomShape.normalize(st.room_shape) === "splay") return true;
+    if (global.RoomShape && RoomShape.sidesLinked) return RoomShape.sidesLinked(st.room_shape, !!st.mirror_lr);
     return !!st.mirror_lr;
   };
 
@@ -405,13 +405,13 @@
 
   ColourSurfaces.prototype._paintMirrorToggle = function () {
     var st = this.getState() || {};
-    var splay = !!(global.RoomShape && RoomShape.normalize(st.room_shape) === "splay");
+    var hide = !!(global.RoomShape && RoomShape.showMirrorToggle && !RoomShape.showMirrorToggle(st.room_shape));
     var row = document.getElementById("mirrorLrRow");
     var box = document.getElementById("mirrorLr");
-    if (row) row.hidden = splay;
+    if (row) row.hidden = hide;
     if (box) {
-      box.checked = splay || !!st.mirror_lr;
-      box.disabled = splay;
+      box.checked = hide || !!st.mirror_lr;
+      box.disabled = hide;
     }
   };
 

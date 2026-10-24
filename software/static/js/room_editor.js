@@ -230,12 +230,12 @@
       }
       ctx.closePath();
     }
-    function splayOn(st) {
-      return !!(global.RoomShape && RoomShape.normalize(st && st.room_shape) === "splay");
+    function polyOn(st) {
+      return !!(global.RoomShape && RoomShape.normalize(st && st.room_shape) !== "box");
     }
-    /* Room-mic drag uses the box margin. Splay then pulls the spot inside the outline. */
+    /* Room-mic drag uses the box margin. A polygon then pulls the spot inside the outline. */
     function clampRoomSpotPatch(st, cap, patch) {
-      if (!splayOn(st) || !patch) return patch;
+      if (!polyOn(st) || !patch) return patch;
       var xk = "room_" + cap + "_x";
       var yk = "room_" + cap + "_y";
       var zk = "room_" + cap + "_z";
@@ -244,7 +244,7 @@
       var z = patch[zk] != null ? patch[zk] : st[zk];
       if (y == null || !isFinite(Number(y))) y = st.my;
       if (x == null || z == null || !isFinite(Number(x)) || !isFinite(Number(z))) return patch;
-      var c = RoomShape.clampInside(Number(x), Number(y), Number(z), st.W, st.H, st.L);
+      var c = RoomShape.clampInside(Number(x), Number(y), Number(z), st.W, st.H, st.L, st.room_shape);
       if (patch[xk] != null) patch[xk] = c.x;
       if (patch[yk] != null) patch[yk] = c.y;
       if (patch[zk] != null) patch[zk] = c.z;
@@ -672,7 +672,7 @@
       ctx.fill();
       ctx.stroke();
 
-      const clipSplay = splayOn(geo.state);
+      const clipSplay = polyOn(geo.state);
       if (clipSplay) {
         ctx.save();
         traceClosed(ctx, outline);

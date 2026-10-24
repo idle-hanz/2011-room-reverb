@@ -76,7 +76,7 @@ test("room_editor calls wall and ceiling drag only after a handle miss", () => {
   assert.match(elev, /kind:\s*"ceiling"/);
   assert.match(editor, /function viewForPatch/);
   assert.match(editor, /mode:\s*"stop"/);
-  assert.match(page, /room_editor\.js\?v=21/);
+  assert.match(page, /room_editor\.js\?v=22/);
   assert.match(page, /drag a wall or corner to resize/);
   assert.match(page, /drag the ceiling to resize/);
 });

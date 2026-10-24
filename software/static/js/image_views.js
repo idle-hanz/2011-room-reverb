@@ -77,8 +77,11 @@
     function sceneState() {
       return getState() || null;
     }
-    function isSplay() {
-      return !!(global.RoomDraw && RoomDraw.normalize(sceneState() && sceneState().room_shape) === "splay");
+    function isPoly() {
+      return !!(global.RoomDraw && RoomDraw.normalize(sceneState() && sceneState().room_shape) !== "box");
+    }
+    function polyShape() {
+      return global.RoomDraw ? RoomDraw.normalize(sceneState() && sceneState().room_shape) : "box";
     }
     function nowMs() {
       return (global.performance && performance.now) ? performance.now() : Date.now();
@@ -159,7 +162,7 @@
 
     /* Paths / last legs: a readable room. Front is z=0 in this view (worldZ of L). */
     function addRoomShell(room) {
-      if (isSplay()) { addSplayShell(room); return; }
+      if (isPoly()) { addSplayShell(room); return; }
       root.add(homeBox(room));
       var built = RoomDraw.imageBoxGeometries(THREE, room.W, room.H, room.L);
       built.home.geo.dispose();
@@ -299,7 +302,7 @@
       var packs = [];
       shownRooms = [];
       function one(prefix, source) {
-        var pack = RoomDraw.imageRooms("splay", room.W, room.H, room.L, source, ear.receivers, {
+        var pack = RoomDraw.imageRooms(polyShape(), room.W, room.H, room.L, source, ear.receivers, {
           order: 4, maxDist: cap, n: nTap, stand: stand
         });
         (pack.rooms || []).forEach(function (r) {
@@ -527,7 +530,7 @@
       hideTip();
       if (!data) return;
       clearRoot();
-      if (isSplay()) {
+      if (isPoly()) {
         addMirroredRooms(true);
         addWallLabels(data.room);
         addActors(data.source, data.mics, data.selected_mics || ["C"]);
@@ -591,7 +594,7 @@
       if (!data) return;
       pathHits = [];
       clearRoot();
-      if (isSplay()) {
+      if (isPoly()) {
         addSplayShell(data.room);
         addSplayPathLines(false);
         addActors(data.source, data.mics, data.selected_mics || ["C"]);
@@ -624,7 +627,7 @@
       if (!data) return;
       pathHits = [];
       clearRoot();
-      if (isSplay()) {
+      if (isPoly()) {
         addSplayShell(data.room);
         addSplayPathLines(true);
         var selected = data.selected_mics || ["C"];
@@ -799,7 +802,7 @@
     function frame() {
       if (disposed) return;
       raf = requestAnimationFrame(frame);
-      var fading = isSplay() && fadePending();
+      var fading = isPoly() && fadePending();
       if (fading) {
         paintFades();
         needsRender = true;
@@ -838,7 +841,7 @@
       },
       resetCamera: function () { forceFit(); },
       drawnCount: function () { return drawnCount; },
-      tapCount: function () { return isSplay() ? hadamardShown() : null; },
+      tapCount: function () { return isPoly() ? hadamardShown() : null; },
       cameraState: function () {
         var lim = radiusLimits();
         return {
