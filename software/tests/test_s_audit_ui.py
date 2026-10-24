@@ -549,6 +549,9 @@ def test_a12_visible_controls_post_or_are_ui_only(audit_server):
                 return r.width > 1 && r.height > 1;
               }
               function choicePressed(el) {
+                if (el.getAttribute('data-room-shape')) {
+                  return el.getAttribute('aria-pressed') === 'true' || el.classList.contains('active');
+                }
                 if (el.getAttribute('aria-pressed') !== 'true') return false;
                 return !!(el.getAttribute('data-pair') || el.getAttribute('data-pan-law') ||
                   el.getAttribute('data-link') || el.getAttribute('data-radius') ||
@@ -708,6 +711,11 @@ def test_a12_visible_controls_post_or_are_ui_only(audit_server):
                 } else if (type === 'range' || type === 'number') {
                   nudgeNum(el);
                 } else if (tag === 'BUTTON') {
+                  if (el.id === 'slAddPorous' && window.RRColourSurfaces && window.RRColourSurfaces.select) {
+                    window.RRColourSurfaces.select('B');
+                    const wallBtn = document.getElementById('slAddPorous');
+                    if (wallBtn) el = wallBtn;
+                  }
                   el.click();
                 } else {
                   el.dispatchEvent(new Event('input', { bubbles: true }));
