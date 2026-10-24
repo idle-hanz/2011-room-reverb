@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>2011 Room Reverb</title>
   <link rel="icon" href="/static/favicon.svg" type="image/svg+xml" />
-  <link rel="stylesheet" href="/static/css/app.css?v=37" />
+  <link rel="stylesheet" href="/static/css/app.css?v=38" />
   <link rel="stylesheet" href="/static/css/sl_room_result.css?v=1" />
   <link rel="stylesheet" href="/static/css/rr_controls.css?v=1" />
 </head>
@@ -453,12 +453,8 @@
             <div class="panel surfaces-panel" id="surfacesPanel">
               <div class="panel-head">
                 <h2>Surfaces <span class="assumed-tag">ASSUMED</span></h2>
-                <span class="hint">Box sides stay apart until Mirror L/R is on. Splay sides stay one pair. Front, back, floor and ceiling stay independent</span>
+                <span class="hint">Box starts with left and right linked. Splay stays one pair. Front, back, floor and ceiling stay independent</span>
               </div>
-              <label class="check" id="mirrorLrRow">
-                <input type="checkbox" id="mirrorLr" />
-                <span>Mirror L/R</span>
-              </label>
               <p class="assumed-banner" id="surfacesBanner">
                 Pick a material for the selected face. Curtain stays on walls. Carpet stays on the floor.
                 Solo and Mute are on this tab only. The direct sound does not change.
@@ -490,6 +486,10 @@
                 <button type="button" class="chip" id="surfacesSoloOff">Solo off</button>
                 <span class="hint">Solo hears one face. Mute drops that face. The direct sound stays.</span>
               </div>
+              <label class="check mirror-lr-switch" id="mirrorLrRow">
+                <input type="checkbox" id="mirrorLr" checked />
+                <span>Mirror left/right walls</span>
+              </label>
               <div class="surface-cards" id="surfaceCards" role="listbox" aria-label="Room walls"></div>
               <div class="surface-detail" id="surfaceDetail">
                 <div class="surface-detail-head">
@@ -1064,7 +1064,7 @@
     <div id="toast" class="toast" hidden role="status"></div>
   </div>
   <script src="/static/js/vendor/three.min.js"></script>
-  <script src="/static/js/room_shape.js?v=2"></script>
+  <script src="/static/js/room_shape.js?v=3"></script>
   <script src="/static/js/room_math.js?v=18"></script>
   <script src="/static/js/spectrum_colors.js?v=1"></script>
   <script src="/static/js/freq_palette.js?v=2"></script>
@@ -1073,7 +1073,7 @@
   <script src="/static/js/room_3d.js?v=22"></script>
   <script src="/static/js/room_editor.js?v=21"></script>
   <script src="/static/js/image_views.js?v=19"></script>
-  <script src="/static/js/colour_surfaces.js?v=7"></script>
+  <script src="/static/js/colour_surfaces.js?v=8"></script>
   <script src="/static/js/polar_field.js?v=7"></script>
   <script src="/static/js/mic_desk.js?v=19"></script>
   <script src="/static/js/source_desk.js?v=4"></script>
@@ -1084,7 +1084,7 @@
   <script src="/static/js/drag_model.js?v=2"></script>
   <script src="/static/js/room_window_math.js?v=1"></script>
   <script src="/static/js/routing_scene.js?v=3"></script>
-  <script src="/static/js/app.js?v=80"></script>
+  <script src="/static/js/app.js?v=81"></script>
   <script>window.RR_SL_STAGE = 5;</script>
   <script src="/static/js/sl_room_result.js?v=5"></script>
   <script src="/static/js/rr_controls.js?v=1"></script>

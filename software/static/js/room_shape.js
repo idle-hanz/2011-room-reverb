@@ -116,7 +116,7 @@
         id: "sides",
         letters: ["A", "C"],
         shared: true,
-        label: splay ? "Splayed sides" : "Left / Right",
+        label: "Left + Right (mirrored)",
         facing: splay ? "angled" : "\u2212X / +X"
       });
     } else {

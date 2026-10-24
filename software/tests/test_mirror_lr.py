@@ -32,6 +32,13 @@ def _split():
     }
 
 
+def test_default_mirror_on_stays_bit_exact():
+    assert _md5(live_fdn_params(A.params_from_body({"mirror_lr": True}))) == EMPTY
+    assert _md5(live_fdn_params(A.params_from_body({
+        "third_mic": "centre", "mic_gain_c": 1.0, "mirror_lr": True,
+    }))) == CENTRE
+
+
 def test_box_off_is_bit_exact():
     assert _md5(live_fdn_params(A.params_from_body({}))) == EMPTY
     assert _md5(live_fdn_params(A.params_from_body({"mirror_lr": False}))) == EMPTY

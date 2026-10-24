@@ -1,4 +1,4 @@
-// Box Mirror L/R. Off keeps two side cards. On links them. Splay has no toggle.
+// Box mirror defaults on: one linked card. Off splits Left and Right. Splay has no switch.
 import test from "node:test";
 import assert from "node:assert/strict";
 import fs from "node:fs";
@@ -71,7 +71,7 @@ function boot() {
   };
   const state = {
     room_shape: "box",
-    mirror_lr: false,
+    mirror_lr: true,
     surfaces_solo: null,
     surfaces_mute: null,
   };
@@ -99,32 +99,46 @@ function cards(nodes) {
   return nodes.surfaceCards.querySelectorAll(".surface-card").map((c) => ({
     letter: c.getAttribute("data-letter"),
     pair: c.getAttribute("data-pair"),
+    html: c._html,
   }));
 }
 
-test("toggle off keeps separate L/R cards and toggle on links them", () => {
+test("box default is mirrored and the switch splits the cards", () => {
   const { cs, state, nodes } = boot();
+  assert.match(app, /mirror_lr:\s*true/);
   assert.equal(nodes.mirrorLrRow.hidden, false);
-  assert.deepEqual(cards(nodes).map((c) => c.letter), ["A", "C", "B", "D", "E", "F"]);
-  cards(nodes).forEach((c) => assert.equal(c.pair, null));
+  assert.equal(nodes.mirrorLr.checked, true);
+  const linked = cards(nodes);
+  assert.deepEqual(linked.map((c) => c.letter), ["A", "B", "D", "E", "F"]);
+  assert.equal(linked[0].pair, "C");
+  assert.match(linked[0].html, /Left \+ Right \(mirrored\)/);
+  assert.match(linked[0].html, /class="sc-link"/);
+  assert.equal(linked.some((c) => c.letter === "C"), false);
 
   state.surfaces.A.absorb[0] = 0.91;
   state.surfaces.C.absorb[0] = 0.11;
   state.surfaces.B.absorb[0] = 0.33;
-  state.mirror_lr = true;
+  cs.syncWallList();
+  assert.equal(state.surfaces.C.absorb[0], 0.91);
+  state.mirror_lr = false;
   cs.syncWallList();
 
   assert.equal(nodes.mirrorLrRow.hidden, false);
-  const linked = cards(nodes);
-  assert.deepEqual(linked.map((c) => c.letter), ["A", "B", "D", "E", "F"]);
-  assert.equal(linked[0].pair, "C");
+  assert.equal(nodes.mirrorLr.checked, false);
+  const split = cards(nodes);
+  assert.deepEqual(split.map((c) => c.letter), ["A", "C", "B", "D", "E", "F"]);
+  split.forEach((c) => assert.equal(c.pair, null));
+  assert.match(split[0].html, />Left</);
+  assert.match(split[1].html, />Right</);
+  assert.equal(split[0].html.includes("sc-link"), false);
+  assert.equal(split[1].html.includes("sc-link"), false);
   assert.equal(state.surfaces.C.absorb[0], 0.91);
   assert.equal(state.surfaces.A.absorb[0], 0.91);
   assert.equal(state.surfaces.B.absorb[0], 0.33);
   assert.equal(state.surfaces.C.letter, "C");
 });
 
-test("splay shows no toggle and stays one pair", () => {
+test("splay shows no switch and stays one linked card", () => {
   const { cs, state, nodes } = boot();
   state.room_shape = "splay";
   state.mirror_lr = false;
@@ -136,10 +150,15 @@ test("splay shows no toggle and stays one pair", () => {
   const linked = cards(nodes);
   assert.equal(linked[0].letter, "A");
   assert.equal(linked[0].pair, "C");
+  assert.match(linked[0].html, /Left \+ Right \(mirrored\)/);
+  assert.match(linked[0].html, /class="sc-link"/);
   assert.equal(linked.some((c) => c.letter === "C"), false);
   assert.equal(state.surfaces.C.absorb[0], 0.42);
-  assert.match(page, /id="mirrorLr"/);
-  assert.match(page, />Mirror L\/R</);
+  const wall = page.indexOf('id="surfaceCards"');
+  const sw = page.indexOf('id="mirrorLrRow"');
+  assert.ok(sw > page.indexOf('id="surfAudition"') && sw < wall);
+  assert.match(page, /id="mirrorLr"[^>]*checked/);
+  assert.match(page, />Mirror left\/right walls</);
   assert.match(app, /o\.mirror_lr = !!state\.mirror_lr/);
   assert.match(app, /mix\.mirror_lr = !!state\.mirror_lr/);
 });

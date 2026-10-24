@@ -444,9 +444,12 @@
       card.setAttribute("data-wall", row.id);
       if (row.letters.length > 1) card.setAttribute("data-pair", row.letters[1]);
       var mark = row.shared ? row.letters.join("\u00b7") : L;
+      var link = row.shared
+        ? '<svg class="sc-link" viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><path fill="currentColor" d="M6.35 9.65a2.5 2.5 0 0 1 0-3.54l1.76-1.76a2.5 2.5 0 0 1 3.54 3.54l-.88.88a.75.75 0 1 1-1.06-1.06l.88-.88a1 1 0 0 0-1.42-1.42L7.41 6.17a1 1 0 0 0 0 1.42.75.75 0 0 1-1.06 1.06zm3.3-3.3a2.5 2.5 0 0 1 0 3.54l-1.76 1.76a2.5 2.5 0 1 1-3.54-3.54l.88-.88a.75.75 0 1 1 1.06 1.06l-.88.88a1 1 0 1 0 1.42 1.42l1.76-1.76a1 1 0 0 0 0-1.42.75.75 0 1 1 1.06-1.06z"/></svg>'
+        : "";
       card.innerHTML =
         '<span class="sc-letter" style="color:' + m.color + '">' + mark + "</span>" +
-        '<span class="sc-label">' + row.label + "</span>" +
+        '<span class="sc-label">' + link + row.label + "</span>" +
         '<span class="sc-facing">' + row.facing + "</span>" +
         '<span class="sc-tag">ASSUMED</span>' +
         '<div class="sc-audition">' +

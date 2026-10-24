@@ -131,8 +131,8 @@
     sub_hp: true, offaxis_tail: false,
     /* Box posts the key. The server keeps the shoebox bytes. */
     room_shape: "box",
-    /* Box only. Off leaves left and right independent. Splay ignores this and stays paired. */
-    mirror_lr: false,
+    /* Box only. On links left and right. Splay ignores this and stays paired. */
+    mirror_lr: true,
     /* Routing. UI names are not engine keys. Off posts nothing. */
     route_array_pre: "none", route_array_drive: 0, route_array_comp: "off", route_array_amount: 0,
     route_room_pre: "none", route_room_drive: 0, route_room_comp: "off", route_room_amount: 0,
@@ -676,7 +676,7 @@
     o.offaxis_tail = !!state.offaxis_tail;
     /* Polygon preset. Box is posted and stays the shoebox. */
     if (state.room_shape) o.room_shape = String(state.room_shape);
-    /* Surfaces Mirror L/R. Off posts false and the server leaves A and C alone. */
+    /* Surfaces mirror. On copies left onto right. Off posts false and leaves them apart. */
     o.mirror_lr = !!state.mirror_lr;
     if (window.LiveFDN) {
       var rate = LiveFDN.rate ? LiveFDN.rate() : 0;
@@ -4024,7 +4024,7 @@
     });
     Object.keys(data).forEach(function (k) { state[k] = data[k]; });
     if (!state.room_shape) state.room_shape = "box";
-    if (state.mirror_lr == null) state.mirror_lr = false;
+    if (state.mirror_lr == null) state.mirror_lr = true;
     migrateRoomState(state);
     if (state.surfaces && colourSurfaces && colourSurfaces.setSurfaces) {
       colourSurfaces.setSurfaces(state.surfaces);

@@ -507,6 +507,16 @@ select.cap-pattern:focus {
 }
 .sc-letter { font-size: 1rem; font-weight: 750; color: var(--accent); }
 .sc-label { font-size: 0.76rem; font-weight: 600; }
+.sc-link { width: 14px; height: 14px; margin-right: 4px; vertical-align: -2px; color: var(--accent); }
+.mirror-lr-switch {
+  display: flex; align-items: center; gap: 10px;
+  margin: 2px 0 8px; padding: 10px 12px;
+  border: 1px solid var(--accent); border-radius: 10px;
+  background: rgba(45, 212, 191, 0.1);
+  font-size: 0.95rem; font-weight: 750; color: var(--text);
+}
+.mirror-lr-switch input { width: 18px; height: 18px; margin: 0; accent-color: var(--accent); }
+.mirror-lr-switch[hidden] { display: none; }
 .sc-tag {
   font-size: 0.56rem; font-weight: 750; letter-spacing: 0.06em;
   color: var(--warn); margin-top: 2px;
