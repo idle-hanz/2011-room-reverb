@@ -46,12 +46,23 @@ Add `pytest` for the test file you touched. Leave `test_b2_render_length.py` out
 
 ## FULL (once, at the end)
 
-Acceptance pytest, `--slow`, harness t05, and extra CPU benches stay off.
+Acceptance pytest, harness `--slow`, harness t05, and extra CPU benches stay off.
+`@pytest.mark.slow` Surfaces renders stay off. `software\pytest.ini` addopts are `-m "not slow"`.
 
 From `software\`:
 
 ```
-.\.venv\Scripts\python.exe -m pytest -q --ignore=tests/test_b2_render_length.py
+.\.venv\Scripts\python.exe -m pytest -q -m "not slow" --ignore=tests/test_b2_render_length.py
+```
+
+## SURFACES (only when the prompt is a Surfaces run)
+
+The slow Surfaces renders (full-length SL2, SL4, SL5/SL6, including the auto-treat xfail). Proof JSON goes to a temp file. `software\proof\` is not rewritten. The two 400 ms Flat bit-exact tests are not in this tier. They stay in FULL.
+
+From `software\` (`-m slow` overrides the default addopts):
+
+```
+.\.venv\Scripts\python.exe -m pytest -q -m slow --ignore=tests/test_b2_render_length.py
 ```
 
 From the repo root, after that pytest:

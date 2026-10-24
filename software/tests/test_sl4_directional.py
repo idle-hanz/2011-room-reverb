@@ -12,7 +12,6 @@ except ImportError:
     from tests import _sl_render as R
 import surf_loop as SL
 
-OUT = H.HERE.parent / "proof"
 CASES = [("real_default", 1.8), ("studio_panelled", None), ("bare_brick_plaster", None)]
 
 
@@ -53,7 +52,8 @@ def _lr_tail_db(ir):
 
 
 @pytest.fixture(scope="module")
-def results():
+def results(tmp_path_factory):
+    """SURFACES opt-in writes the dump under tmp. It must not rewrite software/proof."""
     res = {}
     for room, anchor in CASES:
         ir0, i0, ir1, i1, cal = R.render_calibrated(room, True, anchor)
@@ -66,8 +66,8 @@ def results():
             irf, _ = R.render_body(**R.room_body(room, anchor, decay_mode="flat"))
             res[room]["flat_edt_t30"] = _edt_t30(irf).tolist()
             res[room]["flat_lr_tail_db"] = float(_lr_tail_db(irf))
-    OUT.mkdir(exist_ok=True)
-    (OUT / "sl4_directional_results.json").write_text(json.dumps(res, indent=1, default=float))
+    (tmp_path_factory.mktemp("sl4") / "sl4_directional_results.json").write_text(
+        json.dumps(res, indent=1, default=float))
     return res
 
 

@@ -15,10 +15,11 @@
 12. Brief: read CURRENT_BRIEF.md (one page, includes the do-not-touch list) instead of the full HANDOVER. Prompts give only the delta. Step 0 review only for a new gate or an audio-core change.
 
 ## Added 2026-10-22 from PROCESS_REVIEW "More suggestions" (Idle approved)
-13. QUICK tier (after each step): sound pins/MD5s, quick pins test, selfcheck, node tests, tests for touched files. Node, from `software\`: `node --test (Get-ChildItem tests\*.mjs | % FullName)`. PowerShell does not expand the glob.
-14. FULL tier (once, at the end): pytest WITHOUT test_b2, harness t03 + t04 (they re-render the goldens; a golden hash alone only proves the file wasn't edited), CPU delta bench. Harness t05, the acceptance pytest (and --slow) and extra CPU benches are OFF unless the prompt asks.
-15. Prompts: about 40 lines, one gate, real paths under handoff_build_support_2\roadmap\, a paste-ready QUICK command, a 20-line report. If the gate is not yet scored, the run scores it and stops.
-16. Never two audio laws in one run.
+13. QUICK tier (after each step): sound pins/MD5s, quick pins test, selfcheck, node tests, tests for touched files. Node, from `software\`: `node --test (Get-ChildItem tests\*.mjs | % FullName)`. PowerShell does not expand the glob. `@pytest.mark.slow` is not QUICK. That mark is the SURFACES tier.
+14. FULL tier (once, at the end): pytest WITHOUT test_b2 and without `@pytest.mark.slow`. Default addopts are `-m "not slow"`. Harness t03 + t04 (they re-render the goldens; a golden hash alone only proves the file wasn't edited), CPU delta bench. SURFACES tier, only when the prompt is a Surfaces run: from `software\`, `pytest -q -m slow --ignore=tests/test_b2_render_length.py`. It runs the slow Surfaces renders. Those tests write their proof JSON to a temp file and do not rewrite `software\proof\`. Harness t05, the acceptance pytest (and harness `--slow`) and extra CPU benches are OFF unless the prompt asks.
+15. Prompts: about 40 lines, one gate, real paths under handoff_build_support_2\roadmap\, a paste-ready QUICK command, a 20-line report. A Surfaces prompt also names the SURFACES tier. If the gate is not yet scored, the run scores it and stops.
+16. Never two audio laws in one run. The SURFACES tier is not an audio law.
+
 
 ## Added 2026-10-23 (Idle). Heard faults were becoming a second investigation.
 17. Two heard faults in one prompt is invalid. The builder replies in five lines and stops. The prompt bot splits the file before the next run. This replaces "do the first and stop" for a heard fault.

@@ -1,4 +1,6 @@
-"""SL2: Surfaces mode in the Render loop. Fast design tests + slow render tests (-m slow).
+"""SL2: Surfaces mode in the Render loop. Fast design tests stay in FULL.
+The two 400 ms bit-exact tests stay in FULL (Flat ignores treatment rows).
+Full-length renders are @pytest.mark.slow (SURFACES tier, -m slow).
 Flat (2011) must stay bit-exact: the box proof (hash_scenes.py, pristine vs patched tree) is in
 ../proof/flat_bitexact.json; on Build day the existing golden test is the authority."""
 import inspect
@@ -93,7 +95,8 @@ def test_t20_and_calibration_helpers():
     assert SL.calibration_factors([2.0, 0.1, 1.1, 1, 1, 1, float("nan")], [1.0] * 7) == [1.6, 0.6, 1.1, 1.0, 1.0, 1.0, 1.0]
 
 
-# ---------------------------------------------------------------- slow: real renders
+# ---------------------------------------------------------------- renders
+# 400 ms bit-exact stays in FULL. Full-length renders are the SURFACES tier (-m slow).
 def _render(**over):
     try:
         import _sl_render as R
@@ -109,7 +112,6 @@ def test_ui_body_flat_explicit_equals_absent_bit_exact():
     assert a.tobytes() == b.tobytes()
 
 
-@pytest.mark.slow
 def test_flat_explicit_equals_absent_bit_exact():
     a, _ = _render(ir_length_ms=400)
     b, _ = _render(ir_length_ms=400, decay_mode="flat", surf_cal=[1.3] * 7,
@@ -134,7 +136,6 @@ def test_surfaces_render_default_room_room_average_matches_prototype():
     assert np.max(np.abs(err[2:])) <= 0.15, err
 
 
-@pytest.mark.slow
 def test_surfaces_then_flat_leaves_no_state_behind():
     a, _ = _render(ir_length_ms=400)
     _render(ir_length_ms=400, decay_mode="surfaces")

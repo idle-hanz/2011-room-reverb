@@ -13,8 +13,6 @@ import surf_autotreat as AT
 import surf_loop as SL
 import surf_panels as P
 
-OUT = H.HERE.parent / "proof"
-
 
 def _third_t20(ir, bands):
     from scipy import signal
@@ -31,18 +29,18 @@ def _third_t20(ir, bands):
 
 
 @pytest.mark.slow
-def test_room_shell_bass_matches_box():
+def test_room_shell_bass_matches_box(tmp_path):
     ir0, i0, ir1, i1, cal = R.render_calibrated("real_default", True, 1.8, rows=P.room_shell_rows())
     t = SL.t20_per_octave(ir1.sum(1))
-    OUT.mkdir(exist_ok=True)
-    (OUT / "sl5_shell_results.json").write_text(json.dumps(dict(t20=t, target=i1["surf"]["target_T_oct"], cal=cal), indent=1))
+    # SURFACES opt-in must not rewrite software/proof.
+    (tmp_path / "sl5_shell_results.json").write_text(json.dumps(dict(t20=t, target=i1["surf"]["target_T_oct"], cal=cal), indent=1))
     assert t[0] == pytest.approx(1.9, rel=0.10) and t[1] == pytest.approx(2.35, rel=0.10)
 
 
 @pytest.mark.slow
 @pytest.mark.xfail(strict=False, reason="PC 2026-10-23 scored 13/23 third-octaves within ±10 % "
                    "(box 16/23, keep-below-30 Hz). SL6 re-measures. Not an SL5 gate.")
-def test_auto_treat_plan_rendered():
+def test_auto_treat_plan_rendered(tmp_path):
     W, Hh, L, s, hum = H.room("real_default")
     plan = AT.auto_treat(W, Hh, L, s, hum, 0.8)
     rows = [dict(r, suggested=False) for r in plan["suggested"]]
@@ -51,6 +49,6 @@ def test_auto_treat_plan_rendered():
     tgt = np.asarray(plan["target"])[1:]
     t = _third_t20(ir1, f)
     ok = np.abs(t / tgt - 1) <= 0.10
-    OUT.mkdir(exist_ok=True)
-    (OUT / "sl6_treated_results.json").write_text(json.dumps(dict(f=f.tolist(), t20=t.tolist(), target=tgt.tolist(), n_ok=int(ok.sum()), cal=cal), indent=1))
+    # SURFACES opt-in must not rewrite software/proof/sl6_treated_results.json.
+    (tmp_path / "sl6_treated_results.json").write_text(json.dumps(dict(f=f.tolist(), t20=t.tolist(), target=tgt.tolist(), n_ok=int(ok.sum()), cal=cal), indent=1))
     assert int(ok.sum()) >= 16, (int(ok.sum()), np.round(t / tgt, 2))
