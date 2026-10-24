@@ -230,6 +230,23 @@
       }
       ctx.closePath();
     }
+    function strokeGuides(ctx, segs) {
+      if (!segs || !segs.length) return;
+      ctx.save();
+      ctx.setLineDash([]);
+      ctx.strokeStyle = "#c4b48a";
+      ctx.lineWidth = 1.5;
+      var i;
+      for (i = 0; i < segs.length; i++) {
+        var seg = segs[i];
+        if (!seg || seg.length < 2) continue;
+        ctx.beginPath();
+        ctx.moveTo(seg[0].px, seg[0].py);
+        ctx.lineTo(seg[1].px, seg[1].py);
+        ctx.stroke();
+      }
+      ctx.restore();
+    }
     function polyOn(st) {
       return !!(global.RoomShape && RoomShape.normalize(st && st.room_shape) !== "box");
     }
@@ -711,6 +728,9 @@
         ctx.stroke();
         ctx.setLineDash([]);
       }
+      if (global.RoomShape && RoomShape.planGuidesPx) {
+        strokeGuides(ctx, RoomShape.planGuidesPx(geo.state.room_shape, geo.state.W, geo.state.L, fl));
+      }
 
       const Sp = toPx(geo.source.x, geo.source.z, fl);
       const Cp = toPx(geo.mic_centre.x, geo.mic_centre.z, fl);
@@ -817,6 +837,9 @@
       traceClosed(ctx, elevOutlinePx(geo.state, el));
       ctx.fill();
       ctx.stroke();
+      if (global.RoomShape && RoomShape.elevGuidesPx) {
+        strokeGuides(ctx, RoomShape.elevGuidesPx(geo.state.room_shape, geo.state.H, geo.state.L, el));
+      }
 
       ctx.fillStyle = "#8b92a5";
       ctx.font = "11px Segoe UI, system-ui, sans-serif";

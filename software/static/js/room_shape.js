@@ -29,6 +29,7 @@
       key === "live" || key === "nonparallel" || key === "nonparallellive" ||
       key === "nonparallelliveroom"
     ) return "live";
+    if (key === "gable" || key === "gableroof") return "gable";
     return "box";
   }
 
@@ -45,7 +46,34 @@
       var inset = Math.min(0.25 * W, L * tan6());
       return [[inset, 0], [W - inset, 0], [W, L], [0, L]];
     }
+    /* Gable floor is the shoebox. The ridge is a plan guide, not an extra wall. */
     return [[0, 0], [W, 0], [W, L], [0, L]];
+  }
+
+  /* Ridge along the length at x = W/2. Eaves sit at 0.75*H. */
+  function roofHeight(x, W, H) {
+    W = Number(W);
+    H = Number(H);
+    var eave = 0.75 * H;
+    var half = 0.5 * W;
+    if (!(half > 0)) return H;
+    var t = 1 - Math.abs(Number(x) - half) / half;
+    if (t < 0) t = 0;
+    if (t > 1) t = 1;
+    return eave + (H - eave) * t;
+  }
+
+  function planGuides(shape, W, L) {
+    if (normalize(shape) !== "gable") return [];
+    W = Number(W);
+    L = Number(L);
+    return [[[W * 0.5, 0], [W * 0.5, L]]];
+  }
+
+  function elevGuides(shape, H, L) {
+    if (normalize(shape) !== "gable") return [];
+    var eave = 0.75 * Number(H);
+    return [[[0, eave], [Number(L), eave]]];
   }
 
   function ceilingAt(shape, z, H, L) {
@@ -97,11 +125,22 @@
     });
   }
 
+  function planGuidesPx(shape, W, L, lay) {
+    var scale = lay.scale;
+    var len = lay.L != null ? lay.L : L;
+    return planGuides(shape, W, L).map(function (seg) {
+      return seg.map(function (p) {
+        return { px: lay.ox + p[0] * scale, py: lay.oy + (len - p[1]) * scale };
+      });
+    });
+  }
+
   function elevOutline(shape, H, L) {
     L = Number(L);
     H = Number(H);
     var name = normalize(shape);
-    if (name === "box") return [[0, 0], [L, 0], [L, H], [0, H]];
+    /* Side view looks along X. The gable ridge runs the full length at H. */
+    if (name === "box" || name === "gable") return [[0, 0], [L, 0], [L, H], [0, H]];
     return [
       [0, 0],
       [L, 0],
@@ -118,6 +157,16 @@
     });
   }
 
+  function elevGuidesPx(shape, H, L, lay) {
+    var scale = lay.scale;
+    var Hh = lay.H != null ? lay.H : H;
+    return elevGuides(shape, H, L).map(function (seg) {
+      return seg.map(function (p) {
+        return { px: lay.ox + p[0] * scale, py: lay.oy + (Hh - p[1]) * scale };
+      });
+    });
+  }
+
   /* Closed polygon, inset so a dragged point is inside the outline. */
   function clampInside(x, y, z, W, H, L, shape) {
     if (shape == null) shape = "splay";
@@ -131,7 +180,8 @@
     var span = lim.hi - lim.lo;
     if (span <= 2 * EPS) x = (lim.lo + lim.hi) * 0.5;
     else x = clamp(Number(x), lim.lo + EPS, lim.hi - EPS);
-    var yHi = Math.max(EPS, ceilingAt(shape, z, H, L) - EPS);
+    var yTop = normalize(shape) === "gable" ? roofHeight(x, W, H) : ceilingAt(shape, z, H, L);
+    var yHi = Math.max(EPS, yTop - EPS);
     y = clamp(Number(y), 0, yHi);
     return { x: x, y: y, z: z };
   }
@@ -290,8 +340,20 @@
     return !!mirror;
   }
 
+  function gableRows() {
+    return [
+      { id: "sides", letters: ["A", "C"], shared: true, label: "Left + Right (mirrored)", facing: "\u2212X / +X" },
+      { id: "gable0", letters: ["D"], shared: false, label: "Gable end", facing: "\u2212Z" },
+      { id: "gable2", letters: ["B"], shared: false, label: "Gable end", facing: "+Z" },
+      { id: "floor", letters: ["E"], shared: false, label: "Floor", facing: "\u2212Y" },
+      { id: "roofL", letters: ["F"], shared: false, label: "Left roof", facing: "+Y" },
+      { id: "roofR", letters: ["F"], shared: false, label: "Right roof", facing: "+Y" }
+    ];
+  }
+
   function wallRows(shape, mirror) {
     var name = normalize(shape);
+    if (name === "gable") return gableRows();
     if (name !== "box") return polyRows(name);
     var shared = !!mirror;
     var rows = [];
@@ -318,8 +380,13 @@
     normalize: normalize,
     floorOutline: floorOutline,
     floorPx: floorPx,
+    planGuides: planGuides,
+    planGuidesPx: planGuidesPx,
     elevOutline: elevOutline,
     elevPx: elevPx,
+    elevGuides: elevGuides,
+    elevGuidesPx: elevGuidesPx,
+    roofHeight: roofHeight,
     ceilingAt: ceilingAt,
     clampInside: clampInside,
     maxSpace: maxSpace,

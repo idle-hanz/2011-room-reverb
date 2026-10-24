@@ -37,10 +37,12 @@ test("the picker posts room_shape", () => {
   assert.match(row, /data-room-shape="splay"/);
   assert.match(row, /data-room-shape="lede"/);
   assert.match(row, /data-room-shape="live"/);
+  assert.match(row, /data-room-shape="gable"/);
   assert.match(row, />Box</);
   assert.match(row, />Splay</);
   assert.match(row, />LEDE</);
   assert.match(row, />Live room</);
+  assert.match(row, />Gable</);
   assert.match(app, /room_shape:\s*"box"/);
   assert.match(app, /RoomShape\.normalize\(picked\)/);
   assert.match(app, /mix\.room_shape = String\(state\.room_shape\)/);
@@ -50,7 +52,8 @@ test("the picker posts room_shape", () => {
   assert.equal(boxed.room_shape, "box");
   assert.equal(liveRequestBodyFrom({ room_shape: "lede" }).room_shape, "lede");
   assert.equal(liveRequestBodyFrom({ room_shape: "live" }).room_shape, "live");
-  assert.match(page, /room_shape\.js\?v=4/);
+  assert.equal(liveRequestBodyFrom({ room_shape: "gable" }).room_shape, "gable");
+  assert.match(page, /room_shape\.js\?v=5/);
   assert.match(page, /app\.js\?v=82/);
 });
 
@@ -110,6 +113,32 @@ test("box draws the same outline as now", () => {
   assert.equal(RS.sidesLinked("lede", false), true);
   assert.equal(RS.sidesLinked("live", false), true);
   assert.equal(RS.sidesLinked("box", false), false);
+  assert.equal(RS.normalize("Gable roof"), "gable");
+  assert.equal(RS.showMirrorToggle("gable"), false);
+  assert.equal(RS.lrSymmetric("gable"), true);
+  assert.equal(RS.sidesLinked("gable", false), true);
+  assert.deepEqual(RS.floorOutline("gable", 6, 8), [[0, 0], [6, 0], [6, 8], [0, 8]]);
+  assert.deepEqual(RS.planGuides("gable", 6, 8), [[[3, 0], [3, 8]]]);
+  assert.deepEqual(RS.planGuides("box", 6, 8), []);
+  assert.deepEqual(RS.elevGuides("gable", 3, 8), [[[0, 2.25], [8, 2.25]]]);
+  assert.equal(RS.roofHeight(0, 6, 3), 2.25);
+  assert.equal(RS.roofHeight(3, 6, 3), 3);
+  assert.equal(RS.roofHeight(6, 6, 3), 2.25);
+  const gableRows = RS.wallRows("gable", false);
+  assert.deepEqual(gableRows.map(function (r) { return r.id; }), ["sides", "gable0", "gable2", "floor", "roofL", "roofR"]);
+  assert.equal(gableRows[0].label, "Left + Right (mirrored)");
+  assert.equal(gableRows[0].shared, true);
+  assert.deepEqual(gableRows[0].letters, ["A", "C"]);
+  assert.equal(gableRows[1].label, "Gable end");
+  assert.deepEqual(gableRows[1].letters, ["D"]);
+  assert.equal(gableRows[2].label, "Gable end");
+  assert.deepEqual(gableRows[2].letters, ["B"]);
+  assert.equal(gableRows[4].label, "Left roof");
+  assert.deepEqual(gableRows[4].letters, ["F"]);
+  assert.equal(gableRows[5].label, "Right roof");
+  assert.deepEqual(gableRows[5].letters, ["F"]);
+  assert.match(editor, /RoomShape\.planGuidesPx/);
+  assert.match(editor, /RoomShape\.elevGuidesPx/);
   const z1 = (2 / 7) * 8;
   assert.deepEqual(RS.floorOutline("lede", 6, 8), [
     [1.5, 0], [4.5, 0], [6, z1], [6, 8], [0, 8], [0, z1]
@@ -158,4 +187,17 @@ test("splay drag stays inside the outline", () => {
   const insetY = Math.min(0.45 * 3, 8 * Math.tan((6 * Math.PI) / 180));
   const liveHigh = RS.clampInside(3, 3, 0, 6, 3, 8, "live");
   assert.ok(liveHigh.y < (3 - insetY) + 1e-3);
+  const gableKept = RS.clampInside(2.6, 1.2, 4.75, 6, 3, 8, "gable");
+  assert.equal(gableKept.x, 2.6);
+  assert.equal(gableKept.y, 1.2);
+  assert.equal(gableKept.z, 4.75);
+  const gableCorner = RS.clampInside(0, 1.2, 0, 6, 3, 8, "gable");
+  assert.ok(gableCorner.x < 0.01);
+  assert.ok(gableCorner.z < 0.01);
+  const gableEave = RS.clampInside(0, 2.9, 4, 6, 3, 8, "gable");
+  assert.ok(gableEave.y < 2.26);
+  assert.ok(gableEave.y > 2.2);
+  const gableRidge = RS.clampInside(3, 3, 4, 6, 3, 8, "gable");
+  assert.ok(gableRidge.y > 2.99);
+  assert.ok(gableRidge.y < 3);
 });

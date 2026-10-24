@@ -1,6 +1,6 @@
 /* Display geometry for the 3D room and the Space image rooms.
    Box parts are the shoebox meshes the views already drew.
-   Polygon parts are the prism in engine/poly_room.py (splay, lede, live).
+   Polygon parts are the prism in engine/poly_room.py (splay, lede, live, gable).
    Browser: window.RoomDraw. Node: module.exports. Display only. */
 (function (root, factory) {
   var api = factory();
@@ -49,6 +49,7 @@
       key === "live" || key === "nonparallel" || key === "nonparallellive" ||
       key === "nonparallelliveroom"
     ) return "live";
+    if (key === "gable" || key === "gableroof") return "gable";
     return "box";
   }
 
@@ -260,10 +261,35 @@
     return heightAt("splay", z, H, L);
   }
 
+  /* Same faces as poly_room._gable_faces. Two roofs, two pentagon ends. */
+  function gableFaces(W, H, L) {
+    var eave = 0.75 * H;
+    var ridge = 0.5 * W;
+    var faces = [
+      new Face("floor", [[0, 0, 0], [W, 0, 0], [W, 0, L], [0, 0, L]], "E"),
+      new Face("wall1", [[W, 0, 0], [W, 0, L], [W, eave, L], [W, eave, 0]], "C"),
+      new Face("wall3", [[0, 0, L], [0, 0, 0], [0, eave, 0], [0, eave, L]], "A"),
+      new Face("wall0", [
+        [0, 0, 0], [W, 0, 0], [W, eave, 0], [ridge, H, 0], [0, eave, 0]
+      ], "D"),
+      new Face("wall2", [
+        [0, 0, L], [W, 0, L], [W, eave, L], [ridge, H, L], [0, eave, L]
+      ], "B"),
+      new Face("ceiling", [
+        [0, eave, 0], [ridge, H, 0], [ridge, H, L], [0, eave, L]
+      ], "F"),
+      new Face("ceiling", [
+        [ridge, H, 0], [W, eave, 0], [W, eave, L], [ridge, H, L]
+      ], "F")
+    ];
+    return orient(faces);
+  }
+
   function polyFaces(shape, W, H, L) {
     W = Number(W);
     H = Number(H);
     L = Number(L);
+    if (normalize(shape) === "gable") return gableFaces(W, H, L);
     var pts = floorPts(shape, W, L);
     function h(z) { return heightAt(shape, z, H, L); }
     var floor = pts.map(function (p) { return [p[0], 0, p[1]]; });

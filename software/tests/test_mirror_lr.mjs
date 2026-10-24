@@ -184,3 +184,28 @@ test("lede and live hide the switch and keep the mirrored card", () => {
     assert.equal(state.surfaces.C.absorb[0], 0.42);
   });
 });
+
+test("gable hides the switch and lists both roofs and both gable ends", () => {
+  const { cs, state, nodes } = boot();
+  state.room_shape = "gable";
+  state.mirror_lr = false;
+  state.surfaces.A.absorb[0] = 0.42;
+  state.surfaces.C.absorb[0] = 0.07;
+  cs.syncWallList();
+  assert.equal(nodes.mirrorLrRow.hidden, true);
+  assert.equal(nodes.mirrorLr.disabled, true);
+  const linked = cards(nodes);
+  assert.deepEqual(linked.map((c) => c.letter), ["A", "D", "B", "E", "F", "F"]);
+  assert.equal(linked[0].pair, "C");
+  assert.match(linked[0].html, /Left \+ Right \(mirrored\)/);
+  assert.match(linked[0].html, /class="sc-link"/);
+  assert.equal(linked.filter((c) => c.html.includes("Gable end")).length, 2);
+  assert.match(linked[4].html, /Left roof/);
+  assert.match(linked[4].html, /#e2e8f0/);
+  assert.match(linked[5].html, /Right roof/);
+  assert.match(linked[5].html, /#e2e8f0/);
+  assert.match(linked[1].html, /#cbd5e1/);
+  assert.match(linked[2].html, /#2dd4bf/);
+  assert.equal(linked.some((c) => c.letter === "C"), false);
+  assert.equal(state.surfaces.C.absorb[0], 0.42);
+});
