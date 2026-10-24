@@ -3854,13 +3854,24 @@
     });
   }
 
+  function roomShapeRows() {
+    return [
+      document.getElementById("roomShapeRow"),
+      document.getElementById("spaceShapeRow")
+    ];
+  }
+
+  function applyRoomShape(picked) {
+    state.room_shape = (window.RoomShape && RoomShape.normalize) ? RoomShape.normalize(picked) : "box";
+    if (window.RoomMath && RoomMath.clampRoom) Object.assign(state, RoomMath.clampRoom(state));
+    syncUI();
+    scheduleLiveParams();
+    if (currentView === "space") scheduleImagesFetch(0);
+  }
+
   function paintRoomShape() {
     var name = (window.RoomShape && RoomShape.normalize) ? RoomShape.normalize(state.room_shape) : "box";
-    document.querySelectorAll("#roomShapeRow [data-room-shape]").forEach(function (btn) {
-      var on = btn.getAttribute("data-room-shape") === name;
-      btn.classList.toggle("active", on);
-      btn.setAttribute("aria-pressed", on ? "true" : "false");
-    });
+    if (window.RoomShape && RoomShape.paintShapeRows) RoomShape.paintShapeRows(roomShapeRows(), name);
     var hideSwitch = !!(window.RoomShape && RoomShape.showMirrorToggle && !RoomShape.showMirrorToggle(name));
     var mirrorRow = document.getElementById("mirrorLrRow");
     var mirrorBox = document.getElementById("mirrorLr");
@@ -3886,15 +3897,9 @@
     });
   }
 
-  document.querySelectorAll("#roomShapeRow [data-room-shape]").forEach(function (btn) {
-    btn.addEventListener("click", function () {
-      var picked = btn.getAttribute("data-room-shape");
-      state.room_shape = (window.RoomShape && RoomShape.normalize) ? RoomShape.normalize(picked) : "box";
-      if (window.RoomMath && RoomMath.clampRoom) Object.assign(state, RoomMath.clampRoom(state));
-      syncUI();
-      scheduleLiveParams();
-    });
-  });
+  if (window.RoomShape && RoomShape.bindShapeRows) {
+    RoomShape.bindShapeRows(roomShapeRows(), applyRoomShape);
+  }
 
   function paintMicSetupLink() {
     var link = document.getElementById("roomMicSetupLink");

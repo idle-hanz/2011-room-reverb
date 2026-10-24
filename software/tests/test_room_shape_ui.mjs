@@ -56,8 +56,11 @@ test("the picker posts room_shape", () => {
   assert.equal(liveRequestBodyFrom({ room_shape: "live" }).room_shape, "live");
   assert.equal(liveRequestBodyFrom({ room_shape: "gable" }).room_shape, "gable");
   assert.equal(liveRequestBodyFrom({ room_shape: "hex" }).room_shape, "hex");
-  assert.match(page, /room_shape\.js\?v=6/);
-  assert.match(page, /app\.js\?v=82/);
+  assert.match(page, /room_shape\.js\?v=7/);
+  assert.match(page, /app\.js\?v=83/);
+  assert.match(app, /function applyRoomShape/);
+  assert.match(app, /RoomShape\.bindShapeRows\(roomShapeRows\(\), applyRoomShape\)/);
+  assert.match(app, /RoomShape\.paintShapeRows\(roomShapeRows\(\), name\)/);
 });
 
 test("box draws the same outline as now", () => {
@@ -188,6 +191,95 @@ test("box draws the same outline as now", () => {
   assert.match(surfaces, /_shareSides/);
   assert.match(surfaces, /Left and right share one material/);
   assert.match(surfaces, /RoomShape\.sidesLinked/);
+});
+
+function shapeChip(shape, on) {
+  const classes = new Set(on ? ["chip", "active"] : ["chip"]);
+  return {
+    attrs: { "data-room-shape": shape, "aria-pressed": on ? "true" : "false" },
+    classList: {
+      toggle(name, force) {
+        if (force) classes.add(name);
+        else classes.delete(name);
+      },
+      contains(name) { return classes.has(name); }
+    },
+    getAttribute(key) { return this.attrs[key]; },
+    setAttribute(key, value) { this.attrs[key] = String(value); },
+    addEventListener(type, fn) {
+      if (type === "click") this.onclick = fn;
+    },
+    click() { this.onclick(); }
+  };
+}
+
+function shapeRow(pressed) {
+  const names = ["box", "splay", "lede", "live", "gable", "hex"];
+  const buttons = names.map(function (name) { return shapeChip(name, name === pressed); });
+  return {
+    querySelectorAll(sel) {
+      if (sel !== "[data-room-shape]") throw new Error(sel);
+      return buttons;
+    },
+    buttons: buttons
+  };
+}
+
+function pressedName(row) {
+  const on = row.buttons.filter(function (btn) {
+    return btn.getAttribute("aria-pressed") === "true" && btn.classList.contains("active");
+  });
+  assert.equal(on.length, 1);
+  return on[0].getAttribute("data-room-shape");
+}
+
+test("the space picker shares room_shape with the room picker", () => {
+  const views = page.indexOf('id="imageViews"');
+  const spaceStart = page.indexOf('id="spaceShapeRow"');
+  assert.ok(views > 0 && spaceStart > views);
+  const row = page.slice(spaceStart, spaceStart + 1100);
+  assert.match(row, /aria-label="Room shape"/);
+  assert.match(row, /class="chip active" data-room-shape="box" aria-pressed="true"/);
+  ["splay", "lede", "live", "gable", "hex"].forEach(function (name) {
+    assert.match(row, new RegExp('data-room-shape="' + name + '"'));
+  });
+  assert.match(row, />Box</);
+  assert.match(row, />Splay</);
+  assert.match(row, />LEDE</);
+  assert.match(row, />Live room</);
+  assert.match(row, />Gable</);
+  assert.match(row, />Hex</);
+  const applyStart = app.indexOf("function applyRoomShape");
+  const applyEnd = app.indexOf("function paintRoomShape", applyStart);
+  assert.ok(applyStart > 0 && applyEnd > applyStart);
+  const apply = app.slice(applyStart, applyEnd);
+  assert.match(apply, /RoomMath\.clampRoom/);
+  assert.match(apply, /syncUI\(\)/);
+  assert.match(apply, /scheduleLiveParams\(\)/);
+  assert.match(apply, /scheduleImagesFetch\(0\)/);
+  assert.match(app, /getElementById\("roomShapeRow"\)/);
+  assert.match(app, /getElementById\("spaceShapeRow"\)/);
+  assert.equal(app.split("bindShapeRows(").length - 1, 1);
+
+  const room = shapeRow("box");
+  const space = shapeRow("box");
+  let shape = "box";
+  RS.bindShapeRows([room, space], function (picked) {
+    shape = RS.normalize(picked);
+    RS.paintShapeRows([room, space], shape);
+  });
+  space.buttons[5].click();
+  assert.equal(shape, "hex");
+  assert.equal(pressedName(room), "hex");
+  assert.equal(pressedName(space), "hex");
+  room.buttons[1].click();
+  assert.equal(shape, "splay");
+  assert.equal(pressedName(room), "splay");
+  assert.equal(pressedName(space), "splay");
+  space.buttons[0].click();
+  assert.equal(shape, "box");
+  assert.equal(pressedName(room), "box");
+  assert.equal(pressedName(space), "box");
 });
 
 test("splay drag stays inside the outline", () => {

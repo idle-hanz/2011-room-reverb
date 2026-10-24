@@ -440,6 +440,15 @@
             <button type="button" class="chip space-mode-chip" data-space-mode="paths" aria-pressed="false">Paths</button>
             <button type="button" class="chip space-mode-chip" data-space-mode="legs" aria-pressed="false">Last legs</button>
           </div>
+          <div class="tool-row room-shape-row" id="spaceShapeRow" role="group" aria-label="Room shape">
+            <span class="mic-label">Shape</span>
+            <button type="button" class="chip active" data-room-shape="box" aria-pressed="true">Box</button>
+            <button type="button" class="chip" data-room-shape="splay" aria-pressed="false">Splay</button>
+            <button type="button" class="chip" data-room-shape="lede" aria-pressed="false">LEDE</button>
+            <button type="button" class="chip" data-room-shape="live" aria-pressed="false">Live room</button>
+            <button type="button" class="chip" data-room-shape="gable" aria-pressed="false">Gable</button>
+            <button type="button" class="chip" data-room-shape="hex" aria-pressed="false">Hex</button>
+          </div>
           <div class="tool-row">
             <span class="live-metres" id="liveMetresImg">—</span>
           </div>
@@ -647,7 +656,7 @@
             <button type="button" class="chip" data-place="hall">Hall</button>
           </div>
           <p class="hint" id="placeHint">A place chip resets size, the starting source and mic, and Mix, Surfaces and colour. Hall is the 2011 dump.</p>
-          <div class="place-row" id="roomShapeRow" role="group" aria-label="Room shape">
+          <div class="place-row room-shape-row" id="roomShapeRow" role="group" aria-label="Room shape">
             <button type="button" class="chip active" data-room-shape="box" aria-pressed="true">Box</button>
             <button type="button" class="chip" data-room-shape="splay" aria-pressed="false">Splay</button>
             <button type="button" class="chip" data-room-shape="lede" aria-pressed="false">LEDE</button>
@@ -1068,7 +1077,7 @@
     <div id="toast" class="toast" hidden role="status"></div>
   </div>
   <script src="/static/js/vendor/three.min.js"></script>
-  <script src="/static/js/room_shape.js?v=6"></script>
+  <script src="/static/js/room_shape.js?v=7"></script>
   <script src="/static/js/room_math.js?v=19"></script>
   <script src="/static/js/spectrum_colors.js?v=1"></script>
   <script src="/static/js/freq_palette.js?v=2"></script>
@@ -1088,7 +1097,7 @@
   <script src="/static/js/drag_model.js?v=2"></script>
   <script src="/static/js/room_window_math.js?v=1"></script>
   <script src="/static/js/routing_scene.js?v=3"></script>
-  <script src="/static/js/app.js?v=82"></script>
+  <script src="/static/js/app.js?v=83"></script>
   <script>window.RR_SL_STAGE = 5;</script>
   <script src="/static/js/sl_room_result.js?v=5"></script>
   <script src="/static/js/rr_controls.js?v=1"></script>

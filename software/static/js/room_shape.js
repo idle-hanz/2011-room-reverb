@@ -388,6 +388,42 @@
     return rows;
   }
 
+  function liveRows(rows) {
+    var out = [];
+    var i;
+    for (i = 0; i < rows.length; i++) if (rows[i]) out.push(rows[i]);
+    return out;
+  }
+
+  function paintShapeRows(rows, shape) {
+    var name = normalize(shape);
+    var list = liveRows(rows);
+    var r, buttons, b, on;
+    for (r = 0; r < list.length; r++) {
+      buttons = list[r].querySelectorAll("[data-room-shape]");
+      for (b = 0; b < buttons.length; b++) {
+        on = buttons[b].getAttribute("data-room-shape") === name;
+        if (buttons[b].classList) buttons[b].classList.toggle("active", on);
+        buttons[b].setAttribute("aria-pressed", on ? "true" : "false");
+      }
+    }
+  }
+
+  function bindShapeRows(rows, onPick) {
+    var list = liveRows(rows);
+    var r, buttons, b;
+    for (r = 0; r < list.length; r++) {
+      buttons = list[r].querySelectorAll("[data-room-shape]");
+      for (b = 0; b < buttons.length; b++) {
+        (function (btn) {
+          btn.addEventListener("click", function () {
+            onPick(btn.getAttribute("data-room-shape"));
+          });
+        })(buttons[b]);
+      }
+    }
+  }
+
   return {
     normalize: normalize,
     floorOutline: floorOutline,
@@ -405,6 +441,8 @@
     lrSymmetric: lrSymmetric,
     showMirrorToggle: showMirrorToggle,
     sidesLinked: sidesLinked,
-    wallRows: wallRows
+    wallRows: wallRows,
+    paintShapeRows: paintShapeRows,
+    bindShapeRows: bindShapeRows
   };
 });
