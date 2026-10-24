@@ -10,6 +10,9 @@ import json
 import sys
 from pathlib import Path
 
+import numpy as np
+import pytest
+
 ROOT = Path(__file__).resolve().parents[2]
 SW = ROOT / "software"
 sys.path[:0] = [str(SW), str(SW / "engine")]
@@ -27,10 +30,16 @@ from poly_room import (  # noqa: E402
     normalize_shape,
     poly_on,
 )
-from render_pipeline import live_fdn_params  # noqa: E402
+from render_pipeline import live_fdn_params, render  # noqa: E402
 
 EMPTY = "b20cf5dc675f613992aa6a31c2cd74f4"
 CENTRE = "ba1bbc6d386ed75bf484156f08043f37"
+# First 0.25 s of the default scene, splay walls, posted ir_length_ms 250.
+# Decay lock stays on, so the file is 2790 ms. Scored 27.9 s on 2026-10-24.
+SPLAY_IR_MD5 = "35a944517e970cb5fe6a5d66f2818762"
+SPLAY_IR_MAX = 0.5661171703434549
+_IR_SR = 48000
+_IR_N = 12000
 ROOM = (6.0, 3.0, 8.0)
 SRC = (2.2, 1.3, 3.4)
 MIC = (3.2, 1.4, 4.2)
@@ -183,3 +192,41 @@ def test_presets_scale_with_the_box():
     rear_y = [float(v[1]) for v in ceil.v if abs(float(v[2]) - 8.0) < 1e-6]
     assert front_y and rear_y
     assert max(front_y) < min(rear_y)
+
+
+def _render_impulse(body):
+    """One-sample dry through render(), same kwargs the app posts."""
+    p = A.params_from_body(body)
+    dry = np.zeros(1, dtype=np.float64)
+    dry[0] = 1.0
+    sig = inspect.signature(render).parameters
+    kw = {n: p[n] for n in sig if n not in ("dry", "sr") and n in p}
+    kw["desk"] = p
+    yl, yr, info = render(dry, _IR_SR, **kw)
+    ir = np.ascontiguousarray(
+        np.stack([np.asarray(yl, np.float64), np.asarray(yr, np.float64)], 1)
+    )
+    return ir, info
+
+
+@pytest.mark.slow
+def test_splay_render_impulse_stays_put():
+    """Default scene, splay walls, posted length 250 ms.
+
+    The decay lock stays on, so the FDN cut is 2790 ms. The pin is the first
+    0.25 s (12000 samples). Play still ignores room_shape.
+    """
+    assert _md5(live_fdn_params(A.params_from_body({}))) == EMPTY
+    assert _md5(live_fdn_params(A.params_from_body({
+        "third_mic": "centre", "mic_gain_c": 1.0,
+    }))) == CENTRE
+    posted = {"room_shape": "splay", "ir_length_ms": 250}
+    played = live_fdn_params(A.params_from_body(posted))
+    assert "room_shape" not in played
+    assert _md5(played) == EMPTY
+    ir, info = _render_impulse(posted)
+    assert info["fdn_ms"] == 2790.0
+    head = np.ascontiguousarray(ir[:_IR_N])
+    assert head.shape == (_IR_N, 2)
+    assert hashlib.md5(head.tobytes()).hexdigest() == SPLAY_IR_MD5
+    assert float(np.max(np.abs(head))) == SPLAY_IR_MAX
