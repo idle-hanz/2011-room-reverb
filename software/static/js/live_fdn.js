@@ -404,6 +404,7 @@
       predelay_n: (Number(params.predelay_n) > 0) ? Number(params.predelay_n) : 0,
       pre_colour: (params.pre_colour && params.pre_colour.length >= 16) ? params.pre_colour : null,
       side: (params.side && params.side.length >= 217) ? params.side : null,
+      offaxis_tail: (params.offaxis_tail && params.offaxis_tail.length === 45) ? params.offaxis_tail : null,
       peaking: params.peaking,
       two_sources: !!params.two_sources && !monoFile,
       gain_a: params.gain_a,

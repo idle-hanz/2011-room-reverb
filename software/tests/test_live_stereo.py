@@ -613,7 +613,7 @@ def test_source_has_no_cap_and_keeps_32():
     assert "createConvolver" not in live
     assert "WORKLET_VER = 63" in live
     assert "LANES = 4" in text
-    assert "live_fdn.js?v=63" in page
+    assert "live_fdn.js?v=64" in page
     assert "MAX_SOS" in text
     assert "design_sos" in text
     assert "LS_DC" in text

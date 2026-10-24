@@ -1,8 +1,8 @@
 """B2 / D-AUD-2. Render length follows Decay, then a 50 ms raised-cosine fade.
 
 The four-decay test is slow: Decay 8 s is a few minutes. Gate 5 (the render
-golden) is written to b2_gates.json and is not a failure. Section 4 regenerates
-goldens once, after every Part B item.
+golden) is written under the test temp dir and is not a failure. Section 4
+regenerates goldens once, after every Part B item.
 """
 from __future__ import annotations
 
@@ -18,7 +18,6 @@ ROOT = Path(__file__).resolve().parents[2]
 SW = ROOT / "software"
 LIB = ROOT / "handoff_build_support_2" / "3_phase_acceptance_tests" / "harness" / "lib"
 PRE = ROOT / "handoff_build_support_2" / "research_ui_wishlist" / "s_audit" / "b2_pre_item"
-REPORT = ROOT / "handoff_build_support_2" / "research_ui_wishlist" / "s_audit" / "b2_gates.json"
 GOLDEN = ROOT / "handoff_build_support_2" / "3_phase_acceptance_tests" / "harness" / "golden" / "render_std_unlocked_byp.f32"
 PY = sys.executable
 SR = 48000
@@ -53,7 +52,7 @@ def test_b2_formula_fade_and_label():
     assert 'id="ir_length_ms" min="50" max="2000" step="10" value="1500"' in html
     app = (SW / "static" / "js" / "app.js").read_text(encoding="utf-8")
     assert "Rendering… FDN " in app
-    assert 'app.js?v=73' in html
+    assert 'app.js?v=74' in html
 
 
 def _t30(x: np.ndarray) -> float:
@@ -211,4 +210,4 @@ def test_b2_t30_tail_and_prefix(tmp_path):
         "n_golden": int(len(ref)),
         "same_length": bool(len(got) == len(ref)),
     }
-    REPORT.write_text(json.dumps(report, indent=2), encoding="utf-8")
+    (tmp_path / "b2_gates.json").write_text(json.dumps(report, indent=2), encoding="utf-8")

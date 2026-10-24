@@ -217,4 +217,4 @@ The page has no Bloom panel, so browser Play stays bloom-off until something pos
 - 2026-10-23 Idle: routing preamps and compressors are shelved. Preamps distort badly and the compressors don't sound nice. Leave the code as is, default off, and no runs touch it until Idle asks.
 - 2026-10-23 BACKLOG B: floor wall, corner, and ceiling drag call the existing `drag_model.js` functions. Save/load was already landed. Mic-tab B10/B11 (T9b) was not this run. `room_editor.js?v=20`.
 - 2026-10-24: no-impulse S1P2 designer and `render()` disagree on the R bus for the same auto-treat scene (9.95 with 1 guard, against 10.22 with 0). Not chased.
-- 2026-10-24: `live_fdn.js` `pushParams` does not copy `offaxis_tail`, so a Play message omits section 14. The wasm applies the 45 floats when they are on the message. Not fixed.
+- 2026-10-24: `live_fdn.js` `pushParams` does not copy `offaxis_tail`, so a Play message omits section 14. The wasm applies the 45 floats when they are on the message. Fixed 2026-10-24: `pushParams` copies the 45 floats. The tail test posts that message.

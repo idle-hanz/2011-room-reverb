@@ -147,6 +147,78 @@ def _wasm(params, override, dest):
     return _left(dest)
 
 
+# Posts the dumped live dict through live_fdn.js pushParams, then runs that
+# message on the shipped worklet. A short or missing offaxis_tail stays off
+# the message, the same guard pack_room.js uses for section 14.
+_PUSH_JS = r"""
+const fs = require('fs'), path = require('path'), vm = require('vm');
+const [SW, PJ, OUT, SECS] = process.argv.slice(2);
+const SR = 48000, BLK = 128;
+const reg = {};
+const errors = [];
+class AWP { constructor() { this.port = { postMessage: (m) => { if (m) errors.push(m); }, onmessage: null }; } }
+const packJs = fs.readFileSync(path.join(SW, 'static/js/pack_room.js'), 'utf8');
+const workJs = fs.readFileSync(path.join(SW, 'static/js/fdn_worklet.js'), 'utf8');
+new Function('AudioWorkletProcessor', 'registerProcessor', 'sampleRate', packJs + '\n' + workJs)(AWP, (n, c) => { reg[n] = c; }, SR);
+let live = fs.readFileSync(path.join(SW, 'static/js/live_fdn.js'), 'utf8');
+const needle = 'var node = null;';
+if (!live.includes(needle)) throw new Error('pushParams node binding moved');
+live = live.replace(needle, 'var node = { port: { postMessage: function (m) { global.__posted = m; } } };');
+const sandbox = {
+  console, setTimeout, clearTimeout, Float32Array, Float64Array, Int32Array,
+  Uint8Array, ArrayBuffer, WebAssembly, Date, Math, Number, String, Object, Array,
+  isFinite, isNaN, performance: { now: () => Date.now() },
+  document: { getElementById: () => null }
+};
+sandbox.window = sandbox;
+vm.createContext(sandbox);
+vm.runInContext(packJs + '\n' + live, sandbox);
+const params = JSON.parse(fs.readFileSync(PJ, 'utf8'));
+sandbox.LiveFDN.update(params);
+const msg = sandbox.__posted;
+if (!msg || !msg.blob) throw new Error('pushParams posted no room blob');
+const want = params.offaxis_tail;
+const got = msg.offaxis_tail;
+if (want && want.length === 45) {
+  if (!got || got.length !== 45) throw new Error('pushParams dropped offaxis_tail');
+} else if (got && got.length) {
+  throw new Error('pushParams added offaxis_tail');
+}
+const wasmBytes = fs.readFileSync(path.join(SW, 'static/wasm/live_stereo.wasm'));
+const pr = new reg['room-fdn']({ processorOptions: { wasm: wasmBytes } });
+(async () => {
+  for (let i = 0; i < 100 && !pr.ready; i++) await new Promise(r => setTimeout(r, 20));
+  if (!pr.ready) throw new Error('wasm not ready ' + JSON.stringify(errors));
+  pr.port.onmessage({ data: msg });
+  if (errors.length) throw new Error('worklet ' + JSON.stringify(errors));
+  const total = Math.round(+SECS * SR);
+  const inp = [[new Float32Array(BLK), new Float32Array(BLK)]];
+  const out = [[new Float32Array(BLK), new Float32Array(BLK)]];
+  const buf = new Float32Array(Math.ceil(total / BLK) * BLK * 2);
+  let o = 0;
+  for (let t0 = 0; t0 < total; t0 += BLK) {
+    for (let i = 0; i < BLK; i++) {
+      const v = (t0 + i) === 0 ? 1 : 0;
+      inp[0][0][i] = v; inp[0][1][i] = v;
+    }
+    pr.process(inp, out);
+    for (let i = 0; i < BLK; i++) { buf[o++] = out[0][0][i]; buf[o++] = out[0][1][i]; }
+  }
+  fs.writeFileSync(OUT, Buffer.from(buf.buffer));
+})().catch(e => { console.error(e); process.exit(1); });
+"""
+
+
+def _push_ir(params, dest):
+    """One Play IR. The worklet hears the message pushParams posted."""
+    node = shutil.which("node")
+    assert node, "node is required"
+    script = dest.with_name("push_ir.js")
+    script.write_text(_PUSH_JS, encoding="utf-8")
+    _run([node, str(script), str(SW), str(params), str(dest), str(_SECS)])
+    return _left(dest)
+
+
 def _scene(sx, sz, **kw):
     body = {
         "third_mic": "centre",
@@ -171,8 +243,8 @@ def test_offaxis_high_band_matches_the_reference(tmp_path):
 
     The direct high band drops by the packed 90 degree colour SOS. The FDN
     high band, section 14 against the key absent, drops by that bus SOS.
-    pushParams does not copy offaxis_tail, so the tail run puts the dumped
-    45 floats on the worklet message. Default scene stays the empty live MD5.
+    Both FDN runs post through pushParams. The on key carries the dumped
+    45 floats. Default scene stays the empty live MD5.
     """
     empty = live_fdn_params(A.params_from_body({}))
     assert _md5(empty) == EMPTY_MD5
@@ -209,8 +281,8 @@ def test_offaxis_high_band_matches_the_reference(tmp_path):
     coeffs = tail_live["offaxis_tail"]
     assert len(coeffs) == 45
     assert 14 in _section_ids(pack_blob_v2(tail_live))
-    bare = _wasm(bare_json, {"colour_on": False}, bare_f)
-    heard = _wasm(tail_json, {"colour_on": False, "offaxis_tail": coeffs}, tail_f)
+    bare = _push_ir(bare_json, bare_f)
+    heard = _push_ir(tail_json, tail_f)
     bus = np.asarray(coeffs[15:30], dtype=np.float64).reshape(3, 5)
     tail_ref = T.apply_sos_df1(bare, bus)
     tail_wasm = _band_db(heard) - _band_db(bare)
