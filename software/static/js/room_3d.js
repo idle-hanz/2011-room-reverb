@@ -100,6 +100,7 @@
     var labelSprites = [];
 
     var lastWHL = { W: -1, H: -1, L: -1 };
+    var lastShell = "";
     function worldZ(z, L) {
       if (focusMic) return z;
       return (L != null ? L : lastWHL.L) - z;
@@ -153,7 +154,31 @@
       ctx.closePath();
     }
 
-    function rebuildRoom(W, H, L) {
+    function mapRoom(p, L) {
+      return [p[0], p[1], worldZ(p[2], L)];
+    }
+
+    function polyMesh(ring, material) {
+      var positions = [];
+      var i;
+      for (i = 1; i < ring.length - 1; i++) {
+        positions.push(ring[0][0], ring[0][1], ring[0][2]);
+        positions.push(ring[i][0], ring[i][1], ring[i][2]);
+        positions.push(ring[i + 1][0], ring[i + 1][1], ring[i + 1][2]);
+      }
+      var geo = new THREE.BufferGeometry();
+      geo.setAttribute("position", new THREE.Float32BufferAttribute(positions, 3));
+      geo.computeVertexNormals();
+      return new THREE.Mesh(geo, material);
+    }
+
+    function loopLine(ring, material) {
+      var pts = ring.map(function (p) { return new THREE.Vector3(p[0], p[1], p[2]); });
+      pts.push(pts[0].clone());
+      return new THREE.Line(new THREE.BufferGeometry().setFromPoints(pts), material);
+    }
+
+    function rebuildRoom(W, H, L, shape, surfaces) {
       while (roomGroup.children.length) {
         var ch = roomGroup.children[0];
         roomGroup.remove(ch);
@@ -166,17 +191,83 @@
           });
         }
       }
+      shape = global.RoomDraw ? RoomDraw.normalize(shape) : "box";
 
+      function wallLabel(text, color, x, y, z) {
+        var spr = makeLabel(text, color, true);
+        spr.position.set(x, y, z);
+        spr.scale.set(1.2, 0.44, 1);
+        roomGroup.add(spr);
+      }
+
+      if (shape === "splay" && global.RoomDraw) {
+        var faces = RoomDraw.splayFaces(W, H, L);
+        var edgeMatS = new THREE.LineBasicMaterial({
+          color: 0x5a6478,
+          transparent: true,
+          opacity: 0.7
+        });
+        var labelName = { A: ["Left", "#38bdf8"], B: ["Front", "#2dd4bf"], C: ["Right", "#a78bfa"], D: ["Back", "#fb7185"] };
+        faces.forEach(function (face) {
+          var ring = face.v.map(function (p) { return mapRoom(p, L); });
+          var col = RoomDraw.wallColor(surfaces, face.letter);
+          var floorFace = face.letter === "E";
+          var mat = new THREE.MeshStandardMaterial({
+            color: col,
+            roughness: floorFace ? 0.92 : 0.88,
+            metalness: 0.05,
+            transparent: !floorFace,
+            opacity: floorFace ? 1 : (face.letter === "F" ? 0.28 : 0.55),
+            side: THREE.DoubleSide,
+            depthWrite: floorFace
+          });
+          var mesh = polyMesh(ring, mat);
+          mesh.receiveShadow = true;
+          if (floorFace) mesh.name = "floor";
+          roomGroup.add(mesh);
+          roomGroup.add(loopLine(ring, edgeMatS));
+          var named = labelName[face.letter];
+          if (!named) return;
+          var c = [0, 0, 0];
+          face.v.forEach(function (p) {
+            c[0] += p[0];
+            c[1] += p[1];
+            c[2] += p[2];
+          });
+          var n = face.v.length || 1;
+          var outP = [
+            c[0] / n - face.n[0] * 0.2,
+            c[1] / n - face.n[1] * 0.2,
+            c[2] / n - face.n[2] * 0.2
+          ];
+          var tp = mapRoom(outP, L);
+          wallLabel(named[0], named[1], tp[0], tp[1], tp[2]);
+        });
+        var floorFace0 = faces[0];
+        var fc = [0, 0, 0];
+        floorFace0.v.forEach(function (p) {
+          fc[0] += p[0];
+          fc[1] += p[1];
+          fc[2] += p[2];
+        });
+        var fn = floorFace0.v.length || 1;
+        var f3 = mapRoom([fc[0] / fn, 0, fc[2] / fn], L);
+        var aoGeoS = new THREE.CircleGeometry(Math.min(W, L) * 0.4, 48);
+        aoGeoS.rotateX(-Math.PI / 2);
+        var aoS = new THREE.Mesh(aoGeoS, new THREE.MeshBasicMaterial({
+          color: 0x000000, transparent: true, opacity: 0.22, depthWrite: false
+        }));
+        aoS.position.set(f3[0], 0.003, f3[2]);
+        roomGroup.add(aoS);
+      } else if (global.RoomDraw) {
+      var built = RoomDraw.room3dBoxGeometries(THREE, W, H, L, function (z) { return worldZ(z, L); });
       // Floor with soft AO-ish dark edge via vertex colors feel: dark plane + grid
-      var floorGeo = new THREE.PlaneGeometry(W, L);
-      floorGeo.rotateX(-Math.PI / 2);
       var floorMat = new THREE.MeshStandardMaterial({
         color: COLORS.floor,
         roughness: 0.92,
         metalness: 0.05,
       });
-      var floor = new THREE.Mesh(floorGeo, floorMat);
-      floor.position.set(W * 0.5, 0, L * 0.5);
+      var floor = RoomDraw.placePart(THREE, built.floor, floorMat);
       floor.receiveShadow = true;
       floor.name = "floor";
       roomGroup.add(floor);
@@ -205,25 +296,11 @@
         opacity: 0.55,
       });
 
-      function wall(w, h, d, x, y, z) {
-        var m = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), wallMat.clone());
-        m.position.set(x, y, z);
+      ["front", "back", "left", "right"].forEach(function (name) {
+        var m = RoomDraw.placePart(THREE, built[name], wallMat.clone());
         m.receiveShadow = true;
         roomGroup.add(m);
-      }
-      var t = 0.04;
-      // Front / Back at worldZ so the room view matches the floor plan.
-      wall(W, H, t, W * 0.5, H * 0.5, worldZ(L, L));
-      wall(W, H, t, W * 0.5, H * 0.5, worldZ(0, L));
-      wall(t, H, L, 0, H * 0.5, L * 0.5);
-      wall(t, H, L, W, H * 0.5, L * 0.5);
-
-      function wallLabel(text, color, x, y, z) {
-        var spr = makeLabel(text, color, true);
-        spr.position.set(x, y, z);
-        spr.scale.set(1.2, 0.44, 1);
-        roomGroup.add(spr);
-      }
+      });
       var ly = H * 0.5;
       var out = 0.15;
       wallLabel("Front", "#2dd4bf", W * 0.5, ly, worldZ(L, L) - out);
@@ -232,26 +309,17 @@
       wallLabel("Right", "#a78bfa", W + out, ly, L * 0.5);
 
       // Ceiling (very subtle)
-      var ceil = new THREE.Mesh(
-        new THREE.PlaneGeometry(W, L),
-        new THREE.MeshStandardMaterial({
-          color: 0x161820,
-          transparent: true,
-          opacity: 0.18,
-          side: THREE.DoubleSide,
-          depthWrite: false,
-        })
-      );
-      ceil.rotation.x = Math.PI / 2;
-      ceil.position.set(W * 0.5, H, L * 0.5);
+      var ceil = RoomDraw.placePart(THREE, built.ceil, new THREE.MeshStandardMaterial({
+        color: 0x161820,
+        transparent: true,
+        opacity: 0.18,
+        side: THREE.DoubleSide,
+        depthWrite: false,
+      }));
       roomGroup.add(ceil);
 
       // Wireframe room edges
-      var box = new THREE.BoxGeometry(W, H, L);
-      var edges = new THREE.EdgesGeometry(box);
-      var line = new THREE.LineSegments(edges, edgeMat);
-      line.position.set(W * 0.5, H * 0.5, L * 0.5);
-      roomGroup.add(line);
+      roomGroup.add(RoomDraw.placePart(THREE, built.edges, edgeMat));
 
       // Soft floor shadow disk (fake AO)
       var aoGeo = new THREE.CircleGeometry(Math.min(W, L) * 0.55, 48);
@@ -265,6 +333,7 @@
       var ao = new THREE.Mesh(aoGeo, aoMat);
       ao.position.set(W * 0.5, 0.003, L * 0.5);
       roomGroup.add(ao);
+      }
 
       rim.position.set(W * 0.5, H * 0.75, L * 0.5);
       key.shadow.camera.left = -Math.max(W, L);
@@ -275,6 +344,8 @@
 
       var first = lastWHL.W < 0;
       lastWHL = { W: W, H: H, L: L };
+      lastShell = shape + "|" + W + "|" + H + "|" + L;
+      if (shape === "splay" && global.RoomDraw) lastShell += "|" + RoomDraw.colorKey(surfaces);
       var diag = Math.sqrt(W * W + H * H + L * L);
       var fogFar = Math.max(42, diag * 2.2);
       scene.fog.near = fogFar * 0.4;
@@ -944,8 +1015,11 @@
       if (disposed) return;
       var geo = RoomMath.compute(getState());
       var s = geo.state;
-      if (s.W !== lastWHL.W || s.H !== lastWHL.H || s.L !== lastWHL.L) {
-        rebuildRoom(s.W, s.H, s.L);
+      var shape = global.RoomDraw ? RoomDraw.normalize(s.room_shape) : "box";
+      var shell = shape + "|" + s.W + "|" + s.H + "|" + s.L;
+      if (shape === "splay" && global.RoomDraw) shell += "|" + RoomDraw.colorKey(s.surfaces);
+      if (shell !== lastShell) {
+        rebuildRoom(s.W, s.H, s.L, shape, s.surfaces);
         updateCamera();
       }
       updateActors(geo);

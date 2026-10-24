@@ -16,6 +16,7 @@
       return null;
     }
     var THREE = global.THREE;
+    var getState = opts.getState || function () { return global.RRState || null; };
 
     var renderer;
     try {
@@ -66,6 +67,21 @@
     var root = new THREE.Group(); scene.add(root);
     var mode = "lattice";
     var data = null;
+    var fadeRows = {};
+    var fadeMats = [];
+    var roomCache = {};
+    var drawnCount = null;
+    var wasFading = false;
+
+    function sceneState() {
+      return getState() || null;
+    }
+    function isSplay() {
+      return !!(global.RoomDraw && RoomDraw.normalize(sceneState() && sceneState().room_shape) === "splay");
+    }
+    function nowMs() {
+      return (global.performance && performance.now) ? performance.now() : Date.now();
+    }
     var needsRender = true;
     var disposed = false;
     var raf = 0;
@@ -93,12 +109,10 @@
     }
 
     function boxEdges(min, max, color, opacity) {
-      var sx = Math.max(max.x - min.x, 1e-4), sy = Math.max(max.y - min.y, 1e-4), sz = Math.max(max.z - min.z, 1e-4);
-      var geo = new THREE.BoxGeometry(sx, sy, sz);
-      var edges = new THREE.EdgesGeometry(geo); geo.dispose();
+      var built = RoomDraw.cellEdges(THREE, min, max);
       var mat = new THREE.LineBasicMaterial({ color: color, transparent: true, opacity: opacity == null ? 0.45 : opacity });
-      var line = new THREE.LineSegments(edges, mat);
-      line.position.set((min.x + max.x) * 0.5, (min.y + max.y) * 0.5, (min.z + max.z) * 0.5);
+      var line = new THREE.LineSegments(built.geo, mat);
+      line.position.set(built.pos[0], built.pos[1], built.pos[2]);
       return line;
     }
 
@@ -144,33 +158,21 @@
 
     /* Paths / last legs: a readable room. Front is z=0 in this view (worldZ of L). */
     function addRoomShell(room) {
+      if (isSplay()) { addSplayShell(room); return; }
       root.add(homeBox(room));
-      var floor = new THREE.Mesh(
-        new THREE.PlaneGeometry(room.W, room.L),
-        new THREE.MeshStandardMaterial({ color: 0x2a3142, roughness: 0.86, metalness: 0.04 })
-      );
-      floor.rotation.x = -Math.PI / 2;
-      floor.position.set(room.W * 0.5, 0.012, room.L * 0.5);
+      var built = RoomDraw.imageBoxGeometries(THREE, room.W, room.H, room.L);
+      built.home.geo.dispose();
+      var floor = RoomDraw.placePart(THREE, built.floor, new THREE.MeshStandardMaterial({
+        color: 0x2a3142, roughness: 0.86, metalness: 0.04
+      }));
       root.add(floor);
       var wallMat = new THREE.MeshBasicMaterial({
         color: 0x9aa3b8, transparent: true, opacity: 0.07,
         side: THREE.DoubleSide, depthWrite: false
       });
-      function wall(w, h, x, y, z, rotY) {
-        var mesh = new THREE.Mesh(new THREE.PlaneGeometry(w, h), wallMat);
-        mesh.position.set(x, y, z);
-        if (rotY) mesh.rotation.y = rotY;
-        root.add(mesh);
-      }
-      var hy = room.H * 0.5;
-      wall(room.W, room.H, room.W * 0.5, hy, 0, 0);
-      wall(room.W, room.H, room.W * 0.5, hy, room.L, 0);
-      wall(room.L, room.H, 0, hy, room.L * 0.5, Math.PI / 2);
-      wall(room.L, room.H, room.W, hy, room.L * 0.5, Math.PI / 2);
-      var ceil = new THREE.Mesh(new THREE.PlaneGeometry(room.W, room.L), wallMat);
-      ceil.rotation.x = Math.PI / 2;
-      ceil.position.set(room.W * 0.5, room.H, room.L * 0.5);
-      root.add(ceil);
+      ["z0", "zL", "x0", "xW", "ceil"].forEach(function (name) {
+        root.add(RoomDraw.placePart(THREE, built[name], wallMat));
+      });
       function tag(text, x, y, z) {
         var spr = makeLabel(text, "#c5cad6");
         spr.position.set(x, y, z);
@@ -219,6 +221,153 @@
       var b = makeLabel("Back", "#fb7185");
       b.position.set(room.W * 0.5, ly, worldZ(0, room.L));
       root.add(b);
+    }
+
+    function mapRing(ring, L) {
+      return ring.map(function (p) { return [p[0], p[1], worldZ(p[2], L)]; });
+    }
+
+    function ringLine(ring, color, opacity) {
+      var pts = ring.map(function (p) { return new THREE.Vector3(p[0], p[1], p[2]); });
+      pts.push(pts[0].clone());
+      var mat = new THREE.LineBasicMaterial({ color: color, transparent: true, opacity: opacity });
+      return { line: new THREE.Line(new THREE.BufferGeometry().setFromPoints(pts), mat), mat: mat };
+    }
+
+    function polyFill(ring, color, opacity) {
+      var positions = [];
+      var i;
+      for (i = 1; i < ring.length - 1; i++) {
+        positions.push(ring[0][0], ring[0][1], ring[0][2]);
+        positions.push(ring[i][0], ring[i][1], ring[i][2]);
+        positions.push(ring[i + 1][0], ring[i + 1][1], ring[i + 1][2]);
+      }
+      var geo = new THREE.BufferGeometry();
+      geo.setAttribute("position", new THREE.Float32BufferAttribute(positions, 3));
+      geo.computeVertexNormals();
+      var mat = new THREE.MeshStandardMaterial({
+        color: color, roughness: 0.9, metalness: 0.04,
+        transparent: opacity < 1, opacity: opacity, side: THREE.DoubleSide, depthWrite: opacity >= 1
+      });
+      return new THREE.Mesh(geo, mat);
+    }
+
+    function splayReceivers() {
+      var selected = (data && data.selected_mics) || ["C"];
+      var out = [];
+      selected.forEach(function (id) {
+        var m = data.mics && data.mics[id];
+        if (!m) return;
+        out.push({ id: id, p: [m.x, m.y, m.z] });
+      });
+      return { selected: selected, receivers: out };
+    }
+
+    function takeSplay() {
+      var room = data.room;
+      var ear = splayReceivers();
+      var cap = (data.c || 340) * 1;
+      var packs = [];
+      function one(prefix, source) {
+        var pack = RoomDraw.imageRooms("splay", room.W, room.H, room.L, source, ear.receivers, {
+          order: 4, maxDist: cap
+        });
+        (pack.rooms || []).forEach(function (r) {
+          roomCache[prefix + ":" + r.key] = r;
+        });
+        packs.push({ prefix: prefix, pack: pack });
+      }
+      one("a", [data.source.x, data.source.y, data.source.z]);
+      if (data.source_b) one("b", [data.source_b.x, data.source_b.y, data.source_b.z]);
+      var keys = [];
+      packs.forEach(function (p) {
+        p.pack.rooms.forEach(function (r) { keys.push(p.prefix + ":" + r.key); });
+      });
+      var now = nowMs();
+      fadeRows = RoomDraw.stepFade(fadeRows, keys, now);
+      Object.keys(roomCache).forEach(function (k) {
+        if (!fadeRows[k]) delete roomCache[k];
+      });
+      drawnCount = keys.length;
+      return { packs: packs, now: now, selected: ear.selected, surfaces: (sceneState() || {}).surfaces };
+    }
+
+    function trackFade(mat, key, base) {
+      fadeMats.push({ mat: mat, key: key, base: base });
+      var row = fadeRows[key];
+      mat.opacity = base * RoomDraw.gainOf(row, nowMs());
+    }
+
+    function addMirroredRooms(wireOnly) {
+      fadeMats = [];
+      var got = takeSplay();
+      var room = data.room;
+      Object.keys(fadeRows).forEach(function (key) {
+        var rec = roomCache[key];
+        if (!rec) return;
+        var force = key.charAt(0) === "b" ? SRC_B : null;
+        var col = force != null ? force : (rec.order % 2 === 0 ? (rec.key === "home" ? HOME : POL_POS) : POL_NEG);
+        if (rec.key === "home" && force == null) col = HOME;
+        var base = rec.key === "home" ? 0.95 : (force != null ? 0.22 : 0.32);
+        rec.rings.forEach(function (ring) {
+          var drawn = ringLine(mapRing(ring, room.L), col, base);
+          trackFade(drawn.mat, key, base);
+          root.add(drawn.line);
+        });
+        if (!wireOnly && rec.key === "home") {
+          var faces = got.packs[0].pack.faces;
+          faces.forEach(function (face, i) {
+            var opacity = face.letter === "E" ? 1 : (face.letter === "F" ? 0.22 : 0.45);
+            var mesh = polyFill(mapRing(rec.rings[i], room.L), RoomDraw.wallColor(got.surfaces, face.letter), opacity);
+            root.add(mesh);
+          });
+        }
+        if (rec.key !== "home") {
+          var p = mapPt({ x: rec.pos[0], y: rec.pos[1], z: rec.pos[2] }, room.L);
+          var mark = marker(col, 0.08);
+          mark.position.set(p.x, p.y, p.z);
+          root.add(mark);
+        }
+      });
+      return got;
+    }
+
+    function addSplayShell(room) {
+      var got = addMirroredRooms(false);
+      var faces = got.packs[0].pack.faces;
+      var names = { A: ["A Left", "#38bdf8"], B: ["B Front", "#2dd4bf"], C: ["C Right", "#a78bfa"], D: ["D Back", "#fb7185"], E: ["E Floor", "#78716c"], F: ["F Ceiling", "#e2e8f0"] };
+      faces.forEach(function (face) {
+        var named = names[face.letter];
+        if (!named) return;
+        var c = [0, 0, 0];
+        face.v.forEach(function (p) { c[0] += p[0]; c[1] += p[1]; c[2] += p[2]; });
+        var n = face.v.length || 1;
+        var tp = mapPt({ x: c[0] / n, y: c[1] / n, z: c[2] / n }, room.L);
+        var spr = makeLabel(named[0], named[1]);
+        spr.position.set(tp.x, tp.y, tp.z);
+        root.add(spr);
+      });
+    }
+
+    function addSplayPathLines(lastOnly) {
+      var room = data.room;
+      var selected = data.selected_mics || ["C"];
+      selected.forEach(function (micId) {
+        Object.keys(fadeRows).forEach(function (key) {
+          var rec = roomCache[key];
+          if (!rec || !rec.heard[micId]) return;
+          var path = rec.heard[micId];
+          var ends = lastOnly ? [path[path.length - 2], path[path.length - 1]] : path;
+          if (!ends[0] || !ends[1]) return;
+          var force = key.charAt(0) === "b" ? SRC_B : null;
+          var col = force != null ? force : (rec.key === "home" ? SRC : (rec.order % 2 === 0 ? POL_POS : POL_NEG));
+          var base = rec.key === "home" ? 0.95 : 0.45;
+          var drawn = linePts(ends.map(function (p) { return { x: p[0], y: p[1], z: p[2] }; }), col, base);
+          trackFade(drawn.material, key, base);
+          root.add(drawn);
+          rememberHit({ order: rec.order, is_direct: rec.key === "home", polarity: rec.order % 2 === 0 ? 1 : -1 }, ends, micId);
+        });
+      });
     }
 
 
@@ -339,6 +488,17 @@
       hideTip();
       if (!data) return;
       clearRoot();
+      if (isSplay()) {
+        addMirroredRooms(true);
+        addWallLabels(data.room);
+        addActors(data.source, data.mics, data.selected_mics || ["C"]);
+        fitIfNeeded(true);
+        return;
+      }
+      drawnCount = null;
+      fadeRows = {};
+      fadeMats = [];
+      roomCache = {};
       var room = data.room;
       root.add(homeBox(room));
       var grid = new THREE.GridHelper(Math.max(room.W, room.L), 8, 0x3a4155, 0x222833);
@@ -392,6 +552,14 @@
       if (!data) return;
       pathHits = [];
       clearRoot();
+      if (isSplay()) {
+        addSplayShell(data.room);
+        addSplayPathLines(false);
+        addActors(data.source, data.mics, data.selected_mics || ["C"]);
+        fitIfNeeded(false);
+        return;
+      }
+      drawnCount = null;
       var room = data.room;
       addRoomShell(room);
       var selected = data.selected_mics || ["C"];
@@ -417,6 +585,25 @@
       if (!data) return;
       pathHits = [];
       clearRoot();
+      if (isSplay()) {
+        addSplayShell(data.room);
+        addSplayPathLines(true);
+        var selected = data.selected_mics || ["C"];
+        selected.forEach(function (micId) {
+          var mic = data.mics[micId];
+          if (!mic) return;
+          var hemi = new THREE.Mesh(
+            new THREE.SphereGeometry(0.55, 24, 16, 0, Math.PI * 2, 0, Math.PI * 0.5),
+            new THREE.MeshBasicMaterial({ color: MIC_COLORS[micId], transparent: true, opacity: 0.08, side: THREE.DoubleSide, depthWrite: false })
+          );
+          hemi.position.set(mic.x, mic.y, worldZ(mic.z, data.room.L));
+          root.add(hemi);
+        });
+        addActors(data.source, data.mics, selected);
+        fitIfNeeded(false);
+        return;
+      }
+      drawnCount = null;
       var room = data.room;
       addRoomShell(room);
       var selected = data.selected_mics || ["C"];
@@ -553,9 +740,35 @@
     });
     canvas.addEventListener("contextmenu", function (e) { e.preventDefault(); });
 
+    function fadePending() {
+      var now = nowMs();
+      var keys = Object.keys(fadeRows);
+      var i;
+      for (i = 0; i < keys.length; i++) {
+        if (now - fadeRows[keys[i]].t0 < RoomDraw.FADE_MS) return true;
+      }
+      return false;
+    }
+
+    function paintFades() {
+      var now = nowMs();
+      fadeMats.forEach(function (row) {
+        row.mat.opacity = row.base * RoomDraw.gainOf(fadeRows[row.key], now);
+      });
+    }
+
     function frame() {
       if (disposed) return;
       raf = requestAnimationFrame(frame);
+      var fading = isSplay() && fadePending();
+      if (fading) {
+        paintFades();
+        needsRender = true;
+        wasFading = true;
+      } else if (wasFading) {
+        wasFading = false;
+        rebuild();
+      }
       if (!needsRender) return;
       needsRender = false;
       resize(); updateCamera();
@@ -585,6 +798,7 @@
         needsRender = true;
       },
       resetCamera: function () { forceFit(); },
+      drawnCount: function () { return drawnCount; },
       cameraState: function () {
         var lim = radiusLimits();
         return {

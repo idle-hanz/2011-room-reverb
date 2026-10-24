@@ -1416,7 +1416,10 @@
     var rect = canvas.getBoundingClientRect();
     if (rect.width < 2 || rect.height < 2) return null;
     try {
-      imageView = ImageViews.create({ canvas: canvas });
+      imageView = ImageViews.create({
+        canvas: canvas,
+        getState: function () { return state; }
+      });
       if (!imageView) {
         imageViewInitFailed = true;
         if (statusEl) statusEl.textContent = "Images: WebGL init failed (Three.js / GPU)";
@@ -1582,6 +1585,13 @@
     try {
       imageView.setMode(mode);
       imageView.setData(imagesCache);
+      var heard = imageView.drawnCount && imageView.drawnCount();
+      if (heard != null && liveMetresImg) {
+        liveMetresImg.textContent =
+          heard + " images · " + (imagesCache.hadamard_n || heard) + " FDN lines · mics " + mics +
+          " · c=" + (imagesCache.c || 340) + " m/s" +
+          (imagesCache.source_b ? " · two clouds" : "");
+      }
     } catch (err) {
       if (statusEl) {
         statusEl.textContent = "Images rebuild: " + String(err && err.message ? err.message : err);
