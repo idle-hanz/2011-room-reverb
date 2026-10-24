@@ -51,6 +51,8 @@ def normalize_shape(raw) -> str:
         return "live"
     if key in ("gable", "gableroof"):
         return "gable"
+    if key in ("hex", "hexagon"):
+        return "hex"
     return "box"
 
 
@@ -207,6 +209,20 @@ def faces_for(shape, W: float, H: float, L: float) -> List[Face]:
         return _prism([(inset_x, 0.0), (W - inset_x, 0.0), (W, L), (0.0, L)], h)
     if name == "gable":
         return _gable_faces(W, H, L)
+    if name == "hex":
+        # Front and back are flat, width W/2, centred on x = W/2.
+        # The other four walls meet the box sides at (0, L/2) and (W, L/2).
+        return _prism(
+            [
+                (W / 4.0, 0.0),
+                (3.0 * W / 4.0, 0.0),
+                (W, L / 2.0),
+                (3.0 * W / 4.0, L),
+                (W / 4.0, L),
+                (0.0, L / 2.0),
+            ],
+            lambda x, z: H,
+        )
     return box_faces(W, H, L)
 
 
@@ -274,7 +290,7 @@ def lr_symmetric(shape, W: float = 6.0, L: float = 8.0, H: float = 3.0) -> bool:
     """True when every floor and ceiling vertex mirrors across x = W/2.
 
     A gable has two ceiling planes. One ceiling polygon is the splay, lede,
-    and live case. Both use the same vertex test.
+    live, and hex case. Both use the same vertex test.
     """
     name = normalize_shape(shape)
     if name == "box":

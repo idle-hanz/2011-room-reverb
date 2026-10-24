@@ -99,6 +99,9 @@ def test_unknown_word_is_the_box():
     assert normalize_shape("gable") == "gable"
     assert normalize_shape("Gable roof") == "gable"
     assert poly_on("gable")
+    assert normalize_shape("hex") == "hex"
+    assert normalize_shape("Hexagon") == "hex"
+    assert poly_on("hex")
 
 
 def _mirror_axis(s: float, size: float, k: int) -> float:
@@ -162,7 +165,7 @@ def test_presets_fill_the_quota_and_freeze_the_stand():
     stand = _stand()
     src = (2.6, 1.2, 4.75)
     stand_pt = (stand.cx, stand.cy, stand.cz)
-    for name in ("splay", "lede", "live", "gable"):
+    for name in ("splay", "lede", "live", "gable", "hex"):
         taps = compute_poly_taps(ROOM, src, stand, name, n=32)
         assert len(taps) == 32
         counts = [sum(1 for t in taps if t.order == k) for k in range(5)]
@@ -257,13 +260,14 @@ def _play_bench(body, tmp_path, burst_s: float = 4.0, total_s: float = 10.0) -> 
     node = shutil.which("node")
     assert node, "node is required"
     lib = ROOT / "handoff_build_support_2" / "3_phase_acceptance_tests" / "harness" / "lib"
-    params = tmp_path / "gable_play.json"
-    out = tmp_path / "gable_bench.json"
+    label = str(body.get("room_shape") or "room")
+    params = tmp_path / "shape_play.json"
+    out = tmp_path / "shape_bench.json"
     played = live_fdn_params(A.params_from_body(body))
     n_lines = len(played["buses"]["l"]["delay_ms"])
     if n_lines != PLAY_TAP_BUDGET:
         raise AssertionError(
-            f"gable Play tap count {n_lines} is not {PLAY_TAP_BUDGET}"
+            f"{label} Play tap count {n_lines} is not {PLAY_TAP_BUDGET}"
         )
     params.write_text(json.dumps(played), encoding="utf-8")
     cmd = [
@@ -332,6 +336,81 @@ def test_gable_faces_are_inward_and_play_stays_under_2_40(tmp_path):
     bench = _play_bench({"room_shape": "gable"}, tmp_path)
     play_ms = float(bench["play_median_ms"])
     assert play_ms < 2.40, f"gable Play median {play_ms:.4f} ms is over 2.40"
+
+
+def test_hex_faces_are_inward_and_play_stays_under_2_40(tmp_path):
+    """Hexagon booth: flat front and back of width W/2, flat ceiling at H.
+
+    Vertices are (W/4, 0), (3W/4, 0), (W, L/2), (3W/4, L), (W/4, L), (0, L/2).
+    Faces are planar and inward. The shape mirrors across x = W/2.
+    Play keeps 32 taps and the listen-scene median stays under 2.40 ms.
+    Absent and box stay the shoebox live MD5.
+    """
+    W, H, L = 6.0, 3.0, 8.0
+    faces = faces_for("hex", W, H, L)
+    assert lr_symmetric("hex", W, L, H)
+    assert len(faces) == 8
+    floor = next(face for face in faces if face.name == "floor")
+    ceil = next(face for face in faces if face.name == "ceiling")
+    expect = [
+        (W / 4.0, 0.0),
+        (3.0 * W / 4.0, 0.0),
+        (W, L / 2.0),
+        (3.0 * W / 4.0, L),
+        (W / 4.0, L),
+        (0.0, L / 2.0),
+    ]
+    assert len(floor.v) == 6
+    got = [(float(v[0]), float(v[2])) for v in floor.v]
+    for pair in zip(got, expect):
+        assert pair[0][0] == pytest.approx(pair[1][0])
+        assert pair[0][1] == pytest.approx(pair[1][1])
+    assert all(abs(float(v[1])) < 1e-9 for v in floor.v)
+    front = [got[0], got[1]]
+    assert abs(front[0][1]) < 1e-9 and abs(front[1][1]) < 1e-9
+    assert abs((front[1][0] - front[0][0]) - (W / 2.0)) < 1e-9
+    assert abs(0.5 * (front[0][0] + front[1][0]) - (W / 2.0)) < 1e-9
+    back = [got[3], got[4]]
+    assert abs(back[0][1] - L) < 1e-9 and abs(back[1][1] - L) < 1e-9
+    assert abs((back[0][0] - back[1][0]) - (W / 2.0)) < 1e-9
+    assert {round(p[0], 6) for p in got if abs(p[1] - (L / 2.0)) < 1e-6} == {0.0, W}
+    ceil_xz = [(float(v[0]), float(v[2])) for v in ceil.v]
+    for pair in zip(ceil_xz, expect):
+        assert pair[0][0] == pytest.approx(pair[1][0])
+        assert pair[0][1] == pytest.approx(pair[1][1])
+    assert all(float(v[1]) == pytest.approx(H) for v in ceil.v)
+    for face in faces:
+        for v in face.v:
+            x, y, z = float(v[0]), float(v[1]), float(v[2])
+            assert -1e-8 <= x <= W + 1e-8
+            assert -1e-8 <= y <= H + 1e-8
+            assert -1e-8 <= z <= L + 1e-8
+            assert abs(face.sd(v)) < 1e-6
+    interior = (W / 2.0, 0.5 * H, L / 2.0)
+    near_front = (W / 2.0, 0.5 * H, 0.2)
+    for point in (interior, near_front):
+        for face in faces:
+            assert face.sd(point) > 1e-3
+    outside = (0.05, 0.5 * H, 0.05)
+    assert min(face.sd(outside) for face in faces) < 0.0
+    tall = faces_for("hex", 12.0, 6.0, 16.0)
+    tall_floor = next(face for face in tall if face.name == "floor")
+    tall_xz = [(float(v[0]), float(v[2])) for v in tall_floor.v]
+    assert tall_xz[0] == pytest.approx((3.0, 0.0))
+    assert tall_xz[2] == pytest.approx((12.0, 8.0))
+    tall_ceil = next(face for face in tall if face.name == "ceiling")
+    assert all(float(v[1]) == pytest.approx(6.0) for v in tall_ceil.v)
+    assert _md5(live_fdn_params(A.params_from_body({}))) == EMPTY
+    assert _md5(live_fdn_params(A.params_from_body({"room_shape": "box"}))) == EMPTY
+    assert _md5(live_fdn_params(A.params_from_body({
+        "third_mic": "centre", "mic_gain_c": 1.0,
+    }))) == CENTRE
+    played = live_fdn_params(A.params_from_body({"room_shape": "hex"}))
+    assert played.get("room_shape") == "hex"
+    assert len(played["buses"]["l"]["delay_ms"]) == PLAY_TAP_BUDGET
+    bench = _play_bench({"room_shape": "hex"}, tmp_path)
+    play_ms = float(bench["play_median_ms"])
+    assert play_ms < 2.40, f"hex Play median {play_ms:.4f} ms is over 2.40"
 
 
 def test_splay_play_early_matches_render(tmp_path):
