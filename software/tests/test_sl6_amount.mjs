@@ -108,6 +108,50 @@ test("the Amount drag refreshes the graph and posts Play on pointer release", ()
   assert.equal(input.includes("schedule()"), true);
   assert.equal(panel.includes('amt.addEventListener("pointerup", function () { amountDrag = false; postAmount(); })'), true);
   assert.equal(panel.includes('if (url === "/api/room_result" && window.RRApplyTreatAmount)'), true);
-  assert.equal(panel.includes("treatment-sets-decay"), false);
+  assert.equal(panel.includes('if (url === "/api/room_result" && window.RRApplyTreatDecay)'), true);
   assert.equal(panel.includes("Decay lock is on"), true);
+});
+
+function loadDecay() {
+  const start = app.indexOf("function applyTreatDecay");
+  const end = app.indexOf("window.RRApplyTreatDecay", start);
+  assert.ok(start > 0 && end > start);
+  return new Function(`${app.slice(start, end)}\nreturn applyTreatDecay;`)();
+}
+
+const applyTreatDecay = loadDecay();
+
+test("a missing switch leaves the lock, and Flat keeps it when the switch is on", () => {
+  const locked = { decay_mode: "surfaces", decay_lock: true, decay_s: 1.8 };
+  assert.equal(applyTreatDecay(locked).decay_lock, true);
+  const flat = { decay_mode: "flat", decay_lock: true, decay_s: 1.8, treat_sets_decay: true };
+  assert.equal(applyTreatDecay(flat).decay_lock, true);
+  assert.equal(flat.decay_s, 1.8);
+});
+
+test("Surfaces with the switch on posts the lock off and does not invent a dial", () => {
+  const body = { decay_mode: "surfaces", decay_lock: true, decay_s: 1.8, treat_sets_decay: true };
+  const out = applyTreatDecay(body);
+  assert.equal(out.decay_lock, false);
+  assert.equal(out.decay_s, 1.8);
+  assert.equal(out.treat_sets_decay, true);
+});
+
+test("Treatment sets decay sits beside Amount, shows at stage 6, and posts Play once", () => {
+  const amt = panel.indexOf('amt.id = "slAutoAmount"');
+  const sw = panel.indexOf('sw.id = "slTreatDecay"');
+  const hide = panel.indexOf("if (SL_STAGE < 6) at.hidden = true");
+  assert.ok(amt > 0 && sw > amt && hide > sw);
+  assert.equal(panel.includes("Treatment sets decay"), true);
+  assert.equal(panel.includes("return !!(s && s.treat_sets_decay);"), true);
+  const changeAt = panel.indexOf('box.addEventListener("change"');
+  const changeEnd = panel.indexOf("if (SL_STAGE < 6) at.hidden = true", changeAt);
+  const change = panel.slice(changeAt, changeEnd);
+  assert.equal(change.includes("schedule()"), true);
+  assert.equal(change.includes("if (window.RRPushLive) window.RRPushLive();"), true);
+  assert.equal(panel.includes("s.decay_lock = !!held.decay_lock"), true);
+  assert.equal(panel.includes("if (!s.treat_sets_decay) held = null"), true);
+  const call = app.indexOf("applyTreatDecay(o);");
+  assert.ok(call > app.indexOf("applyTreatAmount(o);"));
+  assert.ok(call < app.indexOf("function applyTreatDecay"));
 });

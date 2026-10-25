@@ -2942,6 +2942,26 @@ def _ceiling_spec(p, room, surfaces, line_t60):
     )
 
 
+def _treat_sets_length(p) -> bool:
+    """Treatment-sets-decay. Surfaces only. Flat and a missing flag leave the lock."""
+    if not bool(p.get("treat_sets_decay")):
+        return False
+    return str(p.get("decay_mode") or "flat").lower() == "surfaces"
+
+
+def _treat_material_mid(p, room, surfaces) -> float:
+    """500 Hz / 1 kHz mean. The same number Render arms when the lock is off."""
+    import numpy as np
+    import surf_panels as _SP
+    import surf_target as _STG
+    W, H, L = float(room[0]), float(room[1]), float(room[2])
+    cards = _SP.cards_with_treatment(surfaces, p.get("surf_treatment") or [])
+    hum = float(p.get("humidity") or 0.0)
+    return float(np.mean(_STG.room_target(
+        W, H, L, cards, hum, np.array([500.0, 1000.0]),
+    )))
+
+
 def _live_surf_pack(p, room, surfaces, taps, rate, n_had, line_t60, peaking, taps_b=None):
     """SL3. Per-bus S1P2 for Play. Flat, lock-off, and N other than 32 return None.
 
@@ -2951,9 +2971,15 @@ def _live_surf_pack(p, room, surfaces, taps, rate, n_had, line_t60, peaking, tap
 
     phys_ceiling on, lock armed, N 32: the same designer, fed by
     phys_ceiling_pack. The key off leaves this body alone, so the live dict
-    does not grow a key.
+    does not grow a key. treat_sets_decay skips that ceiling and uses the
+    material mean, the Render lock-off path.
     """
-    if bool(p.get("phys_ceiling")) and float(line_t60) > 0.05 and int(n_had) == 32:
+    if (
+        not _treat_sets_length(p)
+        and bool(p.get("phys_ceiling"))
+        and float(line_t60) > 0.05
+        and int(n_had) == 32
+    ):
         try:
             spec = _ceiling_spec(p, room, surfaces, line_t60)
             if spec is not None:
@@ -3153,6 +3179,12 @@ def live_fdn_params(
             "shelf2": shelf2,
         }
     mean_ms = mean_ms_acc / float(max(1, mean_ms_n))
+    if _treat_sets_length(p):
+        mid = _treat_material_mid(p, room, surfaces)
+        if mid > 0.05:
+            # Local only. The posted lock stays what the client sent.
+            decay_lock = True
+            decay_s = mid
     if decay_lock and decay_s > 0.05:
         dly_mean = fdn_delays_from_taps(taps, sr=rate, c=c, n=n_had, channel="c")
         g = structure_gain_for_rt60(dly_mean, decay_s, rate, n_had) / float(n_had)

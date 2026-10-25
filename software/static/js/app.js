@@ -668,6 +668,7 @@
     if (window.RRRouting && RRRouting.masterScene) Object.assign(o, RRRouting.masterScene(src));
     if (window.RRRouting && RRRouting.renderScene) Object.assign(o, RRRouting.renderScene(src));
     applyTreatAmount(o);
+    applyTreatDecay(o);
     return o;
   }
 
@@ -695,6 +696,17 @@
   }
   window.RRApplyTreatAmount = applyTreatAmount;
 
+  /* SL6. On, and only in Surfaces, the post copy turns the decay lock off.
+     Flat keeps the lock, so the default scene stays bit-exact. */
+  function applyTreatDecay(o) {
+    if (!o || typeof o !== "object") return o;
+    if (!o.treat_sets_decay) return o;
+    if (String(o.decay_mode || "flat") !== "surfaces") return o;
+    o.decay_lock = false;
+    return o;
+  }
+  window.RRApplyTreatDecay = applyTreatDecay;
+
   function liveRequestBody() {
     var o = heardMix(state);
     /* Boolean. On, the server packs the same 45 floats Play already forwards. */
@@ -720,7 +732,9 @@
     var el = document.getElementById("decayHint");
     if (!el) return;
     var sec = Number(state.decay_s).toFixed(2);
-    if (state.decay_lock) {
+    if (state.treat_sets_decay && state.decay_mode === "surfaces") {
+      el.textContent = "Treatment sets the length (" + sec + " s). Amount moves it.";
+    } else if (state.decay_lock) {
       el.textContent = "Decay is armed at " + sec + " s. Play live and Render use that length.";
     } else {
       el.textContent = "2011 law (Structure Gain) is in charge (" + sec +
@@ -1335,6 +1349,15 @@
     if (dOut) dOut.textContent = Number(seconds).toFixed(2);
     paintDecayHint();
   }
+  function paintDecayControls() {
+    paintDecayHint();
+    var dEl = document.getElementById("decay_s");
+    var dOut = document.getElementById("decay_s_out");
+    if (dEl && document.activeElement !== dEl) dEl.value = state.decay_s;
+    if (dOut) dOut.textContent = Number(state.decay_s).toFixed(2);
+  }
+  window.RRPaintDecay = paintDecayControls;
+  window.RRNoteDecayUser = function (on) { decayFromUser = !!on; };
 
   function gainFromDecay(decayS, meanMs, n) {
     n = n || 32;
@@ -3166,6 +3189,12 @@
   var decayEl = document.getElementById("decay_s");
   if (decayEl) {
     decayEl.addEventListener("input", function (e) {
+      if (state.treat_sets_decay && state.decay_mode === "surfaces") {
+        decayFromUser = false;
+        state.decay_lock = false;
+        syncUI();
+        return;
+      }
       decayFromUser = true;
       state.decay_lock = true;
       state.decay_s = parseFloat(e.target.value);

@@ -6,7 +6,9 @@
    state.surf_cal (seven factors from Calibrate; Play posts the same list at Amount 100),
    state.surf_treatment (rows, suggested:false),
    state.surf_suggestions (rows, suggested:true, never posted as treatment),
-   state.surf_amount (0–100, missing is 100; scales the post copy, not the stored rows). */
+   state.surf_amount (0–100, missing is 100; scales the post copy, not the stored rows).
+   state.treat_sets_decay (missing is off). On, Surfaces turns Decay lock off so Amount
+   sets the length. Off puts the lock and the dial back. */
 (function () {
   "use strict";
   var LETTERS = ["A", "B", "C", "D", "E", "F"];
@@ -36,6 +38,7 @@
     if (extra) Object.keys(extra).forEach(function (k) { body[k] = extra[k]; });
     body.surf_treatment = rows();
     if (url === "/api/room_result" && window.RRApplyTreatAmount) window.RRApplyTreatAmount(body);
+    if (url === "/api/room_result" && window.RRApplyTreatDecay) window.RRApplyTreatDecay(body);
     return fetch(url, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) })
       .then(function (r) { if (!r.ok) throw new Error(url + " " + r.status); return r.json(); });
   }
@@ -100,6 +103,13 @@
     amt.title = "Scales accepted treatment. The room shell stays. 100% posts the stored calibration.";
     var amtOut = el("span", "sl-unit"); amtOut.id = "slAutoAmountOut"; amtOut.textContent = Math.round(amountOf()) + "%";
     at.appendChild(amtLab); at.appendChild(amt); at.appendChild(amtOut);
+    var sw = el("label", "sl-label"); sw.id = "slTreatDecay";
+    sw.title = "On, Decay lock turns off and Amount sets the length. Off puts the lock back.";
+    var box = el("input"); box.type = "checkbox"; box.id = "slTreatDecayBox";
+    box.checked = setsDecay();
+    sw.appendChild(box);
+    sw.appendChild(document.createTextNode(" Treatment sets decay"));
+    at.appendChild(sw);
     at.appendChild(el("span", "hint", "Suggests rows only. Nothing changes until you Accept."));
     btn.addEventListener("click", function () { autoTreat(Number(tm.value)); });
     ebu.addEventListener("click", function () { autoTreat("ebu"); });
@@ -130,6 +140,13 @@
       if (amountDrag) return;
       if (amountPosted) { amountPosted = false; return; }
       postAmount();
+    });
+    box.addEventListener("change", function () {
+      var s = st(); if (!s) return;
+      s.treat_sets_decay = !!box.checked;
+      syncTreatDecay();
+      schedule();
+      if (window.RRPushLive) window.RRPushLive();
     });
     if (SL_STAGE < 6) at.hidden = true;
     panel.appendChild(at);
@@ -184,6 +201,30 @@
     if (cal) cal.hidden = SL_STAGE < 4 || m !== "surfaces";
     var p = document.getElementById("slRoomResult"); if (p) p.classList.toggle("sl-flat", m === "flat");
     paintAmount();
+    syncTreatDecay();
+  }
+  /* The user's lock, kept while the switch forces it off. Not a scene key. */
+  var held = null;
+  function setsDecay() {
+    var s = st();
+    return !!(s && s.treat_sets_decay);
+  }
+  function syncTreatDecay() {
+    var s = st(); if (!s) return;
+    var force = !!(s.treat_sets_decay && s.decay_mode === "surfaces");
+    if (force) {
+      if (!held) held = { decay_lock: !!s.decay_lock, decay_s: Number(s.decay_s) };
+      s.decay_lock = false;
+      if (window.RRNoteDecayUser) window.RRNoteDecayUser(false);
+    } else if (held) {
+      s.decay_lock = !!held.decay_lock;
+      if (isFinite(held.decay_s)) s.decay_s = held.decay_s;
+      if (!s.treat_sets_decay) held = null;
+      if (window.RRNoteDecayUser) window.RRNoteDecayUser(false);
+    }
+    if (window.RRPaintDecay) window.RRPaintDecay();
+    var box = document.getElementById("slTreatDecayBox");
+    if (box && document.activeElement !== box) box.checked = setsDecay();
   }
   function amountOf() {
     var s = st();

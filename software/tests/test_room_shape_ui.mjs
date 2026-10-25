@@ -57,7 +57,7 @@ test("the picker posts room_shape", () => {
   assert.equal(liveRequestBodyFrom({ room_shape: "gable" }).room_shape, "gable");
   assert.equal(liveRequestBodyFrom({ room_shape: "hex" }).room_shape, "hex");
   assert.match(page, /room_shape\.js\?v=7/);
-  assert.match(page, /app\.js\?v=84/);
+  assert.match(page, /app\.js\?v=85/);
   assert.match(app, /function applyRoomShape/);
   assert.match(app, /RoomShape\.bindShapeRows\(roomShapeRows\(\), applyRoomShape\)/);
   assert.match(app, /RoomShape\.paintShapeRows\(roomShapeRows\(\), name\)/);

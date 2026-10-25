@@ -655,6 +655,10 @@ def params_from_body(body: dict) -> dict:
         "decay_s": _f(body.get("decay_s") if "decay_s" in body else 1.8, 1.8),
         "decay_lock": _b(body.get("decay_lock") if "decay_lock" in body else True, True),
         "decay_mode": _decay_mode(body.get("decay_mode")),
+        # Missing is off. Flat ignores it. Surfaces uses the material length.
+        "treat_sets_decay": (
+            _b(body["treat_sets_decay"], False) if "treat_sets_decay" in body else False
+        ),
         # Missing key is ON. An explicit false stays off and adds no live key.
         "phys_ceiling": (_b(body["phys_ceiling"], True) if "phys_ceiling" in body else True),
         # Missing key is ON. An explicit false adds no live-dict field.
