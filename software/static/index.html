@@ -309,17 +309,20 @@
             </section>
           </div>
           <p class="hint" id="decayHint">Decay is armed at 1.80 s. Play live and Render use that length.</p>
-          <label class="check" id="physCeilingRow">
+          <label class="check" id="physCeilingRow" title="Caps the tail at what a real room with these materials could produce.">
             <input type="checkbox" id="phys_ceiling" checked />
             <span>Physical ceiling</span>
+            <span>Room limits the tail</span>
           </label>
-          <label class="check" id="subHpRow">
+          <label class="check" id="subHpRow" title="A 15 Hz high-pass on the tail only. The direct sound and the early reflections stay as they are.">
             <input type="checkbox" id="sub_hp" checked />
             <span>Rumble filter</span>
+            <span>15 Hz rumble cut</span>
           </label>
-          <label class="check" id="offaxisTailRow">
+          <label class="check" id="offaxisTailRow" title="Darkens the 8–16 kHz part of the tail. The direct sound and the early reflections stay untouched. Starts off.">
             <input type="checkbox" id="offaxis_tail" />
             <span>Off-axis tail</span>
+            <span>Darken the tail</span>
           </label>
           <p class="hint" id="physReadout" hidden></p>
           <p class="hint" id="mixHint">0 dB is the calibrated send. L and R choose the speakers; click again for Ø. Stereo pair gangs Left and Right. Natural sets Direct and FDN to 0 dB and gangs them. Solo leaves the faders put.</p>
@@ -1099,7 +1102,7 @@
   <script src="/static/js/drag_model.js?v=2"></script>
   <script src="/static/js/room_window_math.js?v=1"></script>
   <script src="/static/js/routing_scene.js?v=3"></script>
-  <script src="/static/js/app.js?v=88"></script>
+  <script src="/static/js/app.js?v=89"></script>
   <script>window.RR_SL_STAGE = 6;</script>
   <script src="/static/js/sl_room_result.js?v=7"></script>
   <script src="/static/js/rr_controls.js?v=1"></script>

@@ -853,15 +853,9 @@
       if (!el) return;
       if (data.on === false) {
         if (rowEl) rowEl.classList.add("is-off");
-        if (state.two_sources) {
-          physText = "off with two sources";
-          el.hidden = false;
-          el.textContent = physText;
-        } else {
-          physText = "";
-          el.hidden = true;
-          el.textContent = "";
-        }
+        physText = "";
+        el.hidden = true;
+        el.textContent = "";
         return;
       }
       if (rowEl) rowEl.classList.remove("is-off");
