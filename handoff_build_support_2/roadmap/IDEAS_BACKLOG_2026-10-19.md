@@ -219,3 +219,9 @@ The page has no Bloom panel, so browser Play stays bloom-off until something pos
 - 2026-10-24: no-impulse S1P2 designer and `render()` disagree on the R bus for the same auto-treat scene (9.95 with 1 guard, against 10.22 with 0). Not chased.
 - 2026-10-24: `live_fdn.js` `pushParams` does not copy `offaxis_tail`, so a Play message omits section 14. The wasm applies the 45 floats when they are on the message. Fixed 2026-10-24: `pushParams` copies the 45 floats. The tail test posts that message.
 - 2026-10-24: the Mix page does not post `offaxis_tail`. Play only gets the 45 floats when the live dict already has them. Fixed 2026-10-24: the Mix live request posts the boolean. Default stays off. The server still packs the 45 floats.
+
+## 2026-10-24: pinned by Idle (later)
+- Revisit the Live room shape. It is almost the same as Splay (a trapezoid with 6 degree sides instead of about 7, and a steeper ceiling slope), so it looks and sounds close. Make it distinct or replace it.
+- Let the room shape be changed on the Space tab as well as the Room page picker.
+- L-shaped live room (lshape): parked by Idle 2026-10-24. Non-convex, needs a leg-by-leg path check so the inside corner blocks echoes, verified against nonrect\proto\brute_check.py. Not lr_symmetric. Engine and listen run first, then the picker.
+- 2026-10-24 FULL: `test_a12_visible_controls_post_or_are_ui_only` failed on the already-pressed Box chip and `slAddPorous`. Not the 500 Hz factor hold. Not chased.
