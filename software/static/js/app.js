@@ -667,8 +667,33 @@
     for (bi = 0; bi < routeUi.length; bi++) delete o[routeUi[bi]];
     if (window.RRRouting && RRRouting.masterScene) Object.assign(o, RRRouting.masterScene(src));
     if (window.RRRouting && RRRouting.renderScene) Object.assign(o, RRRouting.renderScene(src));
+    applyTreatAmount(o);
     return o;
   }
+
+  /* SL6 Amount. Scale accepted coverage on this copy only. A shell row and a
+     suggested row keep their coverage. A missing amount is 100. Below 100 the
+     stored surf_cal is left off this post and is not rewritten on the scene. */
+  function applyTreatAmount(o) {
+    if (!o || typeof o !== "object") return o;
+    var v = Number(o.surf_amount);
+    if (!isFinite(v)) v = 100;
+    if (v < 0) v = 0;
+    if (v > 100) v = 100;
+    if (Array.isArray(o.surf_treatment)) {
+      var frac = v / 100;
+      o.surf_treatment = o.surf_treatment.map(function (r) {
+        if (!r || typeof r !== "object") return r;
+        var c = Object.assign({}, r);
+        if (c.suggested || c.type === "shell") return c;
+        c.coverage = Number(c.coverage || 0) * frac;
+        return c;
+      });
+    }
+    if (v < 100) delete o.surf_cal;
+    return o;
+  }
+  window.RRApplyTreatAmount = applyTreatAmount;
 
   function liveRequestBody() {
     var o = heardMix(state);

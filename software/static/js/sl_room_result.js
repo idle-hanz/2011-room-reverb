@@ -3,9 +3,10 @@
    /api/make_panel. Needs window.RRState (app.js state) and window.RRColourSurfaces (the Surfaces tab
    instance): in the box copy one hook line in app.js syncUINow() sets both.
    State it owns: state.decay_mode ("flat" | "surfaces"), state.surf_directional,
-   state.surf_cal (seven factors from Calibrate; Play posts the same list),
+   state.surf_cal (seven factors from Calibrate; Play posts the same list at Amount 100),
    state.surf_treatment (rows, suggested:false),
-   state.surf_suggestions (rows, suggested:true, never posted as treatment). */
+   state.surf_suggestions (rows, suggested:true, never posted as treatment),
+   state.surf_amount (0–100, missing is 100; scales the post copy, not the stored rows). */
 (function () {
   "use strict";
   var LETTERS = ["A", "B", "C", "D", "E", "F"];
@@ -34,6 +35,7 @@
     var s = st(); var body = JSON.parse(JSON.stringify(s || {}));
     if (extra) Object.keys(extra).forEach(function (k) { body[k] = extra[k]; });
     body.surf_treatment = rows();
+    if (url === "/api/room_result" && window.RRApplyTreatAmount) window.RRApplyTreatAmount(body);
     return fetch(url, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) })
       .then(function (r) { if (!r.ok) throw new Error(url + " " + r.status); return r.json(); });
   }
@@ -91,9 +93,44 @@
     tm.addEventListener("input", function () { tm.dataset.user = "1"; });
     var ebu = el("button", "chip", "EBU control room"); ebu.type = "button"; ebu.id = "slAutoEbu";
     at.appendChild(btn); at.appendChild(tm); at.appendChild(el("span", "sl-unit", "s T_mid")); at.appendChild(ebu);
+    var amtLab = el("span", "sl-label", "Amount");
+    var amt = el("input");
+    amt.type = "range"; amt.id = "slAutoAmount"; amt.min = "0"; amt.max = "100"; amt.step = "1";
+    amt.value = String(Math.round(amountOf()));
+    amt.title = "Scales accepted treatment. The room shell stays. 100% posts the stored calibration.";
+    var amtOut = el("span", "sl-unit"); amtOut.id = "slAutoAmountOut"; amtOut.textContent = Math.round(amountOf()) + "%";
+    at.appendChild(amtLab); at.appendChild(amt); at.appendChild(amtOut);
     at.appendChild(el("span", "hint", "Suggests rows only. Nothing changes until you Accept."));
     btn.addEventListener("click", function () { autoTreat(Number(tm.value)); });
     ebu.addEventListener("click", function () { autoTreat("ebu"); });
+    /* A drag updates the model graph only. Play posts once, on pointer release.
+       change covers a keyboard step and is skipped while the pointer is down. */
+    var amountDrag = false;
+    var amountPosted = false;
+    amt.addEventListener("pointerdown", function (ev) {
+      amountDrag = true;
+      amountPosted = false;
+      if (amt.setPointerCapture && ev.pointerId != null) {
+        try { amt.setPointerCapture(ev.pointerId); } catch (err) { /* already captured */ }
+      }
+    });
+    amt.addEventListener("input", function () {
+      amountPosted = false;
+      setAmount(amt.value);
+      schedule();
+    });
+    function postAmount() {
+      if (amountPosted) return;
+      amountPosted = true;
+      if (window.RRPushLive) window.RRPushLive();
+    }
+    amt.addEventListener("pointerup", function () { amountDrag = false; postAmount(); });
+    amt.addEventListener("pointercancel", function () { amountDrag = false; postAmount(); });
+    amt.addEventListener("change", function () {
+      if (amountDrag) return;
+      if (amountPosted) { amountPosted = false; return; }
+      postAmount();
+    });
     if (SL_STAGE < 6) at.hidden = true;
     panel.appendChild(at);
     var ln = el("p", "hint sl-locknote"); ln.id = "slLockNote"; ln.hidden = true; panel.appendChild(ln);
@@ -146,6 +183,32 @@
     var cal = document.getElementById("slCalibrate");
     if (cal) cal.hidden = SL_STAGE < 4 || m !== "surfaces";
     var p = document.getElementById("slRoomResult"); if (p) p.classList.toggle("sl-flat", m === "flat");
+    paintAmount();
+  }
+  function amountOf() {
+    var s = st();
+    var v = s ? Number(s.surf_amount) : 100;
+    if (!isFinite(v)) v = 100;
+    if (v < 0) v = 0;
+    if (v > 100) v = 100;
+    return v;
+  }
+  function setAmount(v) {
+    var s = st(); if (!s) return;
+    var n = Number(v);
+    if (!isFinite(n)) n = 100;
+    if (n < 0) n = 0;
+    if (n > 100) n = 100;
+    s.surf_amount = n;
+    var out = document.getElementById("slAutoAmountOut");
+    if (out) out.textContent = Math.round(n) + "%";
+  }
+  function paintAmount() {
+    var slider = document.getElementById("slAutoAmount");
+    var out = document.getElementById("slAutoAmountOut");
+    var v = amountOf();
+    if (slider && document.activeElement !== slider) slider.value = String(Math.round(v));
+    if (out) out.textContent = Math.round(v) + "%";
   }
   function paintToggles() {
     var a = document.getElementById("slTogBand"), b = document.getElementById("slTogEbu");
@@ -311,6 +374,7 @@
   }
   function refresh() {
     if (!st() || !document.getElementById("slRtCanvas")) return;
+    paintAmount();
     post("/api/room_result").then(function (d) { view.last = d; followDial(); draw(); readout(); lockNote(); }).catch(function (e) { flash(String(e)); });
   }
   function dialS() { var s = st() || {}; var v = Number(s.decay_s); return isFinite(v) && v > 0.05 ? v : 1.8; }

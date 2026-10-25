@@ -73,7 +73,7 @@ def test_toggling_a_125_panel_moves_the_model_curve():
 def test_ui_adds_the_shell_on_enter_and_leaves_the_slider_builders():
     root = H.SW
     html = (root / "static" / "index.html").read_text(encoding="utf-8")
-    assert "RR_SL_STAGE = 5" in html
+    assert "RR_SL_STAGE = 6" in html
     js = (root / "static" / "js" / "sl_room_result.js").read_text(encoding="utf-8")
     assert "function addRoomShell()" in js
     assert "paintMode(enter)" in js

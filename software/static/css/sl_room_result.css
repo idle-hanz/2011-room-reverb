@@ -8,6 +8,7 @@
 .sl-rr .sl-primary { font-weight: 600; }
 .sl-readout { font-size: .78rem; color: var(--muted); margin-left: 8px; }
 .sl-autotreat input[type=number] { width: 4.5em; }
+.sl-autotreat input[type=range] { width: 9em; }
 .sl-unit { font-size: .75rem; color: var(--muted); }
 .sl-suggest { margin: 4px 0 8px; }
 .sl-sug-head { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin: 4px 0; }

@@ -505,6 +505,10 @@ _UI_ONLY_IDS = {
     "slPorousSel",
     "slPanelF0",
     "slAddShell",
+    # SL6. Suggest only. The Amount slider posts Play on release.
+    "slAutoBtn",
+    "slAutoTmid",
+    "slAutoEbu",
     # UI-TIDY-1. Save downloads JSON. The Room mic link only calls setView("mic").
     "saveSetupBtn",
     "roomMicSetupLink",
