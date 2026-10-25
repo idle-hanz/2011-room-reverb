@@ -415,6 +415,54 @@
   var msMicStash = null;
   var pairStash = null;
 
+  /* XY, NOS, DIN, and both AB setups. The centre strip is a room mic, not the stand.
+     Spot (4, 1.5, 2) m, yaw 0, then the same 0.10 m wall inset as a room drag.
+     Fader stays 0.5, which is 0 dB. ORTF, ORTF + C, mono, binaural, and ms_* return null. */
+  function pairRoomMic(id, room, drag) {
+    if (id !== "ab_omni" && id !== "ab_card" && id !== "xy_90" && id !== "xy_120" && id !== "nos" && id !== "din") {
+      return null;
+    }
+    var box = {
+      W: Number(room && room.W) > 0 ? Number(room.W) : 6,
+      H: Number(room && room.H) > 0 ? Number(room.H) : 3,
+      L: Number(room && room.L) > 0 ? Number(room.L) : 8
+    };
+    var x = 4;
+    var y = 1.5;
+    var z = 2;
+    var yaw = 0;
+    var margin = 0.10;
+    if (drag && drag.roomFloorDragTo && drag.roomHeightDragTo && drag.roomAimDragTo) {
+      var floor = drag.roomFloorDragTo(box, "c", x, z);
+      var height = drag.roomHeightDragTo(box, "c", y);
+      var aim = drag.roomAimDragTo(box, "c", yaw);
+      x = floor.room_c_x;
+      z = floor.room_c_z;
+      y = height.room_c_y;
+      yaw = aim.room_c_yaw;
+    } else {
+      if (x < margin) x = margin;
+      if (x > box.W - margin) x = box.W - margin;
+      if (y < margin) y = margin;
+      if (y > box.H - margin) y = box.H - margin;
+      if (z < margin) z = margin;
+      if (z > box.L - margin) z = box.L - margin;
+    }
+    return {
+      third_mic: "room",
+      place_c: "room",
+      room_slot: "c",
+      mute_c: false,
+      fader_c: 0.5,
+      gain_exact_c: null,
+      width_c: 0,
+      room_c_x: x,
+      room_c_y: y,
+      room_c_z: z,
+      room_c_yaw: yaw
+    };
+  }
+
   function loadDeskPreset(id) {
     /* Does not mark the desk touched. Boot and a confirmed setup change call this. */
     state.pair_mode = "stereo";
@@ -422,7 +470,8 @@
     state.mic_route_l = "pan";
     state.mic_route_c = "pan";
     state.mic_route_r = "pan";
-    /* D20. ORTF is C off. ORTF + C and every other setup keep C in the centre. */
+    /* D20. ORTF is C off. ORTF + C and the other setups start with C in the centre.
+       The six pair ids below then move that strip to its room spot. */
     state.third_mic = (id === "ortf") ? "off" : "centre";
     cThirdBeforeRoom = null;
     state.ms_s = "l";
@@ -488,6 +537,11 @@
     splitHold = null;
     if (state.pair_mode === "stereo" && window.RRPair && RRPair.applyGang) RRPair.applyGang(state);
     else state.stereo_mic = false;
+    var roomPatch = pairRoomMic(id, state, window.RRDrag);
+    if (roomPatch) {
+      cThirdBeforeRoom = "centre";
+      Object.assign(state, roomPatch);
+    }
   }
 
   function deskWeights(src) {
@@ -946,7 +1000,11 @@
       var row = document.querySelector('.desk-strip[data-cap="' + cap + '"]');
       if (row) row.classList.toggle("is-linked", state.pair_mode === "stereo" && cap !== "c");
       if (row) row.classList.toggle("is-pan-locked", !!locked);
-      if (cap === "c" && row) row.classList.toggle("is-binaural-off", state.mic_setup === "binaural");
+      if (cap === "c" && row) {
+        row.classList.toggle("is-binaural-off", state.mic_setup === "binaural");
+        var deskName = row.querySelector(".desk-name");
+        if (deskName) deskName.textContent = stripIsRoom("c") ? "Room mic" : "Centre";
+      }
     });
     if (state.mic_setup === "binaural") {
       var cFader = document.getElementById("fader_c");

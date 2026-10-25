@@ -404,7 +404,7 @@
           color
         );
         var bodyOn = !!(drag && drag.kind === "room" && drag.canvas === "floor" && drag.roomCap === cap && drag.roomPart === "body");
-        drawHandle(ctx, p.px, p.py, color, cap.toUpperCase(), bodyOn, hover === "room:" + cap);
+        drawHandle(ctx, p.px, p.py, color, cap === "c" ? "Room mic" : cap.toUpperCase(), bodyOn, hover === "room:" + cap);
         var aim = aimFloorPx(p, spot.yaw);
         var aimOn = !!(drag && drag.kind === "room" && drag.canvas === "floor" && drag.roomCap === cap && drag.roomPart === "aim");
         drawAimDot(ctx, aim.px, aim.py, color, aimOn, hover === "roomAim:" + cap);
@@ -425,7 +425,7 @@
         ctx.lineTo(src.px, src.py);
         ctx.stroke();
         var on = !!(drag && drag.kind === "room" && drag.canvas === "elev" && drag.roomCap === cap);
-        drawHandle(ctx, p.px, p.py, color, cap.toUpperCase(), on, hover === "roomH:" + cap);
+        drawHandle(ctx, p.px, p.py, color, cap === "c" ? "Room mic" : cap.toUpperCase(), on, hover === "roomH:" + cap);
       });
     }
     function roomHitsFloor(px, py, geo) {
