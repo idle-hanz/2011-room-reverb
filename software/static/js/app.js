@@ -318,9 +318,10 @@
   var SOLO_BUSES = [
     ["solo_direct", "direct_wet", "direct"],
     ["solo_fdn", "fdn_wet", "fdn"],
-    ["solo_early", "early_wet", "early"],
-    ["solo_dry", "dry_gain", "dry"]
+    ["solo_early", "early_wet", "early"]
   ];
+  /* Page flag. Not a server key. Off is today's dry_gain 0. */
+  var wetBypass = false;
 
   var FADER_KNOTS = [
     [0.02, -60], [0.20, -24], [0.35, -12], [0.42, -6],
@@ -635,29 +636,39 @@
     return s;
   }
 
+  /* Host fader is gone. Off keeps dry_gain at 0. On hears the input and zeros the three wet sends. */
+  function applyWetBypass(o, on) {
+    if (!o) return o;
+    if (!on) {
+      o.dry_gain = 0;
+      return o;
+    }
+    o.dry_gain = 1;
+    o.direct_wet = 0;
+    o.fdn_wet = 0;
+    o.early_wet = 0;
+    return o;
+  }
+
   function heardMix(src) {
     var o = Object.assign({}, src);
     /* Client flag for the MS (2 mics) spare strip. Not a server key. */
     delete o.spare_off;
-    var buses = ["direct", "fdn", "early", "dry"];
+    var buses = ["direct", "fdn", "early"];
     var i;
     o.direct_wet = stripLinear(src, "direct");
     o.fdn_wet = stripLinear(src, "fdn");
     /* K4: early send = bus enable (early_wet, default 1) × early fader. */
     var ewEnable = (src.early_wet == null || !isFinite(Number(src.early_wet))) ? 1 : Math.max(0, Math.min(1, Number(src.early_wet)));
     o.early_wet = ewEnable * stripLinear(src, "early");
-    o.dry_gain = stripLinear(src, "dry");
+    o.dry_gain = 0;
     var any = false;
     for (i = 0; i < SOLO_BUSES.length; i++) {
       if (src[SOLO_BUSES[i][0]]) any = true;
     }
     if (any) {
       for (i = 0; i < buses.length; i++) {
-        var soloKey = buses[i] === "dry" ? "solo_dry" : "solo_" + buses[i];
-        if (!src[soloKey]) {
-          if (buses[i] === "dry") o.dry_gain = 0;
-          else o[buses[i] + "_wet"] = 0;
-        }
+        if (!src["solo_" + buses[i]]) o[buses[i] + "_wet"] = 0;
       }
     }
     o.mic_gain_l = micLinear(src, "l");
@@ -734,6 +745,7 @@
     if (window.RRRouting && RRRouting.renderScene) Object.assign(o, RRRouting.renderScene(src));
     applyTreatAmount(o);
     applyTreatDecay(o);
+    applyWetBypass(o, wetBypass);
     return o;
   }
 
@@ -917,8 +929,8 @@
     });
   }
 
-  var DESK_FADERS = ["l", "c", "r", "direct", "fdn", "early", "dry"];
-  var FADER_BOOT = { l: 0.5, c: 0.5, r: 0.5, direct: 0, fdn: 0.5, early: 0, dry: 0 };
+  var DESK_FADERS = ["l", "c", "r", "direct", "fdn", "early"];
+  var FADER_BOOT = { l: 0.5, c: 0.5, r: 0.5, direct: 0, fdn: 0.5, early: 0 };
 
   function setFader(key, u, fromLink) {
     u = Math.max(0, Math.min(1, Number(u)));
@@ -1154,6 +1166,8 @@
     if (linkBox) linkBox.checked = (state.link_mode || "mirror") === "mirror";
     var naturalBtn = document.getElementById("naturalBtn");
     if (naturalBtn) naturalBtn.setAttribute("aria-pressed", state.natural_bus ? "true" : "false");
+    var bypassBtn = document.getElementById("wetBypass");
+    if (bypassBtn) bypassBtn.setAttribute("aria-pressed", wetBypass ? "true" : "false");
     ["direct", "fdn"].forEach(function (bus) {
       var row = document.querySelector('.desk-strip[data-mix="' + bus + '"]');
       if (row) row.classList.toggle("is-linked", !!state.natural_bus);
@@ -3170,7 +3184,6 @@
     paintDesk();
     paintRoomReads(geo);
     paintDecayHint();
-    paintRouting();
     syncBinauralChrome();
     syncPatternChrome();
     syncMicEach();
@@ -3536,57 +3549,6 @@
       syncUI();
     });
   }
-  function paintRouting() {
-    ["array", "room", "master"].forEach(function (name) {
-      var pre = document.getElementById("route_" + name + "_pre");
-      var drive = document.getElementById("route_" + name + "_drive");
-      var driveOut = document.getElementById("route_" + name + "_drive_out");
-      var comp = document.getElementById("route_" + name + "_comp");
-      var amt = document.getElementById("route_" + name + "_amount");
-      var amtOut = document.getElementById("route_" + name + "_amount_out");
-      var preVal = state["route_" + name + "_pre"] || "none";
-      var compVal = state["route_" + name + "_comp"] || "off";
-      if (pre && document.activeElement !== pre) pre.value = preVal;
-      if (comp && document.activeElement !== comp) comp.value = compVal;
-      if (drive) {
-        if (document.activeElement !== drive) drive.value = String(state["route_" + name + "_drive"] || 0);
-        drive.disabled = preVal === "none";
-        if (driveOut) driveOut.textContent = Number(drive.value).toFixed(1);
-      }
-      if (amt) {
-        if (document.activeElement !== amt) amt.value = String(state["route_" + name + "_amount"] || 0);
-        amt.disabled = compVal === "off";
-        if (amtOut) amtOut.textContent = String(Math.round(Number(amt.value)));
-      }
-    });
-  }
-
-  function bindRouting() {
-    var panel = document.getElementById("routingPanel");
-    if (!panel || panel._routeBound) return;
-    panel._routeBound = true;
-    function onRoute(e) {
-      var id = e.target && e.target.id;
-      if (!id || id.indexOf("route_") !== 0) return;
-      var v = e.target.value;
-      var prev = state[id];
-      if (id.indexOf("_drive") > 0 || id.indexOf("_amount") > 0) state[id] = Number(v);
-      else state[id] = v;
-      var armName = id === "route_array_comp" ? "array"
-        : id === "route_room_comp" ? "room"
-        : id === "route_master_comp" ? "master" : "";
-      if (armName && window.RRRouting && RRRouting.armStrip) {
-        RRRouting.armStrip(state, armName, prev);
-      } else if (id === "route_master_comp" && window.RRRouting && RRRouting.armMaster) {
-        RRRouting.armMaster(state, prev);
-      }
-      syncUI();
-      scheduleLiveParams();
-    }
-    panel.addEventListener("change", onRoute);
-    panel.addEventListener("input", onRoute);
-  }
-
   function bindCheck(id, key) {
     var el = document.getElementById(id);
     if (!el) return;
@@ -4310,7 +4272,13 @@
   }
 
   bindDesk();
-  bindRouting();
+  var wetBypassBtn = document.getElementById("wetBypass");
+  if (wetBypassBtn) {
+    wetBypassBtn.addEventListener("click", function () {
+      wetBypass = !wetBypass;
+      syncUI();
+    });
+  }
   applyMicPreset(state.mic_setup || "ortf", false);
   migrateRoomState(state);
   snapshotBoot();

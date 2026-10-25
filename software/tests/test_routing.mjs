@@ -127,46 +127,6 @@ test("master menu from off to room crush arms amount 100", () => {
   assert.equal(R.masterScene(pre).bloom_amount, 0);
 });
 
-test("a route_master change posts live params", () => {
-  const app = fs.readFileSync(
-    path.join(path.dirname(fileURLToPath(import.meta.url)), "../static/js/app.js"),
-    "utf8"
-  );
-  const start = app.indexOf("function onRoute(e)");
-  const end = app.indexOf('panel.addEventListener("change", onRoute)', start);
-  assert.ok(start > 0 && end > start);
-  const state = { ...off };
-  const calls = [];
-  const onRoute = new Function(
-    "state", "syncUI", "scheduleLiveParams", "window", "RRRouting",
-    app.slice(start, end) + "\nreturn onRoute;"
-  )(
-    state,
-    () => calls.push("sync"),
-    () => calls.push("live"),
-    { RRRouting: R },
-    R
-  );
-  onRoute({ target: { id: "route_master_comp", value: "room_crush" } });
-  assert.deepEqual(calls, ["sync", "live"]);
-  assert.equal(state.route_master_amount, 100);
-  assert.equal(R.masterScene(state).bloom_preset, "room_crush");
-  assert.equal(R.masterScene(state).bloom_amount, 100);
-  onRoute({ target: { id: "route_array_comp", value: "glue" } });
-  assert.equal(state.route_array_amount, 100);
-  assert.equal(R.renderScene(state).array_preset, "glue");
-  assert.equal(R.renderScene(state).array_amount, 100);
-  assert.equal(state.route_master_amount, 100);
-  onRoute({ target: { id: "route_room_comp", value: "nuke" } });
-  assert.equal(state.route_room_amount, 100);
-  assert.equal(R.renderScene(state).room_preset, "nuke");
-  assert.equal(R.renderScene(state).room_amount, 100);
-  onRoute({ target: { id: "route_array_pre", value: "neve1073" } });
-  assert.equal(state.route_array_drive, 0);
-  assert.equal(R.renderScene(state).array_pre, "neve1073");
-  assert.equal(R.renderScene(state).array_drive_db, 0);
-});
-
 function loadPackRoom() {
   const code = fs.readFileSync(path.join(HERE, "../static/js/pack_room.js"), "utf8");
   const sandbox = {};

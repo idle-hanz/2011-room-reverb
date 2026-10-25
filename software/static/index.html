@@ -265,7 +265,10 @@
             <section class="desk-group" id="deskBuses">
               <div class="desk-group-head">
                 <span>Buses</span>
-                <button type="button" class="desk-lock" id="naturalBtn" aria-pressed="false">Natural</button>
+                <span>
+                  <button type="button" class="desk-lock" id="wetBypass" aria-pressed="false" title="Hear the dry input. Direct, FDN, and Early go quiet.">Bypass</button>
+                  <button type="button" class="desk-lock" id="naturalBtn" aria-pressed="false">Natural</button>
+                </span>
               </div>
               <div class="desk-strips">
                 <div class="desk-strip strip-direct" data-mix="direct">
@@ -297,14 +300,6 @@
                   <button type="button" class="desk-read" id="read_early" title="Send level in dB. Click to type.">−∞</button>
                   <button type="button" class="desk-mini mute-btn" id="mute_early" aria-pressed="false" title="Silence this bus">Mute</button>
                 </div>
-                <div class="desk-strip strip-dry" data-mix="dry">
-                  <div class="desk-name">Host</div>
-                  <div class="desk-knob"><span>Trim</span><label class="knob"><input type="range" id="trim_dry" min="-12" max="12" step="0.5" value="0" aria-label="Host dry trim" title="Trim in dB" /></label></div>
-                  <button type="button" class="solo-btn" data-solo="dry" aria-pressed="false" title="Hear only this bus. The other buses go quiet.">Solo</button>
-                  <div class="desk-slot"><span class="desk-zero"></span><input type="range" class="desk-fader" id="fader_dry" min="0" max="1" step="0.001" value="0" aria-label="Host dry fader" title="Send level" /></div>
-                  <button type="button" class="desk-read" id="read_dry" title="Send level in dB. Click to type.">−∞</button>
-                  <button type="button" class="desk-mini mute-btn" id="mute_dry" aria-pressed="false" title="Silence this bus">Mute</button>
-                </div>
               </div>
             </section>
           </div>
@@ -326,98 +321,6 @@
           </label>
           <p class="hint" id="physReadout" hidden></p>
           <p class="hint" id="mixHint">0 dB is the calibrated send. L and R choose the speakers; click again for Ø. Stereo pair gangs Left and Right. Natural sets Direct and FDN to 0 dB and gangs them. Solo leaves the faders put.</p>
-          <section class="panel routing-panel" id="routingPanel">
-            <div class="panel-head">
-              <h2>Routing</h2>
-            </div>
-            <div class="routing-strips">
-              <div class="routing-strip">
-                <h3>Array</h3>
-                <label class="ctrl ctrl-select"><span>Preamp</span>
-                  <select id="route_array_pre" aria-label="Array preamp">
-                    <option value="none">None</option>
-                    <option value="neve1073">Neve</option>
-                    <option value="u610a">610-A</option>
-                  </select>
-                </label>
-                <label class="ctrl"><span>Drive <em>dB</em></span>
-                  <input type="range" id="route_array_drive" min="0" max="12" step="0.5" value="0" aria-label="Array drive" />
-                  <output id="route_array_drive_out">0.0</output>
-                </label>
-                <label class="ctrl ctrl-select"><span>Comp</span>
-                  <select id="route_array_comp" aria-label="Array compressor">
-                    <option value="off">Off</option>
-                    <option value="natural">Natural</option>
-                    <option value="glue">Glue</option>
-                    <option value="room_crush">Room Crush</option>
-                    <option value="nuke">Nuke</option>
-                    <option value="swell">Swell</option>
-                  </select>
-                </label>
-                <label class="ctrl"><span>Amount</span>
-                  <input type="range" id="route_array_amount" min="0" max="100" step="1" value="0" aria-label="Array amount" />
-                  <output id="route_array_amount_out">0</output>
-                </label>
-              </div>
-              <div class="routing-strip">
-                <h3>Room</h3>
-                <label class="ctrl ctrl-select"><span>Preamp</span>
-                  <select id="route_room_pre" aria-label="Room preamp">
-                    <option value="none">None</option>
-                    <option value="neve1073">Neve</option>
-                    <option value="u610a">610-A</option>
-                  </select>
-                </label>
-                <label class="ctrl"><span>Drive <em>dB</em></span>
-                  <input type="range" id="route_room_drive" min="0" max="12" step="0.5" value="0" aria-label="Room drive" />
-                  <output id="route_room_drive_out">0.0</output>
-                </label>
-                <label class="ctrl ctrl-select"><span>Comp</span>
-                  <select id="route_room_comp" aria-label="Room compressor">
-                    <option value="off">Off</option>
-                    <option value="natural">Natural</option>
-                    <option value="glue">Glue</option>
-                    <option value="room_crush">Room Crush</option>
-                    <option value="nuke">Nuke</option>
-                    <option value="swell">Swell</option>
-                  </select>
-                </label>
-                <label class="ctrl"><span>Amount</span>
-                  <input type="range" id="route_room_amount" min="0" max="100" step="1" value="0" aria-label="Room amount" />
-                  <output id="route_room_amount_out">0</output>
-                </label>
-              </div>
-              <div class="routing-strip">
-                <h3>Master</h3>
-                <label class="ctrl ctrl-select"><span>Preamp</span>
-                  <select id="route_master_pre" aria-label="Master preamp">
-                    <option value="none">None</option>
-                    <option value="neve1073">Neve</option>
-                    <option value="u610a">610-A</option>
-                  </select>
-                </label>
-                <label class="ctrl"><span>Drive <em>dB</em></span>
-                  <input type="range" id="route_master_drive" min="0" max="12" step="0.5" value="0" aria-label="Master drive" />
-                  <output id="route_master_drive_out">0.0</output>
-                </label>
-                <label class="ctrl ctrl-select"><span>Comp</span>
-                  <select id="route_master_comp" aria-label="Master compressor">
-                    <option value="off">Off</option>
-                    <option value="natural">Natural</option>
-                    <option value="glue">Glue</option>
-                    <option value="room_crush">Room Crush</option>
-                    <option value="nuke">Nuke</option>
-                    <option value="swell">Swell</option>
-                  </select>
-                </label>
-                <label class="ctrl"><span>Amount</span>
-                  <input type="range" id="route_master_amount" min="0" max="100" step="1" value="0" aria-label="Master amount" />
-                  <output id="route_master_amount_out">0</output>
-                </label>
-              </div>
-            </div>
-            <p class="routing-note">array/room inserts: Render only</p>
-          </section>
         </div>
 
         <div id="imageViews" class="panel image-panel" hidden>
@@ -1102,7 +1005,7 @@
   <script src="/static/js/drag_model.js?v=2"></script>
   <script src="/static/js/room_window_math.js?v=1"></script>
   <script src="/static/js/routing_scene.js?v=3"></script>
-  <script src="/static/js/app.js?v=89"></script>
+  <script src="/static/js/app.js?v=90"></script>
   <script>window.RR_SL_STAGE = 6;</script>
   <script src="/static/js/sl_room_result.js?v=7"></script>
   <script src="/static/js/rr_controls.js?v=1"></script>
