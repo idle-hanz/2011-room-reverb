@@ -6,10 +6,40 @@ const R = createRequire(import.meta.url)("../static/js/ms_presets.js");
 const close = (a, b, e = 0.05) => assert.ok(Math.abs(a - b) <= e, `${a} vs ${b}`);
 
 test("three presets, b is default, ms_classic aliases b", () => {
-  assert.deepEqual(Object.keys(R.PRESETS), ["ms_a", "ms_b", "ms_c"]);
+  assert.deepEqual(Object.keys(R.PRESETS), ["ms_a", "ms_b", "ms_c", "ms_2"]);
   assert.equal(R.PRESETS.ms_b.isDefault, true);
+  assert.equal(R.PRESETS.ms_2.label, "MS (2 mics)");
   assert.equal(R.ALIASES.ms_classic, "ms_b");
   assert.equal(R.build("ms_d"), null);   // (d) dropped (D-UI29)
+});
+test("MS (2 mics) uses the ms_b weights and mutes the right strip", () => {
+  const G = Math.pow(10, -3 / 20);
+  assert.equal(Number(G.toFixed(6)), 0.707946);
+  const before = R.build("ms_b");
+  const two = R.build("ms_2");
+  const after = R.build("ms_b");
+  assert.deepEqual(before, after);
+  assert.equal(two.desk.pair_mode, "ms");
+  assert.equal(two.desk.ms_s, "l");
+  assert.equal(two.desk.ms_m, "c");
+  assert.equal(two.desk.mic_route_l, "s");
+  assert.equal(two.desk.mic_route_c, "both");
+  assert.equal(two.desk.mute_r, true);
+  assert.equal(two.desk.spare_off, "r");
+  assert.equal(two.mic.family_l, "bi");
+  assert.equal(two.mic.pattern_c, "cardioid");
+  assert.equal(two.mic.yaw_l_deg, 90);
+  assert.equal(two.mic.yaw_c_deg, 0);
+  assert.deepEqual(two.mic.polar, ["L", "C"]);
+  assert.deepEqual(after.mic.polar, ["L", "C", "R"]);
+  assert.equal(after.desk.spare_off, undefined);
+  const fader = 1;
+  const s = G * fader;
+  const m = two.desk.gain_exact_c * fader;
+  assert.ok(Math.abs(s - G) < 1e-12);
+  assert.ok(Math.abs(m - G) < 1e-12);
+  assert.deepEqual([s, -s, m, m, 0, 0].map((n) => Number(n.toFixed(6))),
+    [0.707946, -0.707946, 0.707946, 0.707946, 0, 0]);
 });
 test("preset b = U87 Ai Bidirect S + U87 Ai Cardioid M (D-UI29)", () => {
   const b = R.build("ms_b");

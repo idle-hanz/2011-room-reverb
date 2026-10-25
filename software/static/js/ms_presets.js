@@ -52,13 +52,21 @@
       mic.pattern_r = "cardioid"; mic.family_r = "cardioid"; mic.polar_r = 0.5; mic.yaw_r_deg = -90;
       desk.mic_route_r = "s"; desk.phase_r = -1; desk.mute_r = false; desk.ms_s = "l"; /* S = L − R strip */
       mics = { l: "NeumannU87AiCardioid", c: "NeumannU87AiCardioid", r: "NeumannU87AiCardioid" };
+    } else if (id === "ms_2") {   /* two heard mics: ms_b weights, R muted and shown off */
+      var pair = build("ms_b", level);
+      if (!pair) return null;
+      pair.id = "ms_2";
+      pair.mic = Object.assign({}, pair.mic, { polar: ["L", "C"] });
+      pair.desk = Object.assign({}, pair.desk, { spare_off: "r" });
+      return pair;
     } else return null;
     return { id: id, mic: mic, desk: desk, mics: mics };
   }
   var PRESETS = {
     ms_a: { label: "MS \u00b7 omni Mid + fig\u20118 Side", short: "MS omni" },
     ms_b: { label: "MS \u00b7 cardioid Mid + fig\u20118 Side", short: "MS cardioid", isDefault: true },
-    ms_c: { label: "MS \u00b7 cardioid Mid + two back\u2011to\u2011back cardioids", short: "MS 3\u2011mic" }
+    ms_c: { label: "MS \u00b7 cardioid Mid + two back\u2011to\u2011back cardioids", short: "MS 3\u2011mic" },
+    ms_2: { label: "MS (2 mics)", short: "MS (2 mics)" }
   };
   /* Old scenes: ms_classic == ms_b with SM57 mics; keep the id as an alias so recall works. */
   var ALIASES = { ms_classic: "ms_b" };

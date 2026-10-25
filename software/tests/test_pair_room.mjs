@@ -24,7 +24,7 @@ const pairRoomMic = new Function(
 
 const boot = { W: 6, H: 3, L: 8 };
 const PAIRS = ["ab_omni", "ab_card", "xy_90", "xy_120", "nos", "din"];
-const LEFT = ["ortf", "ortf_c", "mono_c", "binaural", "ms", "ms_a", "ms_b", "ms_c", "ms_classic", "custom"];
+const LEFT = ["ortf", "ortf_c", "mono_c", "binaural", "ms", "ms_a", "ms_b", "ms_c", "ms_classic", "ms_2", "custom"];
 
 test("the six pair setups place the centre strip at the room spot", () => {
   PAIRS.forEach((id) => {
@@ -72,6 +72,6 @@ test("the plan draws a room centre mic at its room spot and labels it Room mic",
   assert.match(plan, /cap === "c" && st\.third_mic === "room"/);
   assert.match(plan, /roomSpotOf\(geo\.state, cap\)/);
   assert.match(plan, /cap === "c" \? "Room mic" : cap\.toUpperCase\(\)/);
-  assert.match(page, /app\.js\?v=87/);
+  assert.match(page, /app\.js\?v=88/);
   assert.match(page, /room_editor\.js\?v=24/);
 });

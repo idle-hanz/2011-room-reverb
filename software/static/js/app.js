@@ -54,6 +54,8 @@
     ms_b: rrMsMic("ms_b"),
     ms_c: rrMsMic("ms_c"),
     ms_classic: rrMsMic("ms_b"),
+    /* Two heard mics. Same desk as ms_b. The Right strip is muted and shown off. */
+    ms_2: rrMsMic("ms_2"),
     mono_c:  { space: 0.00, toe_half_deg: 0, car_omni: 1, polar: ["C"],
       pattern_l: "cardioid", pattern_c: "cardioid", pattern_r: "cardioid",
       family_l: "cardioid", family_c: "cardioid", family_r: "cardioid",
@@ -504,6 +506,7 @@
     state.phase_l = 1;
     state.phase_c = 1;
     state.phase_r = 1;
+    delete state.spare_off;
     var msBuilt = rrMsBuilt(id);
     if (msBuilt) {
       if (!msMicStash) {
@@ -634,6 +637,8 @@
 
   function heardMix(src) {
     var o = Object.assign({}, src);
+    /* Client flag for the MS (2 mics) spare strip. Not a server key. */
+    delete o.spare_off;
     var buses = ["direct", "fdn", "early", "dry"];
     var i;
     o.direct_wet = stripLinear(src, "direct");
@@ -1018,24 +1023,32 @@
       if (cFaderOn) cFaderOn.disabled = false;
     }
     var monoDesk = state.mic_setup === "mono_c";
+    var spareR = state.spare_off === "r";
     ["l", "r"].forEach(function (cap) {
       var row = document.querySelector('.desk-strip[data-cap="' + cap + '"]');
       if (!row) return;
-      row.classList.toggle("is-mono-off", monoDesk);
-      row.title = monoDesk ? "Mono centre uses only C" : "";
+      var off = monoDesk || (spareR && cap === "r");
+      row.classList.toggle("is-mono-off", off);
+      row.title = monoDesk ? "Mono centre uses only C" : (off ? "Off" : "");
       row.querySelectorAll("input, button").forEach(function (el) {
-        var panLock = !monoDesk && state.stereo_mic && el.id === ("pan_" + cap);
-        el.disabled = !!monoDesk || !!panLock;
+        var panLock = !off && state.stereo_mic && el.id === ("pan_" + cap);
+        el.disabled = !!off || !!panLock;
         if (monoDesk) el.title = "Mono centre uses only C";
-        else if (el.title === "Mono centre uses only C") el.title = "";
+        else if (off) el.title = "Off";
+        else if (el.title === "Mono centre uses only C" || el.title === "Off") el.title = "";
       });
     });
+    if (spareR) {
+      var rRead = document.getElementById("read_r");
+      if (rRead) rRead.textContent = "off";
+    }
     ["l", "c", "r"].forEach(function (cap) {
       var view = lrView(cap);
       var route = view.route;
       var monoLock = state.mic_setup === "mono_c" && (cap === "l" || cap === "r");
       var stereoLock = state.stereo_mic && cap !== "c";
       var binLock = state.mic_setup === "binaural" && cap === "c";
+      var spareLock = state.spare_off === "r" && cap === "r";
       document.querySelectorAll('.lr-btn[data-lr="' + cap + '"]').forEach(function (btn) {
         var side = btn.getAttribute("data-side") === "r" ? "r" : "l";
         var v = view.shown[side] || 0;
@@ -1043,7 +1056,7 @@
         btn.setAttribute("data-v", String(v));
         btn.textContent = lab.text;
         btn.setAttribute("aria-pressed", v === 0 ? "false" : "true");
-        if (!monoLock) {
+        if (!monoLock && !spareLock) {
           btn.title = lab.title;
           btn.setAttribute("aria-label", lab.title);
         }
@@ -1051,8 +1064,8 @@
       pan = document.getElementById("pan_" + cap);
       var panBox = document.getElementById("panBox_" + cap);
       var panLabel = document.getElementById("panLabel_" + cap);
-      if (pan) pan.disabled = !view.panLive || stereoLock || monoLock || binLock;
-      if (pan && !monoLock) pan.title = view.panLive ? "Pan between the speakers" : "This pan is not in the send";
+      if (pan) pan.disabled = !view.panLive || stereoLock || monoLock || binLock || spareLock;
+      if (pan && !monoLock && !spareLock) pan.title = view.panLive ? "Pan between the speakers" : "This pan is not in the send";
       if (panBox) panBox.classList.toggle("is-pot-off", !view.panLive || binLock || stereoLock);
       if (panLabel && window.RRLR) panLabel.textContent = RRLR.potLabel(view.panLive ? "balance" : "none");
       var trimBox = document.getElementById("trimBox_" + cap);
@@ -1062,7 +1075,7 @@
       if (widthBox) widthBox.hidden = !sOn;
       var width = document.getElementById("width_" + cap);
       if (width && document.activeElement !== width) width.value = state["width_" + cap] || 0;
-      if (!monoLock) {
+      if (!monoLock && !spareLock) {
         var trimIn = document.getElementById("trim_" + cap);
         if (trimIn) trimIn.title = "Trim in dB";
         if (width) width.title = "Side width in dB";
@@ -2513,6 +2526,9 @@
       if (p.yaw_c_deg != null && !near(state.yaw_c_deg, p.yaw_c_deg, 0.8)) continue;
       if (p.yaw_r_deg != null && !near(state.yaw_r_deg, p.yaw_r_deg, 0.8)) continue;
       if (!!state.ms_decode !== (id.indexOf("ms_") === 0)) continue;
+      /* MS (2 mics) shares the ms_b pair. The spare flag keeps the menu on ms_2. */
+      if (id === "ms_2" && state.spare_off !== "r") continue;
+      if (id !== "ms_2" && state.spare_off === "r") continue;
       /* D20. ortf and ortf_c share the pair. C off is ORTF; C on is ORTF + C. */
       if (id === "ortf" || id === "ortf_c") {
         var cOn = state.third_mic !== "off";
