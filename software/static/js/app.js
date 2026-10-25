@@ -175,6 +175,7 @@
   var spaceMode = "lattice"; /* lattice | paths | legs */
   var polarPage = "combined"; /* combined | each */
   var sideSplitUser = null; /* null derives from L vs R. Not posted. */
+  var splitHold = null; /* Split flag put aside while Stereo pair is ganged. */
   /* third_mic C had at the moment it became Room. Client only. Not a state key. */
   var cThirdBeforeRoom = null;
   var hallSnapshot = false; /* 2011 / Hall snapshot loaded. Not posted. */
@@ -412,6 +413,7 @@
   }
 
   var msMicStash = null;
+  var pairStash = null;
 
   function loadDeskPreset(id) {
     /* Does not mark the desk touched. Boot and a confirmed setup change call this. */
@@ -482,6 +484,10 @@
     } else if (id === "ms") {
       state.mic_route_c = "centre";
     }
+    pairStash = null;
+    splitHold = null;
+    if (state.pair_mode === "stereo" && window.RRPair && RRPair.applyGang) RRPair.applyGang(state);
+    else state.stereo_mic = false;
   }
 
   function deskWeights(src) {
@@ -869,7 +875,7 @@
     }
     state["fader_" + key] = u;
     if (fromLink) return;
-    if (state.stereo_mic && (key === "l" || key === "r")) {
+    if ((state.pair_mode === "stereo" || state.stereo_mic) && (key === "l" || key === "r")) {
       setFader(key === "l" ? "r" : "l", u, true);
     }
     if (state.natural_bus && (key === "direct" || key === "fdn")) {
@@ -882,6 +888,9 @@
     if (!isFinite(db)) db = 0;
     state["trim_" + key] = db;
     if (fromLink) return;
+    if (state.pair_mode === "stereo" && (key === "l" || key === "r")) {
+      setTrim(key === "l" ? "r" : "l", db, true);
+    }
     if (state.natural_bus && (key === "direct" || key === "fdn")) {
       setTrim(key === "direct" ? "fdn" : "direct", db, true);
     }
@@ -935,7 +944,7 @@
         }
       }
       var row = document.querySelector('.desk-strip[data-cap="' + cap + '"]');
-      if (row) row.classList.toggle("is-linked", !!(state.stereo_mic && cap !== "c"));
+      if (row) row.classList.toggle("is-linked", state.pair_mode === "stereo" && cap !== "c");
       if (row) row.classList.toggle("is-pan-locked", !!locked);
       if (cap === "c" && row) row.classList.toggle("is-binaural-off", state.mic_setup === "binaural");
     });
@@ -1022,6 +1031,7 @@
     document.querySelectorAll("[data-pair]").forEach(function (btn) {
       var on = btn.getAttribute("data-pair") === (state.pair_mode || "stereo");
       btn.setAttribute("aria-pressed", on ? "true" : "false");
+      btn.setAttribute("aria-current", on ? "true" : "false");
     });
     document.querySelectorAll("[data-pan-law]").forEach(function (btn) {
       var on = btn.getAttribute("data-pan-law") === (state.pan_law || "linear");
@@ -1235,9 +1245,17 @@
     document.querySelectorAll("[data-pair]").forEach(function (btn) {
       btn.addEventListener("click", function () {
         var mode = btn.getAttribute("data-pair");
-        if (mode !== "stereo" && mode !== "ms" && mode !== "independent") return;
-        state.pair_mode = mode;
-        aimCoincidentS();
+        if (!window.RRPair || !RRPair.step) return;
+        var out = RRPair.step(state, mode, pairStash, rrMsBuilt("ms_b"));
+        pairStash = out.stash;
+        if (!out.posts) return;
+        if (mode === "stereo") {
+          if (splitHold == null) splitHold = sideSplitUser;
+          sideSplitUser = false;
+        } else if (mode === "independent" && splitHold != null) {
+          sideSplitUser = splitHold;
+          splitHold = null;
+        }
         state.desk_touched = true;
         syncUI();
       });
@@ -2031,6 +2049,15 @@
 
   function writeFamily(cap, value) {
     if (patternControlsLocked() || state.mic_setup === "binaural") return;
+    if (state.pair_mode === "stereo" && (cap === "l" || cap === "r" || cap === "side")) {
+      state.family_l = value;
+      state.family_r = value;
+      deriveCaps(["l", "r"]);
+      state.preset_owns_pattern = false;
+      markCustomIfDrifted();
+      syncUI();
+      return;
+    }
     if (cap === "side" && splitOn()) return;
     if (cap === "side" || ((cap === "l" || cap === "r") && !splitOn())) {
       state.family_l = value;
@@ -2049,6 +2076,16 @@
     if (patternControlsLocked() || state.mic_setup === "binaural") return;
     var v = Math.max(0, Math.min(1, Number(value)));
     if (!isFinite(v)) return;
+    if (state.pair_mode === "stereo" && (cap === "l" || cap === "r" || cap === "side")) {
+      if (state.family_l === "bi" && state.family_r === "bi") return;
+      state.polar_l = v;
+      state.polar_r = v;
+      deriveCaps(["l", "r"]);
+      state.preset_owns_pattern = false;
+      markCustomIfDrifted();
+      syncUI();
+      return;
+    }
     if (cap === "side" && splitOn()) return;
     if (cap === "side" || ((cap === "l" || cap === "r") && !splitOn())) {
       if (state.family_l === "bi" && state.family_r === "bi") return;
@@ -2661,6 +2698,11 @@
 
   function applyCapsulePreset(slots, id) {
     var row = micCatalogue[id];
+    if (state.pair_mode === "stereo") {
+      slots = slots.slice();
+      if (slots.indexOf("l") >= 0 && slots.indexOf("r") < 0) slots.push("r");
+      if (slots.indexOf("r") >= 0 && slots.indexOf("l") < 0) slots.push("l");
+    }
     slots.forEach(function (slot) {
       state["mic_preset_" + slot] = id;
       if (row && row.capsule) {

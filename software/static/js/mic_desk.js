@@ -947,11 +947,22 @@
       return { x: pick("x"), y: pick("y"), z: pick("z"), yaw: pick("yaw") };
     }
 
-    /* Drawn point. On-stand keeps the stand pose. Room reads the room spot. */
+    /* Drawn point. On-stand keeps the stand pose. Room reads the room spot.
+       An MS side is drawn on the mid, aimed the way the engine parks it. */
     function viewMic(geo, cap) {
       var stand = cap === "l" ? geo.mic_left : (cap === "r" ? geo.mic_right : geo.mic_centre);
       var look = cap === "l" ? geo.look_l : (cap === "r" ? geo.look_r : (geo.look_c || { x: 0, z: 1 }));
       if (!roomPlaced(geo.state, cap)) {
+        if (coincidentS(geo.state, cap)) {
+          var mid = String(geo.state.ms_m || "c");
+          if (mid === cap) mid = cap === "c" ? "l" : "c";
+          var host = mid === "l" ? geo.mic_left : (mid === "r" ? geo.mic_right : geo.mic_centre);
+          var yaw = (Number(geo.state["yaw_" + cap + "_deg"]) || 0) * Math.PI / 180;
+          var sideLook = (RoomMath && RoomMath.lookFromYaw)
+            ? RoomMath.lookFromYaw(yaw)
+            : { x: Math.sin(yaw), z: Math.cos(yaw) };
+          return { x: host.x, y: host.y, z: host.z, look: sideLook, room: false };
+        }
         return { x: stand.x, y: stand.y, z: stand.z, look: look, room: false };
       }
       var spot = roomSpotOf(geo.state, cap);
@@ -1123,6 +1134,20 @@
       }
       if (roomPlaced(st, slot)) {
         st["room_" + slot + "_yaw"] = deg;
+        setState(RoomMath.clampRoom(st));
+        liveReadout = "Front " + fmtYaw(deg);
+        onChange();
+        return;
+      }
+      if (st.pair_mode === "stereo" && (slot === "l" || slot === "r")) {
+        if (slot === "l") {
+          st.yaw_l_deg = deg;
+          st.yaw_r_deg = -deg;
+        } else {
+          st.yaw_r_deg = deg;
+          st.yaw_l_deg = -deg;
+        }
+        st.toe_half_deg = Math.abs(deg);
         setState(RoomMath.clampRoom(st));
         liveReadout = "Front " + fmtYaw(deg);
         onChange();

@@ -200,9 +200,9 @@
               <div class="desk-group-head">
                 <span>Mics</span>
                 <div class="pair-row" id="pairModeRow" role="group" aria-label="Pair mode">
-                  <button type="button" data-pair="stereo" aria-pressed="true" title="Left and Right stay a stereo pair">Stereo pair</button>
-                  <button type="button" data-pair="ms" aria-pressed="false" title="One strip is Mid, one is Side">M/S pair</button>
-                  <button type="button" data-pair="independent" aria-pressed="false" title="Each mic stands alone">Independent</button>
+                  <button type="button" data-pair="stereo" aria-pressed="true" aria-current="true" title="Left and Right share pattern and gain. Aim is mirrored. Moving one moves the other.">Stereo pair</button>
+                  <button type="button" data-pair="ms" aria-pressed="false" aria-current="false" title="Side is a phase-invert send to both speakers. Mid goes to both. The side mic aims at 90 degrees.">M/S pair</button>
+                  <button type="button" data-pair="independent" aria-pressed="false" aria-current="false" title="Left and Right are not ganged. Each mic keeps its own aim, pattern, and gain.">Independent</button>
                 </div>
               </div>
               <div class="pair-row" id="panLawRow" role="group" aria-label="Pan law">
@@ -322,7 +322,7 @@
             <span>Off-axis tail</span>
           </label>
           <p class="hint" id="physReadout" hidden></p>
-          <p class="hint" id="mixHint">0 dB is the calibrated send. L and R choose the speakers; click again for Ø. Stereo mic gangs Left and Right. Natural sets Direct and FDN to 0 dB and gangs them. Solo leaves the faders put.</p>
+          <p class="hint" id="mixHint">0 dB is the calibrated send. L and R choose the speakers; click again for Ø. Stereo pair gangs Left and Right. Natural sets Direct and FDN to 0 dB and gangs them. Solo leaves the faders put.</p>
           <section class="panel routing-panel" id="routingPanel">
             <div class="panel-head">
               <h2>Routing</h2>
@@ -1088,16 +1088,17 @@
   <script src="/static/js/image_views.js?v=20"></script>
   <script src="/static/js/colour_surfaces.js?v=9"></script>
   <script src="/static/js/polar_field.js?v=7"></script>
-  <script src="/static/js/mic_desk.js?v=19"></script>
+  <script src="/static/js/mic_desk.js?v=20"></script>
   <script src="/static/js/source_desk.js?v=4"></script>
   <script src="/static/js/pack_room.js?v=55"></script>
   <script src="/static/js/live_fdn.js?v=64"></script>
   <script src="/static/js/lr_buttons.js?v=1"></script>
   <script src="/static/js/ms_presets.js?v=2"></script>
+  <script src="/static/js/pair_mode.js?v=1"></script>
   <script src="/static/js/drag_model.js?v=2"></script>
   <script src="/static/js/room_window_math.js?v=1"></script>
   <script src="/static/js/routing_scene.js?v=3"></script>
-  <script src="/static/js/app.js?v=85"></script>
+  <script src="/static/js/app.js?v=86"></script>
   <script>window.RR_SL_STAGE = 6;</script>
   <script src="/static/js/sl_room_result.js?v=7"></script>
   <script src="/static/js/rr_controls.js?v=1"></script>
