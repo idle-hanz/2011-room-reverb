@@ -943,26 +943,13 @@
               </div>
               <p class="hint mic-desk-foot" id="micEachFoot"></p>
             </div>
-<div class="panel mic-polar-panel">
+<div class="panel" id="micPolarLinkPanel">
               <div class="panel-head">
-                <h2>Three mics summed (spacing interference)</h2>
-                <div class="pair-row" id="sourcePlaneRow" role="group" aria-label="Source plane mics">
-                  <button type="button" data-plane="sum" aria-pressed="true">Three mics</button>
-                  <button type="button" data-plane="one" aria-pressed="false">One mic</button>
-                </div>
+                <h2>Polar plot</h2>
                 <span class="honesty-badge honesty-measured" id="micHonestyBadge" title="This badge is the data source for the drawing, not the Colour sound mode.">preset data: measured</span>
               </div>
-              <div class="mic-polar-body">
-                <div class="mic-polar-stage">
-                  <p class="hint" id="micPatternHint">One plane: the side mics and the source. Frequency runs up the stack. Centre is included with its delay. This slice does not follow the camera.</p>
-                  <div class="mic-hero diagram-frame" id="micHeroWrap">
-                    <button type="button" class="diagram-expand" aria-label="Enlarge source plane">Enlarge</button>
-                    <canvas id="micPolarHero" width="640" height="520" aria-label="Source plane frequency stack"></canvas>
-                  </div>
-                  <p class="hint" id="micHeroMeta">—</p>
-                  <div class="mic-ring-legend" id="micRingLegend" aria-hidden="true"></div>
-                </div>
-              </div>
+              <p class="hint">The source-plane plot is on the Polar tab.</p>
+              <button type="button" class="chip" id="micPolarLink">Open Polar</button>
             </div>
 </section>
 
@@ -991,7 +978,7 @@
   <script src="/static/js/drag_model.js?v=2"></script>
   <script src="/static/js/room_window_math.js?v=1"></script>
   <script src="/static/js/routing_scene.js?v=3"></script>
-  <script src="/static/js/app.js?v=100"></script>
+  <script src="/static/js/app.js?v=101"></script>
   <script>window.RR_SL_STAGE = 6;</script>
   <script src="/static/js/sl_room_result.js?v=7"></script>
   <script src="/static/js/rr_controls.js?v=1"></script>

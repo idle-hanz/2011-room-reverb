@@ -28,7 +28,9 @@ Pair link (2026-10-26): Mirror, Linked, and Split are off the page. Stereo pair 
 
 Proximity slider (2026-10-26): The page has no mic_proximity slider. The posted default stays 0.25. `app.js?v=93`.
 
-Polar once (2026-10-26): Measured drawing and Play/Render tap levels use the fitter alone. The Zenodo fit is already H(θ)/H(0°), so the ideal pattern is not multiplied again. Bypass and User defined keep the ideal pattern. The source-plane title is Three mics summed (spacing interference), with a One mic toggle. Splay live MD5 `5f757d04e47eea6cda87b32c35daa901`. `app.js?v=93`. `polar_field.js?v=8`.
+Polar once (2026-10-26): Measured drawing and Play/Render tap levels use the fitter alone. The Zenodo fit is already H(θ)/H(0°), so the ideal pattern is not multiplied again. Bypass and User defined keep the ideal pattern. Splay live MD5 `5f757d04e47eea6cda87b32c35daa901`.
+
+Polar tab (2026-10-26): The Polar tab opens on One mic. The other pages are All mics summed and At the speakers. The banner reads "Measured: real mic response, relative to on-axis" in Measured, and "Ideal pattern" in Bypass and User defined. The server note does not replace it. Each plot has dB rings at 0, −6, −12, −18 and −24, marks at 0/90/180, and a front arrow. The frequency key uses FreqPalette. Click a band to solo it. Measured plots draw a dashed ideal pattern over the curve. The L/C/R boxes read Left capsule, Centre capsule, and Right capsule. The plot refreshes with the mic. Refresh is hidden. The Mic tab source plane is a link to Polar. `app.js?v=101`. `polar_field.js?v=12`. `mic_desk.js?v=23`. `app.css?v=41`.
 
 Advanced locks (2026-10-26): The page has no Reaktor parity checkbox and no 2011 Air 1-pole. Posts of those keys are ignored. Play packs air_lp 0 and loop_semantics 0. The worklet one-pole stays. `room_math.js?v=20`. `room_3d.js?v=24`. `room_editor.js?v=25`. The 2011 Reaktor snapshot and the Colour filter stay on sos until `?dev=1` or `window.RR_DEV`. `app.js?v=95`.
 

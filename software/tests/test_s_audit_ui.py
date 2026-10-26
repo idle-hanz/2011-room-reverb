@@ -313,7 +313,7 @@ def test_a4_binaural_hides_dead_rows(audit_server):
             "colour": True, "align": True,
             "centre": True, "side": True, "ccol": True,
         }, hidden
-        meta = pg.locator("#micHeroMeta").inner_text()
+        meta = pg.locator("#micHaloHint").inner_text()
         assert "head" in meta.lower(), meta
         pg.screenshot(path=str(_shots() / "a4_binaural_mic.png"))
         assert len(posts) > n, "binaural did not post live_params"
@@ -523,6 +523,8 @@ _UI_ONLY_IDS = {
     # UI-TIDY-1. Save downloads JSON. The Room mic link only calls setView("mic").
     "saveSetupBtn",
     "roomMicSetupLink",
+    # Polar link. Click only calls setView("polar"). It does not post.
+    "micPolarLink",
 }
 
 

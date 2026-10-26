@@ -1621,7 +1621,6 @@
   }
 
   var polarView = null;
-  var micHero = null;
   var micCatalogue = {};
   if (window.PolarFieldView) {
     polarView = new PolarFieldView({
@@ -1948,7 +1947,6 @@
         if (currentView !== "mic") return;
         if (micDesk && micDesk.redraw) micDesk.redraw();
         if (micDesk && micDesk.view3d && micDesk.view3d.resize) micDesk.view3d.resize();
-        if (micHero && micHero.resize) micHero.resize();
       });
     });
     ro.observe(host);
@@ -2047,10 +2045,6 @@
           if (micDesk) {
             if (currentView === "mic" && micDesk.view3d && micDesk.view3d.resize) micDesk.view3d.resize();
             micDesk.redraw();
-          }
-          if (currentView === "mic") {
-            ensureMicHero();
-            if (micHero && micHero.resize) micHero.resize();
           }
           if (currentView === "polar" && polarPage === "combined" && polarView && polarView.resize) {
             polarView.resize();
@@ -2851,47 +2845,10 @@
     syncUI();
   }
 
-  function heroEnabled() {
-    var same = state.mic_preset_l === state.mic_preset_c
-      && state.mic_preset_c === state.mic_preset_r
-      && state.pattern_l === state.pattern_c
-      && state.pattern_c === state.pattern_r
-      && state.family_l === state.family_c
-      && state.family_c === state.family_r;
-    if (same) return { L: false, C: true, R: false, sum: false };
-    return { L: true, C: true, R: true, sum: false };
+  var polarLinkBtn = document.getElementById("micPolarLink");
+  if (polarLinkBtn) {
+    polarLinkBtn.addEventListener("click", function () { setView("polar"); });
   }
-
-  function ensureMicHero() {
-    if (micHero || !window.PolarFieldView) return micHero;
-    var canvas = document.getElementById("micPolarHero");
-    if (!canvas) return null;
-    micHero = new PolarFieldView({
-      canvas: canvas,
-      wrap: document.getElementById("micHeroWrap"),
-      meta: document.getElementById("micHeroMeta"),
-      isolated: true,
-      useBase: true,
-      enabled: { L: false, C: false, R: false, sum: false, base: true, one: false },
-      getState: function () { return state; }
-    });
-    return micHero;
-  }
-
-  document.querySelectorAll("#sourcePlaneRow [data-plane]").forEach(function (btn) {
-    btn.addEventListener("click", function () {
-      var which = btn.getAttribute("data-plane");
-      document.querySelectorAll("#sourcePlaneRow [data-plane]").forEach(function (b) {
-        b.setAttribute("aria-pressed", b === btn ? "true" : "false");
-      });
-      var hero = ensureMicHero();
-      if (!hero || !polarCache) return;
-      hero.enabled = which === "one"
-        ? { L: false, C: false, R: false, sum: false, base: false, one: true }
-        : { L: false, C: false, R: false, sum: false, base: true, one: false };
-      hero.setData(polarCache);
-    });
-  });
 
   var polarTimer = null;
   var polarReq = 0;
@@ -2922,20 +2879,12 @@
       polarCache = data;
       if (micDesk && micDesk.setPolar) micDesk.setPolar(data, "ok");
       if (polarPage === "speakers") drawSpeakerPolar(data);
-      ensureMicHero();
-      if (micHero) {
-        var oneOn = document.querySelector('#sourcePlaneRow [data-plane="one"][aria-pressed="true"]');
-        micHero.enabled = oneOn
-          ? { L: false, C: false, R: false, sum: false, base: false, one: true }
-          : { L: false, C: false, R: false, sum: false, base: true, one: false };
-        micHero.setData(data);
-      }
       if (polarView && polarView.setData) polarView.setData(data);
       paintPolarBandKey(data.ring_labels);
       paintPolarBanner();
     } catch (err) {
       if (seq === polarReq && micDesk && micDesk.setPolarStatus) micDesk.setPolarStatus("fail");
-      var meta = document.getElementById("micHeroMeta");
+      var meta = document.getElementById("polarMeta");
       if (meta) meta.textContent = "Polar: " + String(err);
     }
   }
@@ -3654,7 +3603,6 @@
       requestAnimationFrame(function () {
         if (micDesk && micDesk.redraw) micDesk.redraw();
         if (micDesk && micDesk.view3d && micDesk.view3d.resize) micDesk.view3d.resize();
-        if (micHero && micHero.resize) micHero.resize();
         if (polarView && polarView.resize) polarView.resize();
       });
     });
