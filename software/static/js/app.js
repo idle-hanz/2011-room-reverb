@@ -181,6 +181,20 @@
   /* third_mic C had at the moment it became Room. Client only. Not a state key. */
   var cThirdBeforeRoom = null;
   var hallSnapshot = false; /* 2011 / Hall snapshot loaded. Not posted. */
+  /* Developer only. ?dev=1 or window.RR_DEV shows the snapshot and the colour filter. */
+  (function () {
+    var on = false;
+    try {
+      on = window.RR_DEV === true || /(?:^|[?&])dev=1(?:&|$)/.test(String(location.search || ""));
+    } catch (e) { on = false; }
+    if (!on) return;
+    var impl = document.getElementById("colourImplRow");
+    var snap = document.getElementById("reaktorSnapshotBtn");
+    var hint = document.getElementById("reaktorSnapshotHint");
+    if (impl) impl.hidden = false;
+    if (snap) snap.hidden = false;
+    if (hint) hint.hidden = false;
+  })();
   var selectedMics = ["L", "R"];
   var imagesCache = null;
   var imagesFetchTimer = null;

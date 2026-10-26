@@ -870,7 +870,7 @@
         </div>
         <details class="panel advanced" id="panelAdvanced" data-sidebar="advanced">
           <summary>Advanced / Structure locks</summary>
-          <label class="ctrl ctrl-select">
+          <label class="ctrl ctrl-select" id="colourImplRow" hidden>
             <span>Colour filter</span>
             <select id="colour_impl" aria-label="Colour filter">
               <option value="sos">IIR biquads</option>
@@ -886,8 +886,8 @@
             <p class="hint" id="feedbackHint">Shown with the Hall snapshot. Gain/N is the 2011 uneven tail. Moving this leaves Decay.</p>
           </div>
           <label class="ctrl"><span>Minimum IR length <em>ms</em></span><input type="range" id="ir_length_ms" min="50" max="2000" step="10" value="1500" /><output id="ir_length_ms_out">1500</output></label>
-          <button type="button" class="btn" id="reaktorSnapshotBtn">2011 Reaktor snapshot</button>
-          <p class="hint">Hall 57×34×97, source/mic from the dump, the 2011 Gain law, Humidity 400, Mic 10 kHz, live surface Dif.</p>
+          <button type="button" class="btn" id="reaktorSnapshotBtn" hidden>2011 Reaktor snapshot</button>
+          <p class="hint" id="reaktorSnapshotHint" hidden>Hall 57×34×97, source/mic from the dump, the 2011 Gain law, Humidity 400, Mic 10 kHz, live surface Dif.</p>
           <label class="check">
             <input type="checkbox" id="live_drag_render" />
             <span>Also bake an IR when I drop Src / Mic</span>
@@ -998,7 +998,7 @@
   <script src="/static/js/drag_model.js?v=2"></script>
   <script src="/static/js/room_window_math.js?v=1"></script>
   <script src="/static/js/routing_scene.js?v=3"></script>
-  <script src="/static/js/app.js?v=94"></script>
+  <script src="/static/js/app.js?v=95"></script>
   <script>window.RR_SL_STAGE = 6;</script>
   <script src="/static/js/sl_room_result.js?v=7"></script>
   <script src="/static/js/rr_controls.js?v=1"></script>
