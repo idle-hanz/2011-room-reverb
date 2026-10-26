@@ -254,7 +254,7 @@ def _shots():
 
 
 def test_a4_binaural_hides_dead_rows(audit_server):
-    """Binaural hides the dead rows. Other setups show them. Posted keys do not grow."""
+    """Binaural hides the dead rows. Other setups show them. Posted keys do not grow, except the XY room mic."""
     p, b = _chrome()
     try:
         pg = b.new_page(viewport={"width": 1600, "height": 1000})
@@ -324,7 +324,12 @@ def test_a4_binaural_hides_dead_rows(audit_server):
         assert again["colour"] is False and again["side"] is False and again["ccol"] is False
         keys_xy = set(posts[-1])
         keys_bin = set(binaural)
-        assert keys_xy == keys_bin, sorted(keys_xy ^ keys_bin)[:20]
+        # c097da6: XY 90 places the centre mic in the room, so Play posts that spot.
+        # Binaural has no centre room mic, so those three keys stay off its post.
+        extra = keys_xy - keys_bin
+        missing = keys_bin - keys_xy
+        assert missing == set(), sorted(missing)[:20]
+        assert extra <= {"mic_x_c", "mic_y_c", "mic_z_c"}, sorted(extra)[:20]
     finally:
         b.close()
         p.stop()
