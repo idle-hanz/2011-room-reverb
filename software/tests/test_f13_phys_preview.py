@@ -15,7 +15,7 @@ import app_server as A  # noqa: E402
 
 def test_two_source_phys_preview_is_on():
     client = TestClient(A.app)
-    res = client.post("/api/phys_preview", json={
+    res = client.post("/api/params/phys", json={
         "two_sources": True,
         "decay_lock": True,
         "decay_s": 1.8,

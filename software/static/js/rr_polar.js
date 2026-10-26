@@ -160,7 +160,7 @@ async function refreshPolar() {
     var body = Object.assign({}, state);
     body.n_az = 72;
     if (body.sy == null && body.my != null) body.sy = body.my;
-    var res = await fetch("/api/polar", {
+    var res = await fetch("/api/display/polar", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(body)
@@ -185,7 +185,7 @@ async function refreshPolar() {
 }
 
 function loadMicCatalogue() {
-  fetch("/api/mic_presets").then(function (res) {
+  fetch("/api/catalogue/mics").then(function (res) {
     if (!res.ok) throw new Error("HTTP " + res.status);
     return res.json();
   }).then(function (data) {

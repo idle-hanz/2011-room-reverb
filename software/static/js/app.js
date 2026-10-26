@@ -620,7 +620,7 @@ if (liveBtn) {
     if (statusEl) statusEl.textContent = "Starting live FDN…";
     try {
       if (window.LiveFDN && LiveFDN.prepare) await LiveFDN.prepare();
-      var res = await fetch("/api/live_params", {
+      var res = await fetch("/api/params/live", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(liveRequestBody())

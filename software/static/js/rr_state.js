@@ -286,7 +286,7 @@ var PLACES = {
   }
 };
 
-/* Page after ORTF + /api/defaults. applyPlace clones this, then overlays the place. */
+/* Page after ORTF + /api/settings?part=defaults. applyPlace clones this, then overlays the place. */
 var bootState = null;
 var placeChosen = false;
 var lastPlace = "";

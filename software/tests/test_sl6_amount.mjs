@@ -107,8 +107,8 @@ test("the Amount drag refreshes the graph and posts Play on pointer release", ()
   assert.equal(input.includes("postAmount"), false);
   assert.equal(input.includes("schedule()"), true);
   assert.equal(panel.includes('amt.addEventListener("pointerup", function () { amountDrag = false; postAmount(); })'), true);
-  assert.equal(panel.includes('if (url === "/api/room_result" && window.RRApplyTreatAmount)'), true);
-  assert.equal(panel.includes('if (url === "/api/room_result" && window.RRApplyTreatDecay)'), true);
+  assert.equal(panel.includes('if (url === "/api/room/result" && window.RRApplyTreatAmount)'), true);
+  assert.equal(panel.includes('if (url === "/api/room/result" && window.RRApplyTreatDecay)'), true);
   assert.equal(panel.includes("Decay lock is on"), true);
 });
 

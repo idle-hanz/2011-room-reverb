@@ -185,7 +185,7 @@ def modes(W, H, L, fmax: float = 300.0):
     return sorted(out)
 
 
-# ---- API payload (/api/room_result) ------------------------------------------------------------
+# ---- API payload (/api/room/result) ------------------------------------------------------------
 def room_result(W, H, L, surfaces, humidity, decay_s: Optional[float] = None, decay_lock: bool = True,
                 cards_with_fn: Optional[Dict[str, dict]] = None, rendered_t20: Optional[dict] = None) -> dict:
     """JSON-ready Room result. surfaces: parsed cards; cards_with_fn: same with absorb_fn (treatment)."""

@@ -419,7 +419,7 @@ def k_for_dial(dial: float) -> float:
 
 
 def phys_ceiling_row(W, H, L, cards, dial, bands=None) -> dict:
-    """This room's T_phys(f; k). Shared by the pack and /api/phys_preview.
+    """This room's T_phys(f; k). Shared by the pack and /api/params/phys.
 
     No min(dial, ...). k is solved on this room and these cards. The returned
     cards are copies. reachable is false when the bisection sticks to a bound

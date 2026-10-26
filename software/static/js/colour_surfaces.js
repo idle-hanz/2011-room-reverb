@@ -1259,7 +1259,7 @@
 
   ColourSurfaces.prototype._loadMaterials = function () {
     var self = this;
-    fetch("/api/surface_materials").then(function (r) { return r.json(); }).then(function (data) {
+    fetch("/api/catalogue/materials").then(function (r) { return r.json(); }).then(function (data) {
       self.materials = (data && data.materials) || [];
       self.materialSets = (data && data.sets) || [];
       if (data && data.letter_role) self.letterRole = data.letter_role;

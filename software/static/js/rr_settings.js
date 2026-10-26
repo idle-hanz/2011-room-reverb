@@ -173,7 +173,7 @@ function downloadSetup() {
 }
 
 function loadServerDefaults() {
-  fetch("/api/defaults").then(function (r) {
+  fetch("/api/settings?part=defaults").then(function (r) {
     noteHttp(r);
     return r.json();
   }).then(function (data) {

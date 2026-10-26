@@ -78,11 +78,11 @@ def test_a7_out_of_range_is_clamped_and_named():
 @pytest.mark.slow
 def test_a7_non_finite_and_non_numeric_are_400():
     client = TestClient(A.app)
-    nan = client.post("/api/live_params", content=b'{"W": NaN}', headers={"Content-Type": "application/json"})
+    nan = client.post("/api/params/live", content=b'{"W": NaN}', headers={"Content-Type": "application/json"})
     assert nan.status_code == 400 and "W" in nan.text
-    abc = client.post("/api/live_params", json={"W": "abc"})
+    abc = client.post("/api/params/live", json={"W": "abc"})
     assert abc.status_code == 400 and "W" in abc.text
-    ok = client.post("/api/live_params", json={"W": 0})
+    ok = client.post("/api/params/live", json={"W": 0})
     assert ok.status_code == 200
     body = ok.json()
     assert "W" in body.get("warnings", [])
@@ -90,8 +90,8 @@ def test_a7_non_finite_and_non_numeric_are_400():
 
 def test_a3_endpoints_are_sync_and_second_render_is_busy(monkeypatch):
     for name in (
-        "api_geometry", "api_live_params", "api_images", "api_source_preview",
-        "api_render", "api_colour", "api_polar",
+        "api_settings", "api_params", "api_images", "api_source_preview",
+        "api_render", "api_display", "api_polar",
     ):
         assert not inspect.iscoroutinefunction(getattr(A, name)), name
     started = threading.Event()
@@ -113,10 +113,10 @@ def test_a3_endpoints_are_sync_and_second_render_is_busy(monkeypatch):
     t.start()
     assert started.wait(5)
     t0 = time.perf_counter()
-    defaults = client.get("/api/defaults")
+    defaults = client.get("/api/settings", params={"part": "defaults"})
     d_s = time.perf_counter() - t0
     t1 = time.perf_counter()
-    live = client.post("/api/live_params", json={})
+    live = client.post("/api/params/live", json={})
     l_s = time.perf_counter() - t1
     busy = client.post(
         "/api/render",
@@ -206,7 +206,7 @@ def test_a11e_present_fitter_starts():
 
 def test_a8_preview_parent_path_is_forbidden():
     client = TestClient(A.app)
-    denied = client.get("/api/preview", params={"path": "../secret.wav"})
+    denied = client.get("/api/render", params={"path": "../secret.wav"})
     assert denied.status_code == 403
 
 

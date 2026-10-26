@@ -2,7 +2,7 @@
 
 `default` is the value `params_from_body` uses when the key is missing, except
 where a row sets `absent` (the body omitted the key) or `stored` (the value
-kept on `DEFAULTS` for `/api/defaults`). `page` is the boot value in
+kept on `DEFAULTS` for `GET /api/settings?part=defaults`). `page` is the boot value in
 `rr_state.js` when that boot value is not `default`.
 
 The JSON next to the static files is generated from this module. The page
@@ -20,20 +20,20 @@ JSON_PATH = ROOT / "static" / "settings.json"
 
 # Routes that receive the mix body or the raw scene.
 _BOTH = [
-    "/api/live_params",
+    "/api/params/live",
     "/api/render",
-    "/api/images",
-    "/api/phys_preview",
-    "/api/polar",
-    "/api/room_result",
+    "/api/params/images",
+    "/api/params/phys",
+    "/api/display/polar",
+    "/api/room/result",
 ]
 _ROUTES = {
     "both": _BOTH,
-    "play": ["/api/live_params"],
+    "play": ["/api/params/live"],
     "render": ["/api/render"],
-    "polar": ["/api/polar"],
-    "colour": ["/api/colour"],
-    "room": ["/api/room_result"],
+    "polar": ["/api/display/polar"],
+    "colour": ["/api/render"],
+    "room": ["/api/room/result"],
     "none": [],
 }
 
@@ -417,7 +417,7 @@ def page_value(name: str):
 
 
 def server_defaults() -> dict:
-    """The dict `/api/defaults` returns. Same keys and values as the old literal."""
+    """The dict `GET /api/settings?part=defaults` returns. Same keys and values as the old literal."""
     out = {}
     for row in ROWS:
         if not row.get("in_defaults"):

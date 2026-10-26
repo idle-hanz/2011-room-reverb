@@ -524,7 +524,7 @@ async function pullPhysPreview() {
   physTimer = null;
   if (!state.phys_ceiling) return;
   try {
-    var res = await fetch("/api/phys_preview", {
+    var res = await fetch("/api/params/phys", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(heardMix(state))
@@ -1140,7 +1140,7 @@ async function pullDecayPreview() {
   }
   liveBusy = true;
   try {
-    var res = await fetch("/api/live_params", {
+    var res = await fetch("/api/params/live", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(state)

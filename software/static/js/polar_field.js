@@ -639,7 +639,7 @@
       body.n_az = 72;
       // Optional independent source height for plane tilt (Prepare SY=MY by default)
       if (body.sy == null && body.my != null) body.sy = body.my;
-      var res = await fetch("/api/polar", {
+      var res = await fetch("/api/display/polar", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(body)

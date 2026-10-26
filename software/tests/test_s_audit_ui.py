@@ -118,7 +118,7 @@ def _posted(url: str, wav: str, seq: list[str]) -> dict:
         )
         pg = b.new_page(viewport={"width": 1600, "height": 1000})
         pg.route("**/api/render", on_route)
-        with pg.expect_response(lambda r: r.url.endswith("/api/defaults") and r.status == 200, timeout=20000):
+        with pg.expect_response(lambda r: r.url.endswith("/api/settings?part=defaults") and r.status == 200, timeout=20000):
             pg.goto(url)
         pg.wait_for_timeout(600)
         pg.set_input_files("#wavInput", wav)
@@ -271,7 +271,7 @@ def test_a4_binaural_hides_dead_rows(audit_server):
                 body='{"ok":false,"error":"stub"}',
             )
 
-        pg.route("**/api/live_params", on_route)
+        pg.route("**/api/params/live", on_route)
         pg.goto(audit_server["url"])
         pg.wait_for_timeout(700)
         pg.evaluate("() => { window.LiveFDN.isRunning = () => true; }")
@@ -388,7 +388,7 @@ def test_a10_header_status_on_every_tab(audit_server):
     try:
         pg = b.new_page(viewport={"width": 1280, "height": 800})
         pg.route(
-            "**/api/live_params",
+            "**/api/params/live",
             lambda route: route.fulfill(
                 status=200,
                 content_type="application/json",
@@ -429,7 +429,7 @@ def test_a10_header_status_on_every_tab(audit_server):
 
 @pytest.mark.slow
 def test_a11_source_labels_omni_and_stale_reply(audit_server):
-    """(a)(b) screenshots. (c) a late /api/images body does not replace a newer one."""
+    """(a)(b) screenshots. (c) a late /api/params/images body does not replace a newer one."""
     p, b = _chrome()
     try:
         pg = b.new_page(viewport={"width": 1600, "height": 1000})
@@ -446,7 +446,7 @@ def test_a11_source_labels_omni_and_stale_reply(audit_server):
         def grab(route):
             held.append(route)
 
-        pg.route("**/api/images", grab)
+        pg.route("**/api/params/images", grab)
         pg.click('.view-tab[data-view="space"]')
         pg.wait_for_timeout(500)
         deadline = time.time() + 5
@@ -504,13 +504,13 @@ _UI_ONLY_IDS = {
     "materialPaintAll",
     # T10 room-size chip. Click only calls setView("edit"). It does not post.
     "roomSizeChip",
-    # SL1 Room result. These redraw the model. They do not post /api/live_params.
+    # SL1 Room result. These redraw the model. They do not post /api/params/live.
     "slMode_flat",
-    # SL3. #slMode_surfaces posts /api/live_params (decay_mode) as well as /api/room_result.
+    # SL3. #slMode_surfaces posts /api/params/live (decay_mode) as well as /api/room/result.
     "slTogBand",
     "slTogEbu",
     # SL5. The porous menu and the tuned-panel frequency only choose the next row.
-    # + Porous and + Tuned panel post /api/live_params.
+    # + Porous and + Tuned panel post /api/params/live.
     # + Room shell repeats the rows the Surfaces chip already added on enter,
     # so this click leaves the posted scene unchanged.
     "slPorousSel",
@@ -544,7 +544,7 @@ def test_a12_visible_controls_post_or_are_ui_only(audit_server):
               const orig = window.fetch;
               window.fetch = function (url, opts) {
                 const u = String(url);
-                if (u.indexOf('/api/live_params') >= 0) {
+                if (u.indexOf('/api/params/live') >= 0) {
                   posts.push(opts && opts.body ? String(opts.body) : '');
                   return Promise.resolve(new Response(JSON.stringify({ ok: true, decay_s: 1.8 }), {
                     status: 200, headers: { 'Content-Type': 'application/json' }
@@ -902,7 +902,7 @@ def test_b5_mono_strips_disabled_and_restored(audit_server):
                 body='{"ok":false,"error":"stub"}',
             )
 
-        pg.route("**/api/live_params", on_route)
+        pg.route("**/api/params/live", on_route)
         pg.goto(audit_server["url"])
         pg.wait_for_timeout(600)
         pg.evaluate("() => { window.LiveFDN.isRunning = () => true; }")
@@ -1005,7 +1005,7 @@ def test_b6_side_view_readout_and_drag(audit_server):
             posts.append(json.loads(route.request.post_data or "{}"))
             route.fulfill(status=200, content_type="application/json", body='{"ok":true}')
 
-        pg.route("**/api/live_params", on_route)
+        pg.route("**/api/params/live", on_route)
         pg.goto(audit_server["url"])
         pg.wait_for_timeout(600)
         pg.evaluate("() => { window.LiveFDN.isRunning = () => true; }")

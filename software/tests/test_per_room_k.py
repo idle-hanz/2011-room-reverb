@@ -100,15 +100,15 @@ def test_unreachable_dials_stay_finite():
 def test_phys_preview_hall_and_off_bytes():
     client = TestClient(A.app)
     for name, body in OFF_BODIES.items():
-        got = client.post("/api/phys_preview", json=body).content
+        got = client.post("/api/params/phys", json=body).content
         assert got == OFF_BYTES[name], (name, got)
     for dial in (4.0, 8.0):
-        data = client.post("/api/phys_preview", json={
+        data = client.post("/api/params/phys", json={
             "W": 57, "H": 34.2, "L": 97, "decay_lock": True, "decay_s": dial,
         }).json()
         assert data["on"] is True and data["reachable"] is True
         assert _rel(data["mean_500_1k"], dial) <= 0.005
-    short = client.post("/api/phys_preview", json={
+    short = client.post("/api/params/phys", json={
         "W": 57, "H": 34.2, "L": 97, "decay_lock": True, "decay_s": 1.8,
     }).json()
     assert short["reachable"] is False

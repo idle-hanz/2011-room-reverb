@@ -1,6 +1,6 @@
 /* SL1 + SL5 + SL6 prebuild: Surfaces "Room result" panel, Decay mode selector, per-face Treatment rows,
-   Auto-treat suggestions (Accept / Discard). Standalone; talks to /api/room_result, /api/auto_treat,
-   /api/make_panel. Needs window.RRState (app.js state) and window.RRColourSurfaces (the Surfaces tab
+   Auto-treat suggestions (Accept / Discard). Standalone; talks to /api/room/result, /api/room/treat,
+   /api/room/panel. Needs window.RRState (app.js state) and window.RRColourSurfaces (the Surfaces tab
    instance): in the box copy one hook line in app.js syncUINow() sets both.
    State it owns: state.decay_mode ("flat" | "surfaces"), state.surf_directional,
    state.surf_cal (seven factors from Calibrate; Play posts the same list at Amount 100),
@@ -36,8 +36,8 @@
     var s = st(); var body = JSON.parse(JSON.stringify(s || {}));
     if (extra) Object.keys(extra).forEach(function (k) { body[k] = extra[k]; });
     body.surf_treatment = rows();
-    if (url === "/api/room_result" && window.RRApplyTreatAmount) window.RRApplyTreatAmount(body);
-    if (url === "/api/room_result" && window.RRApplyTreatDecay) window.RRApplyTreatDecay(body);
+    if (url === "/api/room/result" && window.RRApplyTreatAmount) window.RRApplyTreatAmount(body);
+    if (url === "/api/room/result" && window.RRApplyTreatDecay) window.RRApplyTreatDecay(body);
     return fetch(url, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) })
       .then(function (r) { if (!r.ok) throw new Error(url + " " + r.status); return r.json(); });
   }
@@ -321,7 +321,7 @@
     var bt = el("button", "chip", "+ Tuned panel"); bt.type = "button"; bt.id = "slAddPanel";
     bt.title = "Membrane below 180 Hz, Helmholtz above (Cox & D'Antonio ch. 7)";
     bt.addEventListener("click", function () {
-      post("/api/make_panel", { f0: Number(f0.value) }).then(function (d) {
+      post("/api/room/panel", { f0: Number(f0.value) }).then(function (d) {
         if (!d.row) { flash("No practical panel for that frequency (< 300 Hz only)."); return; }
         var r = d.row; r.face = k; r.suggested = false; r.id = uid("pan");
         var room = MAX_COVER - faceCover(k); r.coverage = Math.round(Math.min(r.coverage, room) * 1000) / 1000;
@@ -343,7 +343,7 @@
   function autoTreat(tmid) {
     var s = st(); if (!s) return;
     flash("Auto-treat\u2026");
-    post("/api/auto_treat", { t_mid: tmid }).then(function (d) {
+    post("/api/room/treat", { t_mid: tmid }).then(function (d) {
       view.plan = d;
       var L = sugg(); L.length = 0;
       (d.suggested || []).forEach(function (r) { L.push(r); });
@@ -391,7 +391,7 @@
     var btn = document.getElementById("slCalibrate");
     if (btn) btn.disabled = true;
     s.surf_directional = true;
-    post("/api/surf_calibrate").then(function (d) {
+    post("/api/room/calibrate").then(function (d) {
       if (!d || !d.ok) { flash((d && d.error) || "Calibrate failed"); return; }
       s.surf_cal = d.surf_cal;
       if (d.rendered_t20) s.surf_rendered_t20 = d.rendered_t20;
@@ -410,7 +410,7 @@
   function refresh() {
     if (!st() || !document.getElementById("slRtCanvas")) return;
     paintAmount();
-    post("/api/room_result").then(function (d) { view.last = d; followDial(); draw(); readout(); lockNote(); }).catch(function (e) { flash(String(e)); });
+    post("/api/room/result").then(function (d) { view.last = d; followDial(); draw(); readout(); lockNote(); }).catch(function (e) { flash(String(e)); });
   }
   function dialS() { var s = st() || {}; var v = Number(s.decay_s); return isFinite(v) && v > 0.05 ? v : 1.8; }
   function followDial() { var t = document.getElementById("slAutoTmid"); if (t && !t.dataset.user) t.value = dialS().toFixed(2); }

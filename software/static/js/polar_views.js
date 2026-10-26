@@ -219,7 +219,7 @@
       colour_mode: cacheMode,
       mics: missing.map(function (row) { return { id: row.id, hpf_on: !!row.hpf_on }; })
     });
-    fetch("/api/polar_display", {
+    fetch("/api/display/field", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: body
@@ -599,7 +599,7 @@
   }
 
   function loadCatalogue(done) {
-    fetch("/api/mic_presets").then(function (res) {
+    fetch("/api/catalogue/mics").then(function (res) {
       if (!res.ok) throw new Error("HTTP " + res.status);
       return res.json();
     }).then(function (data) {

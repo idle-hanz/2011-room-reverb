@@ -324,7 +324,7 @@
       }
       curveKey = key;
       var req = ++curveReq;
-      fetch("/api/source_preview", {
+      fetch("/api/params/source", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(curvesBody())
@@ -337,7 +337,7 @@
       clearTimeout(hearTimer);
       hearTimer = setTimeout(function () {
         var req = ++hearReq;
-        fetch("/api/source_preview", {
+        fetch("/api/params/source", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(curvesBody())
@@ -446,7 +446,7 @@
       });
     }
 
-    fetch("/api/source_presets").then(function (r) { return r.json(); }).then(function (data) {
+    fetch("/api/catalogue/sources").then(function (r) { return r.json(); }).then(function (data) {
       fillPresets((data && data.presets) || []);
       syncWidgets();
     }).catch(function () {});

@@ -52,7 +52,7 @@ from early_field import (  # noqa: E402
 
 Vec3 = Tuple[float, float, float]
 
-# Drawing rings. Same list on the Mic desk and on POST /api/polar.
+# Drawing rings. Same list on the Mic desk and on POST /api/display/polar.
 RING_HZ: Tuple[float, ...] = (20.0, 63.0, 125.0, 250.0, 1000.0, 4000.0, 8000.0, 16000.0)
 RING_LABELS: Tuple[str, ...] = ("20", "63", "125", "250", "1k", "4k", "8k", "16k")
 

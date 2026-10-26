@@ -911,25 +911,22 @@ def index():
     return (STATIC / "index.html").read_text(encoding="utf-8")
 
 
-@app.get("/api/defaults")
 def api_defaults():
     p = params_from_body(dict(DEFAULTS))
     return {"defaults": DEFAULTS, "geometry": geometry_payload(p)}
 
 
 @app.get("/api/settings")
-def api_settings():
-    """The shared settings table. The page fetches this once at boot."""
+def api_settings(part: str = ""):
+    """The shared settings table. The page fetches this once at boot.
+
+    `part=defaults` is the old defaults payload. Both answers come from the table.
+    """
+    if part == "defaults":
+        return api_defaults()
     return settings_payload()
 
 
-@app.post("/api/geometry")
-def api_geometry(body: dict):
-    p = params_from_body(body)
-    return _attach_warnings(geometry_payload(p), body)
-
-
-@app.post("/api/live_params")
 def api_live_params(body: dict):
     """Running-FDN coefficients for the AudioWorklet. Same algebra as Render."""
     try:
@@ -983,7 +980,6 @@ def _images_payload(p: dict, mics, mic_override=None):
     )
 
 
-@app.post("/api/images")
 def api_images(body: dict):
     """Early-field image lattice + folded paths + last legs for selected mics."""
     p = params_from_body(body)
@@ -1036,12 +1032,10 @@ def _annotate_images(payload: dict, p: dict) -> None:
     }
 
 
-@app.get("/api/source_presets")
 def api_source_presets():
-    return {"presets": source_radiation.catalog()}
+    return {"default": D("source_radiation"), "presets": source_radiation.catalog()}
 
 
-@app.post("/api/source_preview")
 def api_source_preview(body: dict):
     """Polar in the source frame, plus what the centre mic hears on the direct."""
     try:
@@ -1315,7 +1309,7 @@ def _render_impl(
         status += "\n" + str(info.get("colour_notice"))
     payload = {
         "ok": True,
-        "preview_url": f"/api/preview?path={preview}",
+        "preview_url": f"/api/render?path={preview}",
         "out_path": str(out),
         "status": status,
         "geometry": geometry_payload(p),
@@ -1342,7 +1336,7 @@ def api_render(
         _render_lock.release()
 
 
-@app.get("/api/preview")
+@app.get("/api/render")
 def api_preview(path: str):
     try:
         fp = Path(path).resolve()
@@ -1364,37 +1358,11 @@ def api_preview(path: str):
 
 
 
-@app.get("/api/mic_presets")
 def api_mic_presets():
-    from mic_colour.preset_store import DEFAULT_PRESET_ID, get_store
-    return {"ok": True, "default": DEFAULT_PRESET_ID, "presets": get_store().summaries()}
+    from mic_colour.preset_store import get_store
+    return {"ok": True, "default": D("mic_preset_l"), "presets": get_store().summaries()}
 
 
-@app.get("/api/mic_presets/{mic_id}")
-def api_mic_preset(mic_id: str):
-    from mic_colour.pattern_map import capsule_law
-    from mic_colour.preset_store import get_store, resolve_preset_id
-    try:
-        pid = resolve_preset_id(mic_id, explicit=True)
-    except KeyError:
-        return JSONResponse({"ok": False, "error": "unknown preset"}, status_code=404)
-    preset = get_store().get(pid)
-    if preset is None:
-        return JSONResponse({"ok": False, "error": "unknown preset"}, status_code=404)
-    return {
-        "ok": True,
-        "preset": preset,
-        "capsule": capsule_law(preset.get("family")),
-    }
-
-
-@app.get("/api/surfaces")
-def api_surfaces_defaults():
-    """Default A–F surface cards (absorb / EQ / diffusion). B/D/E/F names VERIFIED; A/C split ASSUMED."""
-    return surfaces_payload(default_surfaces())
-
-
-@app.get("/api/surface_materials")
 def api_surface_materials():
     """Role-tagged material library. Curtain is wall-only. Carpet is floor-only."""
     from surface_colour import LETTER_ROLE
@@ -1406,7 +1374,6 @@ def api_surface_materials():
     }
 
 
-@app.post("/api/room_result")
 def api_room_result(body: dict):
     """SL1: Room result model (read-only, no audio). T(f) per 1/3 octave, faces vs faces + air, target,
     Schroeder, EBU Tm with pass/fail, axial modes. Treatment rows (SL5) count once accepted."""
@@ -1430,7 +1397,6 @@ def api_room_result(body: dict):
     return out
 
 
-@app.post("/api/auto_treat")
 def api_auto_treat(body: dict):
     """SL6. Suggest Treatment rows. Nothing is written onto the scene.
 
@@ -1455,7 +1421,6 @@ def api_auto_treat(body: dict):
     return out
 
 
-@app.post("/api/make_panel")
 def api_make_panel(body: dict):
     """SL5. One tuned row for the Treatment list. Below 300 Hz, else null.
 
@@ -1486,7 +1451,6 @@ def _impulse_render(p: dict, **over):
     return ir, info
 
 
-@app.post("/api/surf_calibrate")
 def api_surf_calibrate(body: dict):
     """D-SL4. One impulse Render, T20 per octave, factors, a second Render.
 
@@ -1536,7 +1500,6 @@ def api_surf_calibrate(body: dict):
         _render_lock.release()
 
 
-@app.post("/api/phys_preview")
 def api_phys_preview(body: dict):
     """Read-only octave ceiling. Not a live-dict key.
 
@@ -1574,130 +1537,8 @@ def api_phys_preview(body: dict):
     }
 
 
-@app.post("/api/colour")
-def api_colour(body: dict):
-    """Compute 1/3-octave Colour from a short wet IR (no dry file required).
-
-    Uses current room + ASSUMED surfaces. Returns centres_hz + levels_db.
-    """
-    from render_pipeline import (
-        DEFAULT_DEPTH,
-        SPEED_OF_SOUND_M_S,
-        MicStand,
-        allpass_ir_for_stages,
-        combined_ir,
-        compute_taps,
-        grid_bias_for_hadamard_n,
-        normalize_hadamard_n,
-        precompute_wall_peaking_coeffs,
-        direct_field_from_params,
-        propose_fdn_delays_samples,
-        fdn_delays_from_taps,
-    )
-    import numpy as np
-
-    p = params_from_body(body)
-    from mic_colour.colour import MicColour
-    mic_colour = MicColour(
-        p.get("colour_mode"),
-        p.get("mic_preset_l"),
-        p.get("mic_preset_c"),
-        p.get("mic_preset_r"),
-        44100,
-        hpf_engaged=bool(p.get("mic_hpf_engaged")),
-        hpf_sides=p.get("mic_hpf_sides"),
-        hpf_centre=p.get("mic_hpf_centre"),
-        colour_impl=p.get("colour_impl") or "sos",
-    )
-    surfaces = p.get("surfaces") or default_surfaces()
-    room = (p["W"], p["H"], p["L"])
-    sr = 44100
-    c = SPEED_OF_SOUND_M_S
-    n_had = normalize_hadamard_n(p["hadamard_n"])
-    grid = grid_bias_for_hadamard_n(n_had)
-    prep = direct_field_from_params(p)
-    stand = MicStand.from_prepare(
-        prep, car_omni=p["car_omni"],
-        pattern_l=p.get("pattern_l"), pattern_c=p.get("pattern_c"), pattern_r=p.get("pattern_r"),
-        yaw_l_deg=p.get("yaw_l_deg"), yaw_c_deg=p.get("yaw_c_deg"), yaw_r_deg=p.get("yaw_r_deg"),
-        family_l=p.get("family_l"), family_c=p.get("family_c"), family_r=p.get("family_r"),
-        polar_l=p.get("polar_l"), polar_c=p.get("polar_c"), polar_r=p.get("polar_r"),
-        centre_dz=p.get("centre_dz") or 0.0,
-    )
-    from render_pipeline import _place_stand
-    stand_mk = copy.copy(stand)
-    stand = _place_stand(stand, p)
-    taps = compute_taps(
-        room, prep.source, stand, c=c, grid=grid, origin="corner",
-        z_face_4l=False, hadamard_n=n_had,
-        include_offaxis_shelf=mic_colour.include_offaxis_shelf,
-        include_pattern=not mic_colour.measured,
-        reaktor_parity=False,
-    )
-    wall_cache = precompute_wall_peaking_coeffs(room, sr, c, DEFAULT_DEPTH)
-    ap_cache = {
-        0: None,
-        1: allpass_ir_for_stages(1, sr),
-        2: allpass_ir_for_stages(2, sr),
-    }
-    delays = fdn_delays_from_taps(taps, sr=sr, c=c, n=n_had)
-    early_ms = min(90.0, float(p["ir_length_ms"]))
-    fdn_ms = max(early_ms, min(float(p["ir_length_ms"]), 1000.0))
-    tail_sos = None
-    if p.get("offaxis_tail"):
-        from mic_colour.tail_diffuse import design_pack
-        tail_sos = design_pack(
-            (p.get("mic_preset_l"), p.get("mic_preset_c"), p.get("mic_preset_r")),
-            sr,
-            (p.get("polar_l"), p.get("polar_c"), p.get("polar_r")),
-            (p.get("pattern_l"), p.get("pattern_c"), p.get("pattern_r")),
-        )
-    ir_L, ir_R = combined_ir(
-        taps, room, sr, c, wall_cache, ap_cache, delays,
-        early_ms=early_ms, fdn_ms=fdn_ms, fdn_g=float(np.clip(p["fdn_g"], 1e-6, 0.999)),
-        early_wet=p["early_wet"], fdn_wet=p["fdn_wet"],
-        direct_wet=p.get("direct_wet", 1.0), hadamard_n=n_had,
-        surfaces=surfaces,
-        diffusion_seed=p["diffusion_seed"],
-        lambda_ref=p["lambda_ref"],
-        mic_left=prep.mic_left,
-        mic_right=prep.mic_right,
-        colour=mic_colour,
-        mic_gain_l=p.get("mic_gain_l", 1.0),
-        mic_gain_c=p.get("mic_gain_c", 1.0),
-        mic_gain_r=p.get("mic_gain_r", 1.0),
-        mic_pan_l=p.get("mic_pan_l", -1.0),
-        mic_pan_c=p.get("mic_pan_c", 0.0),
-        mic_pan_r=p.get("mic_pan_r", 1.0),
-        mic_phase_l=p.get("mic_phase_l", 1.0),
-        mic_phase_c=p.get("mic_phase_c", 1.0),
-        mic_phase_r=p.get("mic_phase_r", 1.0),
-        desk=p,
-        smooth=bool(p.get("smooth", True)),
-        makeup_stand=stand_mk,
-        makeup_source=prep.source,
-        makeup_grid=grid,
-        makeup_shelf=mic_colour.include_offaxis_shelf,
-        tail_sos=tail_sos,
-    )
-    ref_mode = str((body or {}).get("ref_mode") or "peak")
-    colour = colour_from_stereo(ir_L, ir_R, sr, ref_mode=ref_mode)
-    return {
-        "ok": True,
-        "colour": colour,
-        "surfaces": surfaces_payload(surfaces),
-        "hadamard_n": n_had,
-        "preview_ms": fdn_ms,
-        "assumed": True,
-        "diffusion_seed": p["diffusion_seed"],
-        "lambda_ref": p["lambda_ref"],
-    }
-
-
-@app.post("/api/polar")
 def api_polar(body: dict):
     """ASSUMED mic polar × frequency in mic–source plane (L/C/R + Sum)."""
-    from mic_colour.preset_store import DEFAULT_PRESET_ID
     p = params_from_body(body)
     n_az = int(body.get("n_az") or 72)
     n_az = max(24, min(180, n_az))
@@ -1726,10 +1567,10 @@ def api_polar(body: dict):
         family_l=p.get("family_l"), family_c=p.get("family_c"), family_r=p.get("family_r"),
         polar_l=p.get("polar_l"), polar_c=p.get("polar_c"), polar_r=p.get("polar_r"),
         centre_dz=p.get("centre_dz") or 0.0,
-        colour_mode=p.get("colour_mode") or "MEASURED_SHELF",
-        mic_preset_l=p.get("mic_preset_l") or DEFAULT_PRESET_ID,
-        mic_preset_c=p.get("mic_preset_c") or DEFAULT_PRESET_ID,
-        mic_preset_r=p.get("mic_preset_r") or DEFAULT_PRESET_ID,
+        colour_mode=p.get("colour_mode") or D("colour_mode"),
+        mic_preset_l=p.get("mic_preset_l") or D("mic_preset_l"),
+        mic_preset_c=p.get("mic_preset_c") or D("mic_preset_c"),
+        mic_preset_r=p.get("mic_preset_r") or D("mic_preset_r"),
         mic_hpf_engaged=bool(p.get("mic_hpf_engaged")),
         mic_hpf_sides=p.get("mic_hpf_sides"),
         mic_hpf_centre=p.get("mic_hpf_centre"),
@@ -1739,7 +1580,6 @@ def api_polar(body: dict):
 
 
 
-@app.post("/api/polar_display")
 def api_polar_display(body: dict):
     """Catalogue curves for the Polar tab. Display only. Not a live parameter."""
     from polar_field import display_h_db
@@ -1747,7 +1587,7 @@ def api_polar_display(body: dict):
     raw = (body or {}).get("mics") or []
     if not isinstance(raw, list):
         raw = []
-    mode = str((body or {}).get("colour_mode") or "MEASURED_SHELF")
+    mode = str((body or {}).get("colour_mode") or D("colour_mode"))
     out = []
     for row in raw[:8]:
         if isinstance(row, str):
@@ -1760,6 +1600,61 @@ def api_polar_display(body: dict):
             colour_mode=mode,
         ))
     return {"ok": True, "mics": out}
+
+
+def _unknown(kind: str):
+    return JSONResponse({"ok": False, "error": "unknown " + kind}, status_code=404)
+
+
+@app.post("/api/params/{kind}")
+def api_params(kind: str, body: dict):
+    """One params route. live, images, phys, and source all read the settings table."""
+    fn = {
+        "live": api_live_params,
+        "images": api_images,
+        "phys": api_phys_preview,
+        "source": api_source_preview,
+    }.get(kind)
+    if fn is None:
+        return _unknown(kind)
+    return fn(body or {})
+
+
+@app.post("/api/display/{kind}")
+def api_display(kind: str, body: dict):
+    """One display route. polar is the field. field is the catalogue curves."""
+    fn = {"polar": api_polar, "field": api_polar_display}.get(kind)
+    if fn is None:
+        return _unknown(kind)
+    return fn(body or {})
+
+
+@app.post("/api/room/{kind}")
+def api_room(kind: str, body: dict):
+    """One room-result route. result, treat, panel, and calibrate."""
+    fn = {
+        "result": api_room_result,
+        "treat": api_auto_treat,
+        "panel": api_make_panel,
+        "calibrate": api_surf_calibrate,
+    }.get(kind)
+    if fn is None:
+        return _unknown(kind)
+    return fn(body or {})
+
+
+@app.get("/api/catalogue/{kind}")
+def api_catalogue(kind: str):
+    """One catalogue route. Each answer reads the settings table."""
+    if kind == "mics":
+        return api_mic_presets()
+    if kind == "sources":
+        return api_source_presets()
+    if kind == "materials":
+        out = api_surface_materials()
+        out["mirror_lr"] = D("mirror_lr")
+        return out
+    return _unknown(kind)
 
 
 def fitter_model_path() -> Path:

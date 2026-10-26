@@ -117,7 +117,7 @@ async function fetchImages() {
   var body = Object.assign({}, heardMix(state), { mics: selectedMics });
   var req = ++imagesReq;
   try {
-    var res = await fetch("/api/images", {
+    var res = await fetch("/api/params/images", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(body)

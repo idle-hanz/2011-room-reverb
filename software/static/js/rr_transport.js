@@ -15,7 +15,7 @@ async function pushLiveParams() {
   }
   liveBusy = true;
   try {
-    var res = await fetch("/api/live_params", {
+    var res = await fetch("/api/params/live", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(liveRequestBody())
