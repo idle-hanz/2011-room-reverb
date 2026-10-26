@@ -1,5 +1,6 @@
 """Box Mirror L/R. Off keeps the live MD5. On copies left onto right."""
 from __future__ import annotations
+import pytest
 
 import hashlib
 import json
@@ -54,6 +55,7 @@ def test_box_off_is_bit_exact():
     }))) == SPLAY
 
 
+@pytest.mark.slow
 def test_toggle_copies_left_onto_right_only():
     off = A.params_from_body({"mirror_lr": False, "surfaces": _split(), "room_shape": "box"})
     assert off["surfaces"]["A"]["absorb"][0] == 0.91

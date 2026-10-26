@@ -4,6 +4,7 @@ Render goes through render() with two_sources and both dry channels.
 render_ir.py forces two_sources off, so this test does not use it.
 """
 from __future__ import annotations
+import pytest
 
 import os
 import sys
@@ -92,6 +93,7 @@ def _within_tol(m, tol):
     return [k for k in tol if m[k] > tol[k]]
 
 
+@pytest.mark.slow
 def test_hall_render_and_play_mirror_and_t30():
     ctx, A, render = _ctx()
     from test_mirror_symmetry import TOL, _body, mirror_metrics

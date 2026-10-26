@@ -5,6 +5,7 @@ The harness golden scene peaks above 0.95 on this tree, so that file is allowed
 to move. A direct-only render under the knee must stay byte-identical.
 """
 from __future__ import annotations
+import pytest
 
 import json
 import shutil
@@ -61,6 +62,7 @@ def _run(cmd):
     return r.stdout
 
 
+@pytest.mark.slow
 def test_b3_quiet_identical_and_hot_rms(tmp_path):
     """Quiet direct render stays byte-identical. Hot faders agree with Play within 0.5 dB."""
     quiet_out = tmp_path / "quiet.f32"

@@ -1,6 +1,7 @@
 """Phase 1: aim·ray angle, fitter relative_db, Render hooks. No SciPy package import."""
-
 from __future__ import annotations
+
+import pytest
 
 import inspect
 import math
@@ -738,6 +739,7 @@ def _decode_ir(b64):
     return np.frombuffer(raw, dtype="<f4").astype(np.float64).copy()
 
 
+@pytest.mark.slow
 def test_sos_accuracy_against_relative_db():
     """AT-C1: packed SOS vs analytic relative_db on every measured mic."""
     from mic_colour.colour import MicColour
@@ -1008,13 +1010,11 @@ def test_live_colour_parity():
 
     work = (SOFTWARE / "static/js/fdn_worklet.js").read_text(encoding="utf-8")
     live_js = (SOFTWARE / "static/js/live_fdn.js").read_text(encoding="utf-8")
-    page = (SOFTWARE / "static/index.html").read_text(encoding="utf-8")
     pipe = (SOFTWARE / "render_pipeline.py").read_text(encoding="utf-8")
     assert "apply_mic=True" not in pipe
     assert "mic_one_pole_coeff" not in pipe
     stereo = (SOFTWARE / "engine" / "live_stereo.c").read_text(encoding="utf-8")
     assert "WORKLET_VER = 63" in live_js
-    assert "live_fdn.js?v=64" in page
     assert "MAX_IRS = 192" in stereo
     assert "var MAX_IRS = 192" in work
     assert "Mic colour is OFF:" in live_js

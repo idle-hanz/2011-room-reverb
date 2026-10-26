@@ -1,5 +1,6 @@
 """Routing R1. Buses stay separate until the fold. Master Room Crush is one Bloom call."""
 from __future__ import annotations
+import pytest
 
 import hashlib
 import json
@@ -171,6 +172,7 @@ def _run(cmd):
         raise AssertionError((r.stderr or r.stdout)[-800:])
 
 
+@pytest.mark.slow
 def test_array_glue_moves_a_play_sample(tmp_path):
     """Shipped wasm. Array Glue at 100, preamp off, changes the left channel."""
     root = SW.parent

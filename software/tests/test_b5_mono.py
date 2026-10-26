@@ -6,6 +6,7 @@ This file does not change level. The −10.66 dB table is the pre-S-MIX gap
 between L/R gains 1 and 0, printed here as a short unlocked render.
 """
 from __future__ import annotations
+import pytest
 
 import inspect
 import json
@@ -93,6 +94,7 @@ def _energy_db(x) -> float:
     return 10.0 * math.log10(max(float(np.sum(x ** 2)), 1e-300))
 
 
+@pytest.mark.slow
 def test_b5_mono_centre_is_c_only_and_faders_inert():
     preset = _mono()
     muted = _mono(mic_gain_l=0.0, mic_gain_r=0.0)

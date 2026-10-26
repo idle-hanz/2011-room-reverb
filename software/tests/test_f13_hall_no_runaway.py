@@ -4,6 +4,7 @@ The mirror hall is acceptance test_mirror_symmetry.HALL. Key absent, 12 s.
 1 s RMS windows must fall, and window 12 must be at least 40 dB under window 1.
 """
 from __future__ import annotations
+import pytest
 
 import os
 import sys
@@ -55,6 +56,7 @@ def _assert_falls(ws, name):
     assert ws[11] <= ws[0] - 40.0, f"{name} window 12 not 40 dB down: {ws}"
 
 
+@pytest.mark.slow
 def test_hall_two_source_tails_fall():
     ctx = _ctx()
     from test_mirror_symmetry import _body

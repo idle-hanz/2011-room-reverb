@@ -5,6 +5,7 @@ heardMix posts them only while that strip is a room mic. These tests pin that po
 the engine stand pose is bit-exact, and that two different spots are not.
 """
 from __future__ import annotations
+import pytest
 
 try:
     import _harness as H
@@ -26,6 +27,7 @@ def _room(cap, x, y, z, **over):
     return b
 
 
+@pytest.mark.slow
 def test_shared_spot_equals_per_strip_spot():
     """Same posted numbers, shared spot or migrated per-strip spot. Same IR."""
     a = H.render_body(_room("r", 1.0, 2.0, 6.0, fdn_wet=0.0))
@@ -33,6 +35,7 @@ def test_shared_spot_equals_per_strip_spot():
     assert H.null_db(a, b) <= -120.0
 
 
+@pytest.mark.slow
 def test_two_strips_can_sit_in_different_places():
     a = H.render_body(dict(_room("l", 1.0, 2.0, 6.0, fdn_wet=0.0), mic_x_r=5.0, mic_y_r=2.0, mic_z_r=6.0))
     b = H.render_body(dict(_room("l", 1.0, 2.0, 6.0, fdn_wet=0.0), mic_x_r=1.0, mic_y_r=2.0, mic_z_r=6.0))
@@ -90,6 +93,7 @@ def test_engine_stand_matches_roommath_algebra():
     assert pose["c"] == (3.0, 1.5, 1.5)
 
 
+@pytest.mark.slow
 def test_room_spot_at_stand_nulls_ortf():
     """Switching to Room mic at the current stand pose does not move the sound."""
     base = _page_ortf()
@@ -99,6 +103,7 @@ def test_room_spot_at_stand_nulls_ortf():
         assert db <= -120.0, (cap, db)
 
 
+@pytest.mark.slow
 def test_room_spot_at_stand_nulls_with_height():
     base = _page_ortf(my_l=1.8, align_horizontal=True)
     pose = _engine_pose(base)
@@ -108,6 +113,7 @@ def test_room_spot_at_stand_nulls_with_height():
     assert db <= -120.0, db
 
 
+@pytest.mark.slow
 def test_old_shared_spot_matches_migrated_numbers():
     """Recall copies room_x/y/z/yaw onto the strip. The posted body is the same numbers."""
     shared = _page_ortf(mic_x_r=4.0, mic_y_r=1.5, mic_z_r=2.0, yaw_r_deg=0.0)
@@ -117,6 +123,7 @@ def test_old_shared_spot_matches_migrated_numbers():
     assert db <= -120.0
 
 
+@pytest.mark.slow
 def test_dui25_r_is_a_free_room_mic():
     """L = S, C = M, R = its own room mic. The stand pose nulls. A different spot does not."""
     base = H.ms(fdn_wet=0.0, direct_wet=1.0, early_wet=0.0)

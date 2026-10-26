@@ -7,6 +7,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import re
 import sys
 from pathlib import Path
 
@@ -67,12 +68,53 @@ def test_live_md5s_match_a7():
     assert kept_digest == CENTRE_MD5
 
 
+# Cache query on each file index.html loads. One table, one check.
+PIN_TABLE = {
+    "app.css": 38,
+    "sl_room_result.css": 2,
+    "rr_controls.css": 1,
+    "room_shape.js": 7,
+    "room_math.js": 19,
+    "spectrum_colors.js": 1,
+    "freq_palette.js": 2,
+    "room_view_pose.js": 1,
+    "room_draw.js": 5,
+    "room_3d.js": 23,
+    "room_editor.js": 24,
+    "image_views.js": 20,
+    "colour_surfaces.js": 9,
+    "polar_field.js": 8,
+    "mic_desk.js": 20,
+    "source_desk.js": 4,
+    "pack_room.js": 55,
+    "live_fdn.js": 64,
+    "lr_buttons.js": 1,
+    "ms_presets.js": 3,
+    "pair_mode.js": 2,
+    "drag_model.js": 2,
+    "room_window_math.js": 1,
+    "routing_scene.js": 3,
+    "app.js": 93,
+    "sl_room_result.js": 7,
+    "rr_controls.js": 1,
+    "rr_controls_boot.js": 1,
+}
+
+
 def test_cache_pins():
     live = (SW / "static" / "js" / "live_fdn.js").read_text(encoding="utf-8")
-    page = (SW / "static" / "index.html").read_text(encoding="utf-8")
     assert "WORKLET_VER = 63" in live
-    assert "live_fdn.js?v=64" in page
-    assert "app.js?v=93" in page
+
+
+def test_index_versions_match_pin_table():
+    page = (SW / "static" / "index.html").read_text(encoding="utf-8")
+    found = re.findall(r'(?:href|src)="[^"]*?([^"/?]+)\?v=(\d+)"', page)
+    assert found, "index.html has no cache queries"
+    got = {}
+    for name, ver in found:
+        assert name not in got or got[name] == int(ver), name
+        got[name] = int(ver)
+    assert got == PIN_TABLE
 
 
 def test_geometric_level_is_inverse_distance():

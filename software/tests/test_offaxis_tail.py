@@ -1,6 +1,7 @@
 """Off-axis tail switch. Absent or false stays today's live MD5. No listen render."""
-
 from __future__ import annotations
+
+import pytest
 
 import base64
 import hashlib
@@ -238,6 +239,7 @@ def _scene(sx, sz, **kw):
     return body
 
 
+@pytest.mark.slow
 def test_offaxis_high_band_matches_the_reference(tmp_path):
     """Shipped wasm. One source, centre mic, 2 m, on-axis versus 90 degrees.
 

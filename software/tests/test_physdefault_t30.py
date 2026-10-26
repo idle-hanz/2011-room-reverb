@@ -5,6 +5,7 @@ Colour off, early 0, direct 0, 8 s. The gate is 0.02 relative to the
 values measured on 2026-10-19. This row is T30. It is not the F9 T20 row.
 """
 from __future__ import annotations
+import pytest
 
 import os
 import sys
@@ -34,6 +35,7 @@ PIN = {
 }
 
 
+@pytest.mark.slow
 def test_physdefault_std_lock18_t30_pin():
     sys.path[:0] = [str(HARNESS), str(HARNESS / "lib"), str(SW), str(SW / "engine")]
     os.chdir(SW)

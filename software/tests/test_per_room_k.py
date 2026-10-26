@@ -4,6 +4,7 @@ Boot k stays the three F13 floats. Other rooms solve their own k. Off and
 unarmed preview replies stay the F13 bytes.
 """
 from __future__ import annotations
+import pytest
 
 import os
 import sys
@@ -144,6 +145,7 @@ def _mid_t30(x, sr=48000):
     return float(np.mean(vals)), vals
 
 
+@pytest.mark.slow
 def test_hall_dial8_render_matches_play():
     """One source, hall, dial 8, key absent. 500 Hz and 1 kHz T30 within 10 %."""
     body = {

@@ -138,6 +138,7 @@ def _posted(url: str, wav: str, seq: list[str]) -> dict:
     return _public(caps[-1])
 
 
+@pytest.mark.slow
 def test_a1_place_orders_match_fresh(audit_server):
     """All 9 X→Y posts equal Y clicked fresh. Studio decay_s is 1.80. Club decay_s is 1.80."""
     url = audit_server["url"]
@@ -167,6 +168,7 @@ def _rects_overlap(a, b) -> bool:
     return a["x"] < b["x"] + b["width"] - 1 and a["x"] + a["width"] - 1 > b["x"] and a["y"] < b["y"] + b["height"] - 1 and a["y"] + a["height"] - 1 > b["y"]
 
 
+@pytest.mark.slow
 def test_a2_phone_tabs(audit_server):
     """390 px: every tab is hit-testable, no page scroll, sidebar does not cover the stage.
 
@@ -253,6 +255,7 @@ def _shots():
     return d
 
 
+@pytest.mark.slow
 def test_a4_binaural_hides_dead_rows(audit_server):
     """Binaural hides the dead rows. Other setups show them. Posted keys do not grow, except the XY room mic."""
     p, b = _chrome()
@@ -334,6 +337,7 @@ def test_a4_binaural_hides_dead_rows(audit_server):
         p.stop()
 
 
+@pytest.mark.slow
 def test_a5_stop_suspends_and_play_resumes(audit_server):
     p, b = _chrome()
     try:
@@ -361,6 +365,7 @@ def test_a5_stop_suspends_and_play_resumes(audit_server):
         p.stop()
 
 
+@pytest.mark.slow
 def test_a9_focus_mic_screenshot(audit_server):
     p, b = _chrome()
     try:
@@ -377,6 +382,7 @@ def test_a9_focus_mic_screenshot(audit_server):
         p.stop()
 
 
+@pytest.mark.slow
 def test_a10_header_status_on_every_tab(audit_server):
     p, b = _chrome()
     try:
@@ -421,6 +427,7 @@ def test_a10_header_status_on_every_tab(audit_server):
         p.stop()
 
 
+@pytest.mark.slow
 def test_a11_source_labels_omni_and_stale_reply(audit_server):
     """(a)(b) screenshots. (c) a late /api/images body does not replace a newer one."""
     p, b = _chrome()
@@ -519,6 +526,7 @@ _UI_ONLY_IDS = {
 }
 
 
+@pytest.mark.slow
 def test_a12_visible_controls_post_or_are_ui_only(audit_server):
     p, b = _chrome()
     try:
@@ -816,6 +824,7 @@ def test_b1_chrome_plays_24bit_wav(audit_server, tmp_path):
         p.stop()
 
 
+@pytest.mark.slow
 def test_b3_limiter_message_in_play_and_render(audit_server, tmp_path):
     """Hot faders: the Play badge and the Render status both name the limiter."""
     import random
@@ -874,6 +883,7 @@ def test_b3_limiter_message_in_play_and_render(audit_server, tmp_path):
         p.stop()
 
 
+@pytest.mark.slow
 def test_b5_mono_strips_disabled_and_restored(audit_server):
     """Mono centre greys L and R. Other setups leave those strips enabled."""
     p, b = _chrome()
@@ -978,6 +988,7 @@ def test_b5_mono_strips_disabled_and_restored(audit_server):
         p.stop()
 
 
+@pytest.mark.slow
 def test_b6_side_view_readout_and_drag(audit_server):
     """Side view names each capsule height, and a drag is posted to Play."""
     pose = (ROOT / "software" / "static" / "js" / "room_view_pose.js").read_text(encoding="utf-8")

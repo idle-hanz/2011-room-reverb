@@ -116,6 +116,7 @@ def test_ui_body_flat_explicit_equals_absent_bit_exact():
     assert a.tobytes() == b.tobytes()
 
 
+@pytest.mark.slow
 def test_flat_explicit_equals_absent_bit_exact():
     a, _ = _render(ir_length_ms=400)
     b, _ = _render(ir_length_ms=400, decay_mode="flat", surf_cal=[1.3] * 7,
@@ -140,6 +141,7 @@ def test_surfaces_render_default_room_room_average_matches_prototype():
     assert np.max(np.abs(err[2:])) <= 0.15, err
 
 
+@pytest.mark.slow
 def test_surfaces_then_flat_leaves_no_state_behind():
     a, _ = _render(ir_length_ms=400)
     _render(ir_length_ms=400, decay_mode="surfaces")

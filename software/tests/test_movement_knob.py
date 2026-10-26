@@ -256,6 +256,7 @@ def _py_render(body):
     return np.stack([np.asarray(y_l, np.float64), np.asarray(y_r, np.float64)], 1)
 
 
+@pytest.mark.slow
 def test_section_8_changes_a_play_sample(tmp_path):
     """Shipped wasm, through pushParams. Knob 0 is the pinned live scene.
 

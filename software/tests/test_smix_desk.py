@@ -5,6 +5,7 @@ Play nulls use the rebuilt wasm. TLAW regenerated the five ORTF goldens
 (distance law 1/r, Idle 2026-10-10). The pins below are those files.
 """
 from __future__ import annotations
+import pytest
 
 import hashlib
 import inspect
@@ -155,6 +156,7 @@ def _want_play() -> bool:
     return os.environ.get("SMIX_PLAY") == "1" or "--play" in sys.argv
 
 
+@pytest.mark.slow
 def test_ms_classic_null_user_and_bypass():
     play = _want_play()
     """Item 7.1. Width 0, R off, shared tail off. User defined and Bypass."""
@@ -170,6 +172,7 @@ def test_ms_classic_null_user_and_bypass():
             assert db < -90.0, (mode, eng, db)
 
 
+@pytest.mark.slow
 def test_mono_cancel():
     play = _want_play()
     """Item 7.2. C muted, R off. (L+R) is 0. L = −R."""
@@ -190,6 +193,7 @@ def test_mono_cancel():
             break
 
 
+@pytest.mark.slow
 def test_width_scales_s_only():
     play = _want_play()
     """Item 7.3. Width +2 dB scales L−R by 10^(2/20). M-only is unchanged.
@@ -293,6 +297,7 @@ def _role_scene(s_slot, m_slot, room_slot, pin_m=None):
     return body
 
 
+@pytest.mark.slow
 def test_room_mic_independent():
     play = _want_play()
     """Item 7.4. Muting R, then moving R, leaves L+C unchanged."""
@@ -347,6 +352,7 @@ def test_room_early_delay_matches_geometry():
     assert p["mic_preset_l"] == body.get("mic_preset_l", p["mic_preset_l"])
 
 
+@pytest.mark.slow
 def test_any_strip_route():
     play = _want_play()
     """Item 7.5. C = S, L = M, R = room matches L = S, C = M, R = room."""

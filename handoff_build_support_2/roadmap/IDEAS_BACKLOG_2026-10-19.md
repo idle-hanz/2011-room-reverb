@@ -225,3 +225,4 @@ The page has no Bloom panel, so browser Play stays bloom-off until something pos
 - Let the room shape be changed on the Space tab as well as the Room page picker.
 - L-shaped live room (lshape): parked by Idle 2026-10-24. Non-convex, needs a leg-by-leg path check so the inside corner blocks echoes, verified against nonrect\proto\brute_check.py. Not lr_symmetric. Engine and listen run first, then the picker.
 - 2026-10-24 FULL: `test_a12_visible_controls_post_or_are_ui_only` failed on the already-pressed Box chip and `slAddPorous`. Not the 500 Hz factor hold. Not chased.
+- 2026-10-26: `test_auto_treat_plan_rendered` counted 15 octave bands on the box side of the ratio, the assert wants 16. Not chased.

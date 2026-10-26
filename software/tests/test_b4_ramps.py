@@ -5,6 +5,7 @@ This file checks a move: the step stays with the sine, and an FDN unmute
 keeps the tail that ran while the output was down.
 """
 from __future__ import annotations
+import pytest
 
 import json
 import shutil
@@ -77,6 +78,7 @@ def _event(x, at, n=2400):
     return x[a:b]
 
 
+@pytest.mark.slow
 def test_b4_phase_and_fader_steps(tmp_path):
     body = {
         "decay_lock": True, "decay_s": 1.8, "colour_mode": "BYPASS",
@@ -122,6 +124,7 @@ def test_b4_phase_and_fader_steps(tmp_path):
         json.dumps(report, indent=2), encoding="utf-8")
 
 
+@pytest.mark.slow
 def test_b4_fdn_unmute_keeps_tail(tmp_path):
     body = {
         "decay_lock": True, "decay_s": 1.8, "colour_mode": "BYPASS",

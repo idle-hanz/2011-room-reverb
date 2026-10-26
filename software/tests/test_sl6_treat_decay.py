@@ -3,6 +3,7 @@
 Flat stays the empty-body live MD5. Surfaces with the switch on uses the
 500 Hz / 1 kHz material mean Render already arms when the lock is off.
 """
+import pytest
 import hashlib
 import json
 
@@ -47,6 +48,7 @@ def _live(surfaces, rows, **extra):
     return live_fdn_params(body)
 
 
+@pytest.mark.slow
 def test_flat_switch_keeps_the_empty_live_md5():
     import app_server as A
     assert A.params_from_body({})["treat_sets_decay"] is False
@@ -55,6 +57,7 @@ def test_flat_switch_keeps_the_empty_live_md5():
     assert _md5(A.live_fdn_params(A.params_from_body({"treat_sets_decay": True}))) == EMPTY
 
 
+@pytest.mark.slow
 def test_surfaces_switch_uses_the_material_mean_and_amount_shortens_it():
     W, Hh, L, surfaces, hum = H.room("real_default")
     bare = _mid(W, Hh, L, surfaces, hum, [])

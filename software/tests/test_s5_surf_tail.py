@@ -181,6 +181,7 @@ def test_fit_default_quarter_db():
     assert short is not None and len(short) == len(tail)
 
 
+@pytest.mark.slow
 def test_packer_omits_flat_and_parity():
     _boot()
     from app_server import params_from_body, live_fdn_params
@@ -213,6 +214,7 @@ def test_d16_inject_stays_and_early_gate_drops():
     assert "surf_cascade" in p
 
 
+@pytest.mark.slow
 def test_render_flat_and_parity_match_gain_only():
     """The relative cascade is the only Render audio change. Flat and parity skip it."""
     _boot()
@@ -280,6 +282,7 @@ def test_render_flat_and_parity_match_gain_only():
         rp._scale_inject_reflect = orig
 
 
+@pytest.mark.slow
 def test_play_cascade_off_matches_pre_s5():
     """Stripping the cascade block matches the pre-S5 wasm. Flat and parity already omit it."""
     ctx = _ctx()
@@ -428,6 +431,7 @@ def assert_surf_parity(ctx, extras=True):
         raise AssertionError(fails)
 
 
+@pytest.mark.slow
 def test_mirror_exact(ctx):
     """Centred ORTF pair, source mirrored in x, A and C cards swapped. L/R swap."""
     W = 6.0
@@ -479,6 +483,7 @@ def _assert_no_runaway(x, label):
     assert max(level(18), level(19)) <= -150.0
 
 
+@pytest.mark.slow
 def test_passivity_carpet_ls(ctx):
     """Dial path (phys_ceiling false). The S5 cascade is outside the loop, so T30 stays within ±3% of flat.
 
@@ -508,6 +513,7 @@ def test_passivity_carpet_ls(ctx):
         assert abs(ratio - 1.0) <= 0.03
 
 
+@pytest.mark.slow
 def test_passivity_carpet_ls_physics(ctx):
     """Physics path, key absent. Carpet against the untreated default room. No runaway.
 

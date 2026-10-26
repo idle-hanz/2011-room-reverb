@@ -4,6 +4,7 @@ Hall and boot. The before row drops surf_sos_b so the worklet copies A's
 sections onto B, which is the pre-fix path. The gate is the after row.
 """
 from __future__ import annotations
+import pytest
 
 import json
 import os
@@ -67,6 +68,7 @@ def _metrics(A, B, mirror_metrics, tol):
     return row, [k for k in tol if m[k] > tol[k]]
 
 
+@pytest.mark.slow
 def test_surfaces_two_source_mirror():
     ctx = _ctx()
     from test_mirror_symmetry import TOL, _body, mirror_metrics

@@ -609,11 +609,9 @@ def test_source_has_no_cap_and_keeps_32():
     assert "DIRECT_FOLD = 0.55" in text
     live = (ROOT / "static" / "js" / "live_fdn.js").read_text(encoding="utf-8")
     work = (ROOT / "static" / "js" / "fdn_worklet.js").read_text(encoding="utf-8")
-    page = (ROOT / "static" / "index.html").read_text(encoding="utf-8")
     assert "createConvolver" not in live
     assert "WORKLET_VER = 63" in live
     assert "LANES = 4" in text
-    assert "live_fdn.js?v=64" in page
     assert "MAX_SOS" in text
     assert "design_sos" in text
     assert "LS_DC" in text

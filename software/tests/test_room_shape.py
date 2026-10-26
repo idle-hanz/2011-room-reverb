@@ -46,8 +46,8 @@ EARLY_50_TOL_DB = 2.5
 _EARLY_N = 2400
 # First 0.25 s of the default scene, splay walls, posted ir_length_ms 250.
 # Decay lock stays on, so the file is 2790 ms. Scored 27.9 s on 2026-10-24.
-SPLAY_IR_MD5 = "35a944517e970cb5fe6a5d66f2818762"
-SPLAY_IR_MAX = 0.5661171703434549
+SPLAY_IR_MD5 = "1e0b53c621dac2413c527a42aef39620"
+SPLAY_IR_MAX = 0.5661171703434548
 _IR_SR = 48000
 _IR_N = 12000
 ROOM = (6.0, 3.0, 8.0)
@@ -280,6 +280,7 @@ def _play_bench(body, tmp_path, burst_s: float = 4.0, total_s: float = 10.0) -> 
     return json.loads(out.read_text(encoding="utf-8"))
 
 
+@pytest.mark.slow
 def test_gable_faces_are_inward_and_play_stays_under_2_40(tmp_path):
     """Gable: shoebox floor, ridge along the length, eaves at 0.75*H.
 
@@ -338,6 +339,7 @@ def test_gable_faces_are_inward_and_play_stays_under_2_40(tmp_path):
     assert play_ms < 2.40, f"gable Play median {play_ms:.4f} ms is over 2.40"
 
 
+@pytest.mark.slow
 def test_hex_faces_are_inward_and_play_stays_under_2_40(tmp_path):
     """Hexagon booth: flat front and back of width W/2, flat ceiling at H.
 

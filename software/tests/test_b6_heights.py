@@ -5,6 +5,7 @@ capsule. FDN line length, diffuser and line air stay at the stand height.
 Coincident M/S and binaural ignore the heights.
 """
 from __future__ import annotations
+import pytest
 
 import hashlib
 import json
@@ -174,6 +175,7 @@ def _energy_db(x):
     return float(10.0 * np.log10(np.sum(np.asarray(x, dtype=np.float64) ** 2) + 1e-30))
 
 
+@pytest.mark.slow
 def test_b6_gate1_flat_is_bit_identical():
     """Absent heights and heights equal to the stand match. Play hash stays put."""
     blob, digest = _live({})
@@ -262,6 +264,7 @@ def test_b6_gate2_delays_match_capsule_geometry():
     assert moved > 0
 
 
+@pytest.mark.slow
 def test_b6_gate5_ms_and_binaural_ignore_heights():
     heights = {"my_l": 2.2, "my_r": 0.45, "my_c": 2.4, "align_horizontal": False}
     cases = {
@@ -298,6 +301,7 @@ def _client():
     return json.loads(CLIENT.read_text(encoding="utf-8"))
 
 
+@pytest.mark.slow
 def test_b6_gate3_tilt_tail_and_early():
     """Tilt 1.2 / 1.5 / 1.8 on the client standard body. Stop numbers are printed."""
     base = _client()
@@ -349,6 +353,7 @@ def test_b6_gate3_tilt_tail_and_early():
     assert tail_worst <= 0.5
 
 
+@pytest.mark.slow
 def test_b6_gate4_play_matches_render_tail():
     """Same tilt, colour bypass. Tail third-octaves within 0.1 dB."""
     sys.path[:0] = [

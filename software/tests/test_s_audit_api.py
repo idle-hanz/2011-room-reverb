@@ -75,6 +75,7 @@ def test_a7_out_of_range_is_clamped_and_named():
     assert mic["_clamp_warnings"] == ["mcx", "mcz", "my"]
 
 
+@pytest.mark.slow
 def test_a7_non_finite_and_non_numeric_are_400():
     client = TestClient(A.app)
     nan = client.post("/api/live_params", content=b'{"W": NaN}', headers={"Content-Type": "application/json"})
