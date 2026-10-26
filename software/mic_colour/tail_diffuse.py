@@ -20,6 +20,8 @@ from mic_colour.sos_fit import LAYOUTS, params_to_sos, sos_db
 
 LAYOUT = tuple(LAYOUTS[3])
 SUPER_A = 0.37
+# Hypercardioid a + (1−a)cosθ. a=0.25 gives 1 / 0.25 / −0.5 at 0° / 90° / 180°.
+HYPER_A = 0.25
 _FIT_F = np.concatenate(
     [np.geomspace(20.0, 20000.0, 240), np.linspace(20100.0, 23000.0, 12)]
 )
@@ -28,8 +30,15 @@ _THETA = np.arange(5.0, 180.0, 5.0)
 _CACHE: dict = {}
 
 
-def polar_a(polar: float) -> float:
-    """Omni 0, cardioid 0.5, super 1. Copied from the desk polar slider."""
+def polar_a(polar: float, pattern: str | None = None) -> float:
+    """Omni a=1, cardioid 0.5, super SUPER_A. A hypercardioid name is HYPER_A.
+
+    polar 1 with no name stays SUPER_A. Same map as the desk polar slider.
+    """
+    if pattern is not None:
+        name = str(pattern).strip().lower().replace(" ", "").replace("_", "").replace("-", "")
+        if name in ("hypercardioid", "hyper"):
+            return HYPER_A
     d = max(0.0, min(1.0, float(polar)))
     if d <= 0.5:
         return 1.0 - d
@@ -192,7 +201,7 @@ def measured_model(preset_id: str):
     return pid, preset, get_store().model_for(pid)
 
 
-def gain_db(preset_id: str, sr: float, polar, freqs) -> np.ndarray:
+def gain_db(preset_id: str, sr: float, polar, freqs, pattern=None) -> np.ndarray:
     """G_tail(f) in dB. Absolute -DI, not the 1 kHz-normalised table."""
     _pid, preset, model = measured_model(preset_id)
     f = np.asarray(freqs, dtype=np.float64).reshape(-1)
@@ -208,36 +217,51 @@ def gain_db(preset_id: str, sr: float, polar, freqs) -> np.ndarray:
     if preset is not None:
         family = str(preset.get("family") or "")
     if polar is None:
-        polar = capsule_law(family)["polar"]
-    flat = -diffuse_index_db(polar_a(polar))
+        law = capsule_law(family)
+        polar = law["polar"]
+        if pattern is None:
+            pattern = law["pattern"]
+    flat = -diffuse_index_db(polar_a(polar, pattern))
     return flat + _hf_shelf_db(f, _shelf_depth_db(family))
 
 
-def design_bus(preset_id: str, sr: float, polar=None) -> np.ndarray:
+def design_bus(preset_id: str, sr: float, polar=None, pattern=None) -> np.ndarray:
     """One bus, shape (3, 5), float32-rounded. Same numbers Play packs."""
     pid, _preset_row, model = measured_model(preset_id)
-    pol_key = None if (model is not None or polar is None) else round(float(polar), 6)
-    key = (pid, int(sr), pol_key)
+    use_polar = model is None and polar is not None
+    pol_key = round(float(polar), 6) if use_polar else None
+    pat_key = None
+    if use_polar and pattern is not None:
+        pat_key = str(pattern).strip().lower().replace(" ", "").replace("_", "").replace("-", "")
+        if pat_key not in ("hypercardioid", "hyper"):
+            pat_key = None
+    key = (pid, int(sr), pol_key, pat_key)
     hit = _CACHE.get(key)
     if hit is not None:
         return hit
-    target = lambda freqs: gain_db(pid, sr, None if model is not None else polar, freqs)
+    target = lambda freqs: gain_db(
+        pid, sr, None if model is not None else polar, freqs,
+        None if model is not None else pattern,
+    )
     sos = _stable_sos(_fit(target, float(sr)))
     _CACHE[key] = sos
     return sos
 
 
-def design_pack(ids, sr: float, polars=None) -> list:
+def design_pack(ids, sr: float, polars=None, patterns=None) -> list:
     """45 floats, L then C then R, three biquads each."""
     row = list(ids)
     pols = list(polars) if polars is not None else [None, None, None]
+    pats = list(patterns) if patterns is not None else [None, None, None]
     while len(row) < 3:
         row.append(row[-1] if row else "NeumannU87AiCardioid")
     while len(pols) < 3:
         pols.append(None)
+    while len(pats) < 3:
+        pats.append(None)
     out = []
     for i in range(3):
-        sos = design_bus(row[i], sr, pols[i])
+        sos = design_bus(row[i], sr, pols[i], pats[i])
         out.extend(float(v) for v in np.asarray(sos, dtype=np.float64).reshape(-1))
     return out
 

@@ -1909,6 +1909,7 @@ def _render_core(
             (mic_preset_l, mic_preset_c, mic_preset_r),
             int(sr),
             (polar_l, polar_c, polar_r),
+            (pattern_l, pattern_c, pattern_r),
         )
     surfaces = parse_surfaces(surfaces) if surfaces is not None else default_surfaces()
     smooth_on = smooth_active(
@@ -3549,6 +3550,7 @@ def live_fdn_params(
             ),
             rate,
             (p.get("polar_l"), p.get("polar_c"), p.get("polar_r")),
+            (p.get("pattern_l"), p.get("pattern_c"), p.get("pattern_r")),
         )
     return out
 

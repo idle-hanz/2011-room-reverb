@@ -61,6 +61,15 @@ test("RoomMath stand pose is mcx ± space/2 at stand height and Z", () => {
   assert.equal(g.toe_r_deg, 55);
 });
 
+test("room lobes pass the pattern into polarGain", () => {
+  const editor = readFileSync(join(here, "../static/js/room_editor.js"), "utf8");
+  const room3d = readFileSync(join(here, "../static/js/room_3d.js"), "utf8");
+  assert.equal(editor.includes('geo.state["pattern_" + cap]'), true);
+  assert.equal(editor.includes("polarGain(th - yaw, family, polar, pattern)"), true);
+  assert.equal(room3d.includes("pattern: geo.state.pattern_l"), true);
+  assert.equal(room3d.includes("polarGain(theta, mic.family, mic.polar, mic.pattern)"), true);
+});
+
 test("hypercardioid is 1 / 0.25 / 0.5 and supercardioid stays 0.37", () => {
   globalThis.window = globalThis;
   const src = readFileSync(join(here, "../static/js/room_math.js"), "utf8");

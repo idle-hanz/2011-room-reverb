@@ -1671,6 +1671,7 @@ def api_colour(body: dict):
             (p.get("mic_preset_l"), p.get("mic_preset_c"), p.get("mic_preset_r")),
             sr,
             (p.get("polar_l"), p.get("polar_c"), p.get("polar_r")),
+            (p.get("pattern_l"), p.get("pattern_c"), p.get("pattern_r")),
         )
     ir_L, ir_R = combined_ir(
         taps, room, sr, c, wall_cache, ap_cache, delays,

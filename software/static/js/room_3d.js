@@ -922,9 +922,9 @@
       var nAz = 96;
       var c = geo.mic_centre;
       var mics = [
-        { pos: geo.mic_left, look: geo.look_l, family: geo.state.family_l, polar: geo.state.polar_l, grid: gL },
-        { pos: geo.mic_centre, look: geo.look_c || { x: 0, z: 1 }, family: geo.state.family_c, polar: geo.state.polar_c, grid: gC || gL },
-        { pos: geo.mic_right, look: geo.look_r, family: geo.state.family_r, polar: geo.state.polar_r, grid: gR || gL }
+        { pos: geo.mic_left, look: geo.look_l, family: geo.state.family_l, polar: geo.state.polar_l, pattern: geo.state.pattern_l, grid: gL },
+        { pos: geo.mic_centre, look: geo.look_c || { x: 0, z: 1 }, family: geo.state.family_c, polar: geo.state.polar_c, pattern: geo.state.pattern_c, grid: gC || gL },
+        { pos: geo.mic_right, look: geo.look_r, family: geo.state.family_r, polar: geo.state.polar_r, pattern: geo.state.pattern_r, grid: gR || gL }
       ];
       var rings = [];
       var peak = 1e-6;
@@ -949,7 +949,7 @@
             var mag = sampleMag(row, theta);
             var signed = mag;
             if (global.RoomMath && global.RoomMath.polarGain) {
-              var g = global.RoomMath.polarGain(theta, mic.family, mic.polar);
+              var g = global.RoomMath.polarGain(theta, mic.family, mic.polar, mic.pattern);
               signed = g < 0 ? -mag : (g === 0 ? 0 : mag);
             }
             var dx = mic.pos.x - c.x;

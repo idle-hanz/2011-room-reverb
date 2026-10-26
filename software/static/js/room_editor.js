@@ -351,7 +351,7 @@
         py: dot.py - ROOM_AIM_PX * Math.cos(yaw)
       };
     }
-    function drawRoomPattern(ctx, px, py, yawDeg, family, polar, color) {
+    function drawRoomPattern(ctx, px, py, yawDeg, family, polar, color, pattern) {
       var RM = global.RoomMath;
       if (!RM || !RM.polarGain) return;
       var yaw = ((Number(yawDeg) || 0) * Math.PI) / 180;
@@ -361,7 +361,7 @@
       ctx.beginPath();
       for (i = 0; i <= n; i++) {
         th = (i / n) * Math.PI * 2;
-        g = Math.abs(RM.polarGain(th - yaw, family, polar));
+        g = Math.abs(RM.polarGain(th - yaw, family, polar, pattern));
         sx = px + R * g * Math.sin(th);
         sy = py - R * g * Math.cos(th);
         if (i === 0) ctx.moveTo(sx, sy);
@@ -401,7 +401,8 @@
           ctx, p.px, p.py, spot.yaw,
           geo.state["family_" + cap] || "cardioid",
           geo.state["polar_" + cap],
-          color
+          color,
+          geo.state["pattern_" + cap]
         );
         var bodyOn = !!(drag && drag.kind === "room" && drag.canvas === "floor" && drag.roomCap === cap && drag.roomPart === "body");
         drawHandle(ctx, p.px, p.py, color, cap === "c" ? "Room mic" : cap.toUpperCase(), bodyOn, hover === "room:" + cap);
