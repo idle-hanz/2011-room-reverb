@@ -58,8 +58,8 @@ def _section_payload(blob, sid):
     return None
 
 
-def test_flag_is_off_and_curve_holds():
-    assert rp.MOVEMENT_FORCED_OFF is False
+def test_knob_off_switch_and_curve_holds():
+    assert not hasattr(rp, "MOVEMENT_FORCED_OFF")
     assert rp.movement_peak_ms({}) == 0.0
     assert rp.movement_peak_ms({"movement": 0}) == 0.0
     assert rp.movement_peak_ms({"movement": 50}) == pytest.approx(0.10)
