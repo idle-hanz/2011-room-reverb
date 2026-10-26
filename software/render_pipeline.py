@@ -1324,7 +1324,7 @@ def _fft_conv_head(x: np.ndarray, h: np.ndarray) -> np.ndarray:
 def render_binaural_fdn_ir(
     taps, room, sr, c, length_ms, g, depth,
     preset: str = "SADIE2_KU100",
-    tail_mode: str = "diffuse_ic",
+    tail_mode: str | None = None,
 ):
     """Uncoloured FDN tail, then the head's diffuse-field IC mixer.
 
@@ -1336,6 +1336,8 @@ def render_binaural_fdn_ir(
     """
     from mic_colour.binaural import tail_fir
 
+    if tail_mode is None:
+        tail_mode = D("binaural_tail_mode")
     n_samp = int(float(sr) * float(length_ms) / 1000.0) + 1
     n_lines = 32
     dff = [tap_dff(t.n, None, master=DIFFUSION_MASTER_LIVE) for t in taps]
@@ -1354,7 +1356,7 @@ def render_binaural_fdn_ir(
         if hp is not None:
             inj = _df1_columns(inj, hp)
         polys[ch] = fdn.process_block_poly(inj) * loop_level_trim_lin("render", False)
-    if str(tail_mode) != "diffuse_ic":
+    if str(tail_mode) != str(D("binaural_tail_mode")):
         return polys["l"].sum(axis=1), polys["r"].sum(axis=1)
     scale = math.sqrt(2.0)
     A = scale * polys["l"][:, 0::2].sum(axis=1)
@@ -3304,7 +3306,7 @@ def live_fdn_params(
         )
     ic_hp = None
     ic_hm = None
-    if binaural_on and str(p.get("binaural_tail_mode") or "diffuse_ic") == "diffuse_ic":
+    if binaural_on and str(p.get("binaural_tail_mode") or D("binaural_tail_mode")) == str(D("binaural_tail_mode")):
         from mic_colour.binaural import tail_fir
         fir = tail_fir(str(p.get("binaural_preset") or "SADIE2_KU100"), int(rate))
         if fir is not None:

@@ -885,16 +885,16 @@ def geometry_payload(p: dict) -> dict:
             "sx_b": p.get("sx_b"),
             "sy_b": p.get("sy_b"),
             "sz_b": p.get("sz_b"),
-            "pair_mode": p.get("pair_mode") or "",
-            "pan_law": p.get("pan_law") or "linear",
-            "mic_route_l": p.get("mic_route_l") or "pan",
-            "mic_route_c": p.get("mic_route_c") or "pan",
-            "mic_route_r": p.get("mic_route_r") or "pan",
-            "third_mic": p.get("third_mic") or "",
-            "ms_s": p.get("ms_s") or "l",
-            "ms_m": p.get("ms_m") or "c",
+            "pair_mode": p.get("pair_mode") or D("pair_mode"),
+            "pan_law": p.get("pan_law") or D("pan_law"),
+            "mic_route_l": p.get("mic_route_l") or D("mic_route_l"),
+            "mic_route_c": p.get("mic_route_c") or D("mic_route_c"),
+            "mic_route_r": p.get("mic_route_r") or D("mic_route_r"),
+            "third_mic": p.get("third_mic") or D("third_mic"),
+            "ms_s": p.get("ms_s") or D("ms_s"),
+            "ms_m": p.get("ms_m") or D("ms_m"),
             "s_detached": bool(p.get("s_detached")),
-            "link_mode": p.get("link_mode") or "",
+            "link_mode": p.get("link_mode") or D("link_mode"),
             "mic_x_l": p.get("mic_x_l"),
             "mic_y_l": p.get("mic_y_l"),
             "mic_z_l": p.get("mic_z_l"),
@@ -1000,7 +1000,7 @@ def _images_payload(p: dict, mics, mic_override=None):
 def api_images(body: dict):
     """Early-field image lattice + folded paths + last legs for selected mics."""
     p = params_from_body(body)
-    raw_mics = body.get("mics") or body.get("selected_mics") or ["C"]
+    raw_mics = body.get("mics") or body.get("selected_mics") or D("mics")
     if isinstance(raw_mics, str):
         raw_mics = [m.strip() for m in raw_mics.split(",") if m.strip()]
     mics = [str(m).upper() for m in raw_mics]
@@ -1178,7 +1178,7 @@ def _render_status(out, info, meta, sr, p, body, Lch, Rch, preview):
     colour = info.get("colour")
     if colour is None:
         # Fallback: analyse rendered wet mix (post dry) as last resort
-        colour = colour_from_stereo(Lch, Rch, sr, ref_mode=str(body.get("ref_mode") or "peak"))
+        colour = colour_from_stereo(Lch, Rch, sr, ref_mode=str(body.get("ref_mode") or D("ref_mode")))
 
     status += (
         f"\nColour: 1/3-octave ({len(colour.get('centres_hz', []))} bands)  "
@@ -1272,7 +1272,7 @@ def _render_impl(
             air_shelf=p.get("air_shelf") if p.get("air_shelf") is not None else 1.0,
             reaktor_parity=False,
             air_climate=str(p.get("air_climate") or "studio_20C_50RH"),
-            air_iso=bool(p.get("air_iso")) if p.get("air_iso") is not None else True,
+            air_iso=bool(p.get("air_iso")) if p.get("air_iso") is not None else bool(D("air_iso")),
             diffusion_master=p.get("diffusion_master") if p.get("diffusion_master") is not None else DIFFUSION_MASTER_DEFAULT,
             decay_s=p.get("decay_s") or 0.0,
             decay_lock=bool(p.get("decay_lock")),

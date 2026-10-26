@@ -1,7 +1,8 @@
 """Every control, posted key, and server read is in the shared settings table.
 
 Orphans are names that sit on only one of those surfaces. The test prints them.
-It does not delete them and it does not rewrite the table.
+A name outside the frozen sets fails. The test does not delete orphans and it
+does not rewrite the table.
 """
 from __future__ import annotations
 
@@ -142,6 +143,32 @@ def test_diffusion_and_lambda_match_the_engine_constants():
     assert D("lambda_ref") == DEFAULT_LAMBDA_REF_M
 
 
+# One-surface names after the 2026-10-26 orphan rows. A name outside this
+# set is a new orphan and fails. A name that later gains a second surface
+# drops out and still passes.
+_ORPHAN_POSTED_NOT_READ = frozenset("""
+desk_touched fader_c fader_direct fader_dry fader_early fader_fdn fader_l fader_r
+gain_exact_c gain_exact_l gain_exact_r link_heights link_lr_yaw live_drag_render
+mute_c mute_direct mute_dry mute_early mute_fdn mute_l mute_r natural_bus
+pan_c pan_l pan_r phase_c phase_l phase_r polar_radius
+room_slot room_x room_y room_yaw room_z
+route_array_amount route_array_comp route_array_drive route_array_pre
+route_master_amount route_master_comp route_master_drive route_master_pre
+route_room_amount route_room_comp route_room_drive route_room_pre
+solo_c solo_direct solo_dry solo_early solo_fdn solo_l solo_r
+spare_off stereo_mic surf_amount surf_rendered_t20 surf_suggestions
+trim_c trim_direct trim_dry trim_early trim_fdn trim_l trim_r
+wetBypass width_c width_l width_r
+""".split())
+_ORPHAN_READ_NOT_POSTED = frozenset("""
+air_iso grid mic_pos_c mic_pos_l mic_pos_r mic_preset mirror_null null_mode
+ref_mode rendered_t20 route_c route_l route_r selected_mics
+""".split())
+_ORPHAN_TABLE_ONLY = frozenset(
+    "binaural_image_set binaural_level_ref binaural_tail_mode ear_spacing_m".split()
+)
+
+
 def test_controls_posts_and_reads_are_in_the_table():
     controls, bare = _html_controls()
     posted = _posted_keys()
@@ -158,6 +185,13 @@ def test_controls_posts_and_reads_are_in_the_table():
     print("ORPHANS posted-not-read: " + ", ".join(posted_not_read))
     print("ORPHANS read-not-posted: " + ", ".join(read_only))
     print("ORPHANS table-only: " + ", ".join(table_only))
+    new_orphans = {
+        "posted-not-read": sorted(set(posted_not_read) - _ORPHAN_POSTED_NOT_READ),
+        "read-not-posted": sorted(set(read_only) - _ORPHAN_READ_NOT_POSTED),
+        "table-only": sorted(set(table_only) - _ORPHAN_TABLE_ONLY),
+    }
+    new_orphans = {key: names for key, names in new_orphans.items() if names}
+    assert not new_orphans, new_orphans
     assert not bare, bare
     assert not missing_controls, missing_controls
     assert not missing_posted, missing_posted

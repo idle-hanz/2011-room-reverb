@@ -70,11 +70,11 @@ function stripLinear(src, key) {
 
 function micLinear(src, key) {
   if (src["mute_" + key]) return 0;
-  var route = String(src["mic_route_" + key] || "pan");
+  var route = String(src["mic_route_" + key] || S("mic_route_" + key));
   var fader = gainFromDb(dbFromTravel(src["fader_" + key]), 0);
   var g;
   if (route === "s") {
-    g = window.RRDb.dbToLin(Number(src["width_" + key] || 0)) * fader;
+    g = window.RRDb.dbToLin(Number(src["width_" + key] || S("width_" + key))) * fader;
   } else if (src["gain_exact_" + key] != null && isFinite(Number(src["gain_exact_" + key]))) {
     g = Number(src["gain_exact_" + key]) * fader;
   } else {
@@ -102,10 +102,10 @@ function pairRoomMic(id, room, drag) {
     H: Number(room && room.H) > 0 ? Number(room.H) : 3,
     L: Number(room && room.L) > 0 ? Number(room.L) : 8
   };
-  var x = 4;
-  var y = 1.5;
-  var z = 2;
-  var yaw = 0;
+  var x = S("room_x");
+  var y = S("room_y");
+  var z = S("room_z");
+  var yaw = S("room_yaw");
   var margin = 0.10;
   if (drag && drag.roomFloorDragTo && drag.roomHeightDragTo && drag.roomAimDragTo) {
     var floor = drag.roomFloorDragTo(box, "c", x, z);
@@ -127,10 +127,10 @@ function pairRoomMic(id, room, drag) {
     third_mic: "room",
     place_c: "room",
     room_slot: "c",
-    mute_c: false,
-    fader_c: 0.5,
-    gain_exact_c: null,
-    width_c: 0,
+    mute_c: S("mute_c"),
+    fader_c: S("fader_c"),
+    gain_exact_c: S("gain_exact_c"),
+    width_c: S("width_c"),
     room_c_x: x,
     room_c_y: y,
     room_c_z: z,
@@ -140,45 +140,45 @@ function pairRoomMic(id, room, drag) {
 
 function loadDeskPreset(id) {
   /* Does not mark the desk touched. Boot and a confirmed setup change call this. */
-  state.pair_mode = "stereo";
-  state.pan_law = "linear";
-  state.mic_route_l = "pan";
-  state.mic_route_c = "pan";
-  state.mic_route_r = "pan";
+  state.pair_mode = S("pair_mode");
+  state.pan_law = S("pan_law");
+  state.mic_route_l = S("mic_route_l");
+  state.mic_route_c = S("mic_route_c");
+  state.mic_route_r = S("mic_route_r");
   /* D20. ORTF is C off. ORTF + C and the other setups start with C in the centre.
        The six pair ids below then move that strip to its room spot. */
   state.third_mic = (id === "ortf") ? "off" : "centre";
   cThirdBeforeRoom = null;
-  state.ms_s = "l";
-  state.ms_m = "c";
-  state.s_detached = false;
-  state.width_l = 0;
-  state.width_c = 0;
-  state.width_r = 0;
-  state.gain_exact_l = null;
-  state.gain_exact_c = null;
-  state.gain_exact_r = null;
-  state.place_l = "array";
-  state.place_c = "array";
-  state.place_r = "array";
-  state.mute_l = false;
-  state.mute_c = false;
-  state.mute_r = false;
-  state.solo_l = false;
-  state.solo_c = false;
-  state.solo_r = false;
-  state.pan_l = -1;
-  state.pan_c = 0;
-  state.pan_r = 1;
-  state.trim_l = 0;
-  state.trim_c = 0;
-  state.trim_r = 0;
-  state.fader_l = 0.5;
-  state.fader_c = 0.5;
-  state.fader_r = 0.5;
-  state.phase_l = 1;
-  state.phase_c = 1;
-  state.phase_r = 1;
+  state.ms_s = S("ms_s");
+  state.ms_m = S("ms_m");
+  state.s_detached = S("s_detached");
+  state.width_l = S("width_l");
+  state.width_c = S("width_c");
+  state.width_r = S("width_r");
+  state.gain_exact_l = S("gain_exact_l");
+  state.gain_exact_c = S("gain_exact_c");
+  state.gain_exact_r = S("gain_exact_r");
+  state.place_l = S("place_l");
+  state.place_c = S("place_c");
+  state.place_r = S("place_r");
+  state.mute_l = S("mute_l");
+  state.mute_c = S("mute_c");
+  state.mute_r = S("mute_r");
+  state.solo_l = S("solo_l");
+  state.solo_c = S("solo_c");
+  state.solo_r = S("solo_r");
+  state.pan_l = S("pan_l");
+  state.pan_c = S("pan_c");
+  state.pan_r = S("pan_r");
+  state.trim_l = S("trim_l");
+  state.trim_c = S("trim_c");
+  state.trim_r = S("trim_r");
+  state.fader_l = S("fader_l");
+  state.fader_c = S("fader_c");
+  state.fader_r = S("fader_r");
+  state.phase_l = S("phase_l");
+  state.phase_c = S("phase_c");
+  state.phase_r = S("phase_r");
   delete state.spare_off;
   var msBuilt = rrMsBuilt(id);
   if (msBuilt) {
@@ -239,7 +239,7 @@ function deskWeights(src) {
   }
   function pair(route, g, pan, ph) {
     var a = amp(g, ph);
-    route = String(route || "pan");
+    route = String(route || S("mic_route_l"));
     if (route === "centre") return [a * 0.5, a * 0.5];
     if (route === "both") return [a, a];
     if (route === "l") return [a, 0];
@@ -248,7 +248,7 @@ function deskWeights(src) {
     var t = (Number(pan) + 1) * 0.5;
     if (t < 0) t = 0;
     if (t > 1) t = 1;
-    if (String(src.pan_law || "linear") === "power") {
+    if (String(src.pan_law || S("pan_law")) === "power") {
       return [a * Math.cos(t * Math.PI * 0.5), a * Math.sin(t * Math.PI * 0.5)];
     }
     return [a * (1 - t), a * t];
@@ -631,7 +631,7 @@ function setTrim(key, db, fromLink) {
 
 /* Buttons for one strip. Does not write the route back: centre stays centre until a click. */
 function lrView(cap) {
-  var route = String(state["mic_route_" + cap] || "pan");
+  var route = String(state["mic_route_" + cap] || S("mic_route_" + cap));
   var muteOn = !!state["mute_" + cap];
   var msMid = !!(window.RRLR && RRLR.isMsMid(state, cap));
   if (!window.RRLR) {
@@ -753,7 +753,7 @@ function paintDeskRoutes() {
     if (trimBox) trimBox.hidden = sOn;
     if (widthBox) widthBox.hidden = !sOn;
     var width = document.getElementById("width_" + cap);
-    if (width && document.activeElement !== width) width.value = state["width_" + cap] || 0;
+    if (width && document.activeElement !== width) width.value = state["width_" + cap] || S("width_" + cap);
     if (!monoLock && !spareLock) {
       var trimIn = document.getElementById("trim_" + cap);
       if (trimIn) trimIn.title = "Trim in dB";
@@ -832,11 +832,11 @@ function paintDeskRoutes() {
       + "   R " + n3(w.rl) + " " + n3(w.rr);
   }
   document.querySelectorAll("[data-radius]").forEach(function (btn) {
-    var on = btn.getAttribute("data-radius") === (state.polar_radius || "db");
+    var on = btn.getAttribute("data-radius") === (state.polar_radius || S("polar_radius"));
     btn.setAttribute("aria-pressed", on ? "true" : "false");
   });
   var linkBox = document.getElementById("link_lr_yaw");
-  if (linkBox) linkBox.checked = (state.link_mode || "mirror") === "mirror";
+  if (linkBox) linkBox.checked = (state.link_mode || S("link_mode")) === "mirror";
   var naturalBtn = document.getElementById("naturalBtn");
   if (naturalBtn) naturalBtn.setAttribute("aria-pressed", state.natural_bus ? "true" : "false");
   var bypassBtn = document.getElementById("wetBypass");
@@ -864,7 +864,7 @@ function bindDesk() {
         e.preventDefault();
         e.stopPropagation();
         if (monoStripLocked(key)) return;
-        var boot = Object.prototype.hasOwnProperty.call(FADER_BOOT, key) ? FADER_BOOT[key] : 0;
+        var boot = faderBoot(key);
         setFader(key, boot, false);
         if (key === "l" || key === "c" || key === "r") state.desk_touched = true;
         syncUI();

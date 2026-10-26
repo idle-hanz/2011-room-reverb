@@ -12,6 +12,13 @@ const require = createRequire(import.meta.url);
 const Drag = require("../static/js/drag_model.js");
 const plan = fs.readFileSync(path.join(here, "../static/js/room_editor.js"), "utf8");
 const page = fs.readFileSync(path.join(here, "../static/index.html"), "utf8");
+const settings = JSON.parse(fs.readFileSync(path.join(here, "../static/settings.json"), "utf8"));
+
+function S(name) {
+  const row = settings.by_name[name];
+  if (!row) throw new Error("missing setting " + name);
+  return Object.prototype.hasOwnProperty.call(row, "page") ? row.page : row.default;
+}
 
 const start = app.indexOf("function pairRoomMic(");
 const end = app.indexOf("function loadDeskPreset(", start);
@@ -19,6 +26,7 @@ const pairRoomMic = new Function(
   "id",
   "room",
   "drag",
+  "S",
   app.slice(start, end) + "\nreturn pairRoomMic(id, room, drag);"
 );
 
@@ -28,7 +36,7 @@ const LEFT = ["ortf", "ortf_c", "mono_c", "binaural", "ms", "ms_a", "ms_b", "ms_
 
 test("the six pair setups place the centre strip at the room spot", () => {
   PAIRS.forEach((id) => {
-    const patch = pairRoomMic(id, boot, Drag);
+    const patch = pairRoomMic(id, boot, Drag, S);
     assert.equal(patch.third_mic, "room", id);
     assert.equal(patch.place_c, "room", id);
     assert.equal(patch.room_c_x, 4, id);
@@ -42,7 +50,7 @@ test("the six pair setups place the centre strip at the room spot", () => {
 });
 
 test("a room smaller than the spot keeps the mic 0.10 m inside the walls", () => {
-  const patch = pairRoomMic("xy_90", { W: 2, H: 1.2, L: 3 }, Drag);
+  const patch = pairRoomMic("xy_90", { W: 2, H: 1.2, L: 3 }, Drag, S);
   assert.equal(patch.room_c_x, 1.9);
   assert.equal(patch.room_c_y, 1.1);
   assert.equal(patch.room_c_z, 2);
@@ -53,7 +61,7 @@ test("a room smaller than the spot keeps the mic 0.10 m inside the walls", () =>
 
 test("ORTF stays centre off and the MS presets are not moved", () => {
   LEFT.forEach((id) => {
-    assert.equal(pairRoomMic(id, boot, Drag), null, id);
+    assert.equal(pairRoomMic(id, boot, Drag, S), null, id);
   });
 });
 

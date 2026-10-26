@@ -1097,7 +1097,7 @@
       ];
       var mode = s.colour_mode || "MEASURED_SHELF";
       var toys = mode === "ASSUMED_TOYS";
-      var useDb = !toys && (s.polar_radius || "db") !== "linear";
+      var useDb = !toys && (s.polar_radius || S("polar_radius")) !== "linear";
       var locked = mode === "MEASURED_SHELF" || mode === "BYPASS";
       caps.forEach(function (row) {
         var key = row[0];
@@ -1631,7 +1631,7 @@
       ];
       var mode = s.colour_mode || "MEASURED_SHELF";
       var toys = mode === "ASSUMED_TOYS";
-      var useDb = !toys && (s.polar_radius || "db") !== "linear";
+      var useDb = !toys && (s.polar_radius || S("polar_radius")) !== "linear";
       rows.forEach(function (row) {
         var canvas = document.getElementById(row[2]);
         if (!canvas) return;

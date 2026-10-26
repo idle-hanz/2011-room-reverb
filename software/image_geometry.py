@@ -231,10 +231,10 @@ def build_images_payload(
             if key not in mic_map or pos is None or len(pos) < 3:
                 continue
             mic_map[key] = (float(pos[0]), float(pos[1]), float(pos[2]))
-    wanted = [m.upper() for m in (mics or ["C"])]
+    wanted = [m.upper() for m in (mics or D("mics"))]
     wanted = [m for m in wanted if m in mic_map]
     if not wanted:
-        wanted = ["C"]
+        wanted = [str(m).upper() for m in D("mics")]
 
     if hadamard_n is not None:
         n_had = normalize_hadamard_n(hadamard_n)

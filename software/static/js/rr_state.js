@@ -175,7 +175,7 @@ var SOLO_BUSES = [
   ["solo_early", "early_wet", "early"]
 ];
 /* Page flag. Not a server key. Off is today's dry_gain 0. */
-var wetBypass = false;
+var wetBypass = S("wetBypass");
 
 var FADER_KNOTS = [
   [0.02, -60], [0.20, -24], [0.35, -12], [0.42, -6],
@@ -189,7 +189,10 @@ var physTimer = null;
 var physText = "";
 
 var DESK_FADERS = ["l", "c", "r", "direct", "fdn", "early"];
-var FADER_BOOT = { l: 0.5, c: 0.5, r: 0.5, direct: 0, fdn: 0.5, early: 0 };
+
+function faderBoot(key) {
+  return S("fader_" + key);
+}
 
 var decayPreviewTimer = null;
 
