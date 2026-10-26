@@ -531,12 +531,12 @@
             <div class="panel-head">
               <h2>Polar</h2>
               <div class="place-row" id="polarPageRow" role="group" aria-label="Polar page">
-                <button type="button" class="chip active" data-polar-page="combined" aria-pressed="true">Combined</button>
-                <button type="button" class="chip" data-polar-page="each" aria-pressed="false">Each mic</button>
-                <button type="button" class="chip" data-polar-page="speakers" aria-pressed="false">At speakers</button>
+                <button type="button" class="chip active" data-polar-page="each" aria-pressed="true">One mic</button>
+                <button type="button" class="chip" data-polar-page="combined" aria-pressed="false">All mics summed</button>
+                <button type="button" class="chip" data-polar-page="speakers" aria-pressed="false">At the speakers</button>
               </div>
             </div>
-            <div id="polarCombined">
+            <div id="polarCombined" hidden>
               <p class="assumed-banner" id="polarBanner">Measured: radius = pattern × mic colour. Rings at 20, 63, 125, 250, 1k, 4k, 8k, 16k. No low-frequency omni morph.</p>
               <div class="polar-toggles" id="polarToggles">
                 <label class="polar-chip"><input type="checkbox" data-polar="L" /> L</label>
@@ -549,9 +549,9 @@
               <div class="canvas-wrap polar-wrap" id="polarWrap">
                 <canvas id="polarCanvas" width="900" height="520" aria-label="3D polar field"></canvas>
               </div>
-              <p class="hint">Combined uses the same polar field as the Mic source plane.</p>
+              <p class="hint">All mics summed draws the three capsules in one plot.</p>
             </div>
-            <div id="polarEachHost" hidden></div>
+            <div id="polarEachHost"></div>
             <div id="polarSpeakers" hidden>
               <p class="hint">Each speaker is the desk matrix times the three capsules, with the spacing delay from the centre mic.</p>
               <canvas id="polarSpeakerCanvas" width="900" height="420" aria-label="Level at the speakers"></canvas>
@@ -990,7 +990,7 @@
   <script src="/static/js/drag_model.js?v=2"></script>
   <script src="/static/js/room_window_math.js?v=1"></script>
   <script src="/static/js/routing_scene.js?v=3"></script>
-  <script src="/static/js/app.js?v=96"></script>
+  <script src="/static/js/app.js?v=97"></script>
   <script>window.RR_SL_STAGE = 6;</script>
   <script src="/static/js/sl_room_result.js?v=7"></script>
   <script src="/static/js/rr_controls.js?v=1"></script>

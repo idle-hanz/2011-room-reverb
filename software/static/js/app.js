@@ -175,7 +175,7 @@
   var wavChannels = 0;
   var currentView = "edit";
   var spaceMode = "lattice"; /* lattice | paths | legs */
-  var polarPage = "combined"; /* combined | each */
+  var polarPage = "each"; /* each | combined | speakers */
   var sideSplitUser = null; /* null derives from L vs R. Not posted. */
   var splitHold = null; /* Split flag put aside while Stereo pair is ganged. */
   /* third_mic C had at the moment it became Room. Client only. Not a state key. */
