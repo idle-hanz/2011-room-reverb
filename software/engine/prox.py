@@ -115,40 +115,6 @@ def shelf_g(r: float, a: float, cos_theta: float, tick: bool) -> float:
     return cap_g(g)
 
 
-def discrete_boost_db(
-    g: float,
-    sr: float = 48000.0,
-    hz: float = RR_PROX_CAP_HZ,
-    fc: float = RR_PROX_FC,
-) -> float:
-    """One-pole magnitude at hz. p = exp(-2*pi*fc/fs), same leak as both engines."""
-    p = math.exp(-2.0 * math.pi * float(fc) / float(sr))
-    w = 2.0 * math.pi * float(hz) / float(sr)
-    dr = 1.0 - p * math.cos(w)
-    di = p * math.sin(w)
-    den = dr * dr + di * di
-    lr = (1.0 - p) * dr / den
-    li = -(1.0 - p) * di / den
-    mag2 = (1.0 + float(g) * lr) ** 2 + (float(g) * li) ** 2
-    if mag2 <= 0.0:
-        return -300.0
-    return 10.0 * math.log10(mag2)
-
-
-def theory_b_db(r: float, a: float, cos_theta: float, hz: float = RR_PROX_CAP_HZ) -> float:
-    """Decision model B at hz, on the given cos. c = 343, r_eff = r + d0."""
-    ct = float(cos_theta)
-    aa = float(a)
-    r_eff = float(r) + RR_PROX_D0
-    k = 2.0 * math.pi * float(hz) / RR_PROX_C
-    real = aa + (1.0 - aa) * ct
-    imag = -((1.0 - aa) * ct) / (k * r_eff) if r_eff > 0.0 else 0.0
-    den = abs(real)
-    if den <= 1e-15:
-        return 0.0
-    return 20.0 * math.log10(math.hypot(real, imag) / den)
-
-
 def apply_prox_shelf(x, g: float, sr: float):
     """One-pole shelf. g == 0 returns the same array and does not read it."""
     if g == 0.0 or x is None:

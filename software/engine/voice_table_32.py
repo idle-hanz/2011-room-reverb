@@ -79,16 +79,3 @@ assert len(LIVE_32_IDS) == 32
 assert len(set(LIVE_32_IDS)) == 32
 assert 109 in LIVE_32_IDS
 assert not any(i in LIVE_32_IDS for i in DUP_IDS)
-
-
-def live_triples() -> List[Tuple[int, Triple]]:
-    return [(i, ALL_52[i]) for i in LIVE_32_IDS]
-
-
-def omitted_unique_ids() -> List[int]:
-    kept = set(LIVE_32_IDS) | set(DUP_IDS)
-    # unique by triple: lowest id per triple
-    best = {}
-    for tid, t in sorted(ALL_52.items()):
-        best.setdefault(t, tid)
-    return sorted(tid for tid in best.values() if tid not in kept)

@@ -440,14 +440,6 @@ def phys_ceiling_row(W, H, L, cards, dial, bands=None) -> dict:
     }
 
 
-def phys_teff_bands(W, H, L, cards, dial, bands=None) -> np.ndarray:
-    """T_eff(f) = T_phys(f; k). Humidity 0.35, air on, arau_scatter, c 343.
-
-    The dial chooses k. It does not cap a band.
-    """
-    return phys_ceiling_row(W, H, L, cards, dial, bands)["t"]
-
-
 def phys_ceiling_pack(W, H, L, cards, dial, enabled, surfaces_on, humidity,
                       directional=False, cal=None) -> Optional[dict]:
     """Section spec, or None when the ceiling is off or the lock is not armed.

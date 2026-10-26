@@ -29,10 +29,6 @@ def parse_colour_mode(value) -> str:
     return _ALIASES.get(key, MEASURED_SHELF)
 
 
-def early_toys_for(mode: str) -> bool:
-    return parse_colour_mode(mode) == ASSUMED_TOYS
-
-
 def shelf_in_scalars_for(mode: str) -> bool:
     """L8: only ASSUMED_TOYS keeps the −6 dB level shelf in the inject scalars."""
     return parse_colour_mode(mode) == ASSUMED_TOYS

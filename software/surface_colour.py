@@ -779,20 +779,6 @@ def surface_filter_stages(
     return stages
 
 
-def diffusion_extra_stages(
-    surfaces: Dict[str, Dict[str, Any]],
-    letters: Sequence[str],
-    base_stages: int,
-) -> int:
-    """Deprecated no-op. Surfaces diffusion is seeded path-length jitter, not allpass stages.
-
-    Geometric order allpass (tap.allpass_stages) is unchanged. Kept so leftover callers
-    do not bump Schroeder stages from the Diffusion knob.
-    """
-    del surfaces, letters
-    return int(base_stages)
-
-
 def apply_surface_to_buffer(
     buf: np.ndarray,
     surfaces: Dict[str, Dict[str, Any]],

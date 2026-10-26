@@ -1033,40 +1033,6 @@ def _play_surf_cascade(surfaces, taps, taps_b, sr, n, parity):
     return tail, report
 
 
-def render_direct_ir(
-    taps, room, sr, c, length_ms, humidity, wall_cache, ap_cache,
-    surfaces=None,
-    diffusion_seed=DEFAULT_DIFFUSION_SEED,
-    lambda_ref=DEFAULT_LAMBDA_REF_M,
-    mic_left=None,
-    mic_right=None,
-    capsule_mm=17.0,
-    air_lp=0.25,
-    air_shelf=1.0,
-    colour=None,
-    early_toys=None,
-):
-    """Feedforward first arrival only (n=0,0,0). Not through Hadamard."""
-    direct = [t for t in (taps or []) if tuple(getattr(t, "n", ())) == (0, 0, 0)]
-    if not direct:
-        z = np.zeros(1, dtype=np.float64)
-        return z, z
-    return render_early_ir(
-        direct, room, sr, c, length_ms, DEFAULT_DEPTH, humidity, wall_cache, ap_cache,
-        surfaces=surfaces,
-        diffusion_seed=diffusion_seed,
-        lambda_ref=lambda_ref,
-        mic_left=mic_left,
-        mic_right=mic_right,
-        capsule_mm=capsule_mm,
-        air_lp=0.0,
-        air_shelf=0.0,
-        colour=colour,
-        early_toys=early_toys,
-        air_iso=False,
-    )
-
-
 def _surf_bus(taps, n_lines, line_t60):
     """Per-bus surf dict for the FDN, or None (Flat 2011, or decay lock off).
 

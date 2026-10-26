@@ -16,7 +16,6 @@ Do not claim this restores anything from 2011-room-reverb.ens.
 
 from __future__ import annotations
 
-import math
 from dataclasses import dataclass
 from typing import List, Optional, Sequence, Tuple
 
@@ -50,16 +49,8 @@ def _sub3(a: Vec3, b: Vec3) -> Vec3:
     return (a[0] - b[0], a[1] - b[1], a[2] - b[2])
 
 
-def _add3(a: Vec3, b: Vec3) -> Vec3:
-    return (a[0] + b[0], a[1] + b[1], a[2] + b[2])
-
-
 def _scale3(a: Vec3, s: float) -> Vec3:
     return (a[0] * s, a[1] * s, a[2] * s)
-
-
-def _norm3(a: Vec3) -> float:
-    return math.sqrt(_dot3(a, a))
 
 
 def mirror_point_through_plane(p: Vec3, plane: Plane3) -> Vec3:
@@ -73,11 +64,6 @@ def mirror_point_through_plane(p: Vec3, plane: Plane3) -> Vec3:
         raise ValueError("degenerate plane normal")
     t = (_dot3(n, p) - plane.d) / nn
     return _sub3(p, _scale3(n, 2.0 * t))
-
-
-def mirror_point_through_facet(p: Vec3, facet: Facet) -> Vec3:
-    """Planar mirror only — does not test whether p projects inside the polygon."""
-    return mirror_point_through_plane(p, facet.plane)
 
 
 # ---------------------------------------------------------------------------

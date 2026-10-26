@@ -558,25 +558,6 @@ RENDER_NEVE_OS = 8.0
 PLAY_NEVE_OS = 1.0
 
 
-def os_factors() -> dict:
-    """Play and Render oversampling. ADAA presets stay at 1x. 610-A is 8x."""
-    names = ("natural", "glue", "room_crush", "nuke", "swell")
-
-    def row(table, neve):
-        out = {}
-        for name in names:
-            os_n, adaa = table[name]
-            out[name] = "ADAA1" if adaa else int(os_n)
-        out["neve1073"] = int(neve)
-        out["u610a"] = 8
-        return out
-
-    return {
-        "render": row(_COLOUR_OS, RENDER_NEVE_OS),
-        "play": row(_PLAY_COLOUR_OS, PLAY_NEVE_OS),
-    }
-
-
 def pack_coeffs(spec: dict, play: bool = False) -> list:
     """40 floats, then 5 per EQ biquad. Section 10. Absent unless amount_db > 0.
 

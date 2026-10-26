@@ -709,16 +709,6 @@ def resolve_mic_angles(
     return prepare_angles(diverg)
 
 
-def diverg_approx_from_toe_half_deg(toe_half_deg: float) -> float:
-    """Map absolute half-angle → Reaktor Diverg via the LEFT Add law.
-
-    MLALR = 0.5·d − 0.25, so d = 2·(θ_L + 0.25). Reaktor L/R included angle
-    is locked at 0.5 rad, so this is not a true inverse for modern ORTF toes.
-    """
-    th = -abs(math.radians(float(toe_half_deg)))
-    return 2.0 * (th + 0.25)
-
-
 def prepare_source(
     W: float,
     L: float,
