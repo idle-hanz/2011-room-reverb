@@ -1764,6 +1764,17 @@
     if (imageViewHint) imageViewHint.textContent = camHint;
   }
 
+  function polarBannerText() {
+    var mode = state.colour_mode || "MEASURED_SHELF";
+    if (mode === "MEASURED_SHELF") return "Measured: real mic response, relative to on-axis";
+    return "Ideal pattern";
+  }
+
+  function paintPolarBanner() {
+    var banner = document.getElementById("polarBanner");
+    if (banner) banner.textContent = polarBannerText();
+  }
+
   function syncPolarPageUI() {
     document.querySelectorAll("[data-polar-page]").forEach(function (btn) {
       var on = btn.getAttribute("data-polar-page") === polarPage;
@@ -2881,8 +2892,7 @@
         micHero.setData(data);
       }
       if (polarView && polarView.setData) polarView.setData(data);
-      var banner = document.getElementById("polarBanner");
-      if (banner && data.assumed_note) banner.textContent = data.assumed_note;
+      paintPolarBanner();
     } catch (err) {
       if (seq === polarReq && micDesk && micDesk.setPolarStatus) micDesk.setPolarStatus("fail");
       var meta = document.getElementById("micHeroMeta");
@@ -3203,6 +3213,7 @@
     syncPatternChrome();
     syncMicEach();
     syncFeedbackRow();
+    paintPolarBanner();
     scheduleLiveParams();
     scheduleDecayPreview();
     schedulePolar();

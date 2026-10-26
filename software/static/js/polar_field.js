@@ -141,27 +141,17 @@
     }
     this._rebuildMeshes();
     if (this.meta && data) {
-      var shown = (this.useBase && data.base_plane) ? data.base_plane : data.plane;
-      var tilt = shown && shown.tilt_deg != null
-        ? Number(shown.tilt_deg).toFixed(1)
-        : "—";
       var preset = data.presets && data.presets.C;
       var name = preset && preset.display_name ? preset.display_name : "";
       var st = this.getState ? this.getState() : null;
       if (st && st.mic_setup === "binaural") {
         name = String(st.binaural_preset || "SADIE2_KU100").replace(/_/g, " ") + " head";
       }
-      var law = this.useBase
-        ? "Plane through L, R and the source · centre added with its delay · stack is frequency"
-        : (data.measured
-          ? "Measured · |pattern| × 10^(H/20)"
-          : (data.colour_mode === "BYPASS"
-            ? "Bypass · pattern only"
-            : "User defined · low rings toward omni"));
+      var law = data.measured
+        ? "Measured: real mic response, relative to on-axis"
+        : "Ideal pattern";
       this.meta.textContent =
-        law + " · " +
-        (data.n_bands || (data.centres_hz || []).length) + " rings · " +
-        "tilt " + tilt + "°" +
+        law +
         (name ? " · " + name : "");
     }
   };
