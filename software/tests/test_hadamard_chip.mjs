@@ -62,14 +62,17 @@ function lit(chips) {
   return chips.filter((c) => c.active).map((c) => c.getAttribute("data-n"));
 }
 
-test("the chip shows 32 while Play forces a stored 64 or 128", () => {
+test("the chip stays on the stored size while Play runs", () => {
   for (const stored of [64, 128]) {
     const live = paint(stored, true);
     assert.equal(live.state.hadamard_n, stored);
-    assert.deepEqual(lit(live.chips), ["32"]);
-    assert.equal(live.readout.textContent, "32 images · 32 FDN lines");
-    assert.equal(live.chips.find((c) => c.getAttribute("data-n") === "64").disabled, true);
-    assert.equal(live.chips.find((c) => c.getAttribute("data-n") === "128").disabled, true);
+    assert.deepEqual(lit(live.chips), [String(stored)]);
+    assert.equal(
+      live.readout.textContent,
+      stored + " lines: Render uses " + stored + ", Play is using 32"
+    );
+    assert.equal(live.chips.find((c) => c.getAttribute("data-n") === "64").disabled, false);
+    assert.equal(live.chips.find((c) => c.getAttribute("data-n") === "128").disabled, false);
     const stopped = paint(stored, false);
     assert.equal(stopped.state.hadamard_n, stored);
     assert.deepEqual(lit(stopped.chips), [String(stored)]);
@@ -82,4 +85,5 @@ test("the chip shows 32 while Play forces a stored 64 or 128", () => {
   assert.equal(eight.state.hadamard_n, 8);
   assert.deepEqual(lit(eight.chips), ["8"]);
   assert.equal(eight.readout.textContent, "8 images · 8 FDN lines");
+  assert.equal(eight.chips.find((c) => c.getAttribute("data-n") === "64").disabled, false);
 });

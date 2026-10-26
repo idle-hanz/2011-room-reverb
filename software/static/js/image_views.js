@@ -267,7 +267,7 @@
       return { selected: selected, receivers: out };
     }
 
-    /* Chip size. Play keeps 8, 16, or 32, the same clamp as live_fdn_params. */
+    /* Chip size. The lattice follows the stored selection. Play audio still clamps 64 and 128 to 32. */
     function hadamardShown() {
       var n = 32;
       if (data && data.hadamard_n != null && data.hadamard_n !== "") n = Number(data.hadamard_n);
@@ -276,8 +276,6 @@
         if (st && st.hadamard_n != null) n = Number(st.hadamard_n);
       }
       if (n !== 8 && n !== 16 && n !== 32 && n !== 64 && n !== 128) n = 32;
-      var live = !!(global.LiveFDN && LiveFDN.isRunning && LiveFDN.isRunning());
-      if (live && n !== 8 && n !== 16 && n !== 32) n = 32;
       return n;
     }
 

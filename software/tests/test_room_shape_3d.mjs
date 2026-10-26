@@ -213,7 +213,7 @@ test("splay shows the hadamard quota Play uses, and paths hide the lattice", () 
   assert.match(imageViews, /RoomDraw\.latticeKeys\(mode/);
   assert.match(imageViews, /mode !== "lattice" && key !== "a:home"/);
   assert.match(imageViews, /n: nTap, stand: stand/);
-  assert.match(imageViews, /live && n !== 8 && n !== 16 && n !== 32\) n = 32/);
+  assert.doesNotMatch(imageViews, /if \(live && n !== 8/);
 });
 
 test("lede and live faces match poly_room and Play's quota", () => {
@@ -341,7 +341,7 @@ test("gable roof faces match poly_room and Play's quota", () => {
   assert.match(room3d, /RoomDraw\.wallColor/);
   assert.match(imageViews, /imageRooms\(polyShape\(\)/);
   assert.match(imageViews, /RoomDraw\.wallColor/);
-  assert.match(imageViews, /live && n !== 8 && n !== 16 && n !== 32\) n = 32/);
+  assert.doesNotMatch(imageViews, /if \(live && n !== 8/);
   assert.match(imageViews, /RoomDraw\.latticeKeys\(mode/);
 });
 
@@ -412,7 +412,7 @@ test("hex faces match poly_room and Play's quota", () => {
   });
   assert.match(room3d, /RoomDraw\.polyFaces/);
   assert.match(imageViews, /imageRooms\(polyShape\(\)/);
-  assert.match(imageViews, /live && n !== 8 && n !== 16 && n !== 32\) n = 32/);
+  assert.doesNotMatch(imageViews, /if \(live && n !== 8/);
   assert.match(imageViews, /RoomDraw\.latticeKeys\(mode/);
 });
 

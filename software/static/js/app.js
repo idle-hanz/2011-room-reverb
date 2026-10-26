@@ -2021,19 +2021,21 @@
   function syncHadamardUI() {
     var n = state.hadamard_n || 32;
     var live = !!(window.LiveFDN && LiveFDN.isRunning && LiveFDN.isRunning());
-    // Play sizes 8, 16, and 32. Anything else stays 32. Stored n is for Render.
-    var shown = n;
-    if (live && n !== 8 && n !== 16 && n !== 32) shown = 32;
     document.querySelectorAll(".hadamard-chip").forEach(function (btn) {
       var bn = parseInt(btn.getAttribute("data-n"), 10);
       var renderOnly = bn === 64 || bn === 128;
-      btn.classList.toggle("active", bn === shown);
-      btn.disabled = !!(live && renderOnly);
+      btn.classList.toggle("active", bn === n);
+      btn.disabled = false;
       if (renderOnly) btn.title = "Render only";
       else if (btn.title === "Render only") btn.title = "";
     });
     var ro = document.getElementById("hadamardReadout");
-    if (ro) ro.textContent = shown + " images · " + shown + " FDN lines";
+    if (!ro) return;
+    if (live && (n === 64 || n === 128)) {
+      ro.textContent = n + " lines: Render uses " + n + ", Play is using 32";
+    } else {
+      ro.textContent = n + " images · " + n + " FDN lines";
+    }
   }
 
   function setHadamardN(n) {

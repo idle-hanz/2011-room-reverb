@@ -1692,8 +1692,8 @@ select.cap-pattern:focus-visible {
 .pair-row button {
   font-size: 12px;
 }
-.hadamard-chip[data-n="64"]:disabled::after,
-.hadamard-chip[data-n="128"]:disabled::after {
+.hadamard-chip[data-n="64"]::after,
+.hadamard-chip[data-n="128"]::after {
   content: " R";
   font-size: 0.65rem;
 }
