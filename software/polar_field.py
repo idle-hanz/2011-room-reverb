@@ -151,13 +151,14 @@ def pattern_radius_named(
 def _plane_dirs(n_az: int, plane: str) -> np.ndarray:
     """Unit directions in one plane. Index 0 is +Z (front).
 
-    xz: φ increases from +Z toward −X, matching look = (−sin φ, 0, cos φ).
+    xz: φ increases from +Z toward +X, the same way as room yaw
+    (look = (+sin φ, 0, cos φ), YAW_X_SIGN = +1).
     yz: φ increases from +Z toward +Y.
     """
     phi = np.arange(n_az, dtype=float) * (2.0 * math.pi / float(n_az))
     if plane == "yz":
         return np.stack((np.zeros(n_az), np.sin(phi), np.cos(phi)), axis=1)
-    return np.stack((-np.sin(phi), np.zeros(n_az), np.cos(phi)), axis=1)
+    return np.stack((np.sin(phi), np.zeros(n_az), np.cos(phi)), axis=1)
 
 
 def _halo_magnitude(
@@ -625,7 +626,8 @@ def compute_polar_field(
     }
     pos_of = {"L": left, "C": centre, "R": right}
     phi = np.arange(n_az, dtype=float) * (2.0 * math.pi / float(n_az))
-    dirs = np.stack((-np.sin(phi), np.zeros(n_az), np.cos(phi)), axis=1)
+    # Same sense as room yaw: +φ toward +X. Index 0 stays +Z.
+    dirs = np.stack((np.sin(phi), np.zeros(n_az), np.cos(phi)), axis=1)
     freqs = np.asarray(list(centres), dtype=float)
     omega = 2.0 * math.pi * freqs
     acc_l = np.zeros((n_az, len(freqs)), dtype=np.complex128)
@@ -651,18 +653,64 @@ def compute_polar_field(
     speaker_l = np.abs(acc_l).T
     speaker_r = np.abs(acc_r).T
 
-    # Sum = mean of L/C/R radii; mesh centred on C in the same plane
-    grids["sum"] = (grids["L"] + grids["C"] + grids["R"]) / 3.0
-    e_fwd, e_right = _basis_at_mic(centre, source, normal)
+    # Sum in the centre-look frame. 0° is where the array points (+Z at
+    # yaw 0), and +angle goes toward +X, the same way as room yaw.
+    # Each capsule is sampled at the angle from its own look, then the
+    # three are added with the spacing delay. An index-wise mean of the
+    # look-frame grids ignores that toe and aims the result at the source.
+    e_fwd, e_right = _basis_from_yaw(float(stand.mcalr), normal)
     n_bands = len(centres)
-    sum_verts = np.zeros(n_bands * n_az * 3, dtype=np.float64)
     n_b = max(n_bands - 1, 1)
+    origin_of = {"L": left, "C": centre, "R": right}
+    look_of = {
+        "L": _look_vector(float(stand.mlalr)),
+        "C": _look_vector(float(stand.mcalr)),
+        "R": _look_vector(float(stand.mralr)),
+    }
+    share: Dict[str, np.ndarray] = {}
+    for key in ("L", "C", "R"):
+        share[key] = np.zeros((n_bands, n_az), dtype=np.float64)
+    sum_lin = np.zeros((n_bands, n_az), dtype=np.float64)
+    freqs_sum = np.asarray(list(centres), dtype=float)
+    omega_sum = 2.0 * math.pi * freqs_sum
+    centre_a = np.asarray(centre, dtype=float)
+    for ai in range(n_az):
+        theta = (ai / float(n_az)) * 2.0 * math.pi
+        direction = _vadd(
+            _vmul(e_fwd, math.cos(theta)),
+            _vmul(e_right, math.sin(theta)),
+        )
+        for key in ("L", "C", "R"):
+            look = look_of[key]
+            cang = _clamp(_vdot(direction, look), -1.0, 1.0)
+            ang = math.acos(cang)
+            row_at = ang / (2.0 * math.pi) * float(n_az)
+            i0 = int(math.floor(row_at)) % n_az
+            i1 = (i0 + 1) % n_az
+            frac = row_at - math.floor(row_at)
+            for bi in range(n_bands):
+                row = grids[key][bi]
+                share[key][bi, ai] = (1.0 - frac) * float(row[i0]) + frac * float(row[i1])
+        rel_phase = {}
+        for key in ("L", "C", "R"):
+            rel = np.asarray(origin_of[key], dtype=float) - centre_a
+            rel_phase[key] = float(_vdot(direction, (float(rel[0]), float(rel[1]), float(rel[2]))))
+        for bi in range(n_bands):
+            acc = 0j
+            for key in ("L", "C", "R"):
+                phase = math.cos(-omega_sum[bi] * rel_phase[key] / SPEED_OF_SOUND_M_S)
+                phase_i = math.sin(-omega_sum[bi] * rel_phase[key] / SPEED_OF_SOUND_M_S)
+                amp = float(share[key][bi, ai])
+                acc += amp * (phase + 1j * phase_i)
+            sum_lin[bi, ai] = abs(acc) / 3.0
+    grids["sum"] = sum_lin
+    sum_verts = np.zeros(n_bands * n_az * 3, dtype=np.float64)
     for bi in range(n_bands):
         h = (bi / n_b) * _FREQ_STACK_M
         base = _vadd(centre, _vmul(normal, h))
         for ai in range(n_az):
             theta = (ai / n_az) * 2.0 * math.pi
-            r = float(grids["sum"][bi, ai])
+            r = float(sum_lin[bi, ai])
             offset = _vadd(
                 _vmul(e_fwd, r * math.cos(theta)),
                 _vmul(e_right, r * math.sin(theta)),
@@ -798,6 +846,8 @@ def compute_polar_field(
         "C": as_lists(grids["C"]),
         "R": as_lists(grids["R"]),
         "sum": as_lists(grids["sum"]),
+        # Centre-look frame. Index 0 is the array aim. The page sums a subset.
+        "share": {key: as_lists(share[key]) for key in ("L", "C", "R")},
         "each_db": {key: each_db[key].tolist() for key in ("L", "C", "R")},
         "speaker_l": as_lists(speaker_l),
         "speaker_r": as_lists(speaker_r),

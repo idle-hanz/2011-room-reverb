@@ -249,6 +249,40 @@
     this.root.add(g);
   };
 
+  /* 0° is the array aim (yaw 0 = +Z). +angle goes toward +X, same as room yaw.
+     Plane e2 is n × (right − left) = −Z, so labels that follow e2 sit on the back. */
+  PolarFieldView.prototype._lookBasis = function (plane, yawRad) {
+    var n = (plane && plane.normal) || [0, 1, 0];
+    var yaw = Number(yawRad) || 0;
+    var look = [Math.sin(yaw), 0, Math.cos(yaw)];
+    function dot(a, b) { return a[0] * b[0] + a[1] * b[1] + a[2] * b[2]; }
+    function unit(a) {
+      var len = Math.hypot(a[0], a[1], a[2]);
+      if (!(len > 1e-8)) return null;
+      return [a[0] / len, a[1] / len, a[2] / len];
+    }
+    function cross(a, b) {
+      return [
+        a[1] * b[2] - a[2] * b[1],
+        a[2] * b[0] - a[0] * b[2],
+        a[0] * b[1] - a[1] * b[0]
+      ];
+    }
+    var dn = dot(look, n);
+    var fwd = unit([look[0] - n[0] * dn, look[1] - n[1] * dn, look[2] - n[2] * dn]) || [0, 0, 1];
+    var right = unit(cross(n, fwd)) || [1, 0, 0];
+    fwd = unit(cross(right, n)) || fwd;
+    return { fwd: fwd, right: right, normal: n };
+  };
+
+  PolarFieldView.prototype._arrayYawRad = function () {
+    var d = this.data;
+    if (d && d.yaw_deg && d.yaw_deg.C != null && isFinite(Number(d.yaw_deg.C))) {
+      return Number(d.yaw_deg.C) * Math.PI / 180;
+    }
+    return 0;
+  };
+
   PolarFieldView.prototype._labelSprite = function (text) {
     var canvas = document.createElement("canvas");
     canvas.width = 160;
@@ -271,11 +305,22 @@
 
   PolarFieldView.prototype._addDbRings = function (group, o, e1, e2) {
     var rings = [0, -6, -12, -18, -24];
+    var basis = this._lookBasis(
+      { normal: (this.data && (this.useBase && this.data.base_plane ? this.data.base_plane : this.data.plane) || {}).normal },
+      this._arrayYawRad()
+    );
     function at(radius, ang) {
       return new THREE.Vector3(
         o[0] + e1[0] * radius * Math.sin(ang) + e2[0] * radius * Math.cos(ang),
         o[1] + e1[1] * radius * Math.sin(ang) + e2[1] * radius * Math.cos(ang),
         o[2] + e1[2] * radius * Math.sin(ang) + e2[2] * radius * Math.cos(ang)
+      );
+    }
+    function front(radius, ang) {
+      return new THREE.Vector3(
+        o[0] + basis.right[0] * radius * Math.sin(ang) + basis.fwd[0] * radius * Math.cos(ang),
+        o[1] + basis.right[1] * radius * Math.sin(ang) + basis.fwd[1] * radius * Math.cos(ang),
+        o[2] + basis.right[2] * radius * Math.sin(ang) + basis.fwd[2] * radius * Math.cos(ang)
       );
     }
     var self = this;
@@ -289,22 +334,96 @@
         new THREE.LineBasicMaterial({ color: 0xd6d3cd, transparent: true, opacity: 0.45 })
       ));
       var lab = self._labelSprite((db === 0 ? "0" : String(db)) + " dB");
-      var p = at(radius, 0.35);
+      var p = front(radius, 0.35);
       lab.position.copy(p);
       group.add(lab);
     });
     [[0, "0\u00b0"], [Math.PI / 2, "90\u00b0"], [Math.PI, "180\u00b0"]].forEach(function (row) {
       var lab = self._labelSprite(row[1]);
-      lab.position.copy(at(1.12, row[0]));
+      lab.position.copy(front(1.12, row[0]));
       group.add(lab);
     });
     var origin = new THREE.Vector3(o[0], o[1], o[2]);
-    var dir = new THREE.Vector3(e2[0], e2[1], e2[2]).normalize();
+    var dir = new THREE.Vector3(basis.fwd[0], basis.fwd[1], basis.fwd[2]);
     group.add(new THREE.ArrowHelper(dir, origin, 0.82, 0xf59e0b, 0.16, 0.07));
+  };
+
+  /* share[key] is already in the centre-look frame. A subset is |Σ amp·e^{−jω·proj/c}| / N. */
+  PolarFieldView.prototype._combinedFlat = function (members) {
+    var data = this.data;
+    var share = data && data.share;
+    if (!share || !members || !members.length) return null;
+    var pl = (this.useBase && data.base_plane) ? data.base_plane : data.plane;
+    if (!pl) return null;
+    var n = pl.normal || [0, 1, 0];
+    var basis = this._lookBasis({ normal: n }, this._arrayYawRad());
+    var origins = data.mic_origins || {};
+    var centre = origins.C || pl.origin;
+    if (!centre) return null;
+    var bands = data.centres_hz || [];
+    var nB = bands.length;
+    var nAz = data.n_az || 0;
+    if (!nB || !nAz) return null;
+    var nBm = Math.max(1, nB - 1);
+    var stack = Number(data.stack_m) || 2.4;
+    var speed = 340;
+    var flat = new Float32Array(nB * nAz * 3);
+    var fwd = basis.fwd;
+    var right = basis.right;
+    var nMem = members.length;
+    var ai, bi, theta, ct, st, dir, omega, re, im, r, h, ix, ph, amp, key, o, row;
+    for (ai = 0; ai < nAz; ai++) {
+      theta = (ai / nAz) * Math.PI * 2;
+      ct = Math.cos(theta);
+      st = Math.sin(theta);
+      dir = [
+        fwd[0] * ct + right[0] * st,
+        fwd[1] * ct + right[1] * st,
+        fwd[2] * ct + right[2] * st
+      ];
+      for (bi = 0; bi < nB; bi++) {
+        omega = 2 * Math.PI * Number(bands[bi]);
+        re = 0;
+        im = 0;
+        for (var mi = 0; mi < nMem; mi++) {
+          key = members[mi];
+          o = origins[key];
+          row = share[key] && share[key][bi];
+          amp = row ? Number(row[ai]) || 0 : 0;
+          var proj = 0;
+          if (o) {
+            proj = dir[0] * (o[0] - centre[0]) + dir[1] * (o[1] - centre[1]) + dir[2] * (o[2] - centre[2]);
+          }
+          ph = -omega * proj / speed;
+          re += amp * Math.cos(ph);
+          im += amp * Math.sin(ph);
+        }
+        r = Math.hypot(re, im) / nMem;
+        h = (bi / nBm) * stack;
+        ix = (bi * nAz + ai) * 3;
+        flat[ix] = centre[0] + n[0] * h + fwd[0] * r * ct + right[0] * r * st;
+        flat[ix + 1] = centre[1] + n[1] * h + fwd[1] * r * ct + right[1] * r * st;
+        flat[ix + 2] = centre[2] + n[2] * h + fwd[2] * r * ct + right[2] * r * st;
+      }
+    }
+    return flat;
+  };
+
+  /* Presets tick the boxes without a change event. The plot follows the boxes. */
+  PolarFieldView.prototype._readToggles = function () {
+    if (this.isolated) return;
+    var self = this;
+    document.querySelectorAll("#polarToggles input[data-polar]").forEach(function (box) {
+      var key = box.getAttribute("data-polar");
+      if (key && Object.prototype.hasOwnProperty.call(self.enabled, key)) {
+        self.enabled[key] = !!box.checked;
+      }
+    });
   };
 
   PolarFieldView.prototype._rebuildMeshes = function () {
     if (!this.root || !this.data) return;
+    this._readToggles();
     this._clearMeshes();
     this._drawPlaneWire();
     var bands = this.data.centres_hz || [];
@@ -312,78 +431,115 @@
     if (!bands.length || !nAz) return;
     var nB = bands.length;
     var self = this;
-    ["L", "C", "R", "sum", "base", "one"].forEach(function (key) {
+    ["base", "one"].forEach(function (key) {
       if (!self.enabled[key]) return;
       var mesh = null;
       if (self.data.vertices && self.data.vertices[key]) {
         mesh = self._makeSurfaceFromVertices(
-          self.data.vertices[key], nB, nAz, COLORS[key], key === "sum" ? 0.45 : 0.32
-        );
-      } else if (self.data[key]) {
-        mesh = self._makeSurfaceFromGrid(
-          self.data[key], nB, nAz, COLORS[key], key === "sum" ? 0.45 : 0.32
+          self.data.vertices[key], nB, nAz, COLORS[key] || COLORS.sum, 0.32
         );
       }
       if (!mesh) return;
       self._meshes[key] = mesh;
       self.root.add(mesh);
     });
+    /* Two toed solids overlap into a tube. Two or more ticked capsules
+       draw one combined mesh. One ticked capsule keeps its own solid. */
+    var ticked = ["L", "C", "R"].filter(function (k) { return self.enabled[k]; });
+    var members = ticked.length ? ticked.slice() : (self.enabled.sum ? ["L", "C", "R"] : []);
+    var mesh = null;
+    if (members.length === 1 && ticked.length === 1) {
+      var only = members[0];
+      if (self.data.vertices && self.data.vertices[only]) {
+        mesh = self._makeSurfaceFromVertices(
+          self.data.vertices[only], nB, nAz, COLORS[only], 0.32
+        );
+      } else if (self.data[only]) {
+        mesh = self._makeSurfaceFromGrid(self.data[only], nB, nAz, COLORS[only], 0.32);
+      }
+      if (mesh) {
+        self._meshes[only] = mesh;
+        self.root.add(mesh);
+      }
+    } else if (members.length) {
+      var flat = self._combinedFlat(members);
+      if (flat) {
+        mesh = self._makeSurfaceFromVertices(flat, nB, nAz, COLORS.sum, 0.45);
+      } else if (self.data.vertices && self.data.vertices.sum) {
+        mesh = self._makeSurfaceFromVertices(
+          self.data.vertices.sum, nB, nAz, COLORS.sum, 0.45
+        );
+      } else if (self.data.sum) {
+        mesh = self._makeSurfaceFromGrid(self.data.sum, nB, nAz, COLORS.sum, 0.45);
+      }
+      if (mesh) {
+        self._meshes.sum = mesh;
+        self.root.add(mesh);
+      }
+    }
     this._drawIdealOutline();
   };
 
   PolarFieldView.prototype._drawIdealOutline = function () {
     if (!this.data || !this.data.measured || !this.root) return;
     var pl = (this.useBase && this.data.base_plane) ? this.data.base_plane : this.data.plane;
-    if (!pl || !pl.origin || !pl.e1 || !pl.e2) return;
+    if (!pl || !pl.origin) return;
     var st = this.getState ? (this.getState() || {}) : {};
-    var keys = [];
+    var ticked = [];
     var self = this;
     [["L", "l"], ["C", "c"], ["R", "r"]].forEach(function (row) {
-      if (self.enabled[row[0]]) keys.push(row);
+      if (self.enabled[row[0]]) ticked.push(row);
     });
-    if (!keys.length && this.enabled.sum) keys.push(["C", "c"]);
-    if (!keys.length) return;
-    var o = pl.origin;
-    var e1 = pl.e1;
-    var e2 = pl.e2;
+    if (!ticked.length && !this.enabled.sum) return;
+    var row = ticked.length === 1 ? ticked[0] : ["C", "c"];
+    var origins = this.data.mic_origins || {};
+    var o = (ticked.length === 1 && origins[row[0]]) ? origins[row[0]] : (origins.C || pl.origin);
+    var yaw = this._arrayYawRad();
+    if (ticked.length === 1 && this.data.yaw_deg && this.data.yaw_deg[row[0]] != null) {
+      var yd = Number(this.data.yaw_deg[row[0]]);
+      if (isFinite(yd)) yaw = yd * Math.PI / 180;
+    }
     var nn = pl.normal || [0, 1, 0];
+    var basis = this._lookBasis({ normal: nn }, yaw);
     var centres = this.data.centres_hz || [];
     var bi = 0;
-    var i;
-    for (i = 0; i < centres.length; i++) {
-      if (Math.abs(Number(centres[i]) - 1000) < 1) bi = i;
+    if (this.soloBand != null && this.soloBand >= 0 && this.soloBand < centres.length) {
+      bi = this.soloBand;
+    } else {
+      var i;
+      for (i = 0; i < centres.length; i++) {
+        if (Math.abs(Number(centres[i]) - 1000) < 1) bi = i;
+      }
     }
     var h = (bi / Math.max(1, centres.length - 1)) * (Number(this.data.stack_m) || 2.4);
-    var group = new THREE.Group();
-    keys.forEach(function (row) {
-      var fam = st["family_" + row[1]] || "cardioid";
-      var pol = st["polar_" + row[1]];
-      var pts = [];
-      var k;
-      for (k = 0; k <= 96; k++) {
-        var th = (k / 96) * Math.PI * 2;
-        var g = 1;
-        if (window.RoomMath && RoomMath.polarGain) g = Math.abs(RoomMath.polarGain(th, fam, pol, st["pattern_" + row[1]]));
-        else if (window.MicDesk && MicDesk.patternGain) g = Math.abs(MicDesk.patternGain(th, fam, pol));
-        var rad = 0.9 * g;
-        pts.push(new THREE.Vector3(
-          o[0] + nn[0] * h + e1[0] * rad * Math.sin(th) + e2[0] * rad * Math.cos(th),
-          o[1] + nn[1] * h + e1[1] * rad * Math.sin(th) + e2[1] * rad * Math.cos(th),
-          o[2] + nn[2] * h + e1[2] * rad * Math.sin(th) + e2[2] * rad * Math.cos(th)
-        ));
-      }
-      var geo = new THREE.BufferGeometry().setFromPoints(pts);
-      var mat = new THREE.LineDashedMaterial({
-        color: 0xe8eaef,
-        dashSize: 0.06,
-        gapSize: 0.045,
-        transparent: true,
-        opacity: 0.95
-      });
-      var line = new THREE.Line(geo, mat);
-      line.computeLineDistances();
-      group.add(line);
+    var fam = st["family_" + row[1]] || "cardioid";
+    var pol = st["polar_" + row[1]];
+    var pts = [];
+    var k;
+    for (k = 0; k <= 96; k++) {
+      var th = (k / 96) * Math.PI * 2;
+      var g = 1;
+      if (window.RoomMath && RoomMath.polarGain) g = Math.abs(RoomMath.polarGain(th, fam, pol, st["pattern_" + row[1]]));
+      else if (window.MicDesk && MicDesk.patternGain) g = Math.abs(MicDesk.patternGain(th, fam, pol));
+      var rad = 0.9 * g;
+      pts.push(new THREE.Vector3(
+        o[0] + nn[0] * h + basis.right[0] * rad * Math.sin(th) + basis.fwd[0] * rad * Math.cos(th),
+        o[1] + nn[1] * h + basis.right[1] * rad * Math.sin(th) + basis.fwd[1] * rad * Math.cos(th),
+        o[2] + nn[2] * h + basis.right[2] * rad * Math.sin(th) + basis.fwd[2] * rad * Math.cos(th)
+      ));
+    }
+    var geo = new THREE.BufferGeometry().setFromPoints(pts);
+    var mat = new THREE.LineDashedMaterial({
+      color: 0xe8eaef,
+      dashSize: 0.06,
+      gapSize: 0.045,
+      transparent: true,
+      opacity: 0.95
     });
+    var line = new THREE.Line(geo, mat);
+    line.computeLineDistances();
+    var group = new THREE.Group();
+    group.add(line);
     this._meshes.ideal = group;
     this.root.add(group);
   };

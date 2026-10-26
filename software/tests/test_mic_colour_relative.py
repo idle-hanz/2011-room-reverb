@@ -624,7 +624,7 @@ def test_polar_uses_fitter_radius_not_lf_morph():
     # null is no longer multiplied on top of the fitter.
     assert halo[0][0] > halo[0][36]
     # 17 cm at 1 kHz is half a wavelength along X, so the side ring combs.
-    side = 54  # φ = 3π/2 → û = +X
+    side = 18  # φ = π/2 → û = +X (room yaw, +angle toward +X)
     assert abs(halo[4][side] - halo[0][side]) > 0.2 * max(halo[0][side], 1e-6)
     assert "delay" in measured["halo_note"]
     assert len(measured["vertices"]["base"]) == 8 * 72 * 3
