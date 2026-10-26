@@ -827,6 +827,56 @@ def compute_polar_field(
     }
 
 
+# Display only. The Polar tab reads these grids. Play and Render do not.
+DISPLAY_AZ = 72
+DISPLAY_LOG_N = 48
+DISPLAY_ANGLES_DEG = (0.0, 45.0, 90.0, 135.0, 180.0)
+
+
+def display_h_db(
+    preset_id: str,
+    *,
+    hpf_on: bool = False,
+    colour_mode: str = "MEASURED_SHELF",
+) -> Dict[str, Any]:
+    """Catalogue H(θ, f) for the Polar tab.
+
+    ``h_rings`` and ``h_angles`` are both ``_h_db_grid``. This does not
+    change a pattern, a gain, or a live parameter.
+    """
+    from mic_colour.pattern_map import capsule_law
+    from mic_colour.preset_store import get_store, resolve_preset_id
+
+    store = get_store()
+    pid = resolve_preset_id(preset_id)
+    preset = store.get(pid) or {}
+    try:
+        model = store.model_for(pid)
+    except KeyError:
+        model = None
+    law = capsule_law(preset.get("family"))
+    az = np.arange(DISPLAY_AZ, dtype=float) * (2.0 * math.pi / float(DISPLAY_AZ))
+    rings = np.asarray(RING_HZ, dtype=float)
+    h_rings = _h_db_grid(az, rings, colour_mode, model, store.hpf_of(pid), bool(hpf_on))
+    logf = np.geomspace(20.0, 16000.0, DISPLAY_LOG_N)
+    ang = np.deg2rad(np.asarray(DISPLAY_ANGLES_DEG, dtype=float))
+    h_angles = _h_db_grid(ang, logf, colour_mode, model, store.hpf_of(pid), bool(hpf_on))
+    return {
+        "id": pid,
+        "display_name": preset.get("display_name") or pid,
+        "family": law["family"],
+        "pattern": law["pattern"],
+        "polar": float(law["polar"]),
+        "az_deg": [float(math.degrees(t)) for t in az],
+        "rings_hz": [float(c) for c in rings],
+        "ring_labels": list(RING_LABELS),
+        "h_rings": h_rings.tolist(),
+        "angles_deg": [float(a) for a in DISPLAY_ANGLES_DEG],
+        "freqs_hz": [float(f) for f in logf],
+        "h_angles": h_angles.tolist(),
+    }
+
+
 if __name__ == "__main__":
     p = compute_polar_field(
         W=6, H=3, L=8, sox=0.5, soz=0.55, mz=6.5, my=1.5,

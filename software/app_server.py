@@ -1760,6 +1760,29 @@ def api_polar(body: dict):
 
 
 
+@app.post("/api/polar_display")
+def api_polar_display(body: dict):
+    """Catalogue curves for the Polar tab. Display only. Not a live parameter."""
+    from polar_field import display_h_db
+
+    raw = (body or {}).get("mics") or []
+    if not isinstance(raw, list):
+        raw = []
+    mode = str((body or {}).get("colour_mode") or "MEASURED_SHELF")
+    out = []
+    for row in raw[:8]:
+        if isinstance(row, str):
+            row = {"id": row}
+        if not isinstance(row, dict):
+            continue
+        out.append(display_h_db(
+            str(row.get("id") or ""),
+            hpf_on=bool(row.get("hpf_on")),
+            colour_mode=mode,
+        ))
+    return {"ok": True, "mics": out}
+
+
 def fitter_model_path() -> Path:
     """Sibling mic_fitter package. app_server.py lives in software/."""
     return Path(__file__).resolve().parents[1] / "mic_fitter" / "mic_fitter" / "model.py"

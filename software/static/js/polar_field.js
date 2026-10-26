@@ -25,6 +25,8 @@
     this._meshes = {};
     this._planeHelper = null;
     this.soloBand = null;
+    this._balloonSpec = null;
+    this._skipHidden = !!opts.skipHidden;
     if (!this.canvas || typeof THREE === "undefined") {
       if (this.meta) this.meta.textContent = "Three.js unavailable";
       return;
@@ -507,10 +509,111 @@
     this.renderer.setSize(w, h, false);
   };
 
+  /* One mic, revolved around its front. The drag and the wheel are _bindOrbit. */
+  PolarFieldView.prototype.showBalloon = function (spec) {
+    this._balloonSpec = spec || null;
+    if (!this.root || !this.renderer) return;
+    this._look.set(0, 0, 0);
+    this._dist = 2.8;
+    this._updateCamera();
+    this._rebuildBalloon();
+  };
+
+  PolarFieldView.prototype._rebuildBalloon = function () {
+    if (!this.root) return;
+    this._clearMeshes();
+    var spec = this._balloonSpec;
+    if (!spec || !spec.db || !spec.db.length) return;
+    var db = spec.db;
+    var nAz = db.length;
+    var nTh = Math.floor(nAz / 2) + 1;
+    var nPh = 48;
+    function lin(dbv) {
+      var v = Math.pow(10, Number(dbv) / 20);
+      if (!isFinite(v) || v < 0) v = 0;
+      if (v > 1) v = 1;
+      return v;
+    }
+    var positions = [];
+    var colors = [];
+    var ti, pi, th, ph, r;
+    for (ti = 0; ti < nTh; ti++) {
+      th = Math.PI * ti / Math.max(1, nTh - 1);
+      r = lin(db[ti]);
+      for (pi = 0; pi < nPh; pi++) {
+        ph = (pi / nPh) * Math.PI * 2;
+        positions.push(r * Math.sin(th) * Math.cos(ph), r * Math.sin(th) * Math.sin(ph), r * Math.cos(th));
+        colors.push(0.18, 0.83, 0.75);
+      }
+    }
+    var indices = [];
+    for (ti = 0; ti < nTh - 1; ti++) {
+      for (pi = 0; pi < nPh; pi++) {
+        var p2 = (pi + 1) % nPh;
+        var i0 = ti * nPh + pi;
+        var i1 = ti * nPh + p2;
+        var i2 = (ti + 1) * nPh + pi;
+        var i3 = (ti + 1) * nPh + p2;
+        indices.push(i0, i2, i1, i1, i2, i3);
+      }
+    }
+    var geo = new THREE.BufferGeometry();
+    geo.setAttribute("position", new THREE.Float32BufferAttribute(positions, 3));
+    geo.setAttribute("color", new THREE.Float32BufferAttribute(colors, 3));
+    geo.setIndex(indices);
+    geo.computeVertexNormals();
+    var mesh = new THREE.Mesh(geo, new THREE.MeshStandardMaterial({
+      vertexColors: true,
+      transparent: true,
+      opacity: 0.72,
+      side: THREE.DoubleSide,
+      metalness: 0.05,
+      roughness: 0.45,
+      depthWrite: false
+    }));
+    var rings = new THREE.Group();
+    [0, -6, -12, -18, -24].forEach(function (mark) {
+      var rad = lin(mark);
+      var pts = [];
+      var k;
+      for (k = 0; k <= 64; k++) {
+        var a = (k / 64) * Math.PI * 2;
+        pts.push(new THREE.Vector3(rad * Math.sin(a), 0, rad * Math.cos(a)));
+      }
+      rings.add(new THREE.Line(
+        new THREE.BufferGeometry().setFromPoints(pts),
+        new THREE.LineBasicMaterial({ color: 0xd6d3cd, transparent: true, opacity: 0.45 })
+      ));
+    });
+    if (spec.ideal) {
+      var idealPts = [];
+      var ii;
+      for (ii = 0; ii <= 96; ii++) {
+        var t = (ii / 96) * Math.PI * 2;
+        var g = Math.abs(spec.ideal(t));
+        var ir = g > 1 ? 1 : g;
+        idealPts.push(new THREE.Vector3(ir * Math.sin(t), 0, ir * Math.cos(t)));
+      }
+      var iGeo = new THREE.BufferGeometry().setFromPoints(idealPts);
+      var iMat = new THREE.LineDashedMaterial({
+        color: 0xe8eaef, dashSize: 0.06, gapSize: 0.04, transparent: true, opacity: 0.95
+      });
+      var iLine = new THREE.Line(iGeo, iMat);
+      iLine.computeLineDistances();
+      rings.add(iLine);
+    }
+    rings.add(new THREE.ArrowHelper(new THREE.Vector3(0, 0, 1), new THREE.Vector3(0, 0, 0), 1.05, 0xf59e0b, 0.12, 0.06));
+    this._meshes.balloon = mesh;
+    this._meshes.rings = rings;
+    this.root.add(mesh);
+    this.root.add(rings);
+  };
+
   PolarFieldView.prototype._animate = function () {
     var self = this;
     function tick() {
       requestAnimationFrame(tick);
+      if (self._skipHidden && self.canvas && self.canvas.offsetParent === null) return;
       if (self.renderer && self.scene && self.camera) {
         self.renderer.render(self.scene, self.camera);
       }

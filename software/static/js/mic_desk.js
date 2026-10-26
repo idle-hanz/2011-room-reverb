@@ -1169,6 +1169,7 @@
       else drawTop(geo);
       drawPolars(geo);
       drawRoomPolars(geo);
+      if (global.RRPolarViews && RRPolarViews.paintArrivals) RRPolarViews.paintArrivals();
       ensureView3d();
       if (view3d) view3d.redraw();
       return geo;

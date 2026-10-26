@@ -2049,6 +2049,7 @@
           if (currentView === "polar" && polarPage === "combined" && polarView && polarView.resize) {
             polarView.resize();
           }
+          if (currentView === "polar" && window.RRPolarViews && RRPolarViews.onRoom) RRPolarViews.onRoom(state);
           schedulePolar();
         });
       });
@@ -3220,6 +3221,7 @@
     paintRoomShape();
     paintMicSetupLink();
     scheduleSetupSave();
+    if (window.RRPolarViews && RRPolarViews.onRoom) RRPolarViews.onRoom(state);
   }
 
   function placeScaleMargin(axis) {
