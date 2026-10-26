@@ -1853,6 +1853,7 @@ def compute_taps(
     z_face_4l: bool = False,
     hadamard_n: Optional[int] = None,
     include_offaxis_shelf: bool = True,
+    include_pattern: bool = True,
     reaktor_parity: bool = False,
 ) -> List[ImageTap]:
     """Build taps for the chosen image table.
@@ -1866,6 +1867,9 @@ def compute_taps(
     (see dist_xz); not substituted into image taps here.
     θ is arrival_theta_ray (aim · incoming ray). include_offaxis_shelf False
     leaves the −6 dB level shelf out of the scalars (Measured / Bypass).
+    include_pattern False leaves the ideal capsule out of the scalars.
+    Measured does that: the fitter already holds the polar. The M/S side
+    fig-8 stays, because that difference is the decode, not the fitter.
     """
     left, right = mic_positions(stand)
     yaw_l = stand.mlalr  # VERIFIED Prepare MLALR
@@ -1931,6 +1935,8 @@ def compute_taps(
             _p_s, g_s = capsule_press_grad(
                 th_s, family="bi", polar=0.5, pattern=PATTERN_FIG8
             )
+            if not include_pattern:
+                p_m, g_m = 1.0, 0.0
             geo = geometric_level(d_l) * pol
             sh_l = _shelf(th_m)
             sh_r = sh_l
@@ -1990,6 +1996,9 @@ def compute_taps(
                 polar=getattr(stand, "polar_c", None),
                 pattern=getattr(stand, "pattern_c", None) or pattern_from_car_omni(stand.car_omni),
             )
+            if not include_pattern:
+                p_l = p_r = p_c = 1.0
+                g_l_d = g_r_d = g_c_d = 0.0
             sh_l = _shelf(th_l)
             sh_r = _shelf(th_r)
             sh_c = _shelf(th_c)

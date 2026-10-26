@@ -2806,11 +2806,26 @@
       meta: document.getElementById("micHeroMeta"),
       isolated: true,
       useBase: true,
-      enabled: { L: false, C: false, R: false, sum: false, base: true },
+      enabled: { L: false, C: false, R: false, sum: false, base: true, one: false },
       getState: function () { return state; }
     });
     return micHero;
   }
+
+  document.querySelectorAll("#sourcePlaneRow [data-plane]").forEach(function (btn) {
+    btn.addEventListener("click", function () {
+      var which = btn.getAttribute("data-plane");
+      document.querySelectorAll("#sourcePlaneRow [data-plane]").forEach(function (b) {
+        b.setAttribute("aria-pressed", b === btn ? "true" : "false");
+      });
+      var hero = ensureMicHero();
+      if (!hero || !polarCache) return;
+      hero.enabled = which === "one"
+        ? { L: false, C: false, R: false, sum: false, base: false, one: true }
+        : { L: false, C: false, R: false, sum: false, base: true, one: false };
+      hero.setData(polarCache);
+    });
+  });
 
   var polarTimer = null;
   var polarReq = 0;
@@ -2843,7 +2858,10 @@
       if (polarPage === "speakers") drawSpeakerPolar(data);
       ensureMicHero();
       if (micHero) {
-        micHero.enabled = { L: false, C: false, R: false, sum: false, base: true };
+        var oneOn = document.querySelector('#sourcePlaneRow [data-plane="one"][aria-pressed="true"]');
+        micHero.enabled = oneOn
+          ? { L: false, C: false, R: false, sum: false, base: false, one: true }
+          : { L: false, C: false, R: false, sum: false, base: true, one: false };
         micHero.setData(data);
       }
       if (polarView && polarView.setData) polarView.setData(data);

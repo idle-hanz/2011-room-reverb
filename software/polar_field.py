@@ -4,10 +4,13 @@
 
 Not image-arrival directions. Rings are 20 / 63 / 125 / 250 / 1k / 4k / 8k / 16k.
 
-MEASURED and BYPASS
-    radius = abs(capsule gain) × 10^(H_db(θ, f) / 20)
-    H_db is fitter relative_db in MEASURED, and 0 in BYPASS.
-    Manufacturer HPF stacks on that curve when it is engaged.
+MEASURED
+    radius = 10^(H_db(θ, f) / 20)
+    H_db is the fitter relative_db. That fit is already H(θ)/H(0°)
+    from the Zenodo polar, so the ideal pattern is not applied again.
+BYPASS
+    radius = abs(capsule gain). H_db is 0.
+    Manufacturer HPF stacks on the measured curve when it is engaged.
     The LF→omni morph is not used.
 
 ASSUMED_TOYS
@@ -194,7 +197,14 @@ def _halo_magnitude(
         if measured:
             db = _h_db_grid(theta, centres, mode, mic["model"], mic["hpf"], on)
             lin = np.power(10.0, db / 20.0).T
-            amp = signed[:, None] * lin
+            from mic_colour.modes import fitter_on_for
+            if fitter_on_for(mode):
+                # Sign only. A zero of the ideal pattern must not wipe the fit.
+                gsign = np.sign(signed)
+                gsign[gsign == 0.0] = 1.0
+                amp = gsign[:, None] * lin
+            else:
+                amp = signed[:, None] * lin
         else:
             amp = np.zeros((n_az, n_f), dtype=float)
             for bi, fc in enumerate(freqs):
@@ -371,10 +381,12 @@ def _sample_mic_grid(
     polar: Optional[float] = None,
     measured: bool = False,
     h_db: Optional[np.ndarray] = None,
+    fitter: bool = False,
 ) -> Tuple[np.ndarray, np.ndarray]:
     """Return (radii [n_bands, n_az], vertices flat xyz [n_bands*n_az*3]).
 
-    measured: radius = abs(capsule gain) × 10^(H_db/20). No LF→omni morph.
+    fitter: radius = 10^(H_db/20). That curve already holds the polar.
+    measured without the fitter (Bypass): |capsule gain| × 10^(H_db/20).
     Otherwise the ASSUMED_TOYS morph. 0° is the capsule look when yaw is set.
     """
     n_bands = len(centres)
@@ -401,10 +413,13 @@ def _sample_mic_grid(
             theta = (ai / n_az) * 2.0 * math.pi
             if measured:
                 gdb = 0.0 if h_db is None else float(h_db[bi, ai])
-                gain = pattern_abs(
-                    theta, pat or PATTERN_CARDIOID, family=family, polar=polar
-                )
-                r = gain * (10.0 ** (gdb / 20.0))
+                if fitter:
+                    r = 10.0 ** (gdb / 20.0)
+                else:
+                    gain = pattern_abs(
+                        theta, pat or PATTERN_CARDIOID, family=family, polar=polar
+                    )
+                    r = gain * (10.0 ** (gdb / 20.0))
             elif pat is None and polar is None and family is None:
                 r = pattern_radius(theta, mix)
             else:
@@ -523,11 +538,12 @@ def compute_polar_field(
         float(plane["normal"][2]),
     )
 
-    from mic_colour.modes import parse_colour_mode
+    from mic_colour.modes import fitter_on_for, parse_colour_mode
     from mic_colour.preset_store import get_store, resolve_preset_id
 
     mode = parse_colour_mode(colour_mode)
     measured = _drops_lf_morph(mode)
+    fitter = bool(fitter_on_for(mode))
     sides_on = bool(mic_hpf_engaged) if mic_hpf_sides is None else bool(mic_hpf_sides)
     centre_on = bool(mic_hpf_engaged) if mic_hpf_centre is None else bool(mic_hpf_centre)
     hpf_on = {"L": sides_on, "R": sides_on, "C": centre_on}
@@ -572,7 +588,7 @@ def compute_polar_field(
         g, v = _sample_mic_grid(
             origin, source, normal, centres, n_az, car,
             pattern=pat, yaw_rad=yaw, family=fam, polar=pol,
-            measured=measured, h_db=h_db,
+            measured=measured, h_db=h_db, fitter=fitter,
         )
         grids[key] = g
         verts[key] = v
@@ -694,35 +710,40 @@ def compute_polar_field(
         np.cos(phi)[:, None] * np.asarray(e2b, dtype=float)
         + np.sin(phi)[:, None] * np.asarray(e1b, dtype=float)
     )
-    base_mag = _halo_magnitude(base_dirs, halo_mics, centres, mode, bool(mic_hpf_engaged))
-    # Size the stack from 1 kHz toward the source. The 20 Hz ring is the
-    # wrong ruler: a high-pass shrinks it, and dividing by that tiny value
-    # inflates every other ring.
-    ref_i = 0
-    for i, hz in enumerate(centres):
-        if abs(float(hz) - 1000.0) < 1.0:
-            ref_i = i
-            break
-    ref = float(base_mag[ref_i, 0]) if base_mag.size else 1.0
-    if ref < 1e-3:
-        ref = float(np.max(base_mag)) if base_mag.size else 1.0
-    base_radii = base_mag / max(ref, 1e-9)
-    base_origin = tuple(base_plane["origin"])
-    n_b_stack = max(len(centres) - 1, 1)
-    base_verts = np.zeros(len(centres) * n_az * 3, dtype=np.float64)
-    for bi in range(len(centres)):
-        h = (bi / n_b_stack) * _FREQ_STACK_M
-        base = _vadd(base_origin, _vmul(nb, h))
-        for ai in range(n_az):
-            ang = (ai / n_az) * 2.0 * math.pi
-            r = float(base_radii[bi, ai]) * 0.9
-            offset = _vadd(
-                _vmul(e2b, r * math.cos(ang)),
-                _vmul(e1b, r * math.sin(ang)),
-            )
-            pnt = _vadd(base, offset)
-            idx = (bi * n_az + ai) * 3
-            base_verts[idx : idx + 3] = pnt
+    def _plane_stack(mics):
+        mag = _halo_magnitude(base_dirs, mics, centres, mode, bool(mic_hpf_engaged))
+        # Size the stack from 1 kHz toward the source. The 20 Hz ring is the
+        # wrong ruler: a high-pass shrinks it, and dividing by that tiny value
+        # inflates every other ring.
+        ref_i = 0
+        for i, hz in enumerate(centres):
+            if abs(float(hz) - 1000.0) < 1.0:
+                ref_i = i
+                break
+        ref_v = float(mag[ref_i, 0]) if mag.size else 1.0
+        if ref_v < 1e-3:
+            ref_v = float(np.max(mag)) if mag.size else 1.0
+        radii = mag / max(ref_v, 1e-9)
+        origin = tuple(base_plane["origin"])
+        n_b_stack = max(len(centres) - 1, 1)
+        out = np.zeros(len(centres) * n_az * 3, dtype=np.float64)
+        for bi in range(len(centres)):
+            h = (bi / n_b_stack) * _FREQ_STACK_M
+            base = _vadd(origin, _vmul(nb, h))
+            for ai in range(n_az):
+                ang = (ai / n_az) * 2.0 * math.pi
+                r = float(radii[bi, ai]) * 0.9
+                offset = _vadd(
+                    _vmul(e2b, r * math.cos(ang)),
+                    _vmul(e1b, r * math.sin(ang)),
+                )
+                pnt = _vadd(base, offset)
+                idx = (bi * n_az + ai) * 3
+                out[idx : idx + 3] = pnt
+        return radii, out
+
+    base_radii, base_verts = _plane_stack(halo_mics)
+    one_radii, one_verts = _plane_stack(halo_mics[1:2])
 
     return {
         "ok": True,
@@ -740,8 +761,8 @@ def compute_polar_field(
             for key in ("L", "C", "R")
         },
         "assumed_note": (
-            "Radius = |capsule gain| × 10^(H_db/20). "
-            "MEASURED H_db is the fitter. BYPASS H_db is 0. "
+            "MEASURED radius is the fitter, 10^(H_db/20). "
+            "The ideal pattern is not applied again. BYPASS is the pattern. "
             "No LF→omni morph. Rings 20 / 63 / 125 / 250 / 1k / 4k / 8k / 16k."
             if measured else
             "ASSUMED_TOYS display morph: low rings toward omni, high rings toward "
@@ -784,6 +805,7 @@ def compute_polar_field(
         "halo_xz": as_lists(halo_xz),
         "halo_yz": as_lists(halo_yz),
         "base": as_lists(base_radii),
+        "one": as_lists(one_radii),
         "base_plane": base_plane,
         "base_note": (
             "Pattern in the plane through the side mics and the source. "
@@ -800,6 +822,7 @@ def compute_polar_field(
             "R": verts["R"].tolist(),
             "sum": verts["sum"].tolist(),
             "base": base_verts.tolist(),
+            "one": one_verts.tolist(),
         },
     }
 

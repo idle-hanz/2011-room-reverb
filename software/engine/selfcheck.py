@@ -1071,15 +1071,16 @@ def test_two_source_balance_mirror_and_split() -> None:
     assert a_l_e > a_r_e * 1.05
     assert b_r_e > b_l_e * 1.05
     assert "direct_gain" not in off["buses"]["l"]
-    assert on["buses"]["l"]["direct_gain"] > on["buses"]["r"]["direct_gain"]
-    assert on["buses"]["r"]["b"]["direct_gain"] > on["buses"]["l"]["b"]["direct_gain"]
+    # Measured holds the polar in the fitter, so the broadband spike is flat.
+    assert abs(on["buses"]["l"]["direct_gain"] - on["buses"]["r"]["direct_gain"]) < 1e-9
+    assert abs(on["buses"]["r"]["b"]["direct_gain"] - on["buses"]["l"]["b"]["direct_gain"]) < 1e-9
     assert len(on["buses"]["l"]["b"]["dffs"]) == 32
     aimed = live_fdn_params(dict(
         p, two_sources=True, mirror_b=True, source_balance=0.0,
         yaw_l_deg=-55.0, yaw_c_deg=0.0, yaw_r_deg=55.0,
     ))
-    assert aimed["buses"]["l"]["direct_gain"] > aimed["buses"]["r"]["direct_gain"] * 1.5
-    assert aimed["buses"]["r"]["b"]["direct_gain"] > aimed["buses"]["l"]["b"]["direct_gain"] * 1.5  # K1: mirrored B (right) hotter in R
+    assert abs(aimed["buses"]["l"]["direct_gain"] - aimed["buses"]["r"]["direct_gain"]) < 1e-9
+    assert abs(aimed["buses"]["r"]["b"]["direct_gain"] - aimed["buses"]["l"]["b"]["direct_gain"]) < 1e-9
     tail = dict(common, direct_wet=0.0, fdn_wet=1.0, ir_length_ms=60.0)
     ta_l, ta_r, _info = render(
         impulse, sr, dry_l=impulse, dry_r=silence, source_balance=-1.0, **tail,

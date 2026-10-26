@@ -14,10 +14,10 @@ import app_server as A  # noqa: E402
 from render_pipeline import live_fdn_params  # noqa: E402
 from surface_colour import parse_surfaces  # noqa: E402
 
-EMPTY = "b20cf5dc675f613992aa6a31c2cd74f4"
-CENTRE = "ba1bbc6d386ed75bf484156f08043f37"
+EMPTY = "067adbca1930efcd3f7c83bdd1d4c359"
+CENTRE = "35db578a18557d5729c0450e26f24a9d"
 # Default splay live dict before this toggle. Equal A and C must not move it.
-SPLAY = "06d91ff57c4006fdaec8f6d9b418c147"
+SPLAY = "5f757d04e47eea6cda87b32c35daa901"
 
 
 def _md5(blob) -> str:

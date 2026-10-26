@@ -2,7 +2,7 @@
 (function (global) {
   "use strict";
 
-  var COLORS = { L: 0xa78bfa, C: 0x2dd4bf, R: 0x34d399, sum: 0xfbbf24, base: 0x5eead4 };
+  var COLORS = { L: 0xa78bfa, C: 0x2dd4bf, R: 0x34d399, sum: 0xfbbf24, base: 0x5eead4, one: 0x5eead4 };
 
   function PolarFieldView(opts) {
     opts = opts || {};
@@ -256,7 +256,7 @@
     if (!bands.length || !nAz) return;
     var nB = bands.length;
     var self = this;
-    ["L", "C", "R", "sum", "base"].forEach(function (key) {
+    ["L", "C", "R", "sum", "base", "one"].forEach(function (key) {
       if (!self.enabled[key]) return;
       var mesh = null;
       if (self.data.vertices && self.data.vertices[key]) {

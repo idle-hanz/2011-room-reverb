@@ -958,7 +958,11 @@
             </div>
 <div class="panel mic-polar-panel">
               <div class="panel-head">
-                <h2>Source plane</h2>
+                <h2>Three mics summed (spacing interference)</h2>
+                <div class="pair-row" id="sourcePlaneRow" role="group" aria-label="Source plane mics">
+                  <button type="button" data-plane="sum" aria-pressed="true">Three mics</button>
+                  <button type="button" data-plane="one" aria-pressed="false">One mic</button>
+                </div>
                 <span class="honesty-badge honesty-measured" id="micHonestyBadge" title="This badge is the data source for the drawing, not the Colour sound mode.">preset data: measured</span>
               </div>
               <div class="mic-polar-body">
@@ -989,7 +993,7 @@
   <script src="/static/js/room_editor.js?v=24"></script>
   <script src="/static/js/image_views.js?v=20"></script>
   <script src="/static/js/colour_surfaces.js?v=9"></script>
-  <script src="/static/js/polar_field.js?v=7"></script>
+  <script src="/static/js/polar_field.js?v=8"></script>
   <script src="/static/js/mic_desk.js?v=20"></script>
   <script src="/static/js/source_desk.js?v=4"></script>
   <script src="/static/js/pack_room.js?v=55"></script>
@@ -1000,7 +1004,7 @@
   <script src="/static/js/drag_model.js?v=2"></script>
   <script src="/static/js/room_window_math.js?v=1"></script>
   <script src="/static/js/routing_scene.js?v=3"></script>
-  <script src="/static/js/app.js?v=92"></script>
+  <script src="/static/js/app.js?v=93"></script>
   <script>window.RR_SL_STAGE = 6;</script>
   <script src="/static/js/sl_room_result.js?v=7"></script>
   <script src="/static/js/rr_controls.js?v=1"></script>

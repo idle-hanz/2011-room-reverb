@@ -24,7 +24,7 @@ from mic_colour import tail_diffuse as T  # noqa: E402
 from mic_colour.sos_fit import sos_db, unpack_record  # noqa: E402
 from render_pipeline import live_fdn_params, pack_blob_v2, render_fdn_ir  # noqa: E402
 
-EMPTY_MD5 = "b20cf5dc675f613992aa6a31c2cd74f4"
+EMPTY_MD5 = "067adbca1930efcd3f7c83bdd1d4c359"
 
 
 def _md5(blob) -> str:

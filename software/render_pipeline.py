@@ -1515,6 +1515,7 @@ def makeup_at_stand(
     grid,
     hadamard_n,
     include_offaxis_shelf,
+    include_pattern=True,
     reaktor_parity,
     surfaces,
     g,
@@ -1554,12 +1555,14 @@ def makeup_at_stand(
             room, mk_source, placed, room_shape,
             c=c, n=hadamard_n,
             include_offaxis_shelf=include_offaxis_shelf,
+            include_pattern=include_pattern,
         )
     else:
         taps = compute_taps(
             room, mk_source, placed, c=c, grid=grid, origin="corner",
             z_face_4l=False, hadamard_n=hadamard_n,
             include_offaxis_shelf=include_offaxis_shelf,
+            include_pattern=include_pattern,
             reaktor_parity=bool(reaktor_parity),
         )
     inj_l, inj_c, inj_r = _inject_levels(taps, hadamard_n, surfaces)
@@ -1701,6 +1704,7 @@ def combined_ir(
             makeup_stand, desk, room, makeup_source,
             c=c, grid=grid_mk, hadamard_n=hadamard_n,
             include_offaxis_shelf=shelf,
+            include_pattern=not bool(getattr(colour, "measured", False)),
             reaktor_parity=bool(reaktor_parity),
             surfaces=surfaces, g=fdn_g, ir_length_ms=fdn_ms, sr=sr,
             weights=mk_w,
@@ -2004,11 +2008,13 @@ def _render_core(
                 room, prep.source, stand, room_shape,
                 c=c, n=n_had,
                 include_offaxis_shelf=mic_colour.include_offaxis_shelf,
+                include_pattern=not mic_colour.measured,
             )
         return compute_taps(
             room, prep.source, stand, c=c, grid=grid, origin="corner",
             z_face_4l=False, hadamard_n=n_had,
             include_offaxis_shelf=mic_colour.include_offaxis_shelf,
+            include_pattern=not mic_colour.measured,
             reaktor_parity=reaktor_parity,
         )
 
@@ -2089,6 +2095,7 @@ def _render_core(
                 _unplaced_stand(prep), desk, room, prep.source,
                 c=c, grid=grid, hadamard_n=n_had,
                 include_offaxis_shelf=mic_colour.include_offaxis_shelf,
+                include_pattern=not mic_colour.measured,
                 reaktor_parity=reaktor_parity,
                 surfaces=surfaces, g=g_split, ir_length_ms=fdn_ms, sr=sr,
                 weights=mk_w,
@@ -2431,6 +2438,7 @@ def _render_core(
                 _unplaced_stand(prep), desk, room, prep.source,
                 c=c, grid=grid, hadamard_n=n_had,
                 include_offaxis_shelf=mic_colour.include_offaxis_shelf,
+                include_pattern=not mic_colour.measured,
                 reaktor_parity=bool(reaktor_parity),
                 surfaces=surfaces, g=g, ir_length_ms=fdn_ms, sr=sr,
                 weights=mk_w,
@@ -3120,11 +3128,13 @@ def live_fdn_params(
                 room, source, stand_i, shape,
                 c=c, n=n_had,
                 include_offaxis_shelf=mic_colour.include_offaxis_shelf,
+                include_pattern=not mic_colour.measured,
             )
         return compute_taps(
             room, source, stand_i, c=c, grid=grid, origin="corner",
             z_face_4l=False, hadamard_n=n_had,
             include_offaxis_shelf=mic_colour.include_offaxis_shelf,
+            include_pattern=not mic_colour.measured,
             reaktor_parity=parity,
         )
 
@@ -3211,6 +3221,7 @@ def live_fdn_params(
         stand_for_makeup, p, room, prep.source,
         c=c, grid=grid, hadamard_n=n_had,
         include_offaxis_shelf=mic_colour.include_offaxis_shelf,
+        include_pattern=not mic_colour.measured,
         reaktor_parity=parity,
         surfaces=surfaces, g=g, ir_length_ms=ir_length_ms, sr=sr,
         weights=mk_w,

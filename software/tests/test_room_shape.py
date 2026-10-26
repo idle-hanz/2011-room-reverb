@@ -35,8 +35,8 @@ from poly_room import (  # noqa: E402
 )
 from render_pipeline import live_fdn_params, render  # noqa: E402
 
-EMPTY = "b20cf5dc675f613992aa6a31c2cd74f4"
-CENTRE = "ba1bbc6d386ed75bf484156f08043f37"
+EMPTY = "067adbca1930efcd3f7c83bdd1d4c359"
+CENTRE = "35db578a18557d5729c0450e26f24a9d"
 # Play packs 32 lines (source_radiation.N_LINES and the worklet early route).
 PLAY_TAP_BUDGET = 32
 # First 50 ms. Shoebox Play-vs-Render early-bus energy on this PC, colour

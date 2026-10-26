@@ -490,6 +490,7 @@ def compute_poly_taps(
     c: float = SPEED_OF_SOUND_M_S,
     n: int = 32,
     include_offaxis_shelf: bool = True,
+    include_pattern: bool = True,
 ) -> List[ImageTap]:
     """Thirty-two (or ``n``) taps for one preset. Levels use 1/r. Delays use the stand."""
     W, H, L = float(room[0]), float(room[1]), float(room[2])
@@ -539,6 +540,8 @@ def compute_poly_taps(
                 pattern=getattr(stand, "pattern_c", None) or PATTERN_CARDIOID,
             )
             _ps, g_s = capsule_press_grad(th_s, family="bi", polar=0.5, pattern=PATTERN_FIG8)
+            if not include_pattern:
+                p_m, g_m = 1.0, 0.0
             geo = geometric_level(d_l) * pol
             sh = shelf(th_m)
             press_l = geo * p_m * sh
@@ -584,6 +587,9 @@ def compute_poly_taps(
                 polar=getattr(stand, "polar_c", None),
                 pattern=getattr(stand, "pattern_c", None) or pattern_from_car_omni(stand.car_omni),
             )
+            if not include_pattern:
+                p_l = p_r = p_c = 1.0
+                g_l_d = g_r_d = g_c_d = 0.0
             sh_l, sh_r, sh_c = shelf(th_l), shelf(th_r), shelf(th_c)
             geo_l = geometric_level(d_l) * pol * sh_l
             geo_r = geometric_level(d_r) * pol * sh_r

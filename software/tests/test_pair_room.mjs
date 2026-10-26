@@ -72,6 +72,6 @@ test("the plan draws a room centre mic at its room spot and labels it Room mic",
   assert.match(plan, /cap === "c" && st\.third_mic === "room"/);
   assert.match(plan, /roomSpotOf\(geo\.state, cap\)/);
   assert.match(plan, /cap === "c" \? "Room mic" : cap\.toUpperCase\(\)/);
-  assert.match(page, /app\.js\?v=92/);
+  assert.match(page, /app\.js\?v=93/);
   assert.match(page, /room_editor\.js\?v=24/);
 });

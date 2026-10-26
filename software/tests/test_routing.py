@@ -18,7 +18,7 @@ import bloom_dsp as B  # noqa: E402
 from fdn import apply_capsule_weights  # noqa: E402
 from render_pipeline import _apply_chain, _route_buses  # noqa: E402
 
-EMPTY = "b20cf5dc675f613992aa6a31c2cd74f4"
+EMPTY = "067adbca1930efcd3f7c83bdd1d4c359"
 PAGE = {
     "bloom_preset": "room_crush",
     "bloom_amount": 100,

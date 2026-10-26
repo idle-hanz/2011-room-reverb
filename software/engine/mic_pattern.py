@@ -1,9 +1,10 @@
 """Each-mic pattern the polar graphs and the engine share.
 
-Display only. Play and Render do not call this, so goldens stay on the
-existing colour path. Measured amplitude is capsule_gain times the fitted
-relative_db (and the manufacturer high-pass when it is engaged). Bypass is
-the preset pattern with no colour. A coincident S passes colour_offset_rad
+Display only. Play and Render do not call this. Measured amplitude is the
+fitted relative_db (and the manufacturer high-pass when it is engaged).
+That fit is already the polar, so the ideal pattern is not multiplied again.
+The sign of the ideal pattern is kept when it is not zero. Bypass is the
+preset pattern with no colour. A coincident S passes colour_offset_rad
 so the shelf is sampled on the M axis while the pattern stays on the S aim.
 """
 
@@ -79,6 +80,10 @@ def signed_amp(
     colour_th = th + float(colour_offset_rad)
     db = colour_db(colour_th, freqs_a, model, hpf, hpf_on, measured)
     lin = np.power(10.0, db / 20.0)
+    if measured:
+        sign = np.sign(g)
+        sign[sign == 0.0] = 1.0
+        return sign[:, None] * lin
     return g[:, None] * lin
 
 

@@ -24,8 +24,8 @@ NODE = Path(os.environ.get(
     "RR_NODE",
     r"C:\Users\IdleHanz\AppData\Local\Microsoft\WinGet\Packages\OpenJS.NodeJS_Microsoft.Winget.Source_8wekyb3d8bbwe\node-v26.7.0-win-x64\node.exe",
 ))
-TWO_ABSENT_MD5 = "0e11f5ce3415eb555a61655c6c0e6737"
-TWO_FALSE_MD5 = "8ea544b008a4677b94a3a553c6a2f39b"
+TWO_ABSENT_MD5 = "a4c2cf1a9c81672dc0932534eda58a71"
+TWO_FALSE_MD5 = "c804fc7c80a8624760a6007cc54cdaac"
 
 
 def _ctx():

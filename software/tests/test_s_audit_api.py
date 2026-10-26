@@ -22,8 +22,8 @@ import app_server as A  # noqa: E402
 # 4bd18877a1a80396108bcafd17d4d762. A stored centre moved with the same law
 # (was 16bc17806a12f9c0ad3db32d104eaaaf). The blob diff is inject levels,
 # makeup, and the unwired direct_makeup field. Delays, g, and the direct fold stay.
-_DEFAULT_LIVE_MD5 = "b20cf5dc675f613992aa6a31c2cd74f4"
-_ORTF_PLUS_C_LIVE_MD5 = "ba1bbc6d386ed75bf484156f08043f37"
+_DEFAULT_LIVE_MD5 = "067adbca1930efcd3f7c83bdd1d4c359"
+_ORTF_PLUS_C_LIVE_MD5 = "35db578a18557d5729c0450e26f24a9d"
 
 
 def _wav_bytes() -> bytes:

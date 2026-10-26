@@ -474,7 +474,7 @@ def test_early_toys_gated_and_colour_per_tap():
 
 
 def test_polar_uses_fitter_radius_not_lf_morph():
-    """Mic desk and /api/polar share |gain| × 10^(H/20). MEASURED drops the morph."""
+    """MEASURED radius is the fitter alone. BYPASS stays the ideal pattern."""
     import polar_field as pf
     from early_field import pattern_gain
     from mic_colour.model import relative_db
@@ -509,19 +509,19 @@ def test_polar_uses_fitter_radius_not_lf_morph():
     assert measured["presets"]["C"]["id"] == "ShureSM57"
     assert measured["presets"]["C"]["honesty"] == "MEASURED"
     centres = measured["centres_hz"]
-    # On axis the fitter is 0 dB, so every ring is the cardioid forward gain.
+    fit = get_store().model_for("ShureSM57")
+    # On axis the fitter is 0 dB, so every ring is 1. The ideal pattern is not applied.
     for freq in rings:
         assert abs(_at(measured["C"], freq, 0.0, centres) - 1.0) < 1e-6
-    # Cardioid rear stays a null at 20 Hz. The old morph made that ring omni.
-    assert _at(measured["C"], 20.0, 180.0, centres) < 0.02
+    h180 = float(np.asarray(relative_db(fit, [20.0], 180.0)).reshape(-1)[0])
+    assert abs(_at(measured["C"], 20.0, 180.0, centres) - (10.0 ** (h180 / 20.0))) < 1e-6
     toys = pf.compute_polar_field(**room, colour_mode="ASSUMED_TOYS")
     assert toys["measured"] is False
     assert _at(toys["C"], 20.0, 180.0, centres) > 0.9
-    fit = get_store().model_for("ShureSM57")
     gain90 = abs(pattern_gain(math.pi / 2.0, "cardioid"))
     for freq in (1000.0, 8000.0):
         h = float(np.asarray(relative_db(fit, [freq], 90.0)).reshape(-1)[0])
-        expect = gain90 * (10.0 ** (h / 20.0))
+        expect = 10.0 ** (h / 20.0)
         assert abs(_at(measured["C"], freq, 90.0, centres) - expect) < 1e-6
     assert _at(measured["C"], 8000.0, 90.0, centres) < _at(measured["C"], 1000.0, 90.0, centres)
 
@@ -571,8 +571,11 @@ def test_polar_uses_fitter_radius_not_lf_morph():
         mic_preset_l="RoyerR121", mic_preset_c="RoyerR121", mic_preset_r="RoyerR121",
     )
     assert abs(_at(royer["C"], 1000.0, 0.0, centres) - 1.0) < 1e-5
-    assert _at(royer["C"], 1000.0, 90.0, centres) < 0.02
-    assert _at(royer["C"], 1000.0, 180.0, centres) > _at(royer["C"], 1000.0, 90.0, centres)
+    roy = get_store().model_for("RoyerR121")
+    h90 = float(np.asarray(relative_db(roy, [1000.0], 90.0)).reshape(-1)[0])
+    h180r = float(np.asarray(relative_db(roy, [1000.0], 180.0)).reshape(-1)[0])
+    assert abs(_at(royer["C"], 1000.0, 90.0, centres) - (10.0 ** (h90 / 20.0))) < 1e-5
+    assert abs(_at(royer["C"], 1000.0, 180.0, centres) - (10.0 ** (h180r / 20.0))) < 1e-5
 
     kept = params_from_body({
         "mic_preset_l": "RoyerR121",
@@ -609,13 +612,18 @@ def test_polar_uses_fitter_radius_not_lf_morph():
     halo = measured["halo_xz"]
     assert len(halo) == 8 and len(halo[0]) == 72
     assert len(measured["halo_yz"]) == 8
-    # 20 Hz, front (+Z) is louder than the rear for three cardioids.
-    assert halo[0][0] > halo[0][36] * 2.0
+    # 20 Hz, front (+Z) is still louder than the rear. The hard cardioid
+    # null is no longer multiplied on top of the fitter.
+    assert halo[0][0] > halo[0][36]
     # 17 cm at 1 kHz is half a wavelength along X, so the side ring combs.
     side = 54  # φ = 3π/2 → û = +X
     assert abs(halo[4][side] - halo[0][side]) > 0.2 * max(halo[0][side], 1e-6)
     assert "delay" in measured["halo_note"]
     assert len(measured["vertices"]["base"]) == 8 * 72 * 3
+    assert len(measured["vertices"]["one"]) == 8 * 72 * 3
+    page = (SOFTWARE / "static" / "index.html").read_text(encoding="utf-8")
+    assert "Three mics summed (spacing interference)" in page
+    assert 'data-plane="one"' in page
     assert measured["base_plane"]["e2"][2] > 0.5
     tilted = pf.compute_polar_field(**room, colour_mode="MEASURED_SHELF", sy=2.6)
     assert tilted["base_plane"]["tilt_deg"] > measured["base_plane"]["tilt_deg"] + 5.0
@@ -641,8 +649,13 @@ def test_stock_ortf_direct_and_makeup():
         yaw_l_deg=-55.0, yaw_c_deg=0.0, yaw_r_deg=55.0,
     )
     bare = compute_taps(room, prep.source, stand, hadamard_n=32, include_offaxis_shelf=False)
+    flat = compute_taps(
+        room, prep.source, stand, hadamard_n=32,
+        include_offaxis_shelf=False, include_pattern=False,
+    )
     shelved = compute_taps(room, prep.source, stand, hadamard_n=32, include_offaxis_shelf=True)
     direct = [t for t in bare if t.n == (0, 0, 0)][0]
+    direct_f = [t for t in flat if t.n == (0, 0, 0)][0]
     direct_s = [t for t in shelved if t.n == (0, 0, 0)][0]
     assert 50.0 < math.degrees(direct.theta_l) < 60.0
     assert math.degrees(direct.theta_c) < 1.0
@@ -697,8 +710,8 @@ def test_stock_ortf_direct_and_makeup():
     })
     # No AudioContext rate yet: the shelf is already gone, the FIR is not.
     di = int(live["direct_index"])
-    bare_l = tap_reflect_gain(direct.n, surfaces) * direct.level_l
-    assert abs(live["buses"]["l"]["inject"][di] - bare_l) < 1e-9
+    flat_l = tap_reflect_gain(direct_f.n, surfaces) * direct_f.level_l
+    assert abs(live["buses"]["l"]["inject"][di] - flat_l) < 1e-9
     assert live["colour"]["on"] is False
     assert live["colour_mode"] == "MEASURED_SHELF"
 
@@ -824,8 +837,13 @@ def test_live_colour_parity():
         yaw_l_deg=-55.0, yaw_c_deg=0.0, yaw_r_deg=55.0,
     )
     bare = compute_taps(room, prep.source, stand, hadamard_n=32, include_offaxis_shelf=False)
+    flat = compute_taps(
+        room, prep.source, stand, hadamard_n=32,
+        include_offaxis_shelf=False, include_pattern=False,
+    )
     shelved = compute_taps(room, prep.source, stand, hadamard_n=32, include_offaxis_shelf=True)
     direct = [t for t in bare if t.n == (0, 0, 0)][0]
+    direct_f = [t for t in flat if t.n == (0, 0, 0)][0]
     direct_s = [t for t in shelved if t.n == (0, 0, 0)][0]
     surfaces = default_surfaces()
 
@@ -834,8 +852,9 @@ def test_live_colour_parity():
     bypass = live_fdn_params(_live_scene(colour_mode="BYPASS"))
     di = int(measured["direct_index"])
     bare_l = tap_reflect_gain(direct.n, surfaces) * float(direct.level_l)
+    flat_l = tap_reflect_gain(direct_f.n, surfaces) * float(direct_f.level_l)
     shelf_l = tap_reflect_gain(direct_s.n, surfaces) * float(direct_s.level_l)
-    assert abs(measured["buses"]["l"]["inject"][di] - bare_l) < 1e-9
+    assert abs(measured["buses"]["l"]["inject"][di] - flat_l) < 1e-9
     assert abs(bypass["buses"]["l"]["inject"][di] - bare_l) < 1e-9
     assert abs(toys["buses"]["l"]["inject"][di] - shelf_l) < 1e-9
     assert shelf_l < bare_l
@@ -913,7 +932,7 @@ def test_live_colour_parity():
 
     again = live_fdn_params(_live_scene(colour_rev=bank["rev"]))
     assert again["colour"]["same"] is True and "irs" not in again["colour"]
-    assert abs(again["buses"]["l"]["inject"][di] - bare_l) < 1e-9
+    assert abs(again["buses"]["l"]["inject"][di] - flat_l) < 1e-9
 
     other = {}
     for name in ("ShureSM57", "RoyerR121"):

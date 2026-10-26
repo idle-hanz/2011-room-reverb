@@ -36,8 +36,8 @@ TLAW_SHA1 = {
     "render_std_unlocked_byp.f32": "2a806e334e06cc475868d4c3da3fc78431c9a0aa",
 }
 GOLDEN_META_SHA1 = "52bfce749715e335d8fa2418a16e8593e9a54040"
-EMPTY_MD5 = "b20cf5dc675f613992aa6a31c2cd74f4"
-CENTRE_MD5 = "ba1bbc6d386ed75bf484156f08043f37"
+EMPTY_MD5 = "067adbca1930efcd3f7c83bdd1d4c359"
+CENTRE_MD5 = "35db578a18557d5729c0450e26f24a9d"
 DISTANCES = (0.3, 1.0, 2.5, 7.0, 40.0)
 
 
@@ -72,7 +72,7 @@ def test_cache_pins():
     page = (SW / "static" / "index.html").read_text(encoding="utf-8")
     assert "WORKLET_VER = 63" in live
     assert "live_fdn.js?v=64" in page
-    assert "app.js?v=92" in page
+    assert "app.js?v=93" in page
 
 
 def test_geometric_level_is_inverse_distance():

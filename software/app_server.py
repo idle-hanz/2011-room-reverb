@@ -1651,6 +1651,7 @@ def api_colour(body: dict):
         room, prep.source, stand, c=c, grid=grid, origin="corner",
         z_face_4l=False, hadamard_n=n_had,
         include_offaxis_shelf=mic_colour.include_offaxis_shelf,
+        include_pattern=not mic_colour.measured,
         reaktor_parity=bool(p.get("reaktor_parity")),
     )
     wall_cache = precompute_wall_peaking_coeffs(room, sr, c, DEFAULT_DEPTH)

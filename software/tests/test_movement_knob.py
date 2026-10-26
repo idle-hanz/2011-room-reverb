@@ -29,10 +29,10 @@ sys.path[:0] = [str(SW), str(SW / "engine")]
 import app_server as A  # noqa: E402
 import render_pipeline as rp  # noqa: E402
 
-EMPTY_MD5 = "b20cf5dc675f613992aa6a31c2cd74f4"
-CENTRE_MD5 = "ba1bbc6d386ed75bf484156f08043f37"
-EMPTY_MOVE_MAX = 0.11968714
-CENTRE_MOVE_MAX = 0.079320193
+EMPTY_MD5 = "067adbca1930efcd3f7c83bdd1d4c359"
+CENTRE_MD5 = "35db578a18557d5729c0450e26f24a9d"
+EMPTY_MOVE_MAX = 0.173830654
+CENTRE_MOVE_MAX = 0.116135473
 MOVE_TOL = 1e-6
 NULL_L_DB = -58.0
 NULL_R_DB = -48.0
