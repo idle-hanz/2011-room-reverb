@@ -132,15 +132,9 @@
   }
 
   function idealGain(theta, law) {
-    var RM = (typeof window !== "undefined") ? window.RoomMath : null;
-    if (RM && RM.polarGain) return Math.abs(RM.polarGain(theta, law.family, law.polar, law.pattern));
-    var fam = String(law.family || "");
-    if (fam === "bi") return Math.abs(Math.cos(theta));
-    var d = Math.max(0, Math.min(1, Number(law.polar) || 0));
-    var a = d <= 0.5 ? 1 - d : 0.5 - (d - 0.5) * 0.26;
-    if (law.pattern === "hypercardioid") a = 0.25;
-    else if (law.pattern === "supercardioid") a = 0.37;
-    return Math.abs(a + (1 - a) * Math.cos(theta));
+    var P = window.RRPattern;
+    var a = P.polarA(law.family, law.polar);
+    return Math.abs(P.firstOrderGain(theta, a));
   }
 
   function cardioidDbRow(n) {
