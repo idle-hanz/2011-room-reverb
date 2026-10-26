@@ -64,7 +64,6 @@ def test_flag_is_off_and_curve_holds():
     assert rp.movement_peak_ms({"movement": 0}) == 0.0
     assert rp.movement_peak_ms({"movement": 50}) == pytest.approx(0.10)
     assert rp.movement_peak_ms({"movement": 100}) == pytest.approx(0.15)
-    assert rp.movement_peak_ms({"movement": 100, "reaktor_parity": True}) == 0.0
     assert rp.movement_peak_ms({"movement": 100, "mirror_null": True}) == 0.0
     assert rp.movement_peak_ms({"movement": 100, "fdn_wet": 0.0, "early_wet": 0.0}) == 0.0
 

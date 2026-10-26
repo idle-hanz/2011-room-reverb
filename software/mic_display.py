@@ -85,8 +85,7 @@ def clamp_inside_room(
     """Keep source + mic stand + L/R inside the room.
 
     Returns (sx, sz, my, mcz, space, mcx, sy).
-    When reaktor_parity: MCX snaps to W/2.
-    sy defaults to my when omitted (VERIFIED SY=MY).
+    A missing mcx snaps to W/2. sy defaults to my when omitted (VERIFIED SY=MY).
     """
     W, H, L = float(W), float(H), float(L)
     sx = clamp(sx, 0.0, W)
@@ -94,7 +93,7 @@ def clamp_inside_room(
     my = clamp(my, 0.0, H)
     sy_v = clamp(my if sy is None else float(sy), 0.0, H)
     mcz = clamp(mcz, 0.0, L)
-    if reaktor_parity or mcx is None:
+    if mcx is None:
         mcx_v = W * 0.5
     else:
         mcx_v = clamp(mcx, 0.0, W)

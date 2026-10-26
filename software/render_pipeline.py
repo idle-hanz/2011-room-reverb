@@ -784,13 +784,11 @@ def _posted_wet(p, key: str, default: float) -> float:
 def smooth_active(p, surfaces=None) -> bool:
     """Smooth defaults ON. A missing key is on. Explicit false is off.
 
-    Parity, flat cards, mirror/null, and a direct-only body force it off
+    Flat cards, mirror/null, and a direct-only body force it off
     whatever the switch says. The cap does not scale the decay-lock exponent.
     """
     if not isinstance(p, dict):
         p = {}
-    if p.get("reaktor_parity"):
-        return False
     sur = surfaces
     if sur is None:
         sur = p.get("surfaces")
@@ -819,7 +817,7 @@ def movement_peak_ms(p, surfaces=None) -> float:
 
     0 is off (the path is not entered). 0–50 ramps 0 to 0.10 ms.
     50–100 ramps 0.10 to 0.15 ms. A missing key is off.
-    Parity, flat cards, mirror/null, and a direct-only body force 0,
+    Flat cards, mirror/null, and a direct-only body force 0,
     the same cases as smooth_active. Unlike Smooth, missing is not on.
 
     MOVEMENT_FORCED_OFF returns 0 before that curve. The flag is false, so
@@ -828,8 +826,6 @@ def movement_peak_ms(p, surfaces=None) -> float:
     if MOVEMENT_FORCED_OFF:
         return 0.0
     if not isinstance(p, dict):
-        return 0.0
-    if p.get("reaktor_parity"):
         return 0.0
     sur = surfaces
     if sur is None:
@@ -3052,15 +3048,14 @@ def live_fdn_params(
     decay_s = float(p.get("decay_s") or 0.0)
     grid = grid_bias_for_hadamard_n(n_had)
     humidity = float(p.get("humidity") or 0.0)
-    air_lp = float(p.get("air_lp") if p.get("air_lp") is not None else 0.0)
+    # 2011 Air 1-pole and Reaktor parity are off the product. The bus field stays 0
+    # so the worklet layout does not move. ISO shelves still follow air_shelf.
+    air_lp = 0.0
     air_shelf = float(p.get("air_shelf") if p.get("air_shelf") is not None else 1.0)
     air_climate = str(p.get("air_climate") or "studio_20C_50RH")
     air_iso_on = p.get("air_iso")
     air_iso = True if air_iso_on is None else bool(air_iso_on)
-    parity = bool(p.get("reaktor_parity"))
-    # Reaktor snapshot is the 2011 one-pole only. ISO shelves stay off; air_lp stays.
-    if parity:
-        air_iso = False
+    parity = False
     smooth_on = smooth_active(p, surfaces)
     move_ms = movement_peak_ms(p, surfaces)
     diffusion_master = float(p.get("diffusion_master") if p.get("diffusion_master") is not None else DIFFUSION_MASTER_LIVE)
@@ -3397,10 +3392,10 @@ def live_fdn_params(
         "mic_phase_r": float(p.get("mic_phase_r", 1.0)),
         "direct_index": int(di),
         "hadamard_n": n_had,
-        # 0 = z^-1 in both (D3, 2 Oct). 1 = plain Hadamard (reaktor_parity).
-        "loop_semantics": 1 if parity else 0,
-        # Shared tail is Live-only. Parity and binaural never set it.
-        "shared_tail": bool(p.get("shared_tail")) and not binaural_on and not parity,
+        # 0 = z^-1 in both (D3, 2 Oct).
+        "loop_semantics": 0,
+        # Shared tail is Live-only. Binaural never sets it.
+        "shared_tail": bool(p.get("shared_tail")) and not binaural_on,
         "solo_mute": solo_mute_gates(p.get("surfaces_solo"), p.get("surfaces_mute")),
         "makeup": makeup,
         "direct_makeup": dm,

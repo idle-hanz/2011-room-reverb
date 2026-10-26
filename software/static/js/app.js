@@ -151,9 +151,9 @@
     mute_l: false, mute_c: false, mute_r: false,
     mute_direct: false, mute_fdn: false, mute_early: false, mute_dry: false,
     phase_l: 1, phase_c: 1, phase_r: 1,
-    /* K2 (locked): air 1-pole mix default 0 (shelf still gives HF loss). diffusion_master −0.25 (Structure), clamp [−0.5, 0]. */
-    humidity: 0.35, air_lp: 0, air_shelf: 1, air_climate: "studio_20C_50RH", diffusion_master: -0.25,
-    reaktor_parity: false, live_drag_render: false, shared_tail: false,
+    /* ISO shelf still gives HF loss. diffusion_master −0.25 (Structure), clamp [−0.5, 0]. */
+    humidity: 0.35, air_shelf: 1, air_climate: "studio_20C_50RH", diffusion_master: -0.25,
+    live_drag_render: false, shared_tail: false,
     two_sources: false, mirror_b: true, source_balance: 0,
     /* A is omni, so the source stage is not called. B null follows A. */
     source_radiation: "omni", source_yaw: 0, source_pitch: 0,
@@ -251,7 +251,6 @@
     state.my = 1.9;
     state.mcz = 24.25;
     state.space = 0.25;
-    state.reaktor_parity = true;
     state.car_omni = 0.764;
     state.fader_early = 0;
     state.fader_dry = 0;
@@ -275,7 +274,6 @@
     state.ir_length_ms = 1500;
     state.hadamard_n = 32;
     state.humidity = 0.5;
-    state.air_lp = 0.25;
     state.air_shelf = 1;
     state.diffusion_master = -0.5;
     state.mic_response_hz = 10000;
@@ -656,6 +654,8 @@
     var o = Object.assign({}, src);
     /* Client flag for the MS (2 mics) spare strip. Not a server key. */
     delete o.spare_off;
+    delete o.reaktor_parity;
+    delete o.air_lp;
     var buses = ["direct", "fdn", "early"];
     var i;
     o.direct_wet = stripLinear(src, "direct");
@@ -804,7 +804,7 @@
   }
 
   function feedbackLawOn() {
-    return !!state.reaktor_parity || !!hallSnapshot;
+    return !!hallSnapshot;
   }
 
   function paintDecayHint() {
@@ -3052,7 +3052,7 @@
       setAxisMax("sy", state.H);
     })();
 
-    var numeric = ["W","H","L","space","car_omni","fdn_g","ir_length_ms","humidity","air_lp","air_shelf","decay_s"];
+    var numeric = ["W","H","L","space","car_omni","fdn_g","ir_length_ms","humidity","air_shelf","decay_s"];
     for (var i = 0; i < numeric.length; i++) {
       var id = numeric[i];
       var el = document.getElementById(id);
@@ -3083,8 +3083,6 @@
     if (setupEl && state.mic_setup && document.activeElement !== setupEl) {
       setupEl.value = state.mic_setup;
     }
-    var parity = document.getElementById("reaktor_parity");
-    if (parity) parity.checked = !!state.reaktor_parity;
     var smoothEl = document.getElementById("smooth");
     if (smoothEl) smoothEl.checked = state.smooth === true;
     var movementEl = document.getElementById("movement");
@@ -3254,8 +3252,8 @@
   }
 
   /* Put Space back when the pair still sits inside (0, W).
-     Slide the stand, then shorten Space, only when the pair is wider than the room.
-     Parity keeps mcx at W/2. centre_dz is not touched. */
+     Slide the stand to the room centre, then shorten Space, only when the pair is wider than the room.
+     centre_dz is not touched. */
   function restoreSpaceAfterSize(st, spaceWant) {
     var want = Number(spaceWant);
     var W = Number(st.W);
@@ -3268,7 +3266,7 @@
       return;
     }
     if (!(b - a > W)) return;
-    if (!st.reaktor_parity) st.mcx = W * 0.5;
+    st.mcx = W * 0.5;
     st.space = Math.min(want, RoomMath.maxSpace(W, st.mcx));
   }
 
@@ -3299,7 +3297,7 @@
       syncUI();
     });
   }
-  ["space","car_omni","fdn_g","ir_length_ms","humidity","air_lp","air_shelf"].forEach(function (id) {
+  ["space","car_omni","fdn_g","ir_length_ms","humidity","air_shelf"].forEach(function (id) {
     var el = document.getElementById(id);
     if (!el) return;
     el.addEventListener("input", function (e) {
@@ -3419,14 +3417,6 @@
       if (!BINAURAL_SPACE_M[id]) id = "SADIE2_KU100";
       state.binaural_preset = id;
       if (state.mic_setup === "binaural") state.space = binauralEarSpace(id);
-      syncUI();
-    });
-  }
-  var parityEl = document.getElementById("reaktor_parity");
-  if (parityEl) {
-    parityEl.addEventListener("change", function (e) {
-      state.reaktor_parity = e.target.checked;
-      Object.assign(state, RoomMath.clampRoom(state));
       syncUI();
     });
   }
@@ -3937,14 +3927,14 @@
     studio: {
       W: 5.6, H: 2.8, L: 7.2,
       sx: 2.8, sz: 4.6, sy: 1.2, my: 1.2, mcx: 2.8, mcz: 1.55,
-      space: 0.17, reaktor_parity: false, humidity: 0.35,
+      space: 0.17, humidity: 0.35,
       /* Fresh Studio click is the boot decay. Measured 1.80 s, lock on. */
       decay_lock: true, decay_s: 1.8
     },
     club: {
       W: 14, H: 5.2, L: 22,
       sx: 7, sz: 14.5, sy: 1.6, my: 1.6, mcx: 7, mcz: 3.4,
-      space: 0.25, reaktor_parity: false, humidity: 0.4,
+      space: 0.25, humidity: 0.4,
       /* Fresh Club does not set decay. Boot stays 1.80 s, lock on. Printed, not retuned. */
       decay_lock: true, decay_s: 1.8
     }

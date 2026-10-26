@@ -870,10 +870,6 @@
         </div>
         <details class="panel advanced" id="panelAdvanced" data-sidebar="advanced">
           <summary>Advanced / Structure locks</summary>
-          <label class="check">
-            <input type="checkbox" id="reaktor_parity" />
-            <span>Reaktor parity — lock mic X to room centre (W/2)</span>
-          </label>
           <label class="ctrl ctrl-select">
             <span>Colour filter</span>
             <select id="colour_impl" aria-label="Colour filter">
@@ -887,10 +883,8 @@
               <input type="range" id="fdn_g" min="0" max="1" step="0.01" value="1" />
               <output id="fdn_g_out">1.00</output>
             </label>
-            <p class="hint" id="feedbackHint">Shown with Reaktor parity or the Hall snapshot. Gain/N is the 2011 uneven tail. Moving this leaves Decay.</p>
+            <p class="hint" id="feedbackHint">Shown with the Hall snapshot. Gain/N is the 2011 uneven tail. Moving this leaves Decay.</p>
           </div>
-          <label class="ctrl"><span>2011 Air 1-pole</span><input type="range" id="air_lp" min="0" max="1" step="0.01" value="0" /><output id="air_lp_out">0.00</output></label>
-          <p class="hint">Parity and the Hall snapshot set this. 0.5 on the Wet scale is still 400. Default 0 leaves the sound alone. Direct has no air.</p>
           <label class="ctrl"><span>Minimum IR length <em>ms</em></span><input type="range" id="ir_length_ms" min="50" max="2000" step="10" value="1500" /><output id="ir_length_ms_out">1500</output></label>
           <button type="button" class="btn" id="reaktorSnapshotBtn">2011 Reaktor snapshot</button>
           <p class="hint">Hall 57×34×97, source/mic from the dump, the 2011 Gain law, Humidity 400, Mic 10 kHz, live surface Dif.</p>
@@ -984,13 +978,13 @@
   </div>
   <script src="/static/js/vendor/three.min.js"></script>
   <script src="/static/js/room_shape.js?v=7"></script>
-  <script src="/static/js/room_math.js?v=19"></script>
+  <script src="/static/js/room_math.js?v=20"></script>
   <script src="/static/js/spectrum_colors.js?v=1"></script>
   <script src="/static/js/freq_palette.js?v=2"></script>
   <script src="/static/js/room_view_pose.js?v=1"></script>
   <script src="/static/js/room_draw.js?v=5"></script>
-  <script src="/static/js/room_3d.js?v=23"></script>
-  <script src="/static/js/room_editor.js?v=24"></script>
+  <script src="/static/js/room_3d.js?v=24"></script>
+  <script src="/static/js/room_editor.js?v=25"></script>
   <script src="/static/js/image_views.js?v=20"></script>
   <script src="/static/js/colour_surfaces.js?v=9"></script>
   <script src="/static/js/polar_field.js?v=8"></script>
@@ -1004,7 +998,7 @@
   <script src="/static/js/drag_model.js?v=2"></script>
   <script src="/static/js/room_window_math.js?v=1"></script>
   <script src="/static/js/routing_scene.js?v=3"></script>
-  <script src="/static/js/app.js?v=93"></script>
+  <script src="/static/js/app.js?v=94"></script>
   <script>window.RR_SL_STAGE = 6;</script>
   <script src="/static/js/sl_room_result.js?v=7"></script>
   <script src="/static/js/rr_controls.js?v=1"></script>

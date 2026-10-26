@@ -503,7 +503,7 @@ def params_from_body(body: dict) -> dict:
     W = _f(body.get("W"), DEFAULTS["W"])
     H = _f(body.get("H"), DEFAULTS["H"])
     L = _f(body.get("L"), DEFAULTS["L"])
-    parity = _b(body.get("reaktor_parity"), False)
+    parity = False
     sy_arg = None
     if "sy" in body and body.get("sy") is not None:
         raw_sy = body.get("sy")
@@ -638,11 +638,10 @@ def params_from_body(body: dict) -> dict:
         "diffusion_seed": parse_diffusion_seed(body.get("diffusion_seed"), DEFAULT_DIFFUSION_SEED),
         "lambda_ref": parse_lambda_ref(body.get("lambda_ref"), DEFAULT_LAMBDA_REF_M),
         "humidity": _f(body.get("humidity") if "humidity" in body else 0.35, 0.35),
-        "air_lp": _f(body.get("air_lp"), 0.0),  # K2 locked: 1-pole kept, default mix 0
+        "air_lp": 0.0,
         "air_shelf": _f(body.get("air_shelf"), 1.0),
         "air_climate": str(body.get("air_climate") or DEFAULTS["air_climate"]),
-        # Parity keeps the 2011 one-pole (air_lp) and turns the ISO shelves off.
-        "air_iso": False if parity else _b(body.get("air_iso"), DEFAULTS["air_iso"]),
+        "air_iso": _b(body.get("air_iso"), DEFAULTS["air_iso"]),
         "source_radiation": str(body.get("source_radiation") or DEFAULTS["source_radiation"]),
         "source_yaw": _f(body.get("source_yaw"), DEFAULTS["source_yaw"]),
         "source_pitch": _f(body.get("source_pitch"), DEFAULTS["source_pitch"]),
@@ -1227,9 +1226,9 @@ def _render_impl(
             diffusion_seed=p["diffusion_seed"],
             lambda_ref=p["lambda_ref"],
             humidity=p.get("humidity") or 0.0,
-            air_lp=p.get("air_lp") if p.get("air_lp") is not None else 0.0,
+            air_lp=0.0,
             air_shelf=p.get("air_shelf") if p.get("air_shelf") is not None else 1.0,
-            reaktor_parity=bool(p.get("reaktor_parity")),
+            reaktor_parity=False,
             air_climate=str(p.get("air_climate") or "studio_20C_50RH"),
             air_iso=bool(p.get("air_iso")) if p.get("air_iso") is not None else True,
             diffusion_master=p.get("diffusion_master") if p.get("diffusion_master") is not None else DIFFUSION_MASTER_DEFAULT,
@@ -1303,7 +1302,7 @@ def _render_impl(
         f"mode={info.get('mode')}  duration={meta['duration_s']:.2f}s  sr={sr}\n"
         f"c={SPEED_OF_SOUND_M_S} m/s  MCZ=L−MZ={info.get('mcz'):.3f} m\n"
         f"MCX={info.get('mcx'):.3f} m  "
-        f"({'W/2 parity' if p['reaktor_parity'] else 'free'})\n"
+        f"(free)\n"
         f"source={info.get('source')}  mic_centre={info.get('mic_centre')}\n"
         f"Hadamard N={p['hadamard_n']}  images={info.get('n_taps', p['hadamard_n'])}  "
         f"FDN lines={p['hadamard_n']}  (unscaled ±1)\n"
@@ -1652,7 +1651,7 @@ def api_colour(body: dict):
         z_face_4l=False, hadamard_n=n_had,
         include_offaxis_shelf=mic_colour.include_offaxis_shelf,
         include_pattern=not mic_colour.measured,
-        reaktor_parity=bool(p.get("reaktor_parity")),
+        reaktor_parity=False,
     )
     wall_cache = precompute_wall_peaking_coeffs(room, sr, c, DEFAULT_DEPTH)
     ap_cache = {

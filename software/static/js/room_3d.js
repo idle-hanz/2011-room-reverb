@@ -795,7 +795,7 @@
         st.sx = RoomMath.clamp(x, 0, st.W);
         st.sz = RoomMath.clamp(z, 0, st.L);
       } else {
-        if (!st.reaktor_parity) st.mcx = RoomMath.clamp(x, 0, st.W);
+        st.mcx = RoomMath.clamp(x, 0, st.W);
         st.mcz = RoomMath.clamp(z, 0, st.L);
       }
       setState(RoomMath.clampRoom(st));

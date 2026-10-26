@@ -53,7 +53,7 @@ window.RoomMath = (() => {
     let my = clamp(state.my, 0, H);
     let sy = state.sy != null ? clamp(state.sy, 0, H) : my;
     let mcz = clamp(state.mcz, 0, L);
-    let mcx = state.reaktor_parity ? W * 0.5 : clamp(state.mcx, 0, W);
+    let mcx = clamp(state.mcx, 0, W);
     let space = clamp(state.space, 0, maxSpace(W, mcx));
     const shape = state.room_shape;
     const poly = typeof window !== "undefined" && window.RoomShape &&
@@ -66,7 +66,7 @@ window.RoomMath = (() => {
       const mic = window.RoomShape.clampInside(mcx, my, mcz, W, H, L, shape);
       my = mic.y;
       mcz = mic.z;
-      if (!state.reaktor_parity) mcx = mic.x;
+      mcx = mic.x;
       space = clamp(state.space, 0, window.RoomShape.maxSpace(mcx, mcz, W, L, shape));
     }
     let centre_dz = clamp(Number(state.centre_dz) || 0, -CENTRE_DZ_MAX, CENTRE_DZ_MAX);

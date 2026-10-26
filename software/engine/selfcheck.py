@@ -668,7 +668,7 @@ def test_surface_reflect_and_rt60_gain() -> None:
     assert len(live["peaking"]) == 3
     assert any(bank["on"] for bank in live["peaking"])
     assert len(live["buses"]["l"]["air_g"]) == 32
-    assert live["buses"]["l"]["air_lp"] > 0.0
+    assert live["buses"]["l"]["air_lp"] == 0.0
     assert live["buses"]["l"]["shelf"][0]["on"] is True
     p_dry = dict(p)
     p_dry["humidity"] = 0.0

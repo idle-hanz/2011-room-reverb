@@ -892,8 +892,8 @@ def test_live_colour_parity():
     )
     assert abs(measured["makeup"] - mk) < 1e-9
     assert abs(toys["makeup"] - measured["makeup"]) > 1e-6
-    # Air one-pole and the assumed shelf are not part of this phase.
-    assert measured["buses"]["l"]["air_lp"] == toys["buses"]["l"]["air_lp"] > 0.0
+    # The 2011 one-pole is off Play. The assumed shelf is not part of this phase.
+    assert measured["buses"]["l"]["air_lp"] == toys["buses"]["l"]["air_lp"] == 0.0
     assert measured["buses"]["l"]["air_g"] == toys["buses"]["l"]["air_g"]
     assert measured["buses"]["l"]["shelf"] == toys["buses"]["l"]["shelf"]
     assert measured["buses"]["l"]["shelf"][di]["on"] is True

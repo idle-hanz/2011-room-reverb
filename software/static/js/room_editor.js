@@ -13,7 +13,7 @@
     CENTRE_DZ_MAX: 0.20,
     clampRoom(s) {
       const W = s.W, H = s.H, L = s.L;
-      const mcx = s.reaktor_parity ? W * 0.5 : this.clamp(s.mcx, 0, W);
+      const mcx = this.clamp(s.mcx, 0, W);
       const my = this.clamp(s.my, 0, H);
       let sy = s.sy;
       if (sy == null || sy === "" || !isFinite(Number(sy))) sy = my;
@@ -717,17 +717,6 @@
       }
       if (clipSplay) ctx.restore();
 
-      if (geo.state.reaktor_parity) {
-        a = toPx(geo.state.W * 0.5, 0, fl);
-        b = toPx(geo.state.W * 0.5, geo.state.L, fl);
-        ctx.setLineDash([6, 6]);
-        ctx.strokeStyle = "rgba(139,146,165,0.55)";
-        ctx.beginPath();
-        ctx.moveTo(a.px, a.py);
-        ctx.lineTo(b.px, b.py);
-        ctx.stroke();
-        ctx.setLineDash([]);
-      }
       if (global.RoomShape && RoomShape.planGuidesPx) {
         strokeGuides(ctx, RoomShape.planGuidesPx(geo.state.room_shape, geo.state.W, geo.state.L, fl));
       }
@@ -1098,7 +1087,7 @@
           st.sx = RoomMath.clamp(m.x, 0, st.W);
           st.sz = RoomMath.clamp(m.z, 0, st.L);
         } else {
-          if (!st.reaktor_parity) st.mcx = RoomMath.clamp(m.x, 0, st.W);
+          st.mcx = RoomMath.clamp(m.x, 0, st.W);
           st.mcz = RoomMath.clamp(m.z, 0, st.L);
         }
         setState(RoomMath.clampRoom(st));
@@ -1165,7 +1154,7 @@
           st.sx = RoomMath.clamp(m.x, 0, st.W);
           st.sz = RoomMath.clamp(m.z, 0, st.L);
         } else {
-          if (!st.reaktor_parity) st.mcx = RoomMath.clamp(m.x, 0, st.W);
+          st.mcx = RoomMath.clamp(m.x, 0, st.W);
           st.mcz = RoomMath.clamp(m.z, 0, st.L);
         }
         setState(RoomMath.clampRoom(st));

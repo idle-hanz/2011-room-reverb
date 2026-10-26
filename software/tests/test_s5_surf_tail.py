@@ -191,10 +191,6 @@ def test_packer_omits_flat_and_parity():
     p = live_fdn_params(params_from_body(flat))
     assert "surf_cascade" not in p
     assert p["surf_fit"]["bypass"] is True
-    par = dict(_base(), reaktor_parity=True)
-    q = live_fdn_params(params_from_body(par))
-    assert "surf_cascade" not in q
-    assert q["surf_fit"]["parity"] is True
     shaped = live_fdn_params(params_from_body(_base()))
     assert len(shaped["surf_cascade"]) == 2 + 64 * (1 + 5 * int(shaped["surf_fit"]["k_max"]))
     blob = pack_blob_v2(shaped)
@@ -269,7 +265,6 @@ def test_render_flat_and_parity_match_gain_only():
         assert moved > 0.0
         for label, body in (
             ("flat", _flat(dict(unlocked, surfaces=json.loads(CLIENT.read_text(encoding="utf-8"))["surfaces"]))),
-            ("parity", dict(unlocked, reaktor_parity=True)),
         ):
             d = _maxabs(one(body, False), one(body, True))
             print(label, "render vs gain-only maxabs", d)
@@ -311,7 +306,6 @@ def test_play_cascade_off_matches_pre_s5():
     if OLD_WASM.exists():
         for label, extra in (
             ("flat", {"surfaces": {L: {"absorb": [MEAN_ABS] * 7} for L in "ABCDEF"}}),
-            ("parity", {"reaktor_parity": True}),
         ):
             scene = dict(body, decay_lock=True, decay_s=1.8, **extra)
             a = ctx.play_ir(scene, {"colour_on": False}, 1.0, wasm=OLD_WASM)
