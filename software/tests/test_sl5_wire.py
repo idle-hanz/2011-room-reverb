@@ -73,11 +73,12 @@ def test_toggling_a_125_panel_moves_the_model_curve():
 def test_ui_adds_the_shell_on_enter_and_leaves_the_slider_builders():
     root = H.SW
     html = (root / "static" / "index.html").read_text(encoding="utf-8")
-    assert "RR_SL_STAGE = 6" in html
+    assert "RR_SL_STAGE" not in html
     js = (root / "static" / "js" / "sl_room_result.js").read_text(encoding="utf-8")
+    assert "SL_STAGE" not in js
     assert "function addRoomShell()" in js
     assert "paintMode(enter)" in js
-    assert "if (entered && SL_STAGE >= 5)" in js
+    assert "if (entered) { addRoomShell(); paintRows(); }" in js
     cs = (root / "static" / "js" / "colour_surfaces.js").read_text(encoding="utf-8")
     absorb = cs.split("ColourSurfaces.prototype._buildAbsorbSliders")[1].split("ColourSurfaces.prototype._buildEqControls")[0]
     eq = cs.split("ColourSurfaces.prototype._buildEqControls")[1].split("ColourSurfaces.prototype._bindDiffusion")[0]

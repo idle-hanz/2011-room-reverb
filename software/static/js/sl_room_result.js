@@ -19,8 +19,7 @@
   ];
   var MAX_COVER = 0.9;
   /* Build stage: 1 = SL1 (Surfaces chip greyed "coming", no Treatment / Auto-treat), 2-4 = Surfaces chip live,
-     5 = + Treatment list, 6 = + Auto-treat (all, as proved on the box). Set window.RR_SL_STAGE before this file loads. */
-  var SL_STAGE = Number(window.RR_SL_STAGE) || 6;
+     5 = + Treatment list, 6 = + Auto-treat (all, as proved on the box). The panel is always that full stage. */
   var view = { band: true, ebu: false, last: null, busy: false, timer: 0, plan: null };
 
   function st() { return window.RRState || null; }
@@ -57,8 +56,7 @@
     [["flat", "Flat (2011)"], ["surfaces", "Surfaces"], ["natural", "Natural (air)"]].forEach(function (m) {
       var b = el("button", "chip", m[1]); b.type = "button"; b.dataset.mode = m[0]; b.id = "slMode_" + m[0];
       if (m[0] === "natural") { b.disabled = true; b.title = "Built in SL7a (ST-1/ST-2)"; }
-      if (m[0] === "surfaces" && SL_STAGE < 2) { b.disabled = true; b.title = "coming (SL2)"; }
-      if (m[0] === "surfaces" && SL_STAGE >= 3) b.title = "Surfaces in Play";
+      if (m[0] === "surfaces") b.title = "Surfaces in Play";
       b.addEventListener("click", function () {
         var s = st(); if (!s || b.disabled) return;
         var enter = m[0] === "surfaces" && s.decay_mode !== "surfaces";
@@ -74,9 +72,7 @@
     cal.hidden = true;
     cal.addEventListener("click", function () { calibrate(); });
     mode.appendChild(cal);
-    mode.appendChild(el("span", "hint", SL_STAGE < 3
-      ? "Surfaces = the materials and treatment set the decay per band. Render only. Play: Render only until SL3."
-      : "Surfaces = the materials and treatment set the decay per band. Surfaces in Play."));
+    mode.appendChild(el("span", "hint", "Surfaces = the materials and treatment set the decay per band. Surfaces in Play."));
     panel.appendChild(mode);
     var cv = el("canvas"); cv.id = "slRtCanvas"; cv.width = 760; cv.height = 230; cv.setAttribute("aria-label", "Decay time per third octave");
     panel.appendChild(cv);
@@ -148,7 +144,6 @@
       schedule();
       if (window.RRPushLive) window.RRPushLive();
     });
-    if (SL_STAGE < 6) at.hidden = true;
     panel.appendChild(at);
     var ln = el("p", "hint sl-locknote"); ln.id = "slLockNote"; ln.hidden = true; panel.appendChild(ln);
     var sg = el("div", "sl-suggest"); sg.id = "slSuggest"; panel.appendChild(sg);
@@ -158,7 +153,6 @@
     // Treatment list inside the selected-face detail
     var det = document.getElementById("surfaceDetail");
     var tr = el("div", "sl-treat"); tr.id = "slTreatment";
-    if (SL_STAGE < 5) tr.hidden = true;
     (det || host).insertBefore(tr, det ? det.querySelector(".surfaces-advanced") : null);
     hookSelect();
     paintMode(); paintToggles(); paintRows(); paintSuggest();
@@ -191,14 +185,14 @@
   }
 
   function paintMode(entered) {
-    if (entered && SL_STAGE >= 5) { addRoomShell(); paintRows(); }
+    if (entered) { addRoomShell(); paintRows(); }
     var s = st(); var m = (s && s.decay_mode) || "flat";
     Array.prototype.forEach.call(document.querySelectorAll("#slDecayMode button"), function (b) {
       if (!b.dataset.mode) return;
       b.setAttribute("aria-pressed", b.dataset.mode === m ? "true" : "false"); b.classList.toggle("on", b.dataset.mode === m);
     });
     var cal = document.getElementById("slCalibrate");
-    if (cal) cal.hidden = SL_STAGE < 4 || m !== "surfaces";
+    if (cal) cal.hidden = m !== "surfaces";
     var p = document.getElementById("slRoomResult"); if (p) p.classList.toggle("sl-flat", m === "flat");
     paintAmount();
     syncTreatDecay();

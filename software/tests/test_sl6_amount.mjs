@@ -137,15 +137,15 @@ test("Surfaces with the switch on posts the lock off and does not invent a dial"
   assert.equal(out.treat_sets_decay, true);
 });
 
-test("Treatment sets decay sits beside Amount, shows at stage 6, and posts Play once", () => {
+test("Treatment sets decay sits beside Amount and posts Play once", () => {
   const amt = panel.indexOf('amt.id = "slAutoAmount"');
   const sw = panel.indexOf('sw.id = "slTreatDecay"');
-  const hide = panel.indexOf("if (SL_STAGE < 6) at.hidden = true");
-  assert.ok(amt > 0 && sw > amt && hide > sw);
+  assert.ok(amt > 0 && sw > amt);
+  assert.equal(panel.includes("SL_STAGE"), false);
   assert.equal(panel.includes("Treatment sets decay"), true);
   assert.equal(panel.includes("return !!(s && s.treat_sets_decay);"), true);
   const changeAt = panel.indexOf('box.addEventListener("change"');
-  const changeEnd = panel.indexOf("if (SL_STAGE < 6) at.hidden = true", changeAt);
+  const changeEnd = panel.indexOf("panel.appendChild(at)", changeAt);
   const change = panel.slice(changeAt, changeEnd);
   assert.equal(change.includes("schedule()"), true);
   assert.equal(change.includes("if (window.RRPushLive) window.RRPushLive();"), true);
