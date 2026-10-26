@@ -21,7 +21,7 @@ test("six switches live in one object", () => {
     slice: true,
     angle: true,
     readouts: true,
-    compare: false,
+    compare: true,
     arrivals: false,
     balloon: false,
   });
