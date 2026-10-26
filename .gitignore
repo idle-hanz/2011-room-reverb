@@ -5,3 +5,5 @@ __pycache__/
 *.orig
 software_backup_*
 software/renders/*.wav
+.grok/
+*.docx
