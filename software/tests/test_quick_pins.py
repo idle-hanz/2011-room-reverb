@@ -96,7 +96,7 @@ PIN_TABLE = {
     "room_window_math.js": 1,
     "routing_scene.js": 3,
     "settings_boot.js": 1,
-    "rr_state.js": 1,
+    "rr_state.js": 2,
     "rr_mic.js": 1,
     "rr_mix.js": 1,
     "rr_room.js": 1,

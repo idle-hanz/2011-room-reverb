@@ -395,6 +395,12 @@ def miss(name: str):
     return D(name)
 
 
+def span_of(name: str):
+    """Low and high from the table. Both ends are numbers."""
+    lo, hi = BY_NAME[name]["range"]
+    return float(lo), float(hi)
+
+
 def page_value(name: str):
     """Boot value for rr_state. `page` wins over `default`."""
     row = BY_NAME[name]

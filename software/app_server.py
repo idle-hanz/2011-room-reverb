@@ -40,8 +40,16 @@ from render_pipeline import (
 )
 
 from polar_field import compute_polar_field
-from settings_table import payload as settings_payload
-from fdn import DIFFUSION_MASTER_DEFAULT, DIFFUSION_MASTER_MIN  # locked 28 Sep 2026
+from settings_table import (
+    BY_NAME,
+    D,
+    miss,
+    page_value,
+    payload as settings_payload,
+    server_defaults,
+    span_of,
+)
+from fdn import DIFFUSION_MASTER_DEFAULT  # locked 28 Sep 2026
 from surface_colour import (
     DEFAULT_DIFFUSION_SEED,
     DEFAULT_LAMBDA_REF_M,
@@ -80,60 +88,9 @@ class BadParam(Exception):
 def _bad_param(_request, exc: BadParam):
     return JSONResponse({"ok": False, "error": str(exc.key)}, status_code=400)
 
-DEFAULTS = {
-    "W": 6.0,
-    "H": 3.0,
-    "L": 8.0,
-    "sx": 2.6,  # K3 locked 28 Sep 2026
-    "sz": 4.75,
-    "mcx": 3.0,
-    "mcz": 1.5,
-    "my": 1.5,
-    "sy": 1.2,  # K3 locked 28 Sep 2026
-    "link_heights": False,
-    "space": 0.25,
-    "diverg": 1.0,
-    "car_omni": 1.0,
-    "pattern_l": "cardioid",
-    "pattern_c": "cardioid",
-    "pattern_r": "cardioid",
-    "yaw_l_deg": None,
-    "yaw_c_deg": 0.0,
-    "yaw_r_deg": None,
-    "early_wet": 0.0,
-    "fdn_wet": 1.0,
-    "direct_wet": 1.0,
-    "dry_gain": 0.0,
-    "fdn_g": 1.0,
-    "ir_length_ms": 1500.0,
-    "reaktor_parity": False,
-    "smooth": True,
-    "shared_tail": False,
-    "path_on": False,
-    "path_preset": "still",
-    "ellipse_rate": 1.0,
-    "ellipse_rx": 0.42,
-    "ellipse_rz": 0.35,
-    "hadamard_n": 32,
-    "diffusion_seed": DEFAULT_DIFFUSION_SEED,
-    "lambda_ref": DEFAULT_LAMBDA_REF_M,
-    # Binaural (LOCKED 2026-09-30). Default mic setup stays ORTF.
-    "binaural_preset": "SADIE2_KU100",
-    "binaural_tail_mode": "diffuse_ic",
-    "binaural_level_ref": "head_centre",
-    "binaural_K": 6,
-    "binaural_symmetric": True,
-    "binaural_image_set": "binaural_rear32",
-    "binaural_itd_mode": "table",
-    "head_yaw_deg": 0.0,
-    # ISO air. Humidity 0 is off. Above 0 the slider sets RH; right is drier.
-    "air_climate": "studio_20C_50RH",
-    "air_iso": True,
-    # Source radiation. Omni is the current sound (the stage is not called).
-    "source_radiation": "omni",
-    "source_yaw": 0.0,
-    "source_pitch": 0.0,
-}
+# K3 locked 28 Sep 2026: sx 2.6, sy 1.2. Binaural locked 2026-09-30.
+# ISO air and the omni source stage use the same table. Humidity 0 is off.
+DEFAULTS = server_defaults()
 
 
 def _opt_follow(v: Any):
@@ -171,6 +128,13 @@ def _span(v: Any, default: float, lo: float, hi: float) -> float:
     if x != x:
         return float(default)
     return float(max(lo, min(hi, x)))
+
+
+def _keyed(body: dict, name: str, fallback=None) -> float:
+    """Clamp one posted number to the table range. The fallback is the table default."""
+    lo, hi = span_of(name)
+    base = D(name) if fallback is None else fallback
+    return _span(body.get(name), base, lo, hi)
 
 
 def _phase(v: Any) -> float:
@@ -226,7 +190,9 @@ def _optional_float(body: dict, key: str, default=None):
         return default
 
 
-def _optional_pattern(body: dict, key: str, default: str = "cardioid") -> str:
+def _optional_pattern(body: dict, key: str, default: str | None = None) -> str:
+    if default is None:
+        default = D("pattern_l")
     raw = body.get(key)
     if raw is None or (isinstance(raw, str) and not raw.strip()):
         return default
@@ -246,7 +212,7 @@ def _capsule_from_body(body: dict) -> dict:
     """Per-capsule pattern + yaw. Prefer explicit yaw_*; else derive from toe_half."""
     toe = _optional_toe(body)
     yaw_l = _optional_float(body, "yaw_l_deg", None)
-    yaw_c = _optional_float(body, "yaw_c_deg", 0.0)
+    yaw_c = _optional_float(body, "yaw_c_deg", D("yaw_c_deg"))
     yaw_r = _optional_float(body, "yaw_r_deg", None)
     if yaw_l is None and yaw_r is None and toe is not None:
         yaw_l = -float(toe)
@@ -290,9 +256,10 @@ def _capsule_from_body(body: dict) -> dict:
         pc = "fig8"
     if fr == "bi":
         pr = "fig8"
-    dz = _f(body.get("centre_dz"), 0.0)
-    dz = max(-0.20, min(0.20, dz))
-    if _b(body.get("align_horizontal"), False):
+    dz_lo, dz_hi = span_of("centre_dz")
+    dz = _f(body.get("centre_dz"), D("centre_dz"))
+    dz = max(dz_lo, min(dz_hi, dz))
+    if _b(body.get("align_horizontal"), D("align_horizontal")):
         dz = 0.0
     return {
         "pattern_l": pl,
@@ -310,21 +277,21 @@ def _capsule_from_body(body: dict) -> dict:
         "polar_c": pol_c,
         "polar_r": pol_r,
         "centre_dz": dz,
-        "mic_hp_on": _b(body.get("mic_hp_on"), False),
-        "mic_hp_hz": max(12.0, min(250.0, _f(body.get("mic_hp_hz"), 40.0))),
-        "mic_response_hz": max(10000.0, min(20000.0, _f(body.get("mic_response_hz"), 10000.0))),
-        "mic_proximity": max(0.0, min(1.0, _f(
-            body.get("mic_proximity") if "mic_proximity" in body else 0.25, 0.25))),
-        "ms_decode": _b(body.get("ms_decode"), False) or str(body.get("mic_setup") or "") == "ms_classic",
-        "capsule_mm": max(8.0, min(34.0, _f(body.get("capsule_mm"), 17.0))),
+        "mic_hp_on": _b(body.get("mic_hp_on"), D("mic_hp_on")),
+        "mic_hp_hz": max(span_of("mic_hp_hz")[0], min(span_of("mic_hp_hz")[1], _f(body.get("mic_hp_hz"), D("mic_hp_hz")))),
+        "mic_response_hz": max(span_of("mic_response_hz")[0], min(span_of("mic_response_hz")[1], _f(body.get("mic_response_hz"), D("mic_response_hz")))),
+        "mic_proximity": max(span_of("mic_proximity")[0], min(span_of("mic_proximity")[1], _f(
+            body.get("mic_proximity") if "mic_proximity" in body else miss("mic_proximity"), miss("mic_proximity")))),
+        "ms_decode": _b(body.get("ms_decode"), D("ms_decode")) or str(body.get("mic_setup") or "") == "ms_classic",
+        "capsule_mm": max(span_of("capsule_mm")[0], min(span_of("capsule_mm")[1], _f(body.get("capsule_mm"), D("capsule_mm")))),
     }
 
 
 
 
 def _hadamard_n(body: dict) -> int:
-    """Accept hadamard_n or grid; default 32. Powers of 2 only."""
-    allowed = (8, 16, 32, 64, 128)
+    """Accept hadamard_n or grid. Powers of 2 only. The table default is 32."""
+    allowed = tuple(int(n) for n in BY_NAME["hadamard_n"]["range"])
     raw = body.get("hadamard_n", None)
     if raw is None and body.get("grid") is not None:
         g = str(body.get("grid")).strip().lower()
@@ -332,22 +299,17 @@ def _hadamard_n(body: dict) -> int:
         if g in aliases:
             return aliases[g]
     try:
-        n = int(float(raw)) if raw is not None else 32
+        n = int(float(raw)) if raw is not None else int(D("hadamard_n"))
     except (TypeError, ValueError):
-        n = 32
+        n = int(D("hadamard_n"))
     if n not in allowed:
         # snap to nearest allowed power of 2 in the set
         n = min(allowed, key=lambda a: abs(a - n))
     return n
 
-# Slider limits. parameters.csv has no W/H/L/decay row; these are the HTML ranges.
+# Slider limits from the settings table. parameters.csv has no W/H/L/decay row.
 # ir_length_ms is intentionally absent: the harness posts 3000 and the UI max is only a control.
-_UI_RANGES = {
-    "W": (1.0, 80.0),
-    "H": (1.0, 40.0),
-    "L": (2.0, 120.0),
-    "decay_s": (0.05, 8.0),
-}
+_UI_RANGES = {key: span_of(key) for key in ("W", "H", "L", "decay_s")}
 _CSV_RANGES: dict | None = None
 
 
@@ -533,7 +495,7 @@ def params_from_body(body: dict) -> dict:
     sox, soz, mz = prepare_from_metres(W, L, sx, sz, mcz)
     cap = _capsule_from_body(body)
     mic_colour_fields = _mic_colour_fields(body, cap)
-    mirror_b = _b(body.get("mirror_b") if "mirror_b" in body else True, True)
+    mirror_b = _b(body.get("mirror_b") if "mirror_b" in body else D("mirror_b"), D("mirror_b"))
     if mirror_b:
         sx_b, sy_b, sz_b = mirror_source_b(W, sx, sy, sz)
     else:
@@ -543,9 +505,9 @@ def params_from_body(body: dict) -> dict:
     sx_b = max(0.0, min(W, float(sx_b)))
     sy_b = max(0.0, min(H, float(sy_b)))
     sz_b = max(0.0, min(L, float(sz_b)))
-    two_sources = _b(body.get("two_sources"), False)
-    source_balance = _span(body.get("source_balance"), 0.0, -1.0, 1.0)
-    mic_setup = str(body.get("mic_setup") or "ortf")
+    two_sources = _b(body.get("two_sources"), D("two_sources"))
+    source_balance = _keyed(body, "source_balance")
+    mic_setup = str(body.get("mic_setup") or D("mic_setup"))
     binaural_on = mic_setup == "binaural"
     from desk_matrix import desk_active
     ms_on = bool(cap["ms_decode"])
@@ -558,23 +520,23 @@ def params_from_body(body: dict) -> dict:
     # A stored third_mic or mic_gain_c wins, so old scenes keep their centre.
     third_set = _explicit_field(body, "third_mic")
     gain_set = _explicit_field(body, "mic_gain_c")
-    third = str(body.get("third_mic") or "").strip().lower() if third_set else ""
+    third = str(body.get("third_mic") or D("third_mic")).strip().lower() if third_set else D("third_mic")
     if binaural_on or third == "off":
         gain_c = 0.0
     elif (not third_set) and (not gain_set) and mic_setup in ("", "ortf"):
         gain_c = 0.0
         third = "off"
     else:
-        gain_c = _span(body.get("mic_gain_c"), 1.0, 0.0, 16.0)
-    head_yaw = _span(body.get("head_yaw_deg"), 0.0, -180.0, 180.0)
+        gain_c = _keyed(body, "mic_gain_c")
+    head_yaw = _keyed(body, "head_yaw_deg")
     preset_id = str(body.get("binaural_preset") or DEFAULTS["binaural_preset"])
-    if preset_id not in ("SADIE2_KU100", "SADIE2_KEMAR", "THK_KU100_FF"):
+    if preset_id not in tuple(BY_NAME["binaural_preset"]["range"]):
         preset_id = DEFAULTS["binaural_preset"]
     surfaces = parse_surfaces(body.get("surfaces"))
     # Absent or false on a box leaves A and C alone, so the live MD5 stays.
     if _sides_mirrored(body):
         mirror_left_to_right(surfaces)
-    early_wet = _f(body.get("early_wet") if "early_wet" in body else 1.0, 1.0)
+    early_wet = _f(body.get("early_wet") if "early_wet" in body else miss("early_wet"), miss("early_wet"))
     fdn_wet = _f(body.get("fdn_wet"), DEFAULTS["fdn_wet"])
     smooth_on = smooth_active(
         {
@@ -593,7 +555,7 @@ def params_from_body(body: dict) -> dict:
         "my_l": _opt_height(body, "my_l", H),
         "my_r": _opt_height(body, "my_r", H),
         "my_c": _opt_height(body, "my_c", H),
-        "align_horizontal": _b(body.get("align_horizontal"), False),
+        "align_horizontal": _b(body.get("align_horizontal"), D("align_horizontal")),
         "mcx": mcx, "mcz": mcz, "space": space,
         "sox": sox, "soz": soz, "mz": mz,
         "diverg": _f(body.get("diverg"), DEFAULTS["diverg"]),
@@ -616,9 +578,9 @@ def params_from_body(body: dict) -> dict:
         "mic_hp_hz": cap["mic_hp_hz"],
         "mic_response_hz": cap["mic_response_hz"],
         "mic_proximity": cap["mic_proximity"],
-        "prox_l": True if "prox_l" not in body or body.get("prox_l") is None else _b(body.get("prox_l"), True),
-        "prox_c": True if "prox_c" not in body or body.get("prox_c") is None else _b(body.get("prox_c"), True),
-        "prox_r": True if "prox_r" not in body or body.get("prox_r") is None else _b(body.get("prox_r"), True),
+        "prox_l": _b(body.get("prox_l"), D("prox_l")),
+        "prox_c": _b(body.get("prox_c"), D("prox_c")),
+        "prox_r": _b(body.get("prox_r"), D("prox_r")),
         "ms_decode": ms_on,
         "capsule_mm": cap["capsule_mm"],
         "early_wet": early_wet,
@@ -628,21 +590,21 @@ def params_from_body(body: dict) -> dict:
         "fdn_g": _f(body.get("fdn_g"), DEFAULTS["fdn_g"]),
         "ir_length_ms": _f(body.get("ir_length_ms"), DEFAULTS["ir_length_ms"]),
         "reaktor_parity": parity,
-        "shared_tail": _b(body.get("shared_tail"), False),
-        "path_on": _b(body.get("path_on"), False),
-        "path_preset": str(body.get("path_preset") or "still"),
-        "ellipse_rate": _f(body.get("ellipse_rate"), 1.0),
-        "ellipse_rx": _f(body.get("ellipse_rx"), 0.42),
-        "ellipse_rz": _f(body.get("ellipse_rz"), 0.35),
+        "shared_tail": _b(body.get("shared_tail"), D("shared_tail")),
+        "path_on": _b(body.get("path_on"), D("path_on")),
+        "path_preset": str(body.get("path_preset") or D("path_preset")),
+        "ellipse_rate": _f(body.get("ellipse_rate"), D("ellipse_rate")),
+        "ellipse_rx": _f(body.get("ellipse_rx"), D("ellipse_rx")),
+        "ellipse_rz": _f(body.get("ellipse_rz"), D("ellipse_rz")),
         "hadamard_n": _hadamard_n(body),
         "surfaces": surfaces,
         "surfaces_solo": parse_solo(body.get("surfaces_solo")),
         "surfaces_mute": mute_flags(body.get("surfaces_mute")),
-        "diffusion_seed": parse_diffusion_seed(body.get("diffusion_seed"), DEFAULT_DIFFUSION_SEED),
-        "lambda_ref": parse_lambda_ref(body.get("lambda_ref"), DEFAULT_LAMBDA_REF_M),
-        "humidity": _f(body.get("humidity") if "humidity" in body else 0.35, 0.35),
-        "air_lp": 0.0,
-        "air_shelf": _f(body.get("air_shelf"), 1.0),
+        "diffusion_seed": parse_diffusion_seed(body.get("diffusion_seed"), D("diffusion_seed")),
+        "lambda_ref": parse_lambda_ref(body.get("lambda_ref"), D("lambda_ref")),
+        "humidity": _f(body.get("humidity") if "humidity" in body else D("humidity"), D("humidity")),
+        "air_lp": D("air_lp"),
+        "air_shelf": _f(body.get("air_shelf"), D("air_shelf")),
         "air_climate": str(body.get("air_climate") or DEFAULTS["air_climate"]),
         "air_iso": _b(body.get("air_iso"), DEFAULTS["air_iso"]),
         "source_radiation": str(body.get("source_radiation") or DEFAULTS["source_radiation"]),
@@ -653,46 +615,56 @@ def params_from_body(body: dict) -> dict:
         "source_yaw_b": _opt_deg(body["source_yaw_b"]) if "source_yaw_b" in body else None,
         "source_pitch_b": _opt_deg(body["source_pitch_b"]) if "source_pitch_b" in body else None,
         "source_size_m": body.get("source_size_m"),
-        "diffusion_master": _span(body.get("diffusion_master"), DIFFUSION_MASTER_DEFAULT, DIFFUSION_MASTER_MIN, 0.0),
-        "decay_s": _f(body.get("decay_s") if "decay_s" in body else 1.8, 1.8),
-        "decay_lock": _b(body.get("decay_lock") if "decay_lock" in body else True, True),
+        "diffusion_master": _span(
+            body.get("diffusion_master"), D("diffusion_master"), *span_of("diffusion_master")
+        ),
+        "decay_s": _f(body.get("decay_s") if "decay_s" in body else D("decay_s"), D("decay_s")),
+        "decay_lock": _b(body.get("decay_lock") if "decay_lock" in body else D("decay_lock"), D("decay_lock")),
         "decay_mode": _decay_mode(body.get("decay_mode")),
         # Missing is off. Flat ignores it. Surfaces uses the material length.
         "treat_sets_decay": (
-            _b(body["treat_sets_decay"], False) if "treat_sets_decay" in body else False
+            _b(body["treat_sets_decay"], D("treat_sets_decay"))
+            if "treat_sets_decay" in body else D("treat_sets_decay")
         ),
         # Missing key is ON. An explicit false stays off and adds no live key.
-        "phys_ceiling": (_b(body["phys_ceiling"], True) if "phys_ceiling" in body else True),
+        "phys_ceiling": (
+            _b(body["phys_ceiling"], D("phys_ceiling")) if "phys_ceiling" in body else D("phys_ceiling")
+        ),
         # Missing key is ON. An explicit false adds no live-dict field.
-        "sub_hp": _b(body["sub_hp"], True) if "sub_hp" in body else True,
+        "sub_hp": _b(body["sub_hp"], D("sub_hp")) if "sub_hp" in body else D("sub_hp"),
         # Missing or explicit false stays off. Only a true reaches the live dict.
-        "offaxis_tail": _b(body["offaxis_tail"], False) if "offaxis_tail" in body else False,
+        "offaxis_tail": (
+            _b(body["offaxis_tail"], D("offaxis_tail")) if "offaxis_tail" in body else D("offaxis_tail")
+        ),
         # Absent or box is the shoebox. A polygon word reaches Play and Render.
         "room_shape": (
-            str(body.get("room_shape") or "box").strip().lower()
-            if "room_shape" in body else None
+            str(body.get("room_shape") or page_value("room_shape")).strip().lower()
+            if "room_shape" in body else D("room_shape")
         ),
         "surf_treatment": _surf_treatment(body.get("surf_treatment")),
         "surf_cal": _surf_cal(body.get("surf_cal")),
         # Missing stays room average. Surfaces mode posts true (D-SL2).
-        "surf_directional": _b(body.get("surf_directional") if "surf_directional" in body else False, False),
+        "surf_directional": _b(
+            body.get("surf_directional") if "surf_directional" in body else D("surf_directional"),
+            D("surf_directional"),
+        ),
         # Missing key is ON. Parity, flat, mirror/null, and direct-only store off.
         "smooth": bool(smooth_on),
         # Missing key is OFF. The engine forces 0 in the same cases as Smooth.
-        "movement": _span(body.get("movement"), 0.0, 0.0, 100.0) if "movement" in body else 0.0,
+        "movement": _keyed(body, "movement") if "movement" in body else D("movement"),
         "mirror_null": bool(body.get("mirror_null") or body.get("null_mode")),
         "mic_setup": mic_setup,
         "head_yaw_deg": head_yaw,
         "binaural_preset": preset_id,
-        "binaural_tail_mode": "diffuse_ic",
-        "binaural_level_ref": "head_centre",
-        "binaural_image_set": "binaural_rear32",
-        "mic_gain_l": _span(body.get("mic_gain_l"), 1.0, 0.0, 16.0),
+        "binaural_tail_mode": D("binaural_tail_mode"),
+        "binaural_level_ref": D("binaural_level_ref"),
+        "binaural_image_set": D("binaural_image_set"),
+        "mic_gain_l": _keyed(body, "mic_gain_l"),
         "mic_gain_c": gain_c,
-        "mic_gain_r": _span(body.get("mic_gain_r"), 1.0, 0.0, 16.0),
-        "mic_pan_l": _span(body.get("mic_pan_l"), -1.0, -1.0, 1.0),
-        "mic_pan_c": _span(body.get("mic_pan_c"), 0.0, -1.0, 1.0),
-        "mic_pan_r": _span(body.get("mic_pan_r"), 1.0, -1.0, 1.0),
+        "mic_gain_r": _keyed(body, "mic_gain_r"),
+        "mic_pan_l": _keyed(body, "mic_pan_l"),
+        "mic_pan_c": _keyed(body, "mic_pan_c"),
+        "mic_pan_r": _keyed(body, "mic_pan_r"),
         "mic_phase_l": _phase(body.get("mic_phase_l")),
         "mic_phase_c": _phase(body.get("mic_phase_c")),
         "mic_phase_r": _phase(body.get("mic_phase_r")),
@@ -713,17 +685,17 @@ def params_from_body(body: dict) -> dict:
         "mic_hpf_l": mic_colour_fields["mic_hpf_l"],
         "mic_hpf_r": mic_colour_fields["mic_hpf_r"],
         "sample_rate": body.get("sample_rate"),
-        "colour_rev": body.get("colour_rev") or "",
-        "pair_mode": str(body.get("pair_mode") or ""),
-        "pan_law": str(body.get("pan_law") or "linear"),
-        "mic_route_l": str(body.get("mic_route_l") or body.get("route_l") or "pan"),
-        "mic_route_c": str(body.get("mic_route_c") or body.get("route_c") or "pan"),
-        "mic_route_r": str(body.get("mic_route_r") or body.get("route_r") or "pan"),
+        "colour_rev": body.get("colour_rev") or D("colour_rev"),
+        "pair_mode": str(body.get("pair_mode") or D("pair_mode")),
+        "pan_law": str(body.get("pan_law") or D("pan_law")),
+        "mic_route_l": str(body.get("mic_route_l") or body.get("route_l") or D("mic_route_l")),
+        "mic_route_c": str(body.get("mic_route_c") or body.get("route_c") or D("mic_route_c")),
+        "mic_route_r": str(body.get("mic_route_r") or body.get("route_r") or D("mic_route_r")),
         "third_mic": third,
-        "ms_s": str(body.get("ms_s") or "l"),
-        "ms_m": str(body.get("ms_m") or "c"),
-        "s_detached": _b(body.get("s_detached"), False),
-        "link_mode": str(body.get("link_mode") or ""),
+        "ms_s": str(body.get("ms_s") or D("ms_s")),
+        "ms_m": str(body.get("ms_m") or D("ms_m")),
+        "s_detached": _b(body.get("s_detached"), D("s_detached")),
+        "link_mode": str(body.get("link_mode") or D("link_mode")),
         "mic_x_l": body.get("mic_x_l"),
         "mic_y_l": body.get("mic_y_l"),
         "mic_z_l": body.get("mic_z_l"),
@@ -743,15 +715,15 @@ def params_from_body(body: dict) -> dict:
         "bloom_attack_scale", "bloom_release_scale",
     )
     if any(k in body for k in _bloom_keys):
-        out["bloom_preset"] = str(body.get("bloom_preset") or "natural")
-        out["bloom_amount"] = _f(body.get("bloom_amount"), 0.0)
-        out["bloom_colour"] = _b(body.get("bloom_colour"), False)
-        out["glue_colour"] = _b(body.get("glue_colour"), False)
-        out["pre_colour"] = str(body.get("pre_colour") or "off")
-        out["pre_drive_db"] = _f(body.get("pre_drive_db"), 0.0)
-        out["predelay_ms"] = _f(body.get("predelay_ms"), 0.0)
-        out["bloom_attack_scale"] = _f(body.get("bloom_attack_scale"), 1.0)
-        out["bloom_release_scale"] = _f(body.get("bloom_release_scale"), 1.0)
+        out["bloom_preset"] = str(body.get("bloom_preset") or D("bloom_preset"))
+        out["bloom_amount"] = _f(body.get("bloom_amount"), D("bloom_amount"))
+        out["bloom_colour"] = _b(body.get("bloom_colour"), D("bloom_colour"))
+        out["glue_colour"] = _b(body.get("glue_colour"), D("glue_colour"))
+        out["pre_colour"] = str(body.get("pre_colour") or D("pre_colour"))
+        out["pre_drive_db"] = _f(body.get("pre_drive_db"), D("pre_drive_db"))
+        out["predelay_ms"] = _f(body.get("predelay_ms"), D("predelay_ms"))
+        out["bloom_attack_scale"] = _f(body.get("bloom_attack_scale"), D("bloom_attack_scale"))
+        out["bloom_release_scale"] = _f(body.get("bloom_release_scale"), D("bloom_release_scale"))
     for _ch in ("l", "c", "r"):
         _pk = "place_" + _ch
         if _pk in body and body.get(_pk) not in (None, ""):
@@ -762,10 +734,10 @@ def params_from_body(body: dict) -> dict:
     )
     if any(k in body for k in _route_keys):
         for _prefix in ("array", "room"):
-            out[_prefix + "_preset"] = str(body.get(_prefix + "_preset") or "natural")
-            out[_prefix + "_amount"] = _f(body.get(_prefix + "_amount"), 0.0)
-            out[_prefix + "_pre"] = str(body.get(_prefix + "_pre") or "off")
-            out[_prefix + "_drive_db"] = _f(body.get(_prefix + "_drive_db"), 0.0)
+            out[_prefix + "_preset"] = str(body.get(_prefix + "_preset") or D(_prefix + "_preset"))
+            out[_prefix + "_amount"] = _f(body.get(_prefix + "_amount"), D(_prefix + "_amount"))
+            out[_prefix + "_pre"] = str(body.get(_prefix + "_pre") or D(_prefix + "_pre"))
+            out[_prefix + "_drive_db"] = _f(body.get(_prefix + "_drive_db"), D(_prefix + "_drive_db"))
     return out
 
 

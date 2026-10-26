@@ -102,7 +102,9 @@ def test_knob_is_visible_and_defaults_to_zero():
         "rr_space.js", "rr_polar.js", "rr_transport.js", "rr_settings.js", "app.js",
     ]
     app = "\n".join((SW / "static" / "js" / name).read_text(encoding="utf-8") for name in parts)
-    assert "movement: 0" in app
+    assert 'S("movement")' in app
+    from settings_table import page_value
+    assert page_value("movement") == 0
 
 
 def _md5(blob) -> str:
