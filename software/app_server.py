@@ -40,6 +40,7 @@ from render_pipeline import (
 )
 
 from polar_field import compute_polar_field
+from settings_table import payload as settings_payload
 from fdn import DIFFUSION_MASTER_DEFAULT, DIFFUSION_MASTER_MIN  # locked 28 Sep 2026
 from surface_colour import (
     DEFAULT_DIFFUSION_SEED,
@@ -942,6 +943,12 @@ def index():
 def api_defaults():
     p = params_from_body(dict(DEFAULTS))
     return {"defaults": DEFAULTS, "geometry": geometry_payload(p)}
+
+
+@app.get("/api/settings")
+def api_settings():
+    """The shared settings table. The page fetches this once at boot."""
+    return settings_payload()
 
 
 @app.post("/api/geometry")
