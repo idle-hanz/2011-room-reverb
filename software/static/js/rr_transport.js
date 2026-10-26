@@ -253,6 +253,9 @@ function syncUINow() {
   if (implEl && document.activeElement !== implEl) implEl.value = state.colour_impl || "sos";
   var liveDrag = document.getElementById("live_drag_render");
   if (liveDrag) liveDrag.checked = !!state.live_drag_render;
+  var matchSolo = document.getElementById("match_solo_level");
+  if (matchSolo) matchSolo.checked = state.match_solo_level !== false;
+  if (window.LiveFDN && LiveFDN.noteMatchUi) LiveFDN.noteMatchUi();
   syncHadamardUI();
   var seedEl = document.getElementById("diffusion_seed");
   var seedMix = document.getElementById("diffusion_seed_mix");

@@ -566,6 +566,7 @@ bindCheck("smooth", "smooth");
 bindCheck("phys_ceiling", "phys_ceiling");
 bindCheck("sub_hp", "sub_hp");
 bindCheck("offaxis_tail", "offaxis_tail");
+bindCheck("match_solo_level", "match_solo_level");
 if (movementSlider) {
   movementSlider.addEventListener("input", function (e) {
     var v = Math.round(Number(e.target.value));

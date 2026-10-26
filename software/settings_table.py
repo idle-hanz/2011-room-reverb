@@ -316,6 +316,10 @@ def _rows():
     add(R("structureDifSlider", 0.15, tab="Surfaces", lo=0, hi=1, route="none", path="neither"))
     add(R("surfaces", None, tab="Surfaces"))
     add(R("surfaces_solo", None, tab="Surfaces", page=None))
+    # Play monitor only. Render does not read these. The gain is held on the client.
+    add(R("match_solo_level", True, tab="Surfaces", route="play"))
+    add(R("solo_match_letter", None, tab="Surfaces", route="play", page=None))
+    add(R("solo_match_gain", 1.0, tab="Surfaces", route="play", lo=0.0, hi=10.0 ** (24.0 / 20.0)))
     add(R("surfaces_mute", {"A": False, "B": False, "C": False, "D": False, "E": False, "F": False}, tab="Surfaces"))
     add(R("surf_treatment", [], tab="Surfaces"))
     add(R("surf_cal", None, tab="Surfaces"))

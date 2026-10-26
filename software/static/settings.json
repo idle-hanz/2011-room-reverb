@@ -3949,6 +3949,43 @@
       "page": null
     },
     {
+      "name": "match_solo_level",
+      "default": true,
+      "range": null,
+      "unit": "",
+      "tab": "Surfaces",
+      "route": [
+        "/api/params/live"
+      ],
+      "path": "both"
+    },
+    {
+      "name": "solo_match_letter",
+      "default": null,
+      "range": null,
+      "unit": "",
+      "tab": "Surfaces",
+      "route": [
+        "/api/params/live"
+      ],
+      "path": "both",
+      "page": null
+    },
+    {
+      "name": "solo_match_gain",
+      "default": 1.0,
+      "range": [
+        0.0,
+        15.848931924611133
+      ],
+      "unit": "",
+      "tab": "Surfaces",
+      "route": [
+        "/api/params/live"
+      ],
+      "path": "both"
+    },
+    {
       "name": "surfaces_mute",
       "default": {
         "A": false,
@@ -8693,6 +8730,43 @@
       ],
       "path": "both",
       "page": null
+    },
+    "match_solo_level": {
+      "name": "match_solo_level",
+      "default": true,
+      "range": null,
+      "unit": "",
+      "tab": "Surfaces",
+      "route": [
+        "/api/params/live"
+      ],
+      "path": "both"
+    },
+    "solo_match_letter": {
+      "name": "solo_match_letter",
+      "default": null,
+      "range": null,
+      "unit": "",
+      "tab": "Surfaces",
+      "route": [
+        "/api/params/live"
+      ],
+      "path": "both",
+      "page": null
+    },
+    "solo_match_gain": {
+      "name": "solo_match_gain",
+      "default": 1.0,
+      "range": [
+        0.0,
+        15.848931924611133
+      ],
+      "unit": "",
+      "tab": "Surfaces",
+      "route": [
+        "/api/params/live"
+      ],
+      "path": "both"
     },
     "surfaces_mute": {
       "name": "surfaces_mute",

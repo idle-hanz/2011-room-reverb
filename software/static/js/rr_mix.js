@@ -471,6 +471,15 @@ function liveRequestBody() {
     var rev = LiveFDN.colourRev ? LiveFDN.colourRev() : "";
     if (rate) o.sample_rate = rate;
     if (rev) o.colour_rev = rev;
+    /* Hold the gain from when this letter started. A new letter omits it and is measured. */
+    var soloNow = o.surfaces_solo ? String(o.surfaces_solo).toUpperCase() : "";
+    if (soloNow && LiveFDN.soloHold) {
+      var hold = LiveFDN.soloHold();
+      if (hold && String(hold.letter).toUpperCase() === soloNow && Number(hold.gain) > 0) {
+        o.solo_match_letter = hold.letter;
+        o.solo_match_gain = hold.gain;
+      }
+    }
   }
   return o;
 }

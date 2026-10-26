@@ -9,6 +9,9 @@
   var ctx = null;
   var node = null;
   var analyser = null;
+  var soloGain = null;
+  var soloHeld = { letter: null, gain: 1 };
+  var SOLO_RAMP_S = 0.05;
   var source = null;
   var buffer = null;
   var running = false;
@@ -97,6 +100,82 @@
     suspendTimer = setTimeout(tick, 50);
   }
 
+  function soloMatchHold(prev, letter, enabled, measured) {
+    /* Keep the gain measured when this letter started. A new letter measures again. */
+    var cap = Math.pow(10, 24 / 20);
+    var name, g;
+    if (!enabled || letter == null || letter === "") {
+      return { letter: null, gain: 1 };
+    }
+    name = String(letter).toUpperCase();
+    if (prev && String(prev.letter || "").toUpperCase() === name) {
+      g = Number(prev.gain);
+      if (isFinite(g) && g > 0) {
+        if (g > cap) g = cap;
+        return { letter: name, gain: g };
+      }
+    }
+    g = Number(measured);
+    if (!isFinite(g) || g <= 0) g = 1;
+    if (g > cap) g = cap;
+    return { letter: name, gain: g };
+  }
+
+  function formatSoloMatch(lin) {
+    var db = 20 * Math.log10(lin);
+    var t = Math.round(db * 10) / 10;
+    if (!isFinite(t)) return "";
+    var sign = t > 0 ? "+" : (t < 0 ? "−" : "");
+    return sign + Math.abs(t).toFixed(1) + " dB solo match";
+  }
+
+  function paintSoloMatch() {
+    var el = document.getElementById("soloMatchChip");
+    if (!el) return;
+    el.hidden = !soloHeld.letter;
+    if (soloHeld.letter) el.textContent = formatSoloMatch(soloHeld.gain);
+  }
+
+  function rampSolo(lin) {
+    if (!soloGain || !ctx) return;
+    var now = ctx.currentTime;
+    var param = soloGain.gain;
+    try { param.cancelScheduledValues(now); } catch (e) {}
+    param.setValueAtTime(param.value, now);
+    param.linearRampToValueAtTime(lin, now + SOLO_RAMP_S);
+  }
+
+  function applySoloMatch(params) {
+    var enabled = true;
+    var letter = null;
+    if (params) {
+      letter = params.solo_match_letter || null;
+      if (params.match_solo_level === false || params.match_solo_level === 0 || params.match_solo_level === "false") {
+        enabled = false;
+      }
+    }
+    soloHeld = soloMatchHold(soloHeld.letter ? soloHeld : null, letter, enabled, params && params.solo_match_lin);
+    rampSolo(soloHeld.gain);
+    paintSoloMatch();
+  }
+
+  function noteMatchUi() {
+    var solo = (typeof state !== "undefined" && state) ? state.surfaces_solo : null;
+    var enabled = (typeof state !== "undefined" && state) ? state.match_solo_level !== false : true;
+    if (!solo || !enabled) {
+      if (soloHeld.letter) {
+        soloHeld = { letter: null, gain: 1 };
+        rampSolo(1);
+      }
+    }
+    paintSoloMatch();
+  }
+
+  function soloHold() {
+    if (!soloHeld.letter) return null;
+    return { letter: soloHeld.letter, gain: soloHeld.gain };
+  }
+
   function attachOutput(work) {
     if (!analyser || analyser.context !== ctx) {
       if (analyser) dropNode(analyser);
@@ -104,7 +183,15 @@
       analyser.fftSize = 2048;
       analyser.connect(ctx.destination);
     }
-    work.connect(analyser);
+    if (!soloGain || soloGain.context !== ctx) {
+      if (soloGain) dropNode(soloGain);
+      soloGain = ctx.createGain();
+      soloGain.gain.value = soloHeld.gain || 1;
+    }
+    try { work.disconnect(); } catch (e) {}
+    try { soloGain.disconnect(); } catch (e2) {}
+    work.connect(soloGain);
+    soloGain.connect(analyser);
   }
 
   function status(msg) {
@@ -359,6 +446,7 @@
 
   function pushParams(params) {
     var colour, msg;
+    if (params && params.ok) applySoloMatch(params);
     if (!node || !params || !params.ok) return;
     colour = takeColour(params);
     msg = {
@@ -530,6 +618,9 @@
     start: start,
     stop: stop,
     update: pushParams,
+    soloMatchHold: soloMatchHold,
+    soloHold: soloHold,
+    noteMatchUi: noteMatchUi,
     isRunning: isRunning,
     prepare: prepare,
     rate: rate,

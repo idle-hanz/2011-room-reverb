@@ -180,6 +180,8 @@ html, body {
   transition: background .12s, border-color .12s, color .12s;
 }
 .chip:hover { color: var(--text); border-color: #3a4256; }
+#soloMatchChip { cursor: default; }
+#soloMatchChip:hover { color: var(--muted); border-color: var(--border); }
 .chip.active {
   background: var(--accent);
   color: var(--accent-ink);

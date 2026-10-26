@@ -91,6 +91,7 @@ var state = {
   diffusion_seed: S("diffusion_seed"),
   lambda_ref: S("lambda_ref"),
   surfaces_solo: S("surfaces_solo"),
+  match_solo_level: S("match_solo_level"),
   surfaces_mute: S("surfaces_mute"),
   surfaces: (window.ColourSurfacesDefaults && ColourSurfacesDefaults.defaultSurfaces)
     ? ColourSurfacesDefaults.defaultSurfaces()

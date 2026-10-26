@@ -945,11 +945,31 @@ def api_settings(part: str = ""):
 
 
 def api_live_params(body: dict):
-    """Running-FDN coefficients for the AudioWorklet. Same algebra as Render."""
+    """Running-FDN coefficients for the AudioWorklet. Same algebra as Render.
+
+    Solo match is stamped after the live dict. It is not part of that dict,
+    and an empty body does not measure it.
+    """
     try:
-        src = body or {}
-        p = params_from_body(src)
-        return _attach_warnings(live_fdn_params(p), src)
+        if not isinstance(body, dict):
+            body = {}
+        p = params_from_body(body)
+        live = _attach_warnings(live_fdn_params(p), body)
+        if isinstance(live, dict):
+            from solo_match import attach_solo_match
+
+            if "match_solo_level" in body:
+                enabled = _b(body.get("match_solo_level"), True)
+            else:
+                enabled = True
+            attach_solo_match(
+                live,
+                p,
+                enabled,
+                body.get("solo_match_letter"),
+                body.get("solo_match_gain"),
+            )
+        return live
     except BadParam:
         raise
     except Exception as e:
