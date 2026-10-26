@@ -84,7 +84,7 @@ PIN_TABLE = {
     "image_views.js": 21,
     "colour_surfaces.js": 9,
     "polar_field.js": 14,
-    "polar_views.js": 2,
+    "polar_views.js": 3,
     "mic_desk.js": 25,
     "source_desk.js": 4,
     "pack_room.js": 55,

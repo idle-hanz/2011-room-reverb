@@ -10,7 +10,7 @@
   var SWITCHES = {
     slice: true,
     angle: true,
-    readouts: false,
+    readouts: true,
     compare: false,
     arrivals: false,
     balloon: false
