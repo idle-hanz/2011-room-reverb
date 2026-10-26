@@ -34,7 +34,8 @@ _ENGINE = Path(__file__).resolve().parent / "engine"
 if str(_ENGINE) not in sys.path:
     sys.path.insert(0, str(_ENGINE))
 
-from early_field import look_vector as _look_vector  # noqa: E402  (K1: single yaw convention)
+from maths_look import look_vector  # noqa: E402
+from settings_table import D  # noqa: E402
 from early_field import (  # noqa: E402
     MicStand,
     PATTERN_CARDIOID,
@@ -43,7 +44,6 @@ from early_field import (  # noqa: E402
     capsule_gain,
     cardioid_gain,
     centre_position,
-    look_vector,
     mic_positions,
     normalize_pattern,
     prepare_direct_field,
@@ -359,7 +359,7 @@ def _basis_at_mic(origin: Vec3, source: Vec3, normal: Vec3) -> Tuple[Vec3, Vec3]
 def _basis_from_yaw(yaw_rad: float, normal: Vec3) -> Tuple[Vec3, Vec3]:
     """e_fwd = capsule look (yaw 0 = +Z) projected into plane; e_right = n × e_fwd."""
     # look_xz = (YAW_X_SIGN·sin(yaw), cos(yaw)) → 3D look (x, 0, z); one convention (early_field)
-    look = _look_vector(yaw_rad)
+    look = look_vector(yaw_rad)
     look = _vsub(look, _vmul(normal, _vdot(look, normal)))
     e_fwd = _vunit(look, (0.0, 0.0, 1.0))
     e_right = _vunit(_vcross(normal, e_fwd), (1.0, 0.0, 0.0))
@@ -496,7 +496,7 @@ def compute_polar_field(
     car = _clamp(float(car_omni), 0.0, 1.0)
     if sx is not None and sz is not None and mcz is not None:
         sy_v = float(my) if sy is None else float(sy)
-        mcx_v = (float(W) * 0.5) if mcx is None else float(mcx)
+        mcx_v = float(D("mcx")) if mcx is None else float(mcx)
         prep = direct_field_from_metres(
             float(W), float(H), float(L),
             sx=float(sx), sy=sy_v, sz=float(sz),
@@ -663,9 +663,9 @@ def compute_polar_field(
     n_b = max(n_bands - 1, 1)
     origin_of = {"L": left, "C": centre, "R": right}
     look_of = {
-        "L": _look_vector(float(stand.mlalr)),
-        "C": _look_vector(float(stand.mcalr)),
-        "R": _look_vector(float(stand.mralr)),
+        "L": look_vector(float(stand.mlalr)),
+        "C": look_vector(float(stand.mcalr)),
+        "R": look_vector(float(stand.mralr)),
     }
     share: Dict[str, np.ndarray] = {}
     for key in ("L", "C", "R"):

@@ -29,7 +29,6 @@ from early_field import (
     LIVE_32_REAKTOR,
     enumerate_scaled_grid,
     polarity,
-    geometric_level,
     image_order,
     compute_taps,
     MicStand,
@@ -39,15 +38,7 @@ from early_field import (
     all_wall_combo_keys,
     precompute_wall_peaking_coeffs,
     peaking_stages_for_tap,
-    image_position_corner,
-    image_position_centre,
     SPEED_OF_SOUND_M_S,
-    macro_passthrough,
-    macro_neg,
-    macro_2R_minus_S,
-    macro_2R_plus_S,
-    macro_S_minus_2R,
-    macro_4L_minus_Z,
     prepare_mcx,
     prepare_mcz,
     prepare_mic_triplet,
@@ -62,6 +53,17 @@ from early_field import (
     mic_positions,
     direction_angles,
     arrival_cos_xz,
+)
+from maths_distance import geometric_level
+from maths_image import (
+    image_position_corner,
+    image_position_centre,
+    macro_passthrough,
+    macro_neg,
+    macro_2R_minus_S,
+    macro_2R_plus_S,
+    macro_S_minus_2R,
+    macro_4L_minus_Z,
 )
 
 
@@ -367,7 +369,8 @@ def test_press_grad_and_ms_decode() -> None:
 
 
 def test_first_order_polar_slider() -> None:
-    from early_field import polar_a_from_slider, first_order_gain, SUPER_A, HYPER_A, capsule_gain
+    from maths_pattern import polar_a_from_slider, first_order_gain, SUPER_A, HYPER_A
+    from early_field import capsule_gain
     assert abs(polar_a_from_slider(0.0) - 1.0) < 1e-12
     assert abs(polar_a_from_slider(0.5) - 0.5) < 1e-12
     assert abs(polar_a_from_slider(1.0) - SUPER_A) < 1e-12
@@ -957,7 +960,7 @@ def test_two_source_balance_mirror_and_split() -> None:
         source_balance_gains,
         two_source_excitation,
     )
-    from early_field import image_position
+    from maths_image import image_position
     from app_server import params_from_body
 
     assert source_balance_gains(0.0) == (1.0, 1.0)

@@ -28,15 +28,6 @@ _THETA = np.arange(5.0, 180.0, 5.0)
 _CACHE: dict = {}
 
 
-def polar_a(polar: float, pattern: str | None = None) -> float:
-    """Omni a=1, cardioid 0.5, super 0.37. A hypercardioid name is 0.25.
-
-    polar 1 with no name stays supercardioid. Same map as the desk polar slider.
-    The arithmetic is maths_pattern.polar_a_from_slider.
-    """
-    return polar_a_from_slider(polar, pattern)
-
-
 def diffuse_index_db(a: float) -> float:
     """DI = -10 log10(REE), REE = a^2 + (1-a)^2 / 3. G_tail flat is -DI."""
     aa = float(a)
@@ -213,7 +204,7 @@ def gain_db(preset_id: str, sr: float, polar, freqs, pattern=None) -> np.ndarray
         polar = law["polar"]
         if pattern is None:
             pattern = law["pattern"]
-    flat = -diffuse_index_db(polar_a(polar, pattern))
+    flat = -diffuse_index_db(polar_a_from_slider(polar, pattern))
     return flat + _hf_shelf_db(f, _shelf_depth_db(family))
 
 

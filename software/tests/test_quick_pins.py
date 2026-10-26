@@ -25,7 +25,7 @@ GOLDEN = (
 sys.path[:0] = [str(SW), str(SW / "engine")]
 
 import app_server as A  # noqa: E402
-from early_field import geometric_level  # noqa: E402
+from maths_distance import geometric_level  # noqa: E402
 
 pytestmark = pytest.mark.quick
 
@@ -74,24 +74,24 @@ PIN_TABLE = {
     "sl_room_result.css": 2,
     "rr_controls.css": 1,
     "room_shape.js": 7,
-    "maths_look.js": 1,
-    "maths_pattern.js": 1,
+    "maths_look.js": 2,
+    "maths_pattern.js": 2,
     "maths_distance.js": 1,
     "maths_db.js": 1,
     "maths_bands.js": 1,
     "maths_image.js": 1,
-    "room_math.js": 22,
+    "room_math.js": 23,
     "spectrum_colors.js": 1,
     "freq_palette.js": 2,
     "room_view_pose.js": 1,
     "room_draw.js": 5,
-    "room_3d.js": 25,
-    "room_editor.js": 26,
+    "room_3d.js": 26,
+    "room_editor.js": 27,
     "image_views.js": 21,
     "colour_surfaces.js": 9,
-    "polar_field.js": 16,
-    "polar_views.js": 7,
-    "mic_desk.js": 26,
+    "polar_field.js": 17,
+    "polar_views.js": 8,
+    "mic_desk.js": 27,
     "source_desk.js": 4,
     "pack_room.js": 55,
     "live_fdn.js": 64,

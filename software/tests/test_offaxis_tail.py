@@ -64,11 +64,12 @@ def test_true_packs_45_k3():
 
 
 def test_hyper_polar_a_is_a_quarter_and_super_stays():
-    assert T.polar_a(1.0) == pytest.approx(0.37)
-    assert T.polar_a(1.0, "supercardioid") == pytest.approx(0.37)
-    assert T.polar_a(1.0, "hypercardioid") == pytest.approx(0.25)
-    assert T.polar_a(1.0, "hyper") == pytest.approx(0.25)
-    assert T.polar_a(0.5, "cardioid") == pytest.approx(0.5)
+    from engine.maths_pattern import polar_a_from_slider
+    assert polar_a_from_slider(1.0) == pytest.approx(0.37)
+    assert polar_a_from_slider(1.0, "supercardioid") == pytest.approx(0.37)
+    assert polar_a_from_slider(1.0, "hypercardioid") == pytest.approx(0.25)
+    assert polar_a_from_slider(1.0, "hyper") == pytest.approx(0.25)
+    assert polar_a_from_slider(0.5, "cardioid") == pytest.approx(0.5)
 
 
 def test_u87_cardioid_shape():

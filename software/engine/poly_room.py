@@ -15,6 +15,7 @@ from typing import List, Optional, Sequence, Tuple
 
 import numpy as np
 
+from maths_distance import geometric_level
 from early_field import (
     PATTERN_CARDIOID,
     PATTERN_FIG8,
@@ -24,7 +25,6 @@ from early_field import (
     capsule_press_grad,
     delay_ms_from_distance,
     dist,
-    geometric_level,
     mic_positions,
     offaxis_shelf_gain_linear,
     pattern_from_car_omni,

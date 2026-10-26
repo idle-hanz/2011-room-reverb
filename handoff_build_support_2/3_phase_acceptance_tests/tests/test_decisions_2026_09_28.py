@@ -26,7 +26,7 @@ K1_BASE = dict(W=6, H=3, L=8, sx=1.0, sy=1.5, sz=4.75, mcx=3, mcz=1.5, my=1.5, y
 
 
 def _k1_landed(src):
-    return 'YAW_X_SIGN' in src('engine/early_field.py') and 'YAW_X_SIGN' in src('static/js/room_math.js')
+    return 'YAW_X_SIGN' in src('engine/maths_look.py') and 'YAW_X_SIGN' in src('static/js/maths_look.js')
 
 
 def _lr(ir):
@@ -38,12 +38,12 @@ def _lr(ir):
 # ------------------------------------------------------------------ K1
 @pytest.mark.phase('K1')
 def test_k1_single_yaw_convention(sw, src):
-    """Decision 1: ONE convention constant (Python early_field.YAW_X_SIGN == JS RoomMath.YAW_X_SIGN == +1);
+    """Decision 1: ONE convention constant (Python maths_look.YAW_X_SIGN == JS RRLook.YAW_X_SIGN == +1);
     no per-preset sign edits and no second hard-coded look formula."""
     if not _k1_landed(src):
-        pytest.xfail('K1 not landed: no YAW_X_SIGN in engine/early_field.py / static/js/room_math.js')
-    py = re.search(r'^YAW_X_SIGN\s*=\s*([-+]?[0-9.]+)', src('engine/early_field.py'), re.M)
-    js = re.search(r'YAW_X_SIGN\s*=\s*([-+]?[0-9.]+)', src('static/js/room_math.js'))
+        pytest.xfail('K1 not landed: no YAW_X_SIGN in engine/maths_look.py / static/js/maths_look.js')
+    py = re.search(r'^YAW_X_SIGN\s*=\s*([-+]?[0-9.]+)', src('engine/maths_look.py'), re.M)
+    js = re.search(r'YAW_X_SIGN\s*=\s*([-+]?[0-9.]+)', src('static/js/maths_look.js'))
     assert py and js and float(py.group(1)) == 1.0 and float(js.group(1)) == 1.0, (py, js)
     left = []
     for rel in ('engine/early_field.py', 'polar_field.py', 'mic_display.py'):

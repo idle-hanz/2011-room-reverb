@@ -488,7 +488,7 @@ def params_from_body(body: dict) -> dict:
         my=_f(body.get("my"), DEFAULTS["my"]),
         mcz=_f(body.get("mcz"), DEFAULTS["mcz"]),
         space=_f(body.get("space"), DEFAULTS["space"]),
-        mcx=_f(body.get("mcx"), W * 0.5),
+        mcx=_f(body.get("mcx"), D("mcx")),
         reaktor_parity=parity,
         sy=sy_arg,
     )
@@ -499,9 +499,9 @@ def params_from_body(body: dict) -> dict:
     if mirror_b:
         sx_b, sy_b, sz_b = mirror_source_b(W, sx, sy, sz)
     else:
-        sx_b = _f(body.get("sx_b"), W - sx)
-        sy_b = _f(body.get("sy_b"), sy)
-        sz_b = _f(body.get("sz_b"), sz)
+        sx_b = _f(body.get("sx_b"), D("sx_b"))
+        sy_b = _f(body.get("sy_b"), D("sy_b"))
+        sz_b = _f(body.get("sz_b"), D("sz_b"))
     sx_b = max(0.0, min(W, float(sx_b)))
     sy_b = max(0.0, min(H, float(sy_b)))
     sz_b = max(0.0, min(L, float(sz_b)))

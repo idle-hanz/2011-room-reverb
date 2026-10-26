@@ -678,12 +678,10 @@
       function roomLook(cap, standLook) {
         var pose = global.RRViewPose;
         var drag = global.RRDrag;
-        var math = global.RoomMath;
         if (!pose || !pose.isRoom || !pose.isRoom(s, cap) || !drag || !drag.roomSpot) return standLook;
         var spot = drag.roomSpot(s, cap);
         var rad = (Number(spot.yaw) || 0) * Math.PI / 180;
-        if (math && math.lookFromYaw) return math.lookFromYaw(rad);
-        return standLook;
+        return global.RRLook.lookFromYaw(rad);
       }
       aim(coneL, roomLook("l", geo.look_l));
       aim(coneC, roomLook("c", geo.look_c || { x: 0, z: 1 }));
@@ -948,10 +946,8 @@
             var row = mic.grid[bi] || mic.grid[0];
             var mag = sampleMag(row, theta);
             var signed = mag;
-            if (global.RoomMath && global.RoomMath.polarGain) {
-              var g = global.RoomMath.polarGain(theta, mic.family, mic.polar, mic.pattern);
-              signed = g < 0 ? -mag : (g === 0 ? 0 : mag);
-            }
+            var g = global.RRPattern.polarGain(theta, mic.family, mic.polar, mic.pattern);
+            signed = g < 0 ? -mag : (g === 0 ? 0 : mag);
             var dx = mic.pos.x - c.x;
             var dy = mic.pos.y - c.y;
             var dz = mic.pos.z - c.z;

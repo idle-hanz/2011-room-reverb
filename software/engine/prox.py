@@ -13,11 +13,11 @@ from typing import Optional, Sequence, Tuple
 
 import numpy as np
 
+from maths_pattern import polar_a_from_slider
 from early_field import (
     arrival_cos_ray,
     centre_position,
     mic_positions,
-    polar_a_from_slider,
 )
 
 RR_PROX_RFLOOR = 0.5

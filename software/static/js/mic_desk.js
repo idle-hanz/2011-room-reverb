@@ -111,16 +111,6 @@
     return "#e11d48";
   }
 
-  function patternGain(theta, family, polar, pattern) {
-    var RM = global.RoomMath;
-    if (RM && RM.polarGain) return RM.polarGain(theta, family, polar, pattern);
-    var p = String(family || "cardioid").toLowerCase();
-    if (p === "bi" || p === "fig8") return Math.cos(theta);
-    var d = Math.max(0, Math.min(1, Number(polar) || 0));
-    var a = d <= 0.5 ? 1 - d : 0.5 - (d - 0.5) * 0.26;
-    return a + (1 - a) * Math.cos(theta);
-  }
-
   function familyOf(s, cap) {
     var k = "family_" + cap;
     if (s[k]) return s[k];
@@ -705,8 +695,8 @@
     function polarFrontPx(canvas, yawDeg) {
       var lay = polarLayout(canvas);
       var yaw = ((Number(yawDeg) || 0) * Math.PI) / 180;
-      /* Match lookFromYaw: screen ( S·sin yaw, −cos yaw ) so +Z is up, S = RoomMath.YAW_X_SIGN. */
-      var S = (typeof RoomMath !== "undefined" && RoomMath.YAW_X_SIGN) ? RoomMath.YAW_X_SIGN : 1;
+      /* Match RRLook: screen ( S·sin yaw, −cos yaw ) so +Z is up. */
+      var S = global.RRLook.YAW_X_SIGN;
       return {
         px: lay.cx + S * lay.R * Math.sin(yaw),
         py: lay.cy - lay.R * Math.cos(yaw),
@@ -764,10 +754,8 @@
             var theta = Math.acos(cosT);
             var mag = sampleRow(grids[mi][bi] || grids[mi][0], theta);
             var signed = mag;
-            if (RoomMath && RoomMath.polarGain) {
-              var g = RoomMath.polarGain(theta, fams[mi], pols[mi], pats[mi]);
-              signed = g < 0 ? -mag : (g === 0 ? 0 : mag);
-            }
+            var g = global.RRPattern.polarGain(theta, fams[mi], pols[mi], pats[mi]);
+            signed = g < 0 ? -mag : (g === 0 ? 0 : mag);
             var phase = (((poss[mi].x - c.x) * ux + (poss[mi].y - c.y) * uy + (poss[mi].z - c.z) * uz) / 340) * Math.PI * 2 * freq;
             re += signed * Math.cos(phase);
             im += signed * Math.sin(phase);
@@ -915,7 +903,7 @@
         var ii, thI, gI, dbI, radI;
         for (ii = 0; ii <= nIdeal; ii++) {
           thI = (ii / nIdeal) * Math.PI * 2;
-          gI = Math.abs(patternGain(thI - yaw, family, polar, opt.pattern));
+          gI = Math.abs(global.RRPattern.polarGain(thI - yaw, family, polar, opt.pattern));
           dbI = gI > 1e-6 ? (20 * Math.log(gI) / Math.LN10) : -120;
           radI = radDb(dbI);
           sx = cx + R * radI * Math.sin(thI);
@@ -953,7 +941,7 @@
         ctx.beginPath();
         for (i = 0; i <= n; i++) {
           th = (i / n) * Math.PI * 2;
-          g = Math.abs(patternGain(th - yaw, family, polar, opt.pattern));
+          g = Math.abs(global.RRPattern.polarGain(th - yaw, family, polar, opt.pattern));
           sx = cx + R * g * Math.sin(th);
           sy = cy - R * g * Math.cos(th);
           if (i === 0) ctx.moveTo(sx, sy); else ctx.lineTo(sx, sy);
@@ -1064,18 +1052,14 @@
           if (mid === cap) mid = cap === "c" ? "l" : "c";
           var host = mid === "l" ? geo.mic_left : (mid === "r" ? geo.mic_right : geo.mic_centre);
           var yaw = (Number(geo.state["yaw_" + cap + "_deg"]) || 0) * Math.PI / 180;
-          var sideLook = (RoomMath && RoomMath.lookFromYaw)
-            ? RoomMath.lookFromYaw(yaw)
-            : { x: Math.sin(yaw), z: Math.cos(yaw) };
+          var sideLook = global.RRLook.lookFromYaw(yaw);
           return { x: host.x, y: host.y, z: host.z, look: sideLook, room: false };
         }
         return { x: stand.x, y: stand.y, z: stand.z, look: look, room: false };
       }
       var spot = roomSpotOf(geo.state, cap);
       var yaw = (Number(spot.yaw) || 0) * Math.PI / 180;
-      var roomLook = (RoomMath && RoomMath.lookFromYaw)
-        ? RoomMath.lookFromYaw(yaw)
-        : { x: Math.sin(yaw), z: Math.cos(yaw) };
+      var roomLook = global.RRLook.lookFromYaw(yaw);
       return { x: spot.x, y: spot.y, z: spot.z, look: roomLook, room: true };
     }
 
@@ -1227,10 +1211,10 @@
     }
 
     function applyYawFromPointer(kind, px, py, originPx) {
-      /* Aim on screen is (S·sin yaw, −cos yaw), so +Z is up (S = RoomMath.YAW_X_SIGN).
+      /* Aim on screen is (S·sin yaw, −cos yaw), so +Z is up (S = RRLook.YAW_X_SIGN).
          atan2(S·dx, −dy) keeps the handle under the pointer.
          Dragging right moves the handle right. */
-      var S = (typeof RoomMath !== "undefined" && RoomMath.YAW_X_SIGN) ? RoomMath.YAW_X_SIGN : 1;
+      var S = global.RRLook.YAW_X_SIGN;
       var dx = px - originPx.px;
       var dy = py - originPx.py;
       var deg = Math.atan2(S * dx, -dy) * 180 / Math.PI;
@@ -1551,7 +1535,7 @@
       var hit = screenTheta(canvas, px, py, cap);
       if (Math.abs(hit.theta) < 0.45) return "yaw";
       var st = getState();
-      var outline = Math.abs(patternGain(hit.theta, familyOf(st, cap), polarOf(st, cap))) * hit.lay.R;
+      var outline = Math.abs(global.RRPattern.polarGain(hit.theta, familyOf(st, cap), polarOf(st, cap))) * hit.lay.R;
       if (Math.abs(hit.rad - outline) <= uiPx(18)) return "rim";
       return "yaw";
     }
@@ -1568,7 +1552,7 @@
       var bestErr = 1e9;
       var d, err;
       for (d = 0; d <= 1.0001; d += 0.01) {
-        err = Math.abs(Math.abs(patternGain(hit.theta, fam, Math.min(1, d))) - target);
+        err = Math.abs(Math.abs(global.RRPattern.polarGain(hit.theta, fam, Math.min(1, d))) - target);
         if (err < bestErr) {
           bestErr = err;
           best = Math.min(1, d);
@@ -1759,7 +1743,6 @@
 
   global.MicDesk = {
     create: create,
-    patternGain: patternGain,
     drawPolarChartFrame: drawPolarChartFrame
   };
 })(window);

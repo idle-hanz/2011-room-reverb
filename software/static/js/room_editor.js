@@ -1,92 +1,9 @@
 
-/* 2011 Room Reverb — room math + canvas drag editor */
+/* 2011 Room Reverb — canvas drag editor. Geometry is room_math.js. */
 (function (global) {
   "use strict";
 
-  const RoomMath = (global.RoomMath && global.RoomMath.compute) ? global.RoomMath : {
-    clamp(v, lo, hi) {
-      return Math.max(lo, Math.min(hi, v));
-    },
-    maxSpace(W, mcx) {
-      return Math.max(0, 2 * Math.min(mcx, W - mcx));
-    },
-    CENTRE_DZ_MAX: 0.20,
-    clampRoom(s) {
-      const W = s.W, H = s.H, L = s.L;
-      const mcx = this.clamp(s.mcx, 0, W);
-      const my = this.clamp(s.my, 0, H);
-      let sy = s.sy;
-      if (sy == null || sy === "" || !isFinite(Number(sy))) sy = my;
-      else sy = this.clamp(Number(sy), 0, H);
-      let centre_dz = this.clamp(Number(s.centre_dz) || 0, -this.CENTRE_DZ_MAX, this.CENTRE_DZ_MAX);
-      if (s.align_horizontal) centre_dz = 0;
-      return Object.assign({}, s, {
-        sx: this.clamp(s.sx, 0, W),
-        sz: this.clamp(s.sz, 0, L),
-        my: my,
-        sy: sy,
-        mcz: this.clamp(s.mcz, 0, L),
-        mcx: mcx,
-        space: this.clamp(s.space, 0, this.maxSpace(W, mcx)),
-        centre_dz: centre_dz,
-      });
-    },
-    compute(raw) {
-      const s = this.clampRoom(raw);
-      const sox = Math.abs(s.W) > 1e-12 ? s.sx / s.W : 0;
-      const denom = s.L - s.mcz;
-      const soz = Math.abs(denom) > 1e-12 ? (s.sz - s.mcz) / denom : 0;
-      const mz = s.L - s.mcz;
-      const half = s.space * 0.5;
-      const dz = s.centre_dz || 0;
-      const source = { x: s.sx, y: s.sy, z: s.sz };
-      const centre = { x: s.mcx, y: s.my, z: s.mcz + dz };
-      const left = { x: s.mcx - half, y: s.my, z: s.mcz };
-      const right = { x: s.mcx + half, y: s.my, z: s.mcz };
-      let ml, mr, mc;
-      if (s.yaw_l_deg != null && s.yaw_l_deg !== "" && isFinite(Number(s.yaw_l_deg))) {
-        ml = (Number(s.yaw_l_deg) * Math.PI) / 180;
-      } else if (s.toe_half_deg != null && s.toe_half_deg !== "" && isFinite(Number(s.toe_half_deg))) {
-        ml = (-Number(s.toe_half_deg) * Math.PI) / 180;
-      } else {
-        ml = s.diverg * 0.5 - 0.25;
-      }
-      if (s.yaw_r_deg != null && s.yaw_r_deg !== "" && isFinite(Number(s.yaw_r_deg))) {
-        mr = (Number(s.yaw_r_deg) * Math.PI) / 180;
-      } else if (s.toe_half_deg != null && s.toe_half_deg !== "" && isFinite(Number(s.toe_half_deg))) {
-        mr = (Number(s.toe_half_deg) * Math.PI) / 180;
-      } else {
-        mr = s.diverg * 0.5 + 0.25;
-      }
-      if (s.yaw_c_deg != null && s.yaw_c_deg !== "" && isFinite(Number(s.yaw_c_deg))) {
-        mc = (Number(s.yaw_c_deg) * Math.PI) / 180;
-      } else {
-        mc = 0;
-      }
-      function dist(a, b) {
-        return Math.hypot(a.x - b.x, a.y - b.y, a.z - b.z);
-      }
-      return {
-        state: Object.assign({}, s, { sox: sox, soz: soz, mz: mz }),
-        source: source,
-        mic_centre: centre,
-        mic_left: left,
-        mic_right: right,
-        look_l: { x: -Math.sin(ml), z: Math.cos(ml) },
-        look_c: { x: -Math.sin(mc), z: Math.cos(mc) },
-        look_r: { x: -Math.sin(mr), z: Math.cos(mr) },
-        toe_l_deg: (ml * 180) / Math.PI,
-        toe_c_deg: (mc * 180) / Math.PI,
-        toe_r_deg: (mr * 180) / Math.PI,
-        distances: {
-          sl: dist(source, left),
-          sc: dist(source, centre),
-          sr: dist(source, right),
-        },
-        max_space: this.maxSpace(s.W, s.mcx),
-      };
-    },
-  };
+  const RoomMath = global.RoomMath;
 
   const COLORS = {
     src: "#fbbf24",
@@ -352,8 +269,6 @@
       };
     }
     function drawRoomPattern(ctx, px, py, yawDeg, family, polar, color, pattern) {
-      var RM = global.RoomMath;
-      if (!RM || !RM.polarGain) return;
       var yaw = ((Number(yawDeg) || 0) * Math.PI) / 180;
       var R = 20;
       var n = 48;
@@ -361,7 +276,7 @@
       ctx.beginPath();
       for (i = 0; i <= n; i++) {
         th = (i / n) * Math.PI * 2;
-        g = Math.abs(RM.polarGain(th - yaw, family, polar, pattern));
+        g = Math.abs(global.RRPattern.polarGain(th - yaw, family, polar, pattern));
         sx = px + R * g * Math.sin(th);
         sy = py - R * g * Math.cos(th);
         if (i === 0) ctx.moveTo(sx, sy);
@@ -1378,6 +1293,5 @@
     return { redraw: redraw, setTool: setTool, view3d: view3d };
   }
 
-  if (!global.RoomMath || !global.RoomMath.polarGain) global.RoomMath = RoomMath;
   global.RoomEditor = { create: RoomEditorCreate };
 })(window);

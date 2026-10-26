@@ -8,12 +8,8 @@ window.RoomMath = (() => {
     return window.RRPattern.isHyper(pattern);
   }
 
-  function polarA(family, polar, pattern) {
-    return window.RRPattern.polarA(family, polar, pattern);
-  }
-
-  function polarGain(theta, family, polar, pattern) {
-    return window.RRPattern.polarGain(theta, family, polar, pattern);
+  function tableDefault(name) {
+    return Number(globalThis.RR_SETTINGS.by_name[name].default);
   }
 
   function polarLabel(family, polar, pattern) {
@@ -73,9 +69,9 @@ window.RoomMath = (() => {
     let centre_dz = clamp(Number(state.centre_dz) || 0, -CENTRE_DZ_MAX, CENTRE_DZ_MAX);
     if (state.align_horizontal) centre_dz = 0;
     let mirror_b = !!state.mirror_b;
-    let sx_b = (state.sx_b != null && isFinite(Number(state.sx_b))) ? clamp(Number(state.sx_b), 0, W) : clamp(W - sx, 0, W);
-    let sy_b = (state.sy_b != null && isFinite(Number(state.sy_b))) ? clamp(Number(state.sy_b), 0, H) : sy;
-    let sz_b = (state.sz_b != null && isFinite(Number(state.sz_b))) ? clamp(Number(state.sz_b), 0, L) : sz;
+    let sx_b = (state.sx_b != null && isFinite(Number(state.sx_b))) ? clamp(Number(state.sx_b), 0, W) : clamp(tableDefault("sx_b"), 0, W);
+    let sy_b = (state.sy_b != null && isFinite(Number(state.sy_b))) ? clamp(Number(state.sy_b), 0, H) : clamp(tableDefault("sy_b"), 0, H);
+    let sz_b = (state.sz_b != null && isFinite(Number(state.sz_b))) ? clamp(Number(state.sz_b), 0, L) : clamp(tableDefault("sz_b"), 0, L);
     if (mirror_b) {
       sx_b = clamp(W - sx, 0, W);
       sy_b = sy;
@@ -117,15 +113,7 @@ window.RoomMath = (() => {
   }
 
   /* K1 (28 Sep 2026): one yaw convention. +yaw aims toward +X (screen right).
-     Must equal early_field.YAW_X_SIGN in Python. Was -1 (crossed capsules).
-     The sin/cos formula is RRLook. This literal stays so the K1 file probe
-     can read YAW_X_SIGN = 1 in this file. */
-  const YAW_X_SIGN = 1;
-
-  function lookFromYaw(yawRad) {
-    return window.RRLook.lookFromYaw(yawRad);
-  }
-
+     The constant and the sin/cos formula are RRLook (maths_look.js). */
   function compute(state) {
     const s = clampRoom(state);
     const { sox, soz, mz } = prepareFromMetres(s.W, s.L, s.sx, s.sz, s.mcz);
@@ -152,7 +140,7 @@ window.RoomMath = (() => {
       /* Ears rotate with the head. L = H − (s/2)·right, same as early_field. */
       const psi = ((Number(s.head_yaw_deg) || 0) * Math.PI) / 180;
       const rx = Math.cos(psi);
-      const rz = -YAW_X_SIGN * Math.sin(psi);
+      const rz = -window.RRLook.YAW_X_SIGN * Math.sin(psi);
       left = { x: s.mcx - half * rx, y: yL, z: barZ - half * rz };
       right = { x: s.mcx + half * rx, y: yR, z: barZ + half * rz };
       mlalr = psi - Math.PI / 2;
@@ -165,9 +153,9 @@ window.RoomMath = (() => {
       mralr = yawRadFromState(s, "r");
       mcalr = yawRadFromState(s, "c");
     }
-    const look_l = lookFromYaw(mlalr);
-    const look_r = lookFromYaw(mralr);
-    const look_c = lookFromYaw(mcalr);
+    const look_l = window.RRLook.lookFromYaw(mlalr);
+    const look_r = window.RRLook.lookFromYaw(mralr);
+    const look_c = window.RRLook.lookFromYaw(mcalr);
     const dist = (a, b) => Math.hypot(a.x - b.x, a.y - b.y, a.z - b.z);
     return {
       state: { ...s, sox, soz, mz },
@@ -202,7 +190,7 @@ window.RoomMath = (() => {
 
   return {
     clamp, maxSpace, clampRoom, prepareFromMetres, compute,
-    lookFromYaw, YAW_X_SIGN, polarA, polarGain, polarLabel, derivePattern,
+    polarLabel, derivePattern,
     polarFromPattern, familyFromPattern, CENTRE_DZ_MAX, effectiveBPose
   };
 })();

@@ -40,6 +40,7 @@ test("roomSpot falls back to the shared spot, then prefers the stored one", () =
 
 function loadRoomMath() {
   globalThis.window = globalThis;
+  globalThis.RR_SETTINGS = JSON.parse(readFileSync(join(here, "../static/settings.json"), "utf8"));
   eval(readFileSync(join(here, "../static/js/maths_look.js"), "utf8"));
   eval(readFileSync(join(here, "../static/js/maths_pattern.js"), "utf8"));
   eval(readFileSync(join(here, "../static/js/room_math.js"), "utf8"));
@@ -77,12 +78,13 @@ test("room lobes pass the pattern into polarGain", () => {
 
 test("hypercardioid is 1 / 0.25 / 0.5 and supercardioid stays 0.37", () => {
   loadRoomMath();
+  const P = globalThis.RRPattern;
   const RM = globalThis.RoomMath;
   const near = (a, b) => assert.ok(Math.abs(a - b) < 1e-9, [a, b]);
-  near(RM.polarGain(0, "cardioid", 1, "hypercardioid"), 1);
-  near(RM.polarGain(Math.PI / 2, "cardioid", 1, "hypercardioid"), 0.25);
-  near(Math.abs(RM.polarGain(Math.PI, "cardioid", 1, "hypercardioid")), 0.5);
-  near(RM.polarGain(Math.PI / 2, "cardioid", 1), 0.37);
+  near(P.polarGain(0, "cardioid", 1, "hypercardioid"), 1);
+  near(P.polarGain(Math.PI / 2, "cardioid", 1, "hypercardioid"), 0.25);
+  near(Math.abs(P.polarGain(Math.PI, "cardioid", 1, "hypercardioid")), 0.5);
+  near(P.polarGain(Math.PI / 2, "cardioid", 1), 0.37);
   assert.equal(RM.derivePattern("cardioid", 1, "hypercardioid"), "hypercardioid");
   assert.equal(RM.derivePattern("cardioid", 0.8, "hypercardioid"), "supercardioid");
   assert.equal(RM.polarLabel("cardioid", 1, "hypercardioid"), "Hypercardioid");

@@ -5,8 +5,7 @@
    (ORTF −55°, MS −90°). R aims outward toward +X (ORTF +55°, MS +90°).
    K1 (Idle, 28 Sep 2026): the old sign was −1, which aimed every
    L-negative/R-positive preset inward. Stored yaw numbers did not change.
-   early_field.py and room_math.js still write the literal 1 so the K1
-   file probe can read it. This module is the formula. */
+   This module is the formula. The K1 probe reads YAW_X_SIGN here. */
 (function (root) {
   "use strict";
   var YAW_X_SIGN = 1;

@@ -347,7 +347,7 @@
       var yawMs = Number(state["yaw_" + key + "_deg"]) || 0;
       return {
         x: host.x, y: host.y, z: host.z, yawDeg: yawMs,
-        look: RM.lookFromYaw(yawMs * Math.PI / 180)
+        look: window.RRLook.lookFromYaw(yawMs * Math.PI / 180)
       };
     }
     if (!placed) {
@@ -365,7 +365,7 @@
     var yaw = num("yaw");
     return {
       x: num("x"), y: num("y"), z: num("z"), yawDeg: yaw,
-      look: RM.lookFromYaw(yaw * Math.PI / 180)
+      look: window.RRLook.lookFromYaw(yaw * Math.PI / 180)
     };
   }
 

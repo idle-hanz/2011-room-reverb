@@ -20,7 +20,8 @@ SW = ROOT / "software"
 sys.path[:0] = [str(SW), str(SW / "engine")]
 
 import app_server as A  # noqa: E402
-from early_field import MicStand, dist, image_position_corner  # noqa: E402
+from early_field import MicStand, dist  # noqa: E402
+from maths_image import image_position_corner  # noqa: E402
 from fdn import fdn_delays_from_taps  # noqa: E402
 from poly_room import (  # noqa: E402
     QUOTA,

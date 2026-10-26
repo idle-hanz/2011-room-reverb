@@ -39,6 +39,7 @@ _SURF_CTX: "_cv.ContextVar[Optional[dict]]" = _cv.ContextVar("rr_surf_ctx", defa
 _SUB_HP: "_cv.ContextVar[Optional[tuple]]" = _cv.ContextVar("rr_sub_hp", default=None)
 
 from poly_room import compute_poly_taps, normalize_shape, poly_on  # noqa: E402
+from settings_table import D  # noqa: E402
 from early_field import (  # noqa: E402
     DEFAULT_HADAMARD_N,
     SAMPLE_RATE_HZ,
@@ -1492,16 +1493,15 @@ def makeup_at_stand(
     ``ir_rms_makeup_from_inject``. ``g`` stays the caller's decay gain.
 
     D-SRC-DIST-LEVEL: the source in this pass is the boot offset from the
-    placed stand centre, not the live source. Boot source (DEFAULTS
-    2.6, 1.2, 4.75) minus boot stand (3.0, 1.5, 1.5) is (-0.4, -0.3, +3.25).
+    placed stand centre, not the live source. Boot source minus boot stand
+    is the settings-table pair (sx, sy, sz) minus (mcx, my, mcz).
     On the boot stand that rebuilds the boot source, so the default scene
     stays bit-exact. A moved source then follows 1/r through the injects.
     """
     placed = _place_stand(copy.copy(stand), _desk_at_stand(desk))
-    # Same literals as app_server.DEFAULTS. Subtract-then-add keeps the boot
-    # source bit-exact when the stand centre is the boot stand.
-    boot_src = (2.6, 1.2, 4.75)
-    boot_stand = (3.0, 1.5, 1.5)
+    # Table defaults, not a second copy of the boot numbers.
+    boot_src = (float(D("sx")), float(D("sy")), float(D("sz")))
+    boot_stand = (float(D("mcx")), float(D("my")), float(D("mcz")))
     if placed is None:
         mk_source = source
     else:
@@ -1989,7 +1989,7 @@ def _render_core(
         return _placed_taps(prep, desk), prep
 
     def taps_for(sx_v: float, sy_v: float, sz_v: float):
-        mcx_v = (float(W) * 0.5) if mcx is None else float(mcx)
+        mcx_v = float(D("mcx")) if mcx is None else float(mcx)
         prep_i = direct_field_from_metres(
             W, H, L,
             sx=float(sx_v), sy=float(sy_v), sz=float(sz_v),
@@ -2025,9 +2025,9 @@ def _render_core(
             if mirror_b:
                 bx, by, bz = mirror_source_b(float(W), float(sx), sy_a, float(sz))
             else:
-                bx = float(W) - float(sx) if sx_b is None else float(sx_b)
-                by = sy_a if sy_b is None else float(sy_b)
-                bz = float(sz) if sz_b is None else float(sz_b)
+                bx = float(D("sx_b")) if sx_b is None else float(sx_b)
+                by = float(D("sy_b")) if sy_b is None else float(sy_b)
+                bz = float(D("sz_b")) if sz_b is None else float(sz_b)
             bx = min(max(bx, 0.0), float(W))
             by = min(max(by, 0.0), float(H))
             bz = min(max(bz, 0.0), float(L))
@@ -3210,9 +3210,9 @@ def live_fdn_params(
                 room[0], prep.source[0], prep.source[1], prep.source[2],
             )
         else:
-            sx_b = room[0] - float(prep.source[0]) if p.get("sx_b") is None else float(p["sx_b"])
-            sy_b = float(prep.source[1]) if p.get("sy_b") is None else float(p["sy_b"])
-            sz_b = float(prep.source[2]) if p.get("sz_b") is None else float(p["sz_b"])
+            sx_b = float(D("sx_b")) if p.get("sx_b") is None else float(p["sx_b"])
+            sy_b = float(D("sy_b")) if p.get("sy_b") is None else float(p["sy_b"])
+            sz_b = float(D("sz_b")) if p.get("sz_b") is None else float(p["sz_b"])
         sx_b = min(max(float(sx_b), 0.0), room[0])
         sy_b = min(max(float(sy_b), 0.0), room[1])
         sz_b = min(max(float(sz_b), 0.0), room[2])

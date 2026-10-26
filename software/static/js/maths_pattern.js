@@ -3,7 +3,7 @@
    A hypercardioid name is HYPER_A (0.25), so 0° / 90° / 180° read 1 / 0.25 / −0.5.
    polar 1 with no hyper name stays SUPER_A (0.37).
    Family "bi" is the desk short-circuit (gain becomes cos). The Python slider
-   does not take a family; that branch stays here so RoomMath.polarA can delegate. */
+   does not take a family. Callers use RRPattern, not a second copy. */
 (function (root) {
   "use strict";
   var SUPER_A = 0.37;

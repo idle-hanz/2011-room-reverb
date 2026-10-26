@@ -90,19 +90,8 @@ Vec3 = Tuple[float, float, float]
 
 # Shoebox images live in maths_image.py. Corner origin is the live path.
 # The VERIFIED macro notes (shots 207, 317–330, 352, 353, 402, 435) moved with
-# the functions. Names stay here so `from early_field import image_position` works.
-from maths_image import (  # noqa: E402
-    image_position_centre,
-    macro_passthrough,
-    macro_neg,
-    macro_2R_minus_S,
-    macro_2R_plus_S,
-    macro_S_minus_2R,
-    macro_4L_minus_Z,
-    corner_axis_from_macro,
-    image_position_corner,
-    image_position,
-)
+# the functions. This file calls them. Callers import maths_image directly.
+from maths_image import image_position  # noqa: E402
 
 
 def polarity(n: Tuple[int, int, int]) -> int:
@@ -788,14 +777,9 @@ def direct_field_from_params(p: dict) -> PrepareResult:
 #   R capsule (larger X): outward toward +X ⇒ positive yaw (e.g. ORTF +55°, MS +90°).
 #   K1 fix (Idle, 28 Sep 2026): the old convention was YAW_X_SIGN = −1, which aimed
 #   every L-negative/R-positive preset INWARD (crossed capsules). Stored yaw numbers
-#   (presets, saves) are unchanged; only this one sign flipped. JS mirror:
-#   RRLook and RoomMath.YAW_X_SIGN (static/js). Keep them equal.
-#   The formula is maths_look.look_vector. This literal stays so the K1 file
-#   probe can read ^YAW_X_SIGN = 1.0 on this line.
-from maths_look import YAW_X_SIGN as _MATHS_YAW_X_SIGN, look_vector  # noqa: E402
-YAW_X_SIGN = 1.0
-if YAW_X_SIGN != _MATHS_YAW_X_SIGN:
-    raise RuntimeError("YAW_X_SIGN drifted from maths_look")
+#   (presets, saves) are unchanged; only this one sign flipped. The constant and
+#   the sin/cos formula live in maths_look.py. The page twin is RRLook.
+from maths_look import YAW_X_SIGN, look_vector  # noqa: E402
 # (Superseded note, kept for history: "Idle Hanz 'facing each other' / MS inward =
 #  L −90°, R +90°" described the old −1 convention. Locked decision K1 = outward.)
 PATTERN_OMNI = "omni"

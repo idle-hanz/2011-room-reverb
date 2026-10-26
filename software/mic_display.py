@@ -17,15 +17,10 @@ if str(_ENGINE) not in sys.path:
     sys.path.insert(0, str(_ENGINE))
 
 from early_field import direct_field_from_metres, prepare_direct_field  # noqa: E402
+from maths_look import look_xz  # noqa: E402
+from settings_table import D  # noqa: E402
 
 Vec3 = Tuple[float, float, float]
-
-
-def look_xz(yaw_rad: float) -> Tuple[float, float]:
-    """Mic look in XZ for Prepare yaw. yaw=0 faces +Z. The sign is maths_look (K1)."""
-    from maths_look import look_vector
-    x, _y, z = look_vector(yaw_rad)
-    return (x, z)
 
 
 def dist3(a: Vec3, b: Vec3) -> float:
@@ -62,7 +57,7 @@ def clamp(v: float, lo: float, hi: float) -> float:
 def max_space_m(W: float, mcx: Optional[float] = None) -> float:
     """Largest Space so L/R capsules stay in [0, W] given MCX."""
     W = float(W)
-    mcx_v = (W * 0.5) if mcx is None else float(mcx)
+    mcx_v = float(D("mcx")) if mcx is None else float(mcx)
     return max(0.0, 2.0 * min(mcx_v, W - mcx_v))
 
 
@@ -83,7 +78,7 @@ def clamp_inside_room(
     """Keep source + mic stand + L/R inside the room.
 
     Returns (sx, sz, my, mcz, space, mcx, sy).
-    A missing mcx snaps to W/2. sy defaults to my when omitted (VERIFIED SY=MY).
+    A missing mcx is the settings-table centre. sy defaults to my when omitted (VERIFIED SY=MY).
     """
     W, H, L = float(W), float(H), float(L)
     sx = clamp(sx, 0.0, W)
@@ -92,7 +87,7 @@ def clamp_inside_room(
     sy_v = clamp(my if sy is None else float(sy), 0.0, H)
     mcz = clamp(mcz, 0.0, L)
     if mcx is None:
-        mcx_v = W * 0.5
+        mcx_v = float(D("mcx"))
     else:
         mcx_v = clamp(mcx, 0.0, W)
     space = clamp(space, 0.0, max_space_m(W, mcx_v))
@@ -125,7 +120,7 @@ def geometry(
 ):
     if sx is not None and sz is not None and mcz is not None:
         sy_v = float(my) if sy is None else float(sy)
-        mcx_v = (float(W) * 0.5) if mcx is None else float(mcx)
+        mcx_v = float(D("mcx")) if mcx is None else float(mcx)
         prep = direct_field_from_metres(
             W, H, L,
             sx=float(sx), sy=sy_v, sz=float(sz),

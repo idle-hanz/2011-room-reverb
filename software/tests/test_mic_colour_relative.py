@@ -219,9 +219,9 @@ def test_ray_angle_replaces_floor_plan():
         compute_taps,
         direction_angles,
         direct_field_from_metres,
-        look_vector,
         pattern_gain,
     )
+    from maths_look import look_vector
     src = inspect.getsource(compute_taps)
     assert "arrival_theta_ray" in src
     assert "arrival_cos_xz" not in src

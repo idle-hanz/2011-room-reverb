@@ -22,6 +22,8 @@ _ENGINE = Path(__file__).resolve().parent / "engine"
 if str(_ENGINE) not in sys.path:
     sys.path.insert(0, str(_ENGINE))
 
+from maths_image import image_position  # noqa: E402
+from settings_table import D  # noqa: E402
 from early_field import (  # noqa: E402
     DEFAULT_HADAMARD_N,
     SPEED_OF_SOUND_M_S,
@@ -31,7 +33,6 @@ from early_field import (  # noqa: E402
     grid_bias_for_hadamard_n,
     hadamard_n_for_grid,
     image_order,
-    image_position,
     normalize_hadamard_n,
     polarity,
     prepare_direct_field,
@@ -202,7 +203,7 @@ def build_images_payload(
     """
     if sx is not None and sz is not None and mcz is not None:
         sy_v = float(my) if sy is None else float(sy)
-        mcx_v = (float(W) * 0.5) if mcx is None else float(mcx)
+        mcx_v = float(D("mcx")) if mcx is None else float(mcx)
         prep = direct_field_from_metres(
             W, H, L,
             sx=float(sx), sy=sy_v, sz=float(sz),
