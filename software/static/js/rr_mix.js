@@ -718,6 +718,11 @@ function paintDesk() {
     var rRead = document.getElementById("read_r");
     if (rRead) rRead.textContent = "off";
   }
+  paintDeskRoutes();
+}
+
+function paintDeskRoutes() {
+  var pan;
   ["l", "c", "r"].forEach(function (cap) {
     var view = lrView(cap);
     var route = view.route;
@@ -961,6 +966,10 @@ function bindDesk() {
       syncUI();
     });
   });
+  bindDeskRest();
+}
+
+function bindDeskRest() {
   document.querySelectorAll("[data-place][data-name]").forEach(function (btn) {
     var cap = btn.getAttribute("data-place");
     if (cap !== "l" && cap !== "c" && cap !== "r") return;

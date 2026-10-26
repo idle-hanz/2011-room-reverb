@@ -461,95 +461,11 @@ def _surf_cal(v):
         return None
 
 
-def params_from_body(body: dict) -> dict:
-    if not isinstance(body, dict):
-        raise BadParam("body")
-    clamp_body(body)
-    W = _f(body.get("W"), DEFAULTS["W"])
-    H = _f(body.get("H"), DEFAULTS["H"])
-    L = _f(body.get("L"), DEFAULTS["L"])
-    parity = False
-    sy_arg = None
-    if "sy" in body and body.get("sy") is not None:
-        raw_sy = body.get("sy")
-        if not (isinstance(raw_sy, str) and raw_sy.strip().lower() in ("", "null", "none")):
-            try:
-                sy_arg = float(raw_sy)
-            except (TypeError, ValueError):
-                sy_arg = None
-    elif body.get("my") is None:
-        # K3 (locked 28 Sep 2026): a body with neither sy nor my gets the default source
-        # height. A body that sends my but not sy keeps the legacy "sy follows my".
-        sy_arg = DEFAULTS["sy"]
-    sx, sz, my, mcz, space, mcx, sy = clamp_inside_room(
-        W, H, L,
-        sx=_f(body.get("sx"), DEFAULTS["sx"]),
-        sz=_f(body.get("sz"), DEFAULTS["sz"]),
-        my=_f(body.get("my"), DEFAULTS["my"]),
-        mcz=_f(body.get("mcz"), DEFAULTS["mcz"]),
-        space=_f(body.get("space"), DEFAULTS["space"]),
-        mcx=_f(body.get("mcx"), D("mcx")),
-        reaktor_parity=parity,
-        sy=sy_arg,
-    )
-    sox, soz, mz = prepare_from_metres(W, L, sx, sz, mcz)
-    cap = _capsule_from_body(body)
-    mic_colour_fields = _mic_colour_fields(body, cap)
-    mirror_b = _b(body.get("mirror_b") if "mirror_b" in body else D("mirror_b"), D("mirror_b"))
-    if mirror_b:
-        sx_b, sy_b, sz_b = mirror_source_b(W, sx, sy, sz)
-    else:
-        sx_b = _f(body.get("sx_b"), D("sx_b"))
-        sy_b = _f(body.get("sy_b"), D("sy_b"))
-        sz_b = _f(body.get("sz_b"), D("sz_b"))
-    sx_b = max(0.0, min(W, float(sx_b)))
-    sy_b = max(0.0, min(H, float(sy_b)))
-    sz_b = max(0.0, min(L, float(sz_b)))
-    two_sources = _b(body.get("two_sources"), D("two_sources"))
-    source_balance = _keyed(body, "source_balance")
-    mic_setup = str(body.get("mic_setup") or D("mic_setup"))
-    binaural_on = mic_setup == "binaural"
-    from desk_matrix import desk_active
-    ms_on = bool(cap["ms_decode"])
-    # An old MS-classic body has no pair mode and no routes, so it stays on
-    # the kept ms_decode branch. A desk that is actually in use must not
-    # also set that branch, or the side capsule is decoded twice.
-    if desk_active(body):
-        ms_on = False
-    # D20. An empty body, or ORTF with neither third_mic nor mic_gain_c, is C off.
-    # A stored third_mic or mic_gain_c wins, so old scenes keep their centre.
-    third_set = _explicit_field(body, "third_mic")
-    gain_set = _explicit_field(body, "mic_gain_c")
-    third = str(body.get("third_mic") or D("third_mic")).strip().lower() if third_set else D("third_mic")
-    if binaural_on or third == "off":
-        gain_c = 0.0
-    elif (not third_set) and (not gain_set) and mic_setup in ("", "ortf"):
-        gain_c = 0.0
-        third = "off"
-    else:
-        gain_c = _keyed(body, "mic_gain_c")
-    head_yaw = _keyed(body, "head_yaw_deg")
-    preset_id = str(body.get("binaural_preset") or DEFAULTS["binaural_preset"])
-    if preset_id not in tuple(BY_NAME["binaural_preset"]["range"]):
-        preset_id = DEFAULTS["binaural_preset"]
-    surfaces = parse_surfaces(body.get("surfaces"))
-    # Absent or false on a box leaves A and C alone, so the live MD5 stays.
-    if _sides_mirrored(body):
-        mirror_left_to_right(surfaces)
-    early_wet = _f(body.get("early_wet") if "early_wet" in body else miss("early_wet"), miss("early_wet"))
-    fdn_wet = _f(body.get("fdn_wet"), DEFAULTS["fdn_wet"])
-    smooth_on = smooth_active(
-        {
-            "reaktor_parity": parity,
-            "smooth": body.get("smooth") if "smooth" in body else None,
-            "fdn_wet": fdn_wet,
-            "early_wet": early_wet,
-            "mirror_null": bool(body.get("mirror_null") or body.get("null_mode")),
-            "surfaces": surfaces,
-        },
-        surfaces,
-    )
-    out = {
+def _params_room_fields(
+    body, W, H, L, sx, sz, my, sy, mcx, mcz, space, sox, soz, mz,
+    cap, ms_on, early_wet, fdn_wet, surfaces, smooth_on, parity,
+):
+    return {
         "W": W, "H": H, "L": L,
         "sx": sx, "sz": sz, "my": my, "sy": sy,
         "my_l": _opt_height(body, "my_l", H),
@@ -653,6 +569,13 @@ def params_from_body(body: dict) -> dict:
         # Missing key is OFF. The engine forces 0 in the same cases as Smooth.
         "movement": _keyed(body, "movement") if "movement" in body else D("movement"),
         "mirror_null": bool(body.get("mirror_null") or body.get("null_mode")),
+    }
+
+def _params_desk_fields(
+    body, mic_setup, head_yaw, preset_id, gain_c, third,
+    two_sources, mirror_b, source_balance, sx_b, sy_b, sz_b, mic_colour_fields,
+):
+    return {
         "mic_setup": mic_setup,
         "head_yaw_deg": head_yaw,
         "binaural_preset": preset_id,
@@ -709,6 +632,103 @@ def params_from_body(body: dict) -> dict:
         "mic_pos_c": body.get("mic_pos_c"),
         "mic_pos_r": body.get("mic_pos_r"),
     }
+
+def params_from_body(body: dict) -> dict:
+    if not isinstance(body, dict):
+        raise BadParam("body")
+    clamp_body(body)
+    W = _f(body.get("W"), DEFAULTS["W"])
+    H = _f(body.get("H"), DEFAULTS["H"])
+    L = _f(body.get("L"), DEFAULTS["L"])
+    parity = False
+    sy_arg = None
+    if "sy" in body and body.get("sy") is not None:
+        raw_sy = body.get("sy")
+        if not (isinstance(raw_sy, str) and raw_sy.strip().lower() in ("", "null", "none")):
+            try:
+                sy_arg = float(raw_sy)
+            except (TypeError, ValueError):
+                sy_arg = None
+    elif body.get("my") is None:
+        # K3 (locked 28 Sep 2026): a body with neither sy nor my gets the default source
+        # height. A body that sends my but not sy keeps the legacy "sy follows my".
+        sy_arg = DEFAULTS["sy"]
+    sx, sz, my, mcz, space, mcx, sy = clamp_inside_room(
+        W, H, L,
+        sx=_f(body.get("sx"), DEFAULTS["sx"]),
+        sz=_f(body.get("sz"), DEFAULTS["sz"]),
+        my=_f(body.get("my"), DEFAULTS["my"]),
+        mcz=_f(body.get("mcz"), DEFAULTS["mcz"]),
+        space=_f(body.get("space"), DEFAULTS["space"]),
+        mcx=_f(body.get("mcx"), D("mcx")),
+        reaktor_parity=parity,
+        sy=sy_arg,
+    )
+    sox, soz, mz = prepare_from_metres(W, L, sx, sz, mcz)
+    cap = _capsule_from_body(body)
+    mic_colour_fields = _mic_colour_fields(body, cap)
+    mirror_b = _b(body.get("mirror_b") if "mirror_b" in body else D("mirror_b"), D("mirror_b"))
+    if mirror_b:
+        sx_b, sy_b, sz_b = mirror_source_b(W, sx, sy, sz)
+    else:
+        sx_b = _f(body.get("sx_b"), D("sx_b"))
+        sy_b = _f(body.get("sy_b"), D("sy_b"))
+        sz_b = _f(body.get("sz_b"), D("sz_b"))
+    sx_b = max(0.0, min(W, float(sx_b)))
+    sy_b = max(0.0, min(H, float(sy_b)))
+    sz_b = max(0.0, min(L, float(sz_b)))
+    two_sources = _b(body.get("two_sources"), D("two_sources"))
+    source_balance = _keyed(body, "source_balance")
+    mic_setup = str(body.get("mic_setup") or D("mic_setup"))
+    binaural_on = mic_setup == "binaural"
+    from desk_matrix import desk_active
+    ms_on = bool(cap["ms_decode"])
+    # An old MS-classic body has no pair mode and no routes, so it stays on
+    # the kept ms_decode branch. A desk that is actually in use must not
+    # also set that branch, or the side capsule is decoded twice.
+    if desk_active(body):
+        ms_on = False
+    # D20. An empty body, or ORTF with neither third_mic nor mic_gain_c, is C off.
+    # A stored third_mic or mic_gain_c wins, so old scenes keep their centre.
+    third_set = _explicit_field(body, "third_mic")
+    gain_set = _explicit_field(body, "mic_gain_c")
+    third = str(body.get("third_mic") or D("third_mic")).strip().lower() if third_set else D("third_mic")
+    if binaural_on or third == "off":
+        gain_c = 0.0
+    elif (not third_set) and (not gain_set) and mic_setup in ("", "ortf"):
+        gain_c = 0.0
+        third = "off"
+    else:
+        gain_c = _keyed(body, "mic_gain_c")
+    head_yaw = _keyed(body, "head_yaw_deg")
+    preset_id = str(body.get("binaural_preset") or DEFAULTS["binaural_preset"])
+    if preset_id not in tuple(BY_NAME["binaural_preset"]["range"]):
+        preset_id = DEFAULTS["binaural_preset"]
+    surfaces = parse_surfaces(body.get("surfaces"))
+    # Absent or false on a box leaves A and C alone, so the live MD5 stays.
+    if _sides_mirrored(body):
+        mirror_left_to_right(surfaces)
+    early_wet = _f(body.get("early_wet") if "early_wet" in body else miss("early_wet"), miss("early_wet"))
+    fdn_wet = _f(body.get("fdn_wet"), DEFAULTS["fdn_wet"])
+    smooth_on = smooth_active(
+        {
+            "reaktor_parity": parity,
+            "smooth": body.get("smooth") if "smooth" in body else None,
+            "fdn_wet": fdn_wet,
+            "early_wet": early_wet,
+            "mirror_null": bool(body.get("mirror_null") or body.get("null_mode")),
+            "surfaces": surfaces,
+        },
+        surfaces,
+    )
+    out = _params_room_fields(
+        body, W, H, L, sx, sz, my, sy, mcx, mcz, space, sox, soz, mz, cap, ms_on,
+        early_wet, fdn_wet, surfaces, smooth_on, parity,
+    )
+    out.update(_params_desk_fields(
+        body, mic_setup, head_yaw, preset_id, gain_c, third, two_sources, mirror_b,
+        source_balance, sx_b, sy_b, sz_b, mic_colour_fields,
+    ))
     _bloom_keys = (
         "bloom_amount", "bloom_preset", "bloom_colour", "glue_colour",
         "pre_colour", "pre_drive_db", "predelay_ms",
@@ -1134,6 +1154,56 @@ def _bloom_render_kw(p: dict) -> dict:
     }
 
 
+def _render_status(out, info, meta, sr, p, body, Lch, Rch, preview):
+    status = (
+        f"Wrote {out}\n"
+        f"mode={info.get('mode')}  duration={meta['duration_s']:.2f}s  sr={sr}\n"
+        f"c={SPEED_OF_SOUND_M_S} m/s  MCZ=L−MZ={info.get('mcz'):.3f} m\n"
+        f"MCX={info.get('mcx'):.3f} m  "
+        f"(free)\n"
+        f"source={info.get('source')}  mic_centre={info.get('mic_centre')}\n"
+        f"Hadamard N={p['hadamard_n']}  images={info.get('n_taps', p['hadamard_n'])}  "
+        f"FDN lines={p['hadamard_n']}  (unscaled ±1)\n"
+        f"Mic colour={info.get('colour_mode')}  "
+        f"L/C/R={info.get('mic_preset_l')}\n"
+        f"peak_before_norm={info.get('peak_before_norm'):.4f}  "
+        f"norm_scale={info.get('norm_scale'):.4f}"
+    )
+    if info.get("fdn_ms") is not None:
+        status += (
+            f"\nFDN {float(info['fdn_ms']) / 1000.0:.2f} s"
+            f"  T60 {float(info.get('t60_s') or 0.0):.2f} s"
+        )
+    lim_n = int(info.get("limiter_samples") or 0)
+    lim_line = limiter_message(float(info.get("limiter_db") or 0.0), lim_n)
+    if lim_line:
+        status = lim_line + "\n" + status
+    colour = info.get("colour")
+    if colour is None:
+        # Fallback: analyse rendered wet mix (post dry) as last resort
+        colour = colour_from_stereo(Lch, Rch, sr, ref_mode=str(body.get("ref_mode") or "peak"))
+
+    status += (
+        f"\nColour: 1/3-octave ({len(colour.get('centres_hz', []))} bands)  "
+        f"Surfaces: ASSUMED absorb×EQ + path-length jitter "
+        f"(seed={p['diffusion_seed']} λ_ref={p['lambda_ref']} m)"
+    )
+    if info.get("colour_notice"):
+        status += "\n" + str(info.get("colour_notice"))
+    payload = {
+        "ok": True,
+        "preview_url": f"/api/render?path={preview}",
+        "out_path": str(out),
+        "status": status,
+        "geometry": geometry_payload(p),
+        "duration_s": meta["duration_s"],
+        "limiter_db": float(info.get("limiter_db") or 0.0),
+        "limiter_samples": int(info.get("limiter_samples") or 0),
+        "colour": colour,
+        "surfaces": surfaces_payload(p.get("surfaces") or default_surfaces()),
+    }
+    return _attach_warnings(payload, body)
+
 def _render_impl(
     file: UploadFile,
     params_json: str,
@@ -1272,54 +1342,7 @@ def _render_impl(
 
     preview = replace_preview(out)
 
-    status = (
-        f"Wrote {out}\n"
-        f"mode={info.get('mode')}  duration={meta['duration_s']:.2f}s  sr={sr}\n"
-        f"c={SPEED_OF_SOUND_M_S} m/s  MCZ=L−MZ={info.get('mcz'):.3f} m\n"
-        f"MCX={info.get('mcx'):.3f} m  "
-        f"(free)\n"
-        f"source={info.get('source')}  mic_centre={info.get('mic_centre')}\n"
-        f"Hadamard N={p['hadamard_n']}  images={info.get('n_taps', p['hadamard_n'])}  "
-        f"FDN lines={p['hadamard_n']}  (unscaled ±1)\n"
-        f"Mic colour={info.get('colour_mode')}  "
-        f"L/C/R={info.get('mic_preset_l')}\n"
-        f"peak_before_norm={info.get('peak_before_norm'):.4f}  "
-        f"norm_scale={info.get('norm_scale'):.4f}"
-    )
-    if info.get("fdn_ms") is not None:
-        status += (
-            f"\nFDN {float(info['fdn_ms']) / 1000.0:.2f} s"
-            f"  T60 {float(info.get('t60_s') or 0.0):.2f} s"
-        )
-    lim_n = int(info.get("limiter_samples") or 0)
-    lim_line = limiter_message(float(info.get("limiter_db") or 0.0), lim_n)
-    if lim_line:
-        status = lim_line + "\n" + status
-    colour = info.get("colour")
-    if colour is None:
-        # Fallback: analyse rendered wet mix (post dry) as last resort
-        colour = colour_from_stereo(Lch, Rch, sr, ref_mode=str(body.get("ref_mode") or "peak"))
-
-    status += (
-        f"\nColour: 1/3-octave ({len(colour.get('centres_hz', []))} bands)  "
-        f"Surfaces: ASSUMED absorb×EQ + path-length jitter "
-        f"(seed={p['diffusion_seed']} λ_ref={p['lambda_ref']} m)"
-    )
-    if info.get("colour_notice"):
-        status += "\n" + str(info.get("colour_notice"))
-    payload = {
-        "ok": True,
-        "preview_url": f"/api/render?path={preview}",
-        "out_path": str(out),
-        "status": status,
-        "geometry": geometry_payload(p),
-        "duration_s": meta["duration_s"],
-        "limiter_db": float(info.get("limiter_db") or 0.0),
-        "limiter_samples": int(info.get("limiter_samples") or 0),
-        "colour": colour,
-        "surfaces": surfaces_payload(p.get("surfaces") or default_surfaces()),
-    }
-    return _attach_warnings(payload, body)
+    return _render_status(out, info, meta, sr, p, body, Lch, Rch, preview)
 
 
 @app.post("/api/render")
