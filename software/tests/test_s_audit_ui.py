@@ -288,7 +288,6 @@ def test_a4_binaural_hides_dead_rows(audit_server):
                   return {
                     colour: hid('colourModeRow'),
                     align: hid('alignHorizontalRow'),
-                    link: hid('linkModeRow'),
                     centre: hid('centreMicChoice'),
                     side: hid('sideMicChoice'),
                     ccol: !c || c.hidden === true
@@ -300,7 +299,7 @@ def test_a4_binaural_hides_dead_rows(audit_server):
         pg.wait_for_timeout(200)
         shown = flags()
         assert shown == {
-            "colour": False, "align": False, "link": False,
+            "colour": False, "align": False,
             "centre": False, "side": False, "ccol": False,
         }, shown
         n = len(posts)
@@ -308,7 +307,7 @@ def test_a4_binaural_hides_dead_rows(audit_server):
         pg.wait_for_timeout(400)
         hidden = flags()
         assert hidden == {
-            "colour": True, "align": True, "link": True,
+            "colour": True, "align": True,
             "centre": True, "side": True, "ccol": True,
         }, hidden
         meta = pg.locator("#micHeroMeta").inner_text()

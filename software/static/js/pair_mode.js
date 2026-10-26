@@ -48,6 +48,8 @@
     state.family_r = state.family_l;
     state.polar_r = state.polar_l;
     state.mic_preset_r = state.mic_preset_l;
+    state.link_mode = "mirror";
+    state.link_lr_yaw = true;
     var yl = Number(state.yaw_l_deg);
     if (isFinite(yl)) state.yaw_r_deg = -yl;
   }
@@ -126,7 +128,25 @@
     }
     state.pair_mode = "independent";
     state.stereo_mic = false;
+    state.link_mode = "split";
+    state.link_lr_yaw = false;
     return { stash: stash || null, posts: 1 };
+  }
+
+  /* Saved Mirror/Linked/Split values. Linked is gone. Yaws and gains stay. */
+  function mapSaved(state) {
+    if (!state) return state;
+    var mode = state.link_mode;
+    if (mode === "split" || mode === "independent") {
+      state.link_mode = "split";
+      state.link_lr_yaw = false;
+      if (state.pair_mode !== "ms") state.pair_mode = "independent";
+      return state;
+    }
+    state.link_mode = "mirror";
+    state.link_lr_yaw = true;
+    if (state.pair_mode !== "ms") state.pair_mode = "stereo";
+    return state;
   }
 
   /* Moving one side copies gain, pattern, and the mirrored aim while Stereo is on. */
@@ -157,6 +177,7 @@
     applyGang: applyGang,
     applyMs: applyMs,
     step: step,
-    follow: follow
+    follow: follow,
+    mapSaved: mapSaved
   };
 });

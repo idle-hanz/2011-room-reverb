@@ -529,6 +529,8 @@
     }
     if (!msBuilt && id === "mono_c") {
       state.pair_mode = "independent";
+      state.link_mode = "split";
+      state.link_lr_yaw = false;
       state.mic_route_c = "centre";
       state.mute_l = true;
       state.mute_r = true;
@@ -1328,13 +1330,8 @@
         var out = RRPair.step(state, mode, pairStash, rrMsBuilt("ms_b"));
         pairStash = out.stash;
         if (!out.posts) return;
-        if (mode === "stereo") {
-          if (splitHold == null) splitHold = sideSplitUser;
-          sideSplitUser = false;
-        } else if (mode === "independent" && splitHold != null) {
-          sideSplitUser = splitHold;
-          splitHold = null;
-        }
+        if (mode === "stereo") sideSplitUser = false;
+        else if (mode === "independent") sideSplitUser = true;
         state.desk_touched = true;
         syncUI();
       });
@@ -1356,19 +1353,6 @@
         if (state.ms_s === state.ms_m) state.ms_m = state.ms_s === "c" ? "l" : "c";
         aimCoincidentS();
         state.desk_touched = true;
-        syncUI();
-      });
-    });
-    document.querySelectorAll("[data-link]").forEach(function (btn) {
-      btn.addEventListener("click", function () {
-        var mode = btn.getAttribute("data-link");
-        if (mode !== "mirror" && mode !== "linked" && mode !== "split" && mode !== "independent") return;
-        if (mode === "independent") mode = "split";
-        state.link_mode = mode;
-        state.link_lr_yaw = mode === "mirror";
-        if (mode === "mirror") state.yaw_r_deg = -Number(state.yaw_l_deg || 0);
-        /* Split opens R's own preset, pattern, HPF and yaw. Mirror and Linked close that. */
-        sideSplitUser = mode === "split";
         syncUI();
       });
     });
@@ -4157,6 +4141,7 @@
     Object.keys(data).forEach(function (k) { state[k] = data[k]; });
     if (!state.room_shape) state.room_shape = "box";
     if (state.mirror_lr == null) state.mirror_lr = true;
+    if (window.RRPair && RRPair.mapSaved) RRPair.mapSaved(state);
     migrateRoomState(state);
     if (state.surfaces && colourSurfaces && colourSurfaces.setSurfaces) {
       colourSurfaces.setSurfaces(state.surfaces);

@@ -428,7 +428,7 @@ test("the page draws box through RoomDraw and splay through the polygon", () => 
   assert.match(page, /room_draw\.js\?v=5/);
   assert.match(page, /room_3d\.js\?v=23/);
   assert.match(page, /image_views\.js\?v=20/);
-  assert.match(page, /app\.js\?v=90/);
+  assert.match(page, /app\.js\?v=91/);
   assert.match(room3d, /RoomDraw\.polyFaces/);
   assert.match(imageViews, /imageRooms\(polyShape\(\)/);
   assert.match(app, /imageView\.tapCount\(\)/);

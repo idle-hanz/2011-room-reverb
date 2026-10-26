@@ -81,6 +81,8 @@ test("Stereo gangs aim, pattern, and gain and leaves the routes", () => {
   const out = Pair.step(s, "stereo", null, MS.build("ms_b"));
   assert.equal(out.posts, 1);
   assert.equal(s.pair_mode, "stereo");
+  assert.equal(s.link_mode, "mirror");
+  assert.equal(s.link_lr_yaw, true);
   assert.equal(s.yaw_r_deg, 30);
   assert.equal(s.pattern_r, "cardioid");
   assert.equal(s.family_r, s.family_l);
@@ -105,6 +107,8 @@ test("Independent does not gang and does not rewrite routes", () => {
   const out = Pair.step(s, "independent", null, MS.build("ms_b"));
   assert.equal(out.posts, 1);
   assert.equal(s.pair_mode, "independent");
+  assert.equal(s.link_mode, "split");
+  assert.equal(s.link_lr_yaw, false);
   assert.equal(s.mic_route_l, "l");
   assert.equal(s.fader_r, 0.2);
   assert.equal(s.yaw_r_deg, 10);
@@ -154,4 +158,35 @@ test("M/S posts the ms_b weights with the side at 90, and Stereo restores the ro
   assert.equal(s.mute_r, false);
   assert.equal(s.yaw_r_deg, 45);
   assert.equal(weights(Object.assign({}, s, { third_mic: "centre" }))[2], 0.5);
+});
+
+test("saved link modes map onto Stereo and Independent and keep the yaws", () => {
+  const linked = xy();
+  linked.link_mode = "linked";
+  linked.pair_mode = "independent";
+  linked.yaw_l_deg = -20;
+  linked.yaw_r_deg = 40;
+  linked.fader_r = 0.2;
+  Pair.mapSaved(linked);
+  assert.equal(linked.link_mode, "mirror");
+  assert.equal(linked.pair_mode, "stereo");
+  assert.equal(linked.yaw_l_deg, -20);
+  assert.equal(linked.yaw_r_deg, 40);
+  assert.equal(linked.fader_r, 0.2);
+  const split = xy();
+  split.link_mode = "independent";
+  split.pair_mode = "stereo";
+  split.yaw_r_deg = 10;
+  Pair.mapSaved(split);
+  assert.equal(split.link_mode, "split");
+  assert.equal(split.pair_mode, "independent");
+  assert.equal(split.yaw_r_deg, 10);
+  const ms = xy();
+  ms.pair_mode = "ms";
+  ms.link_mode = "linked";
+  ms.yaw_l_deg = 90;
+  Pair.mapSaved(ms);
+  assert.equal(ms.pair_mode, "ms");
+  assert.equal(ms.link_mode, "mirror");
+  assert.equal(ms.yaw_l_deg, 90);
 });
