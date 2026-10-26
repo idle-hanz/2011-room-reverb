@@ -105,7 +105,9 @@ function cards(nodes) {
 
 test("box default is mirrored and the switch splits the cards", () => {
   const { cs, state, nodes } = boot();
-  assert.match(app, /mirror_lr:\s*true/);
+  assert.match(app, /mirror_lr:\s*S\("mirror_lr"\)/);
+  const table = JSON.parse(fs.readFileSync(path.join(here, "../static/settings.json"), "utf8"));
+  assert.equal(table.by_name.mirror_lr.page, true);
   assert.equal(nodes.mirrorLrRow.hidden, false);
   assert.equal(nodes.mirrorLr.checked, true);
   const linked = cards(nodes);

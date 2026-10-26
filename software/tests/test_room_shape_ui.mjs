@@ -45,7 +45,9 @@ test("the picker posts room_shape", () => {
   assert.match(row, />Live room</);
   assert.match(row, />Gable</);
   assert.match(row, />Hex</);
-  assert.match(app, /room_shape:\s*"box"/);
+  assert.match(app, /room_shape:\s*S\("room_shape"\)/);
+  const table = JSON.parse(readFileSync(join(here, "../static/settings.json"), "utf8"));
+  assert.equal(table.by_name.room_shape.page, "box");
   assert.match(app, /RoomShape\.normalize\(picked\)/);
   assert.match(app, /mix\.room_shape = String\(state\.room_shape\)/);
   const play = liveRequestBodyFrom({ room_shape: "splay" });

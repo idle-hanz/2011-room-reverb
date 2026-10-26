@@ -4110,6 +4110,28 @@
       "path": "both"
     },
     {
+      "name": "surf_suggestions",
+      "default": [],
+      "range": null,
+      "unit": "",
+      "tab": "Surfaces",
+      "route": [
+        "/api/room_result"
+      ],
+      "path": "neither"
+    },
+    {
+      "name": "surf_rendered_t20",
+      "default": null,
+      "range": null,
+      "unit": "",
+      "tab": "Surfaces",
+      "route": [
+        "/api/room_result"
+      ],
+      "path": "neither"
+    },
+    {
       "name": "surf_directional",
       "default": false,
       "range": null,
@@ -8938,6 +8960,28 @@
         "/api/room_result"
       ],
       "path": "both"
+    },
+    "surf_suggestions": {
+      "name": "surf_suggestions",
+      "default": [],
+      "range": null,
+      "unit": "",
+      "tab": "Surfaces",
+      "route": [
+        "/api/room_result"
+      ],
+      "path": "neither"
+    },
+    "surf_rendered_t20": {
+      "name": "surf_rendered_t20",
+      "default": null,
+      "range": null,
+      "unit": "",
+      "tab": "Surfaces",
+      "route": [
+        "/api/room_result"
+      ],
+      "path": "neither"
     },
     "surf_directional": {
       "name": "surf_directional",

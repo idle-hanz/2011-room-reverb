@@ -326,6 +326,9 @@ def _rows():
     add(R("surfaces_mute", {"A": False, "B": False, "C": False, "D": False, "E": False, "F": False}, tab="Surfaces"))
     add(R("surf_treatment", [], tab="Surfaces"))
     add(R("surf_cal", None, tab="Surfaces"))
+    # Suggestions stay on the page. The room-result post copies state, so the key can be present.
+    add(R("surf_suggestions", [], tab="Surfaces", route="room", path="neither"))
+    add(R("surf_rendered_t20", None, tab="Surfaces", route="room", path="neither"))
     add(R("surf_directional", False, tab="Surfaces"))
     add(R("surf_amount", 100.0, tab="Surfaces", lo=0, hi=100))
     add(R("colourRefMode", "peak", tab="Surfaces", choices=["peak", "rms"], route="colour", path="neither"))
