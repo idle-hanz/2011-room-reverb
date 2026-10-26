@@ -699,13 +699,6 @@ def test_a12_visible_controls_post_or_are_ui_only(audit_server):
               for (let i = 0; i < controls.length; i++) {
                 let el = resolve(controls[i]);
                 if (!el) continue;
-                if (el.id === 'mcx') {
-                  const parity = document.getElementById('reaktor_parity');
-                  if (parity && parity.checked) {
-                    parity.click();
-                    prev = await settle();
-                  }
-                }
                 const tag = el.tagName;
                 const type = (el.type || '').toLowerCase();
                 if (el.classList.contains('desk-read')) {

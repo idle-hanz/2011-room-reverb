@@ -104,7 +104,7 @@ PIN_TABLE = {
     "settings_boot.js": 1,
     "rr_state.js": 3,
     "rr_mic.js": 1,
-    "rr_mix.js": 4,
+    "rr_mix.js": 5,
     "rr_room.js": 1,
     "rr_source.js": 1,
     "rr_space.js": 2,

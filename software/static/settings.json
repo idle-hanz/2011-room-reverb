@@ -1980,40 +1980,6 @@
       "in_defaults": true
     },
     {
-      "name": "binaural_K",
-      "default": 6,
-      "range": null,
-      "unit": "",
-      "tab": "Mic",
-      "route": [
-        "/api/params/live",
-        "/api/render",
-        "/api/params/images",
-        "/api/params/phys",
-        "/api/display/polar",
-        "/api/room/result"
-      ],
-      "path": "both",
-      "in_defaults": true
-    },
-    {
-      "name": "binaural_symmetric",
-      "default": true,
-      "range": null,
-      "unit": "",
-      "tab": "Mic",
-      "route": [
-        "/api/params/live",
-        "/api/render",
-        "/api/params/images",
-        "/api/params/phys",
-        "/api/display/polar",
-        "/api/room/result"
-      ],
-      "path": "both",
-      "in_defaults": true
-    },
-    {
       "name": "binaural_image_set",
       "default": "binaural_rear32",
       "range": null,
@@ -2029,45 +1995,6 @@
       ],
       "path": "both",
       "in_defaults": true
-    },
-    {
-      "name": "binaural_itd_mode",
-      "default": "table",
-      "range": [
-        "table",
-        "woodworth",
-        "geometry"
-      ],
-      "unit": "",
-      "tab": "Mic",
-      "route": [
-        "/api/params/live",
-        "/api/render",
-        "/api/params/images",
-        "/api/params/phys",
-        "/api/display/polar",
-        "/api/room/result"
-      ],
-      "path": "both",
-      "in_defaults": true
-    },
-    {
-      "name": "binaural_eq",
-      "default": "diffuse_field",
-      "range": null,
-      "unit": "",
-      "tab": "Mic",
-      "route": [],
-      "path": "neither"
-    },
-    {
-      "name": "binaural_headphones_note",
-      "default": true,
-      "range": null,
-      "unit": "",
-      "tab": "Mic",
-      "route": [],
-      "path": "neither"
     },
     {
       "name": "ear_spacing_m",
@@ -3797,23 +3724,6 @@
       "in_defaults": true
     },
     {
-      "name": "reaktor_parity",
-      "default": false,
-      "range": null,
-      "unit": "",
-      "tab": "Advanced",
-      "route": [
-        "/api/params/live",
-        "/api/render",
-        "/api/params/images",
-        "/api/params/phys",
-        "/api/display/polar",
-        "/api/room/result"
-      ],
-      "path": "neither",
-      "in_defaults": true
-    },
-    {
       "name": "mirror_null",
       "default": false,
       "range": null,
@@ -3921,22 +3831,6 @@
       ],
       "path": "both",
       "in_defaults": true
-    },
-    {
-      "name": "air_lp",
-      "default": 0.0,
-      "range": null,
-      "unit": "",
-      "tab": "Advanced",
-      "route": [
-        "/api/params/live",
-        "/api/render",
-        "/api/params/images",
-        "/api/params/phys",
-        "/api/display/polar",
-        "/api/room/result"
-      ],
-      "path": "both"
     },
     {
       "name": "diffusion_master",
@@ -6831,40 +6725,6 @@
       "path": "both",
       "in_defaults": true
     },
-    "binaural_K": {
-      "name": "binaural_K",
-      "default": 6,
-      "range": null,
-      "unit": "",
-      "tab": "Mic",
-      "route": [
-        "/api/params/live",
-        "/api/render",
-        "/api/params/images",
-        "/api/params/phys",
-        "/api/display/polar",
-        "/api/room/result"
-      ],
-      "path": "both",
-      "in_defaults": true
-    },
-    "binaural_symmetric": {
-      "name": "binaural_symmetric",
-      "default": true,
-      "range": null,
-      "unit": "",
-      "tab": "Mic",
-      "route": [
-        "/api/params/live",
-        "/api/render",
-        "/api/params/images",
-        "/api/params/phys",
-        "/api/display/polar",
-        "/api/room/result"
-      ],
-      "path": "both",
-      "in_defaults": true
-    },
     "binaural_image_set": {
       "name": "binaural_image_set",
       "default": "binaural_rear32",
@@ -6881,45 +6741,6 @@
       ],
       "path": "both",
       "in_defaults": true
-    },
-    "binaural_itd_mode": {
-      "name": "binaural_itd_mode",
-      "default": "table",
-      "range": [
-        "table",
-        "woodworth",
-        "geometry"
-      ],
-      "unit": "",
-      "tab": "Mic",
-      "route": [
-        "/api/params/live",
-        "/api/render",
-        "/api/params/images",
-        "/api/params/phys",
-        "/api/display/polar",
-        "/api/room/result"
-      ],
-      "path": "both",
-      "in_defaults": true
-    },
-    "binaural_eq": {
-      "name": "binaural_eq",
-      "default": "diffuse_field",
-      "range": null,
-      "unit": "",
-      "tab": "Mic",
-      "route": [],
-      "path": "neither"
-    },
-    "binaural_headphones_note": {
-      "name": "binaural_headphones_note",
-      "default": true,
-      "range": null,
-      "unit": "",
-      "tab": "Mic",
-      "route": [],
-      "path": "neither"
     },
     "ear_spacing_m": {
       "name": "ear_spacing_m",
@@ -8648,23 +8469,6 @@
       "path": "both",
       "in_defaults": true
     },
-    "reaktor_parity": {
-      "name": "reaktor_parity",
-      "default": false,
-      "range": null,
-      "unit": "",
-      "tab": "Advanced",
-      "route": [
-        "/api/params/live",
-        "/api/render",
-        "/api/params/images",
-        "/api/params/phys",
-        "/api/display/polar",
-        "/api/room/result"
-      ],
-      "path": "neither",
-      "in_defaults": true
-    },
     "mirror_null": {
       "name": "mirror_null",
       "default": false,
@@ -8773,22 +8577,6 @@
       ],
       "path": "both",
       "in_defaults": true
-    },
-    "air_lp": {
-      "name": "air_lp",
-      "default": 0.0,
-      "range": null,
-      "unit": "",
-      "tab": "Advanced",
-      "route": [
-        "/api/params/live",
-        "/api/render",
-        "/api/params/images",
-        "/api/params/phys",
-        "/api/display/polar",
-        "/api/room/result"
-      ],
-      "path": "both"
     },
     "diffusion_master": {
       "name": "diffusion_master",

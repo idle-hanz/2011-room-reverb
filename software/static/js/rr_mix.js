@@ -328,8 +328,6 @@ function heardMix(src) {
   var o = Object.assign({}, src);
   /* Client flag for the MS (2 mics) spare strip. Not a server key. */
   delete o.spare_off;
-  delete o.reaktor_parity;
-  delete o.air_lp;
   var buses = ["direct", "fdn", "early"];
   var i;
   o.direct_wet = stripLinear(src, "direct");

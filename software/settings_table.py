@@ -211,12 +211,7 @@ def _rows():
     add(R("binaural_preset", "SADIE2_KU100", tab="Mic", choices=_HEADS, in_defaults=True))
     add(R("binaural_tail_mode", "diffuse_ic", tab="Mic", in_defaults=True))
     add(R("binaural_level_ref", "head_centre", tab="Mic", in_defaults=True))
-    add(R("binaural_K", 6, tab="Mic", in_defaults=True))
-    add(R("binaural_symmetric", True, tab="Mic", in_defaults=True))
     add(R("binaural_image_set", "binaural_rear32", tab="Mic", in_defaults=True))
-    add(R("binaural_itd_mode", "table", tab="Mic", choices=["table", "woodworth", "geometry"], in_defaults=True))
-    add(R("binaural_eq", "diffuse_field", tab="Mic", route="none", path="neither"))
-    add(R("binaural_headphones_note", True, tab="Mic", route="none", path="neither"))
     add(R("ear_spacing_m", 0.18, unit="m", tab="Mic", route="none", path="neither"))
 
     # Per-capsule room spots. The post copies them onto mic_x/y/z when Place is Room.
@@ -306,7 +301,6 @@ def _rows():
     add(R("sub_hp", True, tab="Mix"))
     add(R("offaxis_tail", False, tab="Mix"))
     add(R("shared_tail", False, tab="Advanced", in_defaults=True))
-    add(R("reaktor_parity", False, tab="Advanced", path="neither", in_defaults=True))
     add(R("mirror_null", False, tab="Advanced"))
     add(R("null_mode", False, tab="Advanced"))
 
@@ -315,7 +309,6 @@ def _rows():
     add(R("air_shelf", 1.0, tab="Surfaces", lo=0, hi=1))
     add(R("air_climate", "studio_20C_50RH", tab="Surfaces", choices=_CLIMATES, in_defaults=True))
     add(R("air_iso", True, tab="Advanced", in_defaults=True))
-    add(R("air_lp", 0.0, tab="Advanced", path="both"))
     add(R("diffusion_master", -0.25, tab="Surfaces", lo=-0.5, hi=0))
     add(R("diffusion_seed", 0, tab="Surfaces", lo=0, hi=None, in_defaults=True))
     add(R("lambda_ref", 0.02, unit="m", tab="Surfaces", lo=0, hi=1, in_defaults=True))
