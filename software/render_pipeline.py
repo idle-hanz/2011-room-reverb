@@ -1775,7 +1775,9 @@ def _render_core(
     ms_decode: bool = False,
     capsule_mm: float = 17.0,
     humidity: float = 0.0,
-    air_lp: float = 0.25,
+    # Product air mix is off. The old 0.25 default came back when the setting
+    # key left the params dict and render() took this default.
+    air_lp: float = 0.0,
     air_shelf: float = 1.0,
     diffusion_master: float = DIFFUSION_MASTER_LIVE,
     decay_s: float = 0.0,
