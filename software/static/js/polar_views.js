@@ -13,7 +13,7 @@
     readouts: true,
     compare: true,
     arrivals: true,
-    balloon: false
+    balloon: true
   };
 
   var SWITCH_LABEL = {

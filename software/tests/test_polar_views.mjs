@@ -23,7 +23,7 @@ test("six switches live in one object", () => {
     readouts: true,
     compare: true,
     arrivals: true,
-    balloon: false,
+    balloon: true,
   });
   assert.match(page, /id="polarExtras"/);
   assert.match(desk, /RRPolarViews.paintArrivals/);
