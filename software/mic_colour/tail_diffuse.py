@@ -13,15 +13,13 @@ import math
 
 import numpy as np
 
+from engine.maths_pattern import polar_a_from_slider
 from mic_colour.model import relative_db
 from mic_colour.pattern_map import capsule_law
 from mic_colour.preset_store import get_store, resolve_preset_id
 from mic_colour.sos_fit import LAYOUTS, params_to_sos, sos_db
 
 LAYOUT = tuple(LAYOUTS[3])
-SUPER_A = 0.37
-# Hypercardioid a + (1−a)cosθ. a=0.25 gives 1 / 0.25 / −0.5 at 0° / 90° / 180°.
-HYPER_A = 0.25
 _FIT_F = np.concatenate(
     [np.geomspace(20.0, 20000.0, 240), np.linspace(20100.0, 23000.0, 12)]
 )
@@ -31,18 +29,12 @@ _CACHE: dict = {}
 
 
 def polar_a(polar: float, pattern: str | None = None) -> float:
-    """Omni a=1, cardioid 0.5, super SUPER_A. A hypercardioid name is HYPER_A.
+    """Omni a=1, cardioid 0.5, super 0.37. A hypercardioid name is 0.25.
 
-    polar 1 with no name stays SUPER_A. Same map as the desk polar slider.
+    polar 1 with no name stays supercardioid. Same map as the desk polar slider.
+    The arithmetic is maths_pattern.polar_a_from_slider.
     """
-    if pattern is not None:
-        name = str(pattern).strip().lower().replace(" ", "").replace("_", "").replace("-", "")
-        if name in ("hypercardioid", "hyper"):
-            return HYPER_A
-    d = max(0.0, min(1.0, float(polar)))
-    if d <= 0.5:
-        return 1.0 - d
-    return 0.5 - (d - 0.5) * (0.5 - SUPER_A) / 0.5
+    return polar_a_from_slider(polar, pattern)
 
 
 def diffuse_index_db(a: float) -> float:

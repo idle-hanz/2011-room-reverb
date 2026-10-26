@@ -39,7 +39,7 @@ function gainFromDb(faderDb, trimDb) {
   if (!isFinite(faderDb)) return 0;
   var db = faderDb + Number(trimDb || 0);
   if (db < -120) return 0;
-  var g = Math.pow(10, db / 20);
+  var g = window.RRDb.dbToLin(db);
   if (g < 0) g = 0;
   if (g > 16) g = 16;
   return g;
@@ -74,7 +74,7 @@ function micLinear(src, key) {
   var fader = gainFromDb(dbFromTravel(src["fader_" + key]), 0);
   var g;
   if (route === "s") {
-    g = Math.pow(10, Number(src["width_" + key] || 0) / 20) * fader;
+    g = window.RRDb.dbToLin(Number(src["width_" + key] || 0)) * fader;
   } else if (src["gain_exact_" + key] != null && isFinite(Number(src["gain_exact_" + key]))) {
     g = Number(src["gain_exact_" + key]) * fader;
   } else {

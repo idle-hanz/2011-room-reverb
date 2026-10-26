@@ -37,7 +37,7 @@
 
   function polarAmpRadius(db, outer) {
     if (db > 0) db = 0;
-    return outer * Math.pow(10, db / 20);
+    return outer * window.RRDb.dbToLin(db);
   }
 
   /* Concentric dB rings, 0/90/180 marks, and a front arrow.

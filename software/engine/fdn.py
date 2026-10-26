@@ -27,6 +27,8 @@ import sys
 import wave
 from typing import List, Optional, Sequence, Tuple
 
+from maths_db import db_to_lin
+
 try:
     import numpy as np
 except ImportError as e:  # pragma: no cover
@@ -387,7 +389,7 @@ def gain_from_db(fader_db_value: float, trim_db: float = 0.0) -> float:
     db = float(fader_db_value) + float(trim_db)
     if db < -120.0:
         return 0.0
-    return float(max(0.0, min(16.0, 10.0 ** (db / 20.0))))
+    return float(max(0.0, min(16.0, db_to_lin(db))))
 
 
 def pan_lr(pan: float) -> Tuple[float, float]:

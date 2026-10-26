@@ -22,12 +22,10 @@ Vec3 = Tuple[float, float, float]
 
 
 def look_xz(yaw_rad: float) -> Tuple[float, float]:
-    """Mic look in XZ for Prepare yaw. yaw=0 faces +Z. One convention: early_field.YAW_X_SIGN (K1)."""
-    try:
-        from early_field import YAW_X_SIGN
-    except ImportError:  # pragma: no cover
-        YAW_X_SIGN = 1.0
-    return (YAW_X_SIGN * math.sin(yaw_rad), math.cos(yaw_rad))
+    """Mic look in XZ for Prepare yaw. yaw=0 faces +Z. The sign is maths_look (K1)."""
+    from maths_look import look_vector
+    x, _y, z = look_vector(yaw_rad)
+    return (x, z)
 
 
 def dist3(a: Vec3, b: Vec3) -> float:

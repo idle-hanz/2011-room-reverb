@@ -16,11 +16,12 @@ import numpy as np
 
 import surface_colour as SC
 from air_iso import _iso_alpha_db_per_m, climate_record, rh_pct_from_slider
+from maths_bands import exact_third_centres
 
 C_AIR = 343.0
 BANDS = np.array([125, 250, 500, 1000, 2000, 4000, 8000], float)          # octave centres
-THIRD_40_8K = 1000.0 * 2.0 ** (np.arange(-14, 10) / 3.0)                    # 24 third-octaves 40 Hz-8 kHz
-THIRD_PANEL = 1000.0 * 2.0 ** (np.arange(-14, 11) / 3.0)                    # 40 Hz-10 kHz (panel x-axis)
+THIRD_40_8K = exact_third_centres(-14, 10)                                 # 24 third-octaves 40 Hz-8 kHz
+THIRD_PANEL = exact_third_centres(-14, 11)                                 # 40 Hz-10 kHz (panel x-axis)
 AX = {"x": ("A", "C"), "y": ("E", "F"), "z": ("B", "D")}
 FACES = ("A", "B", "C", "D", "E", "F")
 DEFAULT_SCATTER = 0.15                                                       # card "diffusion" fallback

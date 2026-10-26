@@ -254,7 +254,8 @@
   PolarFieldView.prototype._lookBasis = function (plane, yawRad) {
     var n = (plane && plane.normal) || [0, 1, 0];
     var yaw = Number(yawRad) || 0;
-    var look = [Math.sin(yaw), 0, Math.cos(yaw)];
+    var lookV = window.RRLook.lookVector(yaw);
+    var look = [lookV.x, lookV.y, lookV.z];
     function dot(a, b) { return a[0] * b[0] + a[1] * b[1] + a[2] * b[2]; }
     function unit(a) {
       var len = Math.hypot(a[0], a[1], a[2]);
@@ -325,7 +326,7 @@
     }
     var self = this;
     rings.forEach(function (db) {
-      var radius = 0.9 * Math.pow(10, db / 20);
+      var radius = 0.9 * window.RRDb.dbToLin(db);
       var pts = [];
       var i;
       for (i = 0; i <= 72; i++) pts.push(at(radius, (i / 72) * Math.PI * 2));
@@ -685,7 +686,7 @@
     var nTh = Math.floor(nAz / 2) + 1;
     var nPh = 48;
     function lin(dbv) {
-      var v = Math.pow(10, Number(dbv) / 20);
+      var v = window.RRDb.dbToLin(dbv);
       if (!isFinite(v) || v < 0) v = 0;
       if (v > 1) v = 1;
       return v;

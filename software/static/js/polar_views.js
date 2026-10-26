@@ -47,7 +47,8 @@
   }
 
   function linOf(db) {
-    var v = Math.pow(10, Number(db) / 20);
+    var dbApi = (typeof window !== "undefined" && window.RRDb) || globalThis.RRDb;
+    var v = dbApi.dbToLin(Number(db));
     if (!isFinite(v) || v < 0) return 0;
     return v > 1 ? 1 : v;
   }
@@ -94,19 +95,11 @@
     return x0 + t * (x1 - x0);
   }
 
-  function cornerAxis(s, size, k) {
-    if (k === 0) return s;
-    if (k === -1) return -s;
-    if (k === 1) return 2 * size - s;
-    return s;
-  }
-
   function imagePoint(source, room, n) {
-    return {
-      x: cornerAxis(source.x, room.W, n[0]),
-      y: cornerAxis(source.y, room.H, n[1]),
-      z: cornerAxis(source.z, room.L, n[2])
-    };
+    /* FIRST marks use k in −1, 0, 1. Those three match the old local axis.
+       |k| > 1 now follows maths_image, which no current mark asks for. */
+    var im = (typeof window !== "undefined" && window.RRImage) || globalThis.RRImage;
+    return im.imagePoint(source, room, n);
   }
 
   function arrivalAzimuth(mic, look, point) {

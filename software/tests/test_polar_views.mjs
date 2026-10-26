@@ -8,6 +8,7 @@ import { fileURLToPath } from "node:url";
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const require = createRequire(import.meta.url);
+require("../static/js/maths_image.js");
 const V = require("../static/js/polar_views.js");
 const page = fs.readFileSync(path.join(here, "../static/index.html"), "utf8");
 const desk = fs.readFileSync(path.join(here, "../static/js/mic_desk.js"), "utf8");

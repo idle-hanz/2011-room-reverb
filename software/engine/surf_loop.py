@@ -15,10 +15,11 @@ from typing import Callable, Dict, List, Optional, Sequence, Tuple
 import numpy as np
 
 import surf_target as ST
+from maths_bands import exact_third_centres
 
 FIT_F = np.geomspace(20.0, 20000.0, 56)
 OCT = np.array([125, 250, 500, 1000, 2000, 4000, 8000], float)
-THIRD = 1000.0 * 2.0 ** (np.arange(-10, 11) / 3.0)
+THIRD = exact_third_centres(-10, 11)
 NB = {"S1": 0, "S1P1": 1, "S1P2": 2}
 S_MIN = 0.5                    # D-SL2 (locked): floor on the scattered share s'
 CAL_CLAMP = (0.6, 1.6)         # D-SL4 (locked)

@@ -1306,9 +1306,10 @@ def cardioid_gain(theta: float, car_omni: float) -> float:
 
 
 def offaxis_shelf_gain_linear(theta: float) -> float:
+    from maths_db import db_to_lin
     t = min(abs(theta) / math.pi, 1.0)
     db = t * MIC_OFFAXIS_SHELF_DB
-    return 10.0 ** (db / 20.0)
+    return db_to_lin(db)
 
 
 # Software amplitude 1/r (Idle, 2026-10-10).
