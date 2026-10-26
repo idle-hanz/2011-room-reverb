@@ -12,7 +12,7 @@
     angle: true,
     readouts: true,
     compare: true,
-    arrivals: false,
+    arrivals: true,
     balloon: false
   };
 
