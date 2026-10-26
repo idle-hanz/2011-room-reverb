@@ -907,6 +907,26 @@
           ctx.lineWidth = bi === dbGrid.length - 1 ? 2 : 1.25;
           ctx.stroke();
         }
+        ctx.save();
+        ctx.setLineDash([uiPx(5), uiPx(4)]);
+        ctx.beginPath();
+        var nIdeal = 128;
+        var ii, thI, gI, dbI, radI;
+        for (ii = 0; ii <= nIdeal; ii++) {
+          thI = (ii / nIdeal) * Math.PI * 2;
+          gI = Math.abs(patternGain(thI - yaw, family, polar));
+          dbI = gI > 1e-6 ? (20 * Math.log(gI) / Math.LN10) : -120;
+          radI = radDb(dbI);
+          sx = cx + R * radI * Math.sin(thI);
+          sy = cy - R * radI * Math.cos(thI);
+          if (ii === 0) ctx.moveTo(sx, sy);
+          else ctx.lineTo(sx, sy);
+        }
+        ctx.closePath();
+        ctx.strokeStyle = "rgba(232,234,239,0.92)";
+        ctx.lineWidth = Math.max(1, uiPx(1.25));
+        ctx.stroke();
+        ctx.restore();
         if (opt.cap) drawnPts[opt.cap] = pts;
       } else if (grid && grid.length && grid[0] && grid[0].length) {
         var nAz = grid[0].length;

@@ -326,6 +326,64 @@
       self._meshes[key] = mesh;
       self.root.add(mesh);
     });
+    this._drawIdealOutline();
+  };
+
+  PolarFieldView.prototype._drawIdealOutline = function () {
+    if (!this.data || !this.data.measured || !this.root) return;
+    var pl = (this.useBase && this.data.base_plane) ? this.data.base_plane : this.data.plane;
+    if (!pl || !pl.origin || !pl.e1 || !pl.e2) return;
+    var st = this.getState ? (this.getState() || {}) : {};
+    var keys = [];
+    var self = this;
+    [["L", "l"], ["C", "c"], ["R", "r"]].forEach(function (row) {
+      if (self.enabled[row[0]]) keys.push(row);
+    });
+    if (!keys.length && this.enabled.sum) keys.push(["C", "c"]);
+    if (!keys.length) return;
+    var o = pl.origin;
+    var e1 = pl.e1;
+    var e2 = pl.e2;
+    var nn = pl.normal || [0, 1, 0];
+    var centres = this.data.centres_hz || [];
+    var bi = 0;
+    var i;
+    for (i = 0; i < centres.length; i++) {
+      if (Math.abs(Number(centres[i]) - 1000) < 1) bi = i;
+    }
+    var h = (bi / Math.max(1, centres.length - 1)) * (Number(this.data.stack_m) || 2.4);
+    var group = new THREE.Group();
+    keys.forEach(function (row) {
+      var fam = st["family_" + row[1]] || "cardioid";
+      var pol = st["polar_" + row[1]];
+      var pts = [];
+      var k;
+      for (k = 0; k <= 96; k++) {
+        var th = (k / 96) * Math.PI * 2;
+        var g = 1;
+        if (window.RoomMath && RoomMath.polarGain) g = Math.abs(RoomMath.polarGain(th, fam, pol));
+        else if (window.MicDesk && MicDesk.patternGain) g = Math.abs(MicDesk.patternGain(th, fam, pol));
+        var rad = 0.9 * g;
+        pts.push(new THREE.Vector3(
+          o[0] + nn[0] * h + e1[0] * rad * Math.sin(th) + e2[0] * rad * Math.cos(th),
+          o[1] + nn[1] * h + e1[1] * rad * Math.sin(th) + e2[1] * rad * Math.cos(th),
+          o[2] + nn[2] * h + e1[2] * rad * Math.sin(th) + e2[2] * rad * Math.cos(th)
+        ));
+      }
+      var geo = new THREE.BufferGeometry().setFromPoints(pts);
+      var mat = new THREE.LineDashedMaterial({
+        color: 0xe8eaef,
+        dashSize: 0.06,
+        gapSize: 0.045,
+        transparent: true,
+        opacity: 0.95
+      });
+      var line = new THREE.Line(geo, mat);
+      line.computeLineDistances();
+      group.add(line);
+    });
+    this._meshes.ideal = group;
+    this.root.add(group);
   };
 
   PolarFieldView.prototype._makeSurfaceFromVertices = function (flat, nB, nAz, color, opacity) {
