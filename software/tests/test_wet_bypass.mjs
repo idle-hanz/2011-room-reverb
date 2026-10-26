@@ -21,7 +21,7 @@ test("the mix desk has one Bypass button and no routing or host fader", () => {
   assert.doesNotMatch(page, /id="routingPanel"/);
   assert.doesNotMatch(page, /id="fader_dry"/);
   assert.match(page, /<option value="BYPASS">Bypass<\/option>/);
-  assert.match(page, /app\.js\?v=91/);
+  assert.match(page, /app\.js\?v=92/);
   assert.match(app, /applyWetBypass\(o, wetBypass\)/);
   assert.doesNotMatch(app, /stripLinear\(src, "dry"\)/);
 });

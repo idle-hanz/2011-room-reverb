@@ -19,7 +19,7 @@ test("the three Mix checks keep their names and carry the short labels", () => {
   assert.match(page, /title="Caps the tail at what a real room with these materials could produce\."/);
   assert.match(page, /title="A 15 Hz high-pass on the tail only\. The direct sound and the early reflections stay as they are\."/);
   assert.match(page, /title="Darkens the 8–16 kHz part of the tail\. The direct sound and the early reflections stay untouched\. Starts off\."/);
-  assert.match(page, /app\.js\?v=91/);
+  assert.match(page, /app\.js\?v=92/);
 });
 
 test("the physical readout no longer says off with two sources", () => {

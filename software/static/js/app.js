@@ -3151,7 +3151,6 @@
       if (hpOn) hpOn.checked = !!state.mic_hp_on;
       setM("mic_hp_hz", state.mic_hp_hz, 0);
       setM("mic_response_hz", state.mic_response_hz, 0);
-      setM("mic_proximity", state.mic_proximity, 2);
       setM("capsule_mm", state.capsule_mm != null ? state.capsule_mm : 17, 1);
       if (typeof liveMetresMic !== "undefined" && liveMetresMic) {
         liveMetresMic.textContent = RRViewPose.metresMic(state, roomSpotOf(state, "c"));
@@ -3654,7 +3653,7 @@
   bindProx("prox_l", "prox_l");
   bindProx("prox_c", "prox_c");
   bindProx("prox_r", "prox_r");
-  ["mic_hp_hz", "mic_response_hz", "mic_proximity", "capsule_mm"].forEach(function (id) {
+  ["mic_hp_hz", "mic_response_hz", "capsule_mm"].forEach(function (id) {
     var el = document.getElementById(id);
     if (!el) return;
     el.addEventListener("input", function (e) {
