@@ -38,10 +38,15 @@ test("roomSpot falls back to the shared spot, then prefers the stored one", () =
   assert.deepEqual(D.roomSpot(stored, "l"), { x: 4, y: 1.5, z: 2, yaw: 0 });
 });
 
-test("RoomMath stand pose is mcx ± space/2 at stand height and Z", () => {
+function loadRoomMath() {
   globalThis.window = globalThis;
-  const src = readFileSync(join(here, "../static/js/room_math.js"), "utf8");
-  eval(src);
+  eval(readFileSync(join(here, "../static/js/maths_look.js"), "utf8"));
+  eval(readFileSync(join(here, "../static/js/maths_pattern.js"), "utf8"));
+  eval(readFileSync(join(here, "../static/js/room_math.js"), "utf8"));
+}
+
+test("RoomMath stand pose is mcx ± space/2 at stand height and Z", () => {
+  loadRoomMath();
   const g = globalThis.RoomMath.compute({
     W: 6, H: 3, L: 8, sx: 2.6, sz: 4.75, sy: 1.2,
     mcx: 3, mcz: 1.5, my: 1.5, space: 0.17, centre_dz: 0,
@@ -71,9 +76,7 @@ test("room lobes pass the pattern into polarGain", () => {
 });
 
 test("hypercardioid is 1 / 0.25 / 0.5 and supercardioid stays 0.37", () => {
-  globalThis.window = globalThis;
-  const src = readFileSync(join(here, "../static/js/room_math.js"), "utf8");
-  eval(src);
+  loadRoomMath();
   const RM = globalThis.RoomMath;
   const near = (a, b) => assert.ok(Math.abs(a - b) < 1e-9, [a, b]);
   near(RM.polarGain(0, "cardioid", 1, "hypercardioid"), 1);

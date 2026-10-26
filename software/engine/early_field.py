@@ -88,120 +88,21 @@ MIC_CO = 1.0                   # Power Y; C/O panel value unread (not Car/Omni)
 
 Vec3 = Tuple[float, float, float]
 
-
-def image_position_centre(source: Vec3, room: Vec3, n: Tuple[int, int, int]) -> Vec3:
-    """Centre-origin (from-them paper): image = (-1)^n * source + n * roomSize per axis.
-
-    Kept for A/B; source/mic are centre-relative. Not deleted when corner became default.
-    """
-    sx, sy, sz = source
-    W, H, L = room
-    nx, ny, nz = n
-    ix = ((-1) ** nx) * sx + nx * W
-    iy = ((-1) ** ny) * sy + ny * H
-    iz = ((-1) ** nz) * sz + nz * L
-    return (ix, iy, iz)
-
-
-# --- Mirror leaves (Structure VERIFIED 2026-09-17) ---------------------------
-# Corner origin, full room size R (W/H/L). No half-W. Sub pin order as opened.
-# Named after ensemble macros; Const 2 / Const 4 / unary -x as Structure.
-
-def macro_passthrough(s: float) -> float:
-    """S / X / Y / Z — pass-through."""
-    return s
-
-
-def macro_neg(s: float) -> float:
-    """-X / -Y — unary invert (−x). VERIFIED (-X shot 353; -Y shot 319)."""
-    return -s
-
-
-def macro_2R_minus_S(s: float, R: float) -> float:
-    """2W-X / 2H-Y / 2L-Z = (2·R) − S. VERIFIED (2W-X 207/329; 2H-Y 317; 2L-Z 326)."""
-    return (2.0 * R) - s
-
-
-def macro_2R_plus_S(s: float, R: float) -> float:
-    """2W+X / 2H+Y / 2L+Z = (2·R) + S. VERIFIED (2W+X 330/352; 2H+Y 318; 2L+Z 325)."""
-    return (2.0 * R) + s
-
-
-def macro_S_minus_2R(s: float, R: float) -> float:
-    """-2H+Y / -2L+Z = S − (2·R). VERIFIED (321 / 324).
-
-    Same Sub pin order used for X-family -2W+X. VERIFIED shot 402: plus=SX,
-    minus=2W → X − (2·W). Matches -2H+Y / -2L+Z. Do not invent a half-W form.
-    """
-    return s - (2.0 * R)
-
-
-def macro_4L_minus_Z(z: float, L: float) -> float:
-    """4L-Z = (4·L) − Z (Const 4). VERIFIED (328)."""
-    return (4.0 * L) - z
-
-
-def corner_axis_from_macro(s: float, R: float, k: int) -> float:
-    """Map image index k → VERIFIED named-macro algebra on one axis.
-
-    k: 0→S, -1→-S, 1→2R-S, 2→2R+S, -2→S-(2R)  [= -2R+S]
-    Full R (never half-W). Densеr |k|>2 = PROPOSAL extension only.
-    """
-    if k == 0:
-        return macro_passthrough(s)
-    if k == -1:
-        return macro_neg(s)
-    if k == 1:
-        return macro_2R_minus_S(s, R)
-    if k == 2:
-        return macro_2R_plus_S(s, R)
-    if k == -2:
-        return macro_S_minus_2R(s, R)
-    # Extension for denser grids (PROPOSAL — not from macros):
-    if k % 2 == 0:
-        return k * R + s
-    return k * R + (R - s) if k > 0 else k * R - s
-
-
-def image_position_corner(
-    source: Vec3,
-    room: Vec3,
-    n: Tuple[int, int, int],
-    *,
-    z_face_4l: bool = False,
-) -> Vec3:
-    """Corner-origin positions via VERIFIED mirror leaves (default live path).
-
-    Prepare MCX=W×0.5 implies corner at 0. Live-32 nz=+2 is 2L+Z (435).
-    n==(0,0,2) → 4L-Z only when z_face_4l (macro exists, not in live 32).
-    """
-    sx, sy, sz = source
-    W, H, L = room
-    nx, ny, nz = n
-    ix = corner_axis_from_macro(sx, W, nx)
-    iy = corner_axis_from_macro(sy, H, ny)
-    if z_face_4l and n == (0, 0, 2):
-        iz = macro_4L_minus_Z(sz, L)
-    else:
-        iz = corner_axis_from_macro(sz, L, nz)
-    return (ix, iy, iz)
-
-
-def image_position(
-    source: Vec3,
-    room: Vec3,
-    n: Tuple[int, int, int],
-    *,
-    origin: str = "corner",
-    z_face_4l: bool = False,
-) -> Vec3:
-    """Dispatch image position by origin. Default **corner** (see image_position_corner)."""
-    o = origin.strip().lower()
-    if o == "corner":
-        return image_position_corner(source, room, n, z_face_4l=z_face_4l)
-    if o == "centre" or o == "center":
-        return image_position_centre(source, room, n)
-    raise ValueError(f"origin must be 'corner' or 'centre', got {origin!r}")
+# Shoebox images live in maths_image.py. Corner origin is the live path.
+# The VERIFIED macro notes (shots 207, 317–330, 352, 353, 402, 435) moved with
+# the functions. Names stay here so `from early_field import image_position` works.
+from maths_image import (  # noqa: E402
+    image_position_centre,
+    macro_passthrough,
+    macro_neg,
+    macro_2R_minus_S,
+    macro_2R_plus_S,
+    macro_S_minus_2R,
+    macro_4L_minus_Z,
+    corner_axis_from_macro,
+    image_position_corner,
+    image_position,
+)
 
 
 def polarity(n: Tuple[int, int, int]) -> int:
@@ -888,8 +789,13 @@ def direct_field_from_params(p: dict) -> PrepareResult:
 #   K1 fix (Idle, 28 Sep 2026): the old convention was YAW_X_SIGN = −1, which aimed
 #   every L-negative/R-positive preset INWARD (crossed capsules). Stored yaw numbers
 #   (presets, saves) are unchanged; only this one sign flipped. JS mirror:
-#   RoomMath.YAW_X_SIGN (static/js/room_math.js). Keep both equal.
+#   RRLook and RoomMath.YAW_X_SIGN (static/js). Keep them equal.
+#   The formula is maths_look.look_vector. This literal stays so the K1 file
+#   probe can read ^YAW_X_SIGN = 1.0 on this line.
+from maths_look import YAW_X_SIGN as _MATHS_YAW_X_SIGN, look_vector  # noqa: E402
 YAW_X_SIGN = 1.0
+if YAW_X_SIGN != _MATHS_YAW_X_SIGN:
+    raise RuntimeError("YAW_X_SIGN drifted from maths_look")
 # (Superseded note, kept for history: "Idle Hanz 'facing each other' / MS inward =
 #  L −90°, R +90°" described the old −1 convention. Locked decision K1 = outward.)
 PATTERN_OMNI = "omni"
@@ -899,9 +805,9 @@ PATTERN_HYPER = "hypercardioid"
 PATTERN_FIG8 = "fig8"
 PATTERN_NAMES = (PATTERN_OMNI, PATTERN_CARDIOID, PATTERN_SUPER, PATTERN_HYPER, PATTERN_FIG8)
 # First-order supercardioid a + (1−a)cosθ. ASSUMED textbook 0.37 (not Structure OCR).
-SUPER_A = 0.37
 # Hypercardioid a + (1−a)cosθ. a=0.25 gives 1 / 0.25 / −0.5 at 0° / 90° / 180°.
-HYPER_A = 0.25
+# Slider map and a + (1−a) cos θ live in maths_pattern. Names stay for pattern_gain.
+from maths_pattern import SUPER_A, HYPER_A, polar_a_from_slider, first_order_gain  # noqa: E402
 CENTRE_DZ_MAX_M = 0.20  # Mic-desk centre setback; ASSUMED UI, not Prepare
 
 
@@ -920,27 +826,6 @@ def normalize_pattern(pattern: Optional[str], default: str = PATTERN_CARDIOID) -
     if p in ("cardioid", "cardio", "car", "1", "subcardioid"):
         return PATTERN_CARDIOID
     return default
-
-
-def polar_a_from_slider(polar: float, pattern: Optional[str] = None) -> float:
-    """Map Omni(0) → Cardioid(0.5) → Super(1) onto first-order a.
-
-    a=1 omni, a=0.5 cardioid, a=SUPER_A supercardioid. ASSUMED continuum.
-    A hypercardioid name is HYPER_A. polar 1 with no name stays SUPER_A.
-    """
-    if pattern is not None and normalize_pattern(pattern) == PATTERN_HYPER:
-        return HYPER_A
-    d = max(0.0, min(1.0, float(polar)))
-    if d <= 0.5:
-        return 1.0 - d
-    return 0.5 - (d - 0.5) * (0.5 - SUPER_A) / 0.5
-
-
-def first_order_gain(theta: float, a: float, *, signed: bool = True) -> float:
-    g = float(a) + (1.0 - float(a)) * math.cos(theta)
-    if not signed:
-        return abs(g)
-    return g
 
 
 def family_from_pattern(pattern: str) -> str:
@@ -1388,11 +1273,6 @@ def arrival_cos_xz(from_mic: Vec3, to_image: Vec3, yaw_rad: float) -> float:
     return max(-1.0, min(1.0, rz / hyp))
 
 
-def look_vector(yaw_rad: float) -> Vec3:
-    """Horizontal aim. Yaw 0 looks toward +Z: (YAW_X_SIGN·sin yaw, 0, cos yaw). No tilt."""
-    return (YAW_X_SIGN * math.sin(yaw_rad), 0.0, math.cos(yaw_rad))
-
-
 def arrival_cos_ray(from_mic: Vec3, to_image: Vec3, yaw_rad: float) -> float:
     """cosθ = clamp(look · û, −1, 1). Image on the capsule is on-axis (1).
 
@@ -1431,17 +1311,13 @@ def offaxis_shelf_gain_linear(theta: float) -> float:
     return 10.0 ** (db / 20.0)
 
 
-def geometric_level(distance: float) -> float:
-    """Software amplitude 1/r (Idle, 2026-10-10).
-
-    The Structure Air Abs graph is still 1/r² (shot 256: Dis×Dis then 1/x).
-    Idle chose 1/r for the whole software, Play and Render: AGC balance,
-    close mics too loud, and the physical pressure law (about 6 dB per
-    doubling). Distances 1/x stays 1/340 (delay), not this gain.
-    """
-    if distance <= 1e-9:
-        return 0.0
-    return 1.0 / distance
+# Software amplitude 1/r (Idle, 2026-10-10).
+# The Structure Air Abs graph is still 1/r² (shot 256: Dis×Dis then 1/x).
+# Idle chose 1/r for the whole software, Play and Render: AGC balance,
+# close mics too loud, and the physical pressure law (about 6 dB per
+# doubling). Distances 1/x stays 1/340 (delay), not this gain.
+# The function is maths_distance.geometric_level.
+from maths_distance import geometric_level  # noqa: E402
 
 
 def axial_mode_hz(c: float, dim_m: float) -> float:

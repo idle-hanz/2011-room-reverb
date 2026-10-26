@@ -3,25 +3,17 @@ window.RoomMath = (() => {
   const clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
   const maxSpace = (W, mcx) => Math.max(0, 2 * Math.min(mcx, W - mcx));
   const CENTRE_DZ_MAX = 0.20;
-  const SUPER_A = 0.37;
-  const HYPER_A = 0.25;
 
   function isHyper(pattern) {
-    const p = String(pattern || "").toLowerCase().replace(/[\s_-]/g, "");
-    return p === "hypercardioid" || p === "hyper";
+    return window.RRPattern.isHyper(pattern);
   }
 
   function polarA(family, polar, pattern) {
-    if (String(family || "cardioid") === "bi") return 0;
-    if (isHyper(pattern)) return HYPER_A;
-    const d = clamp(Number(polar) || 0, 0, 1);
-    if (d <= 0.5) return 1 - d;
-    return 0.5 - (d - 0.5) * (0.5 - SUPER_A) / 0.5;
+    return window.RRPattern.polarA(family, polar, pattern);
   }
 
   function polarGain(theta, family, polar, pattern) {
-    const a = polarA(family, polar, pattern);
-    return a + (1 - a) * Math.cos(theta);
+    return window.RRPattern.polarGain(theta, family, polar, pattern);
   }
 
   function polarLabel(family, polar, pattern) {
@@ -125,11 +117,13 @@ window.RoomMath = (() => {
   }
 
   /* K1 (28 Sep 2026): one yaw convention. +yaw aims toward +X (screen right).
-     Must equal early_field.YAW_X_SIGN in Python. Was -1 (crossed capsules). */
+     Must equal early_field.YAW_X_SIGN in Python. Was -1 (crossed capsules).
+     The sin/cos formula is RRLook. This literal stays so the K1 file probe
+     can read YAW_X_SIGN = 1 in this file. */
   const YAW_X_SIGN = 1;
 
   function lookFromYaw(yawRad) {
-    return { x: YAW_X_SIGN * Math.sin(yawRad), z: Math.cos(yawRad) };
+    return window.RRLook.lookFromYaw(yawRad);
   }
 
   function compute(state) {
