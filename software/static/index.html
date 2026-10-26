@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>2011 Room Reverb</title>
   <link rel="icon" href="/static/favicon.svg" type="image/svg+xml" />
-  <link rel="stylesheet" href="/static/css/app.css?v=38" />
+  <link rel="stylesheet" href="/static/css/app.css?v=39" />
   <link rel="stylesheet" href="/static/css/sl_room_result.css?v=2" />
   <link rel="stylesheet" href="/static/css/rr_controls.css?v=1" />
 </head>
@@ -33,6 +33,13 @@
           <span>Load</span>
         </label>
         <button type="button" class="btn primary" id="renderBtn">Render</button>
+        <div class="render-extra">
+          <label class="ctrl"><span>Minimum IR length <em>ms</em></span><input type="range" id="ir_length_ms" min="50" max="2000" step="10" value="1500" /><output id="ir_length_ms_out">1500</output></label>
+          <label class="check">
+            <input type="checkbox" id="live_drag_render" />
+            <span>Also bake an IR when I drop Src / Mic</span>
+          </label>
+        </div>
       </div>
     </header>
     <p id="backendBanner" class="backend-banner" hidden role="alert"></p>
@@ -885,13 +892,8 @@
             </label>
             <p class="hint" id="feedbackHint">Shown with the Hall snapshot. Gain/N is the 2011 uneven tail. Moving this leaves Decay.</p>
           </div>
-          <label class="ctrl"><span>Minimum IR length <em>ms</em></span><input type="range" id="ir_length_ms" min="50" max="2000" step="10" value="1500" /><output id="ir_length_ms_out">1500</output></label>
           <button type="button" class="btn" id="reaktorSnapshotBtn" hidden>2011 Reaktor snapshot</button>
           <p class="hint" id="reaktorSnapshotHint" hidden>Hall 57×34×97, source/mic from the dump, the 2011 Gain law, Humidity 400, Mic 10 kHz, live surface Dif.</p>
-          <label class="check">
-            <input type="checkbox" id="live_drag_render" />
-            <span>Also bake an IR when I drop Src / Mic</span>
-          </label>
           <label class="check" id="sharedTailRow">
             <input type="checkbox" id="shared_tail" />
             <span>Lighter CPU (shared tail)</span>
