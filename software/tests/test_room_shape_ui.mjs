@@ -5,11 +5,11 @@ import { createRequire } from "node:module";
 import { readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
+import { appSource as app } from "./app_sources.mjs";
 
 const require = createRequire(import.meta.url);
 const here = dirname(fileURLToPath(import.meta.url));
 const RS = require("../static/js/room_shape.js");
-const app = readFileSync(join(here, "../static/js/app.js"), "utf8");
 const editor = readFileSync(join(here, "../static/js/room_editor.js"), "utf8");
 const math = readFileSync(join(here, "../static/js/room_math.js"), "utf8");
 const surfaces = readFileSync(join(here, "../static/js/colour_surfaces.js"), "utf8");

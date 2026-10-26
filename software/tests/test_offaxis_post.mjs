@@ -1,12 +1,7 @@
 // The Mix live request posts offaxis_tail. The server packs 45 floats when it is on.
 import test from "node:test";
 import assert from "node:assert/strict";
-import fs from "node:fs";
-import path from "node:path";
-import { fileURLToPath } from "node:url";
-
-const HERE = path.dirname(fileURLToPath(import.meta.url));
-const app = fs.readFileSync(path.join(HERE, "../static/js/app.js"), "utf8");
+import { appSource as app } from "./app_sources.mjs";
 
 function liveRequestBodyFrom(state) {
   const start = app.indexOf("function liveRequestBody");

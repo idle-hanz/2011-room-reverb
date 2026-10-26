@@ -1,15 +1,11 @@
 // node --test test_hadamard_chip.mjs
 import test from "node:test";
 import assert from "node:assert/strict";
-import fs from "node:fs";
-import path from "node:path";
 import vm from "node:vm";
-import { fileURLToPath } from "node:url";
-
-const HERE = path.dirname(fileURLToPath(import.meta.url));
+import { appSource } from "./app_sources.mjs";
 
 function hadamardSource() {
-  const app = fs.readFileSync(path.join(HERE, "../static/js/app.js"), "utf8");
+  const app = appSource;
   const start = app.indexOf("function syncHadamardUI()");
   const end = app.indexOf("function setHadamardN(", start);
   assert.ok(start > 0 && end > start);

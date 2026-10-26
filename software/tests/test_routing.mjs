@@ -6,6 +6,7 @@ import path from "node:path";
 import vm from "node:vm";
 import { createRequire } from "node:module";
 import { fileURLToPath } from "node:url";
+import { appSource as app } from "./app_sources.mjs";
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 
@@ -186,7 +187,6 @@ test("an on array strip reaches the worklet as section 13", () => {
   assert.equal(packed[86], 1);
   const off = pushMessage({ ok: true, g: 0.5 });
   assert.equal(section(packRoom(off), 13), null);
-  const app = fs.readFileSync(path.join(HERE, "../static/js/app.js"), "utf8");
   const start = app.indexOf("function heardMix");
   const end = app.indexOf("function liveRequestBody", start);
   const body = app.slice(start, end);

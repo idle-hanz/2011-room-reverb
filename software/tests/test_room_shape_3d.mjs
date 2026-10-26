@@ -6,6 +6,7 @@ import { readFileSync } from "node:fs";
 import { spawnSync } from "node:child_process";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
+import { appSource as app } from "./app_sources.mjs";
 
 const require = createRequire(import.meta.url);
 const here = dirname(fileURLToPath(import.meta.url));
@@ -16,7 +17,6 @@ const fixture = JSON.parse(readFileSync(join(here, "fixture_box_geometry.json"),
 const room3d = readFileSync(join(software, "static/js/room_3d.js"), "utf8");
 const imageViews = readFileSync(join(software, "static/js/image_views.js"), "utf8");
 const page = readFileSync(join(software, "static/index.html"), "utf8");
-const app = readFileSync(join(software, "static/js/app.js"), "utf8");
 
 const EPS = 1e-5;
 const SRC = [2.6, 1.2, 4.0];

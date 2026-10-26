@@ -51,7 +51,11 @@ def test_b2_formula_fade_and_label():
     html = (SW / "static" / "index.html").read_text(encoding="utf-8")
     assert "Minimum IR length" in html
     assert 'id="ir_length_ms" min="50" max="2000" step="10" value="1500"' in html
-    app = (SW / "static" / "js" / "app.js").read_text(encoding="utf-8")
+    parts = [
+        "rr_state.js", "rr_mic.js", "rr_mix.js", "rr_room.js", "rr_source.js",
+        "rr_space.js", "rr_polar.js", "rr_transport.js", "rr_settings.js", "app.js",
+    ]
+    app = "\n".join((SW / "static" / "js" / name).read_text(encoding="utf-8") for name in parts)
     assert "Rendering… FDN " in app
 
 

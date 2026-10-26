@@ -4,10 +4,10 @@ import assert from "node:assert/strict";
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { appSource as app } from "./app_sources.mjs";
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const page = fs.readFileSync(path.join(here, "../static/index.html"), "utf8");
-const app = fs.readFileSync(path.join(here, "../static/js/app.js"), "utf8");
 
 test("the three Mix checks keep their names and carry the short labels", () => {
   assert.match(page, /id="phys_ceiling" checked/);

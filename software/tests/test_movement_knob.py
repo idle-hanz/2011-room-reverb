@@ -97,7 +97,11 @@ def test_knob_is_visible_and_defaults_to_zero():
     page = (SW / "static" / "index.html").read_text(encoding="utf-8")
     assert 'id="movementRow" hidden' not in page
     assert 'id="movement" min="0" max="100" step="1" value="0"' in page
-    app = (SW / "static" / "js" / "app.js").read_text(encoding="utf-8")
+    parts = [
+        "rr_state.js", "rr_mic.js", "rr_mix.js", "rr_room.js", "rr_source.js",
+        "rr_space.js", "rr_polar.js", "rr_transport.js", "rr_settings.js", "app.js",
+    ]
+    app = "\n".join((SW / "static" / "js" / name).read_text(encoding="utf-8") for name in parts)
     assert "movement: 0" in app
 
 

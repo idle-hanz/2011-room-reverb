@@ -5,11 +5,11 @@ import fs from "node:fs";
 import path from "node:path";
 import { createRequire } from "node:module";
 import { fileURLToPath } from "node:url";
+import { appSource as app } from "./app_sources.mjs";
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const require = createRequire(import.meta.url);
 const Drag = require("../static/js/drag_model.js");
-const app = fs.readFileSync(path.join(here, "../static/js/app.js"), "utf8");
 const plan = fs.readFileSync(path.join(here, "../static/js/room_editor.js"), "utf8");
 const page = fs.readFileSync(path.join(here, "../static/index.html"), "utf8");
 

@@ -5,9 +5,9 @@ import assert from "node:assert/strict";
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { appSource as app } from "./app_sources.mjs";
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
-const app = fs.readFileSync(path.join(HERE, "../static/js/app.js"), "utf8");
 const panel = fs.readFileSync(path.join(HERE, "../static/js/sl_room_result.js"), "utf8");
 const PROVED = [1, 1, 1, 0.850, 0.878, 0.870, 0.906];
 

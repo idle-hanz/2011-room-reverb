@@ -5,6 +5,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { createRequire } from "node:module";
 import { fileURLToPath } from "node:url";
+import { appSource as app } from "./app_sources.mjs";
 
 const require = createRequire(import.meta.url);
 const Pair = require("../static/js/pair_mode.js");
@@ -204,9 +205,5 @@ test("the third mic row reads None, Centre, and Room mic", () => {
   assert.match(page, /data-third="centre"[^>]*>3rd mic: Centre</);
   assert.match(page, /data-third="room"[^>]*>3rd mic: Room mic</);
   assert.doesNotMatch(page, /id="mic_proximity"/);
-  const app = fs.readFileSync(
-    path.join(path.dirname(fileURLToPath(import.meta.url)), "../static/js/app.js"),
-    "utf8"
-  );
   assert.match(app, /mic_proximity: 0\.25/);
 });
