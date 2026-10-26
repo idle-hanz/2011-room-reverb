@@ -142,10 +142,14 @@ def cascade_biquads(x: np.ndarray, stages: Sequence[Biquad]) -> np.ndarray:
     return y
 
 
+# Plaster-ish default. This exact list stays on the mean-plus-relative cascade
+# so the empty live pack stays bit-exact. Any other non-flat curve is one filter.
+_STOCK_ABSORB: Tuple[float, ...] = (0.05, 0.06, 0.08, 0.10, 0.14, 0.18, 0.22)
+
+
 def default_surface(letter: str) -> Dict[str, Any]:
     meta = SURFACE_META[letter]
-    # Mild default absorb rising with frequency (ASSUMED plaster-ish)
-    absorb = [0.05, 0.06, 0.08, 0.10, 0.14, 0.18, 0.22]
+    absorb = list(_STOCK_ABSORB)
     return {
         "letter": letter,
         "label": meta["label"],
@@ -732,6 +736,47 @@ def _absorb_to_db(alpha: float) -> float:
     return 20.0 * math.log10(refl)
 
 
+def card_absorb_kind(card: Any) -> str:
+    """mute, empty, uniform, stock, or shaped.
+
+    Stock is the plaster list. Uniform is one α on every band. Shaped is a
+    posted curve, filtered as √(1−α) per band instead of the mean.
+    """
+    if not isinstance(card, dict):
+        return "empty"
+    if card.get("muted"):
+        return "mute"
+    absorb = card.get("absorb") or []
+    if not absorb:
+        return "empty"
+    try:
+        vals = [float(x) for x in absorb]
+    except (TypeError, ValueError):
+        return "stock"
+    if len(vals) >= 2 and all(abs(v - vals[0]) <= 1e-6 for v in vals):
+        return "uniform"
+    if (
+        len(vals) == len(_STOCK_ABSORB)
+        and all(abs(vals[i] - _STOCK_ABSORB[i]) <= 1e-6 for i in range(len(vals)))
+    ):
+        return "stock"
+    return "shaped"
+
+
+def uniform_reflect_lin(card: Any) -> Optional[float]:
+    """√(1−α) when every band is the same α. None for stock, shaped, and mute.
+
+    The 0.95 cap matches the mean path. A flat card is this one number, not
+    seven overlapping peaks.
+    """
+    if card_absorb_kind(card) != "uniform":
+        return None
+    absorb = card.get("absorb") or []
+    acc = sum(float(x) for x in absorb) / float(len(absorb))
+    acc = max(0.0, min(0.95, acc))
+    return math.sqrt(max(0.0, 1.0 - acc))
+
+
 def surface_filter_stages(
     surfaces: Dict[str, Dict[str, Any]],
     letters: Sequence[str],
@@ -744,17 +789,23 @@ def surface_filter_stages(
         if not s or s.get("muted"):
             continue
         absorb = s.get("absorb") or []
-        hz_list = s.get("absorb_hz") or list(ABSORB_BAND_HZ)
-        for i, hz in enumerate(hz_list):
-            if i >= len(absorb):
-                break
-            f0 = float(hz)
-            if f0 <= 0.0 or f0 >= sr * 0.49:
-                continue
-            gdb = _absorb_to_db(float(absorb[i]))
-            if abs(gdb) < 0.05:
-                continue
-            stages.append(rbj_peaking(float(sr), f0, 0.9, gdb))
+        kind = card_absorb_kind(s)
+        if kind == "shaped":
+            stages.extend(fit_absorb_stages(absorb, float(sr)))
+        elif kind != "uniform":
+            # Stock plaster keeps the old absolute peaks. A flat card is the
+            # scalar in apply_surface_to_buffer, not seven peaks.
+            hz_list = s.get("absorb_hz") or list(ABSORB_BAND_HZ)
+            for i, hz in enumerate(hz_list):
+                if i >= len(absorb):
+                    break
+                f0 = float(hz)
+                if f0 <= 0.0 or f0 >= sr * 0.49:
+                    continue
+                gdb = _absorb_to_db(float(absorb[i]))
+                if abs(gdb) < 0.05:
+                    continue
+                stages.append(rbj_peaking(float(sr), f0, 0.9, gdb))
         eq = s.get("eq") or {}
         ls_db = float(eq.get("low_shelf_db", 0.0))
         if abs(ls_db) >= 0.05:
@@ -785,7 +836,18 @@ def apply_surface_to_buffer(
     letters: Sequence[str],
     sr: float,
 ) -> np.ndarray:
+    g = 1.0
+    if isinstance(surfaces, dict):
+        for L in letters:
+            s = surfaces.get(L)
+            if not isinstance(s, dict) or s.get("muted"):
+                continue
+            lin = uniform_reflect_lin(s)
+            if lin is not None:
+                g *= lin
     stages = surface_filter_stages(surfaces, letters, sr)
+    if g != 1.0:
+        buf = np.asarray(buf, dtype=np.float64) * float(g)
     if not stages:
         return buf
     return cascade_biquads(buf, stages)
@@ -965,6 +1027,62 @@ def fit_line_cascade(stages: Sequence[Biquad], sr: float) -> Dict[str, Any]:
     }
     _FIT_CACHE[key] = out
     return out
+
+
+def fit_absorb_stages(absorb: Sequence[float], sr: float) -> List[Biquad]:
+    """Biquads whose response is 20·log10(√(1−α)) across the absorb bands.
+
+    One shared fit for Play and Render. Flat cards do not come here. The
+    result is already float32, so the packed cascade matches this chain.
+    """
+    sr_f = float(sr)
+    try:
+        vals = tuple(round(float(x), 6) for x in absorb)
+    except (TypeError, ValueError):
+        return []
+    key = ("absorb", round(sr_f, 3), vals)
+    cached = _FIT_CACHE.get(key)
+    if cached is not None:
+        return list(cached["biquads"])
+    freq = _surf_grid(sr_f)
+    n_b = min(len(vals), len(ABSORB_BAND_HZ))
+    hz = np.asarray(ABSORB_BAND_HZ[:n_b], dtype=np.float64)
+    pts = np.array([_absorb_to_db(vals[i]) for i in range(n_b)], dtype=np.float64)
+    empty: List[Biquad] = []
+    if n_b == 0 or float(np.max(np.abs(pts))) <= SURF_IDENTITY_DB:
+        _FIT_CACHE[key] = {"biquads": empty}
+        return []
+    if n_b == 1:
+        target = np.full(freq.shape[0], float(pts[0]))
+    else:
+        target = np.interp(np.log(freq), np.log(hz), pts)
+    best = None
+    for k in (2, 3, 4, SURF_K_MAX):
+        trials = 1 if k < 4 else 8
+        err, xv = _fit_one(target, k, sr_f, freq, trials)
+        if best is None or err < best[0]:
+            best = (err, k, xv)
+        if err <= SURF_ERR_DB:
+            break
+    assert best is not None
+    fit_db, k_fit, xv = best
+    coefs = [_f32_row(row) for row in _surf_model(xv, k_fit, sr_f)]
+    kept: List[Tuple[float, float, float, float, float]] = []
+    for row in coefs:
+        db = _db_of([row], sr_f, freq)
+        if float(np.max(np.abs(db))) <= SURF_IDENTITY_DB:
+            continue
+        kept.append(row)
+    if not kept:
+        _FIT_CACHE[key] = {"biquads": empty}
+        return []
+    shipped = _db_of(kept, sr_f, freq)
+    residual = float(np.max(np.abs(shipped - target)))
+    if residual > SURF_ERR_DB and fit_db <= SURF_ERR_DB:
+        kept = list(coefs)
+    biquads = [(row[0], row[1], row[2], 1.0, row[3], row[4]) for row in kept]
+    _FIT_CACHE[key] = {"biquads": biquads}
+    return list(biquads)
 
 
 def third_octave_band_edges(f_c: float) -> Tuple[float, float]:

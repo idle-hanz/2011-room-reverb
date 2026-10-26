@@ -173,7 +173,11 @@ from surface_colour import (  # noqa: E402
     surfaces_hit_by_n,
     surfaces_payload,
     fit_line_cascade,
+    fit_absorb_stages,
+    card_absorb_kind,
     _absorb_to_db,
+    _f32_row,
+    _norm5,
     rbj_peaking,
     surface_filter_stages,
     ABSORB_BAND_HZ,
@@ -886,6 +890,10 @@ def tap_reflect_gain(n, surfaces) -> float:
         # Muted / not-soloed faces are full absorb. The 0.95 clamp would still leak.
         if card.get("muted"):
             return 0.0
+        # A shaped card's √(1−α) lives in the per-band filter. Do not also
+        # multiply the mean. Stock plaster and a flat card keep the mean.
+        if card_absorb_kind(card) == "shaped":
+            continue
         absorb = card.get("absorb") or []
         if not absorb:
             continue
@@ -911,7 +919,10 @@ def _surf_rel_stages(surfaces, letters, sr):
         if not isinstance(s, dict) or s.get("muted"):
             continue
         absorb = s.get("absorb") or []
-        if absorb:
+        kind = card_absorb_kind(s)
+        if kind == "shaped" and absorb:
+            out.extend(fit_absorb_stages(absorb, sr))
+        elif kind != "uniform" and absorb:
             m = max(0.0, min(0.95, sum(float(x) for x in absorb) / float(len(absorb))))
             hz_list = s.get("absorb_hz") or list(ABSORB_BAND_HZ)
             for j, hz in enumerate(hz_list):
@@ -928,6 +939,37 @@ def _surf_rel_stages(surfaces, letters, sr):
         flat["absorb"] = []
         out.extend(surface_filter_stages({L: flat}, [L], sr))
     return out
+
+
+def _line_is_exact(surfaces, letters) -> bool:
+    """True when no hit face is still on the stock plaster cascade.
+
+    Stock-only lines stay on fit_line_cascade, so the empty live pack does
+    not move. A flat or shaped hit is packed as the biquads themselves.
+    """
+    if not letters:
+        return False
+    for L in letters:
+        s = surfaces.get(L) if isinstance(surfaces, dict) else None
+        if card_absorb_kind(s) == "stock":
+            return False
+    return True
+
+
+def _line_surf_fit(surfaces, letters, sr):
+    """Per-line cascade. Exact when the stages already are the shipped filter."""
+    stages = _surf_rel_stages(surfaces, letters, sr)
+    if _line_is_exact(surfaces, letters) and 0 < len(stages) <= SURF_K_MAX:
+        coef = [_f32_row(_norm5(bq)) for bq in stages]
+        rows = [tuple(float(x) for x in row) for row in coef]
+        return {
+            "k": len(rows),
+            "coef": rows,
+            "residual_db": 0.0,
+            "miss": False,
+            "bypass": False,
+        }
+    return fit_line_cascade(stages, sr)
 
 
 def _scale_inject_reflect(inj, taps, surfaces, sr=None, reaktor_parity=False) -> None:
@@ -948,8 +990,8 @@ def _scale_inject_reflect(inj, taps, surfaces, sr=None, reaktor_parity=False) ->
         inj[:, i] *= g
         if not colour or g == 0.0:
             continue
-        stages = _surf_rel_stages(surfaces, surfaces_hit_by_n(taps[i % n_t].n), float(sr))
-        coef = fit_line_cascade(stages, float(sr)).get("coef") or []
+        fit = _line_surf_fit(surfaces, surfaces_hit_by_n(taps[i % n_t].n), float(sr))
+        coef = fit.get("coef") or []
         if not coef:
             continue
         rows = tuple((b0, b1, b2, 1.0, a1, a2) for b0, b1, b2, a1, a2 in coef)
@@ -990,8 +1032,7 @@ def _play_surf_cascade(surfaces, taps, taps_b, sr, n, parity):
                 rows.append((0, []))
                 continue
             letters = surfaces_hit_by_n(bank[i % n_t].n)
-            stages = _surf_rel_stages(surfaces, letters, sr)
-            fit = fit_line_cascade(stages, sr)
+            fit = _line_surf_fit(surfaces, letters, sr)
             rows.append((int(fit["k"]), list(fit["coef"])))
             db = float(fit["residual_db"])
             line = {
