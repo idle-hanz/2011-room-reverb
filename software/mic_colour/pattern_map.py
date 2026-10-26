@@ -11,7 +11,7 @@ _FAMILY = {
     "fig8": ("fig8", "bi", 0.5),
     "bidirectional": ("fig8", "bi", 0.5),
     "bidirect": ("fig8", "bi", 0.5),
-    "hypercardioid": ("supercardioid", "cardioid", 1.0),
+    "hypercardioid": ("hypercardioid", "cardioid", 1.0),
     "supercardioid": ("supercardioid", "cardioid", 1.0),
     "super": ("supercardioid", "cardioid", 1.0),
     "omni": ("omni", "cardioid", 0.0),

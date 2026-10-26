@@ -4,21 +4,29 @@ window.RoomMath = (() => {
   const maxSpace = (W, mcx) => Math.max(0, 2 * Math.min(mcx, W - mcx));
   const CENTRE_DZ_MAX = 0.20;
   const SUPER_A = 0.37;
+  const HYPER_A = 0.25;
 
-  function polarA(family, polar) {
+  function isHyper(pattern) {
+    const p = String(pattern || "").toLowerCase().replace(/[\s_-]/g, "");
+    return p === "hypercardioid" || p === "hyper";
+  }
+
+  function polarA(family, polar, pattern) {
     if (String(family || "cardioid") === "bi") return 0;
+    if (isHyper(pattern)) return HYPER_A;
     const d = clamp(Number(polar) || 0, 0, 1);
     if (d <= 0.5) return 1 - d;
     return 0.5 - (d - 0.5) * (0.5 - SUPER_A) / 0.5;
   }
 
-  function polarGain(theta, family, polar) {
-    const a = polarA(family, polar);
+  function polarGain(theta, family, polar, pattern) {
+    const a = polarA(family, polar, pattern);
     return a + (1 - a) * Math.cos(theta);
   }
 
-  function polarLabel(family, polar) {
+  function polarLabel(family, polar, pattern) {
     if (String(family || "cardioid") === "bi") return "Fig\u20118";
+    if (isHyper(pattern)) return "Hypercardioid";
     const d = clamp(Number(polar) || 0, 0, 1);
     if (d < 0.18) return "Omni";
     if (d < 0.42) return "Subcardioid";
@@ -26,18 +34,19 @@ window.RoomMath = (() => {
     return "Supercardioid";
   }
 
-  function derivePattern(family, polar) {
+  function derivePattern(family, polar, pattern) {
     if (String(family || "cardioid") === "bi") return "fig8";
     const d = clamp(Number(polar) || 0, 0, 1);
+    if (isHyper(pattern) && d > 0.9) return "hypercardioid";
     if (d < 0.18) return "omni";
     if (d > 0.75) return "supercardioid";
     return "cardioid";
   }
 
   function polarFromPattern(pattern) {
-    const p = String(pattern || "cardioid").toLowerCase();
+    const p = String(pattern || "cardioid").toLowerCase().replace(/[\s_-]/g, "");
     if (p === "omni") return 0;
-    if (p === "supercardioid") return 1;
+    if (p === "supercardioid" || p === "super" || p === "hypercardioid" || p === "hyper") return 1;
     return 0.5;
   }
 

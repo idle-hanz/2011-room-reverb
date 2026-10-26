@@ -165,6 +165,7 @@ Checked against: `HANDOVER.md` (Current pin 2026-10-18), `roadmap\BUILD_RUN_LOG.
 6. **SL7 re-scope** (2.4 / 6.16): the plan still says "one default switch", but defaults are now being switched one by one.
 7. **Virtual-speaker demo** never scored (8.4); **idlehanz.com page** two months behind (8.3); **TU-Berlin licence question** must come before either (6.12).
 8. Smaller: reflection selection U9 (1.5), CR2 standing gate (2.11), multi-pattern presets (3.5), audit Q3/Q4/Q6, listening backlog (8.8), site URL (8.9), N16 leftovers.
+9. **Hyper tail** (2026-10-26): `tail_diffuse.polar_a` still ends at SUPER_A 0.37 and ignores a hypercardioid name, and the room lobes in `room_3d.js` / `room_editor.js` still call `polarGain` without the pattern, so those two stay supercardioid at polar 1.
 
 ## 10. Suggested order after the queue (PHYSDEFAULT → BLOOM → off-axis tail colour → Colour module)
 1. **F9** closed 2026-10-19 (F9 NOTES). The +20% / −12% row was the hypot ruler, not a section-fit bias. Proper boot T20 is within about 1% from 125 Hz to 2 kHz. No sound change.

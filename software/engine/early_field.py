@@ -905,10 +905,13 @@ YAW_X_SIGN = 1.0
 PATTERN_OMNI = "omni"
 PATTERN_CARDIOID = "cardioid"
 PATTERN_SUPER = "supercardioid"
+PATTERN_HYPER = "hypercardioid"
 PATTERN_FIG8 = "fig8"
-PATTERN_NAMES = (PATTERN_OMNI, PATTERN_CARDIOID, PATTERN_SUPER, PATTERN_FIG8)
+PATTERN_NAMES = (PATTERN_OMNI, PATTERN_CARDIOID, PATTERN_SUPER, PATTERN_HYPER, PATTERN_FIG8)
 # First-order supercardioid a + (1−a)cosθ. ASSUMED textbook 0.37 (not Structure OCR).
 SUPER_A = 0.37
+# Hypercardioid a + (1−a)cosθ. a=0.25 gives 1 / 0.25 / −0.5 at 0° / 90° / 180°.
+HYPER_A = 0.25
 CENTRE_DZ_MAX_M = 0.20  # Mic-desk centre setback; ASSUMED UI, not Prepare
 
 
@@ -920,18 +923,23 @@ def normalize_pattern(pattern: Optional[str], default: str = PATTERN_CARDIOID) -
         return PATTERN_OMNI
     if p in ("fig8", "figure8", "bidirectional", "bi", "side"):
         return PATTERN_FIG8
-    if p in ("supercardioid", "super", "hypercardioid", "hyper"):
+    if p in ("hypercardioid", "hyper"):
+        return PATTERN_HYPER
+    if p in ("supercardioid", "super"):
         return PATTERN_SUPER
     if p in ("cardioid", "cardio", "car", "1", "subcardioid"):
         return PATTERN_CARDIOID
     return default
 
 
-def polar_a_from_slider(polar: float) -> float:
+def polar_a_from_slider(polar: float, pattern: Optional[str] = None) -> float:
     """Map Omni(0) → Cardioid(0.5) → Super(1) onto first-order a.
 
     a=1 omni, a=0.5 cardioid, a=SUPER_A supercardioid. ASSUMED continuum.
+    A hypercardioid name is HYPER_A. polar 1 with no name stays SUPER_A.
     """
+    if pattern is not None and normalize_pattern(pattern) == PATTERN_HYPER:
+        return HYPER_A
     d = max(0.0, min(1.0, float(polar)))
     if d <= 0.5:
         return 1.0 - d
@@ -953,7 +961,7 @@ def polar_from_pattern(pattern: str) -> float:
     p = normalize_pattern(pattern)
     if p == PATTERN_OMNI:
         return 0.0
-    if p == PATTERN_SUPER:
+    if p == PATTERN_SUPER or p == PATTERN_HYPER:
         return 1.0
     if p == PATTERN_FIG8:
         return 0.5
@@ -977,6 +985,7 @@ def pattern_gain(theta: float, pattern: str, *, signed: bool = True) -> float:
     - omni: 1
     - cardioid: 0.5*(1+cos θ)  — VERIFIED
     - supercardioid: SUPER_A + (1−SUPER_A)cos θ — ASSUMED first-order
+    - hypercardioid: HYPER_A + (1−HYPER_A)cos θ — 1 / 0.25 / −0.5 at 0/90/180
     - fig8: cos θ — ASSUMED (not Structure OCR); negative = rear polarity
     """
     p = normalize_pattern(pattern)
@@ -985,6 +994,8 @@ def pattern_gain(theta: float, pattern: str, *, signed: bool = True) -> float:
     if p == PATTERN_FIG8:
         g = math.cos(theta)
         return float(g if signed else abs(g))
+    if p == PATTERN_HYPER:
+        return first_order_gain(theta, HYPER_A, signed=signed)
     if p == PATTERN_SUPER:
         return first_order_gain(theta, SUPER_A, signed=signed)
     return 0.5 * (1.0 + math.cos(theta))
@@ -1025,11 +1036,13 @@ def capsule_press_grad(
         return 0.0, float(g)
     a = 0.5
     if polar is not None:
-        a = polar_a_from_slider(polar)
+        a = polar_a_from_slider(polar, pattern)
     else:
         p = normalize_pattern(pattern or PATTERN_CARDIOID)
         if p == PATTERN_OMNI:
             a = 1.0
+        elif p == PATTERN_HYPER:
+            a = HYPER_A
         elif p == PATTERN_SUPER:
             a = SUPER_A
         elif p == PATTERN_FIG8:

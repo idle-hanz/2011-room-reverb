@@ -2166,7 +2166,7 @@
   function deriveCaps(caps) {
     if (!window.RoomMath || !RoomMath.derivePattern) return;
     caps.forEach(function (cap) {
-      state["pattern_" + cap] = RoomMath.derivePattern(state["family_" + cap], state["polar_" + cap]);
+      state["pattern_" + cap] = RoomMath.derivePattern(state["family_" + cap], state["polar_" + cap], state["pattern_" + cap]);
     });
   }
 
@@ -2235,7 +2235,7 @@
   function presetLawPhrase(id) {
     var law = capsuleOf(id) || { family: "cardioid", polar: 0.5 };
     var label = (window.RoomMath && RoomMath.polarLabel)
-      ? RoomMath.polarLabel(law.family, law.polar)
+      ? RoomMath.polarLabel(law.family, law.polar, law.pattern)
       : "Cardioid";
     return presetShort(id) + " = " + String(label).toLowerCase();
   }
@@ -2491,7 +2491,7 @@
     var polS = setPol("polar_side", state.polar_l);
     var polSOut = document.getElementById("polar_side_out");
     if (polSOut && window.RoomMath && RoomMath.polarLabel) {
-      polSOut.textContent = RoomMath.polarLabel(state.family_l, state.polar_l);
+      polSOut.textContent = RoomMath.polarLabel(state.family_l, state.polar_l, state.pattern_l);
     }
     ["l", "c", "r"].forEach(function (cap) {
       var fam = document.getElementById("family_" + cap);
@@ -3165,13 +3165,13 @@
         if (pol && state[keyP] != null) pol.value = state[keyP];
         if (polOut) {
           polOut.textContent = (window.RoomMath && RoomMath.polarLabel)
-            ? RoomMath.polarLabel(state[keyF], state[keyP])
+            ? RoomMath.polarLabel(state[keyF], state[keyP], state["pattern_" + cap])
             : Number(state[keyP] || 0).toFixed(2);
         }
         if (fam) fam.disabled = state.mic_setup === "binaural";
         if (pol) pol.disabled = state.mic_setup === "binaural" || state[keyF] === "bi";
         if (window.RoomMath && RoomMath.derivePattern) {
-          state["pattern_" + cap] = RoomMath.derivePattern(state[keyF], state[keyP]);
+          state["pattern_" + cap] = RoomMath.derivePattern(state[keyF], state[keyP], state["pattern_" + cap]);
         }
       });
       var ah = document.getElementById("align_horizontal");

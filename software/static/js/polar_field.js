@@ -361,7 +361,7 @@
       for (k = 0; k <= 96; k++) {
         var th = (k / 96) * Math.PI * 2;
         var g = 1;
-        if (window.RoomMath && RoomMath.polarGain) g = Math.abs(RoomMath.polarGain(th, fam, pol));
+        if (window.RoomMath && RoomMath.polarGain) g = Math.abs(RoomMath.polarGain(th, fam, pol, st["pattern_" + row[1]]));
         else if (window.MicDesk && MicDesk.patternGain) g = Math.abs(MicDesk.patternGain(th, fam, pol));
         var rad = 0.9 * g;
         pts.push(new THREE.Vector3(

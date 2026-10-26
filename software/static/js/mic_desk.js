@@ -111,9 +111,9 @@
     return "#e11d48";
   }
 
-  function patternGain(theta, family, polar) {
+  function patternGain(theta, family, polar, pattern) {
     var RM = global.RoomMath;
-    if (RM && RM.polarGain) return RM.polarGain(theta, family, polar);
+    if (RM && RM.polarGain) return RM.polarGain(theta, family, polar, pattern);
     var p = String(family || "cardioid").toLowerCase();
     if (p === "bi" || p === "fig8") return Math.cos(theta);
     var d = Math.max(0, Math.min(1, Number(polar) || 0));
@@ -739,6 +739,7 @@
       var looks = [geo.look_l, geo.look_c || { x: 0, z: 1 }, geo.look_r];
       var fams = [geo.state.family_l, geo.state.family_c, geo.state.family_r];
       var pols = [geo.state.polar_l, geo.state.polar_c, geo.state.polar_r];
+      var pats = [geo.state.pattern_l, geo.state.pattern_c, geo.state.pattern_r];
       var rx = Math.sin(sideAz);
       var rz = Math.cos(sideAz);
       var nB = Math.min(freqs.length, grids[0].length);
@@ -764,7 +765,7 @@
             var mag = sampleRow(grids[mi][bi] || grids[mi][0], theta);
             var signed = mag;
             if (RoomMath && RoomMath.polarGain) {
-              var g = RoomMath.polarGain(theta, fams[mi], pols[mi]);
+              var g = RoomMath.polarGain(theta, fams[mi], pols[mi], pats[mi]);
               signed = g < 0 ? -mag : (g === 0 ? 0 : mag);
             }
             var phase = (((poss[mi].x - c.x) * ux + (poss[mi].y - c.y) * uy + (poss[mi].z - c.z) * uz) / 340) * Math.PI * 2 * freq;
@@ -914,7 +915,7 @@
         var ii, thI, gI, dbI, radI;
         for (ii = 0; ii <= nIdeal; ii++) {
           thI = (ii / nIdeal) * Math.PI * 2;
-          gI = Math.abs(patternGain(thI - yaw, family, polar));
+          gI = Math.abs(patternGain(thI - yaw, family, polar, opt.pattern));
           dbI = gI > 1e-6 ? (20 * Math.log(gI) / Math.LN10) : -120;
           radI = radDb(dbI);
           sx = cx + R * radI * Math.sin(thI);
@@ -952,7 +953,7 @@
         ctx.beginPath();
         for (i = 0; i <= n; i++) {
           th = (i / n) * Math.PI * 2;
-          g = Math.abs(patternGain(th - yaw, family, polar));
+          g = Math.abs(patternGain(th - yaw, family, polar, opt.pattern));
           sx = cx + R * g * Math.sin(th);
           sy = cy - R * g * Math.cos(th);
           if (i === 0) ctx.moveTo(sx, sy); else ctx.lineTo(sx, sy);
@@ -1017,7 +1018,7 @@
       canvas.dataset.drawnFamily = String(family || "");
       canvas.dataset.drawnPolar = String(Number(polar));
       canvas.dataset.drawnYaw = String(Math.round(Number(yawDeg) || 0));
-      var lab = (RoomMath && RoomMath.polarLabel) ? RoomMath.polarLabel(family, polar) : String(family);
+      var lab = (RoomMath && RoomMath.polarLabel) ? RoomMath.polarLabel(family, polar, opt.pattern) : String(family);
       ctx.fillStyle = COLORS.ink;
       ctx.font = "700 12px Segoe UI, system-ui, sans-serif";
       ctx.textAlign = "center";
@@ -1140,7 +1141,8 @@
           cap: key,
           fig8: fig8,
           minusLabel: route === "s" ? "\u2212S" : "\u2212",
-          routeNote: route === "s" ? "S \u2192 +L, \u2212R" : ""
+          routeNote: route === "s" ? "S \u2192 +L, \u2212R" : "",
+          pattern: s["pattern_" + slot]
         });
       });
     }
@@ -1664,7 +1666,8 @@
           db: db,
           useDb: useDb && !toys,
           note: note,
-          fig8: fig8
+          fig8: fig8,
+          pattern: s["pattern_" + slot]
         });
       });
     }

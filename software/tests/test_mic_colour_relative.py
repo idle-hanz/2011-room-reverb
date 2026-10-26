@@ -159,7 +159,14 @@ def test_preset_loader_and_pattern_map():
     assert card["pattern"] == "cardioid" and card["polar"] == 0.5
     assert omni["pattern"] != card["pattern"]
     hyper = capsule_law("hypercardioid")
-    assert hyper["pattern"] == "supercardioid" and hyper["polar"] == 1.0
+    assert hyper["pattern"] == "hypercardioid" and hyper["polar"] == 1.0
+    import math
+    from early_field import capsule_gain
+    g0 = capsule_gain(0.0, family=hyper["family"], polar=hyper["polar"], pattern=hyper["pattern"])
+    g90 = capsule_gain(math.pi / 2, family=hyper["family"], polar=hyper["polar"], pattern=hyper["pattern"])
+    g180 = capsule_gain(math.pi, family=hyper["family"], polar=hyper["polar"], pattern=hyper["pattern"])
+    assert abs(g0 - 1.0) < 1e-9 and abs(g90 - 0.25) < 1e-9 and abs(abs(g180) - 0.5) < 1e-9
+    assert capsule_law("supercardioid")["pattern"] == "supercardioid"
 
 
 def test_server_defaults_do_not_move_the_desk():

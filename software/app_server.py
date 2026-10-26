@@ -234,7 +234,9 @@ def _optional_pattern(body: dict, key: str, default: str = "cardioid") -> str:
         return "omni"
     if p in ("fig8", "figure8", "bidirectional", "bi", "side"):
         return "fig8"
-    if p in ("supercardioid", "super", "hypercardioid", "hyper"):
+    if p in ("hypercardioid", "hyper"):
+        return "hypercardioid"
+    if p in ("supercardioid", "super"):
         return "supercardioid"
     return "cardioid"
 
@@ -275,7 +277,7 @@ def _capsule_from_body(body: dict) -> dict:
             return max(0.0, min(1.0, float(v)))
         if pat == "omni":
             return 0.0
-        if pat == "supercardioid":
+        if pat in ("supercardioid", "hypercardioid"):
             return 1.0
         return 0.5
 

@@ -367,10 +367,14 @@ def test_press_grad_and_ms_decode() -> None:
 
 
 def test_first_order_polar_slider() -> None:
-    from early_field import polar_a_from_slider, first_order_gain, SUPER_A, capsule_gain
+    from early_field import polar_a_from_slider, first_order_gain, SUPER_A, HYPER_A, capsule_gain
     assert abs(polar_a_from_slider(0.0) - 1.0) < 1e-12
     assert abs(polar_a_from_slider(0.5) - 0.5) < 1e-12
     assert abs(polar_a_from_slider(1.0) - SUPER_A) < 1e-12
+    assert abs(polar_a_from_slider(1.0, "hypercardioid") - HYPER_A) < 1e-12
+    for th, expect in ((0.0, 1.0), (1.5707963267948966, 0.25), (3.141592653589793, 0.5)):
+        g = abs(capsule_gain(th, family="cardioid", polar=1.0, pattern="hypercardioid"))
+        assert abs(g - expect) < 1e-9, (th, g)
     assert abs(first_order_gain(0.0, 0.5) - 1.0) < 1e-12
     assert abs(capsule_gain(0.0, family="bi") - 1.0) < 1e-12
     assert abs(capsule_gain(3.1415926535, family="bi") + 1.0) < 1e-6
