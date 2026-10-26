@@ -1824,14 +1824,14 @@
       var nAz = grid[0].length;
       var cx = w * (side === 0 ? 0.27 : 0.73);
       var cy = h * 0.54;
-      var R = Math.min(w * 0.2, h * 0.36);
-      ctx.strokeStyle = "rgba(255,255,255,0.08)";
-      ctx.lineWidth = 1;
-      [0.25, 0.5, 0.75, 1].forEach(function (f) {
-        ctx.beginPath();
-        ctx.arc(cx, cy, R * f, 0, Math.PI * 2);
-        ctx.stroke();
-      });
+      var R = Math.min(w * 0.18, h * 0.32);
+      if (window.MicDesk && MicDesk.drawPolarChartFrame) {
+        MicDesk.drawPolarChartFrame(ctx, cx, cy, R, 0, {
+          useDb: false,
+          fontPx: Math.max(11 * ratio, Math.min(14 * ratio, R * 0.1)),
+          lineWidth: Math.max(1, ratio)
+        });
+      }
       var bi, ai, k, theta, g, sx, sy;
       for (bi = 0; bi < nB; bi++) {
         ctx.beginPath();

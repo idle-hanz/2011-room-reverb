@@ -26,6 +26,83 @@
 
   var RING_HZ = [20, 63, 125, 250, 1000, 4000, 8000, 16000];
 
+  var POLAR_DB_RINGS = [0, -6, -12, -18, -24];
+  var POLAR_DB_FLOOR = -30;
+
+  function polarDbRadius(db, outer) {
+    if (!(db > POLAR_DB_FLOOR)) db = POLAR_DB_FLOOR;
+    if (db > 0) db = 0;
+    return outer * (db - POLAR_DB_FLOOR) / (0 - POLAR_DB_FLOOR);
+  }
+
+  function polarAmpRadius(db, outer) {
+    if (db > 0) db = 0;
+    return outer * Math.pow(10, db / 20);
+  }
+
+  /* Concentric dB rings, 0/90/180 marks, and a front arrow.
+     useDb maps radius in dB down to -30. Otherwise 0 dB is the outer ring. */
+  function drawPolarChartFrame(ctx, cx, cy, outer, yawRad, opts) {
+    opts = opts || {};
+    var useDb = !!opts.useDb;
+    function rr(db) {
+      return useDb ? polarDbRadius(db, outer) : polarAmpRadius(db, outer);
+    }
+    var fontPx = opts.fontPx || Math.max(9, Math.min(13, outer * 0.11));
+    ctx.save();
+    ctx.lineWidth = opts.lineWidth || 1;
+    ctx.strokeStyle = "rgba(255,255,255,0.2)";
+    ctx.fillStyle = opts.labelColor || "#8b92a5";
+    ctx.font = Math.round(fontPx) + "px Segoe UI, system-ui, sans-serif";
+    POLAR_DB_RINGS.forEach(function (db) {
+      var rad = rr(db);
+      if (!(rad > 0.5)) return;
+      ctx.beginPath();
+      ctx.arc(cx, cy, rad, 0, Math.PI * 2);
+      ctx.stroke();
+      ctx.textAlign = "left";
+      ctx.textBaseline = "bottom";
+      ctx.fillText((db === 0 ? "0" : String(db)) + " dB", cx + fontPx * 0.3, cy - rad);
+    });
+    var edge = rr(0);
+    [[0, "0\u00b0"], [Math.PI / 2, "90\u00b0"], [Math.PI, "180\u00b0"]].forEach(function (row) {
+      var th = row[0] + yawRad;
+      var s = Math.sin(th);
+      var c = Math.cos(th);
+      ctx.beginPath();
+      ctx.moveTo(cx + edge * s, cy - edge * c);
+      ctx.lineTo(cx + (edge + fontPx * 0.55) * s, cy - (edge + fontPx * 0.55) * c);
+      ctx.stroke();
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+      ctx.fillText(row[1], cx + (edge + fontPx * 1.45) * s, cy - (edge + fontPx * 1.45) * c);
+    });
+    if (opts.arrow !== false) {
+      var dx = Math.sin(yawRad);
+      var dy = -Math.cos(yawRad);
+      var tip = edge * 0.92;
+      var tx = cx + tip * dx;
+      var ty = cy + tip * dy;
+      ctx.strokeStyle = opts.arrowColor || "#f59e0b";
+      ctx.fillStyle = opts.arrowColor || "#f59e0b";
+      ctx.lineWidth = opts.arrowWidth || Math.max(1.4, fontPx * 0.14);
+      ctx.beginPath();
+      ctx.moveTo(cx, cy);
+      ctx.lineTo(tx, ty);
+      ctx.stroke();
+      var ah = fontPx * 0.9;
+      var px = -dy;
+      var py = dx;
+      ctx.beginPath();
+      ctx.moveTo(tx, ty);
+      ctx.lineTo(tx - dx * ah + px * ah * 0.42, ty - dy * ah + py * ah * 0.42);
+      ctx.lineTo(tx - dx * ah - px * ah * 0.42, ty - dy * ah - py * ah * 0.42);
+      ctx.closePath();
+      ctx.fill();
+    }
+    ctx.restore();
+  }
+
   function ringColor(i, n) {
     var S = global.SpectrumColors;
     if (S && n === RING_HZ.length) return S.forHz(RING_HZ[i] || RING_HZ[RING_HZ.length - 1]).css;
@@ -779,17 +856,16 @@
 
       var peak = grid ? gridPeak(grid) : 1;
       var scale = R / peak;
-      ctx.strokeStyle = "rgba(255,255,255,0.08)";
-      ctx.lineWidth = 1;
-      [0.25, 0.5, 0.75, 1].forEach(function (f) {
-        ctx.beginPath(); ctx.arc(cx, cy, scale * peak * f, 0, Math.PI * 2); ctx.stroke();
-      });
-      ctx.beginPath();
-      ctx.moveTo(cx - R, cy); ctx.lineTo(cx + R, cy);
-      ctx.moveTo(cx, cy - R); ctx.lineTo(cx, cy + R);
-      ctx.stroke();
-
       var yaw = ((Number(yawDeg) || 0) * Math.PI) / 180;
+      var optEarly = arguments[8] || {};
+      var dbGridEarly = optEarly.db;
+      var useDbEarly = !!optEarly.useDb && dbGridEarly && dbGridEarly.length;
+      drawPolarChartFrame(ctx, cx, cy, R, yaw, {
+        useDb: useDbEarly,
+        arrow: false,
+        fontPx: Math.max(uiPx(9), Math.min(uiPx(12), R * 0.1)),
+        lineWidth: 1
+      });
       var opt = arguments[8] || {};
       var dbGrid = opt.db;
       var useDb = !!opt.useDb && dbGrid && dbGrid.length;
@@ -811,16 +887,6 @@
           if (db > 0) db = 0;
           return (db - floorDb) / (0 - floorDb);
         }
-        ctx.strokeStyle = "rgba(255,255,255,0.1)";
-        [-10, -20].forEach(function (db) {
-          ctx.beginPath();
-          ctx.arc(cx, cy, R * radDb(db), 0, Math.PI * 2);
-          ctx.stroke();
-          ctx.fillStyle = COLORS.text;
-          ctx.font = "9px Segoe UI, system-ui, sans-serif";
-          ctx.textAlign = "left";
-          ctx.fillText(String(db), cx + 4, cy - R * radDb(db));
-        });
         var pts = [];
         for (bi = 0; bi < dbGrid.length; bi++) {
           ctx.beginPath();
@@ -895,12 +961,29 @@
       }
 
       var front = polarFrontPx(canvas, yawDeg);
+      var fdx = front.px - cx;
+      var fdy = front.py - cy;
+      var flen = Math.hypot(fdx, fdy) || 1;
+      var ux = fdx / flen;
+      var uy = fdy / flen;
+      var tipx = cx + ux * R * 0.92;
+      var tipy = cy + uy * R * 0.92;
       ctx.beginPath();
       ctx.moveTo(cx, cy);
-      ctx.lineTo(front.px, front.py);
+      ctx.lineTo(tipx, tipy);
       ctx.strokeStyle = hexRgba(COLORS.yaw, 0.9);
       ctx.lineWidth = 1.6;
       ctx.stroke();
+      var ah = uiPx(9);
+      var pxv = -uy;
+      var pyv = ux;
+      ctx.beginPath();
+      ctx.moveTo(tipx, tipy);
+      ctx.lineTo(tipx - ux * ah + pxv * ah * 0.42, tipy - uy * ah + pyv * ah * 0.42);
+      ctx.lineTo(tipx - ux * ah - pxv * ah * 0.42, tipy - uy * ah - pyv * ah * 0.42);
+      ctx.closePath();
+      ctx.fillStyle = COLORS.yaw;
+      ctx.fill();
       ctx.beginPath();
       ctx.arc(front.px, front.py, uiPx(11), 0, Math.PI * 2);
       ctx.fillStyle = COLORS.yaw;
@@ -1644,5 +1727,9 @@
     };
   }
 
-  global.MicDesk = { create: create, patternGain: patternGain };
+  global.MicDesk = {
+    create: create,
+    patternGain: patternGain,
+    drawPolarChartFrame: drawPolarChartFrame
+  };
 })(window);

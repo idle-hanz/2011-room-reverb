@@ -174,7 +174,10 @@
       this.root.remove(this._planeHelper);
       this._planeHelper.traverse(function (ch) {
         if (ch.geometry) ch.geometry.dispose();
-        if (ch.material) ch.material.dispose();
+        if (ch.material) {
+          if (ch.material.map) ch.material.map.dispose();
+          ch.material.dispose();
+        }
       });
       this._planeHelper = null;
     }
@@ -224,6 +227,7 @@
     var g = new THREE.Group();
     g.add(loop);
     g.add(cross);
+    this._addDbRings(g, o, e1, e2);
     // Source marker in plane
     if (pl.source) {
       var src = new THREE.Mesh(
@@ -235,6 +239,60 @@
     }
     this._planeHelper = g;
     this.root.add(g);
+  };
+
+  PolarFieldView.prototype._labelSprite = function (text) {
+    var canvas = document.createElement("canvas");
+    canvas.width = 160;
+    canvas.height = 64;
+    var ctx = canvas.getContext("2d");
+    ctx.fillStyle = "rgba(232,230,223,0.92)";
+    ctx.font = "600 28px Segoe UI, sans-serif";
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.fillText(text, 80, 32);
+    var tex = new THREE.CanvasTexture(canvas);
+    var sprite = new THREE.Sprite(new THREE.SpriteMaterial({
+      map: tex,
+      transparent: true,
+      depthTest: false
+    }));
+    sprite.scale.set(0.42, 0.17, 1);
+    return sprite;
+  };
+
+  PolarFieldView.prototype._addDbRings = function (group, o, e1, e2) {
+    var rings = [0, -6, -12, -18, -24];
+    function at(radius, ang) {
+      return new THREE.Vector3(
+        o[0] + e1[0] * radius * Math.sin(ang) + e2[0] * radius * Math.cos(ang),
+        o[1] + e1[1] * radius * Math.sin(ang) + e2[1] * radius * Math.cos(ang),
+        o[2] + e1[2] * radius * Math.sin(ang) + e2[2] * radius * Math.cos(ang)
+      );
+    }
+    var self = this;
+    rings.forEach(function (db) {
+      var radius = 0.9 * Math.pow(10, db / 20);
+      var pts = [];
+      var i;
+      for (i = 0; i <= 72; i++) pts.push(at(radius, (i / 72) * Math.PI * 2));
+      group.add(new THREE.Line(
+        new THREE.BufferGeometry().setFromPoints(pts),
+        new THREE.LineBasicMaterial({ color: 0xd6d3cd, transparent: true, opacity: 0.45 })
+      ));
+      var lab = self._labelSprite((db === 0 ? "0" : String(db)) + " dB");
+      var p = at(radius, 0.35);
+      lab.position.copy(p);
+      group.add(lab);
+    });
+    [[0, "0\u00b0"], [Math.PI / 2, "90\u00b0"], [Math.PI, "180\u00b0"]].forEach(function (row) {
+      var lab = self._labelSprite(row[1]);
+      lab.position.copy(at(1.12, row[0]));
+      group.add(lab);
+    });
+    var origin = new THREE.Vector3(o[0], o[1], o[2]);
+    var dir = new THREE.Vector3(e2[0], e2[1], e2[2]).normalize();
+    group.add(new THREE.ArrowHelper(dir, origin, 0.82, 0xf59e0b, 0.16, 0.07));
   };
 
   PolarFieldView.prototype._rebuildMeshes = function () {
