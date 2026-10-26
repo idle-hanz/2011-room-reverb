@@ -19,7 +19,7 @@ test("six switches live in one object", () => {
   ]);
   assert.deepEqual(V.SWITCHES, {
     slice: true,
-    angle: false,
+    angle: true,
     readouts: false,
     compare: false,
     arrivals: false,
