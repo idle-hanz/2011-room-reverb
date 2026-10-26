@@ -1,7 +1,10 @@
 // node --test test_pair_mode.mjs
 import test from "node:test";
 import assert from "node:assert/strict";
+import fs from "node:fs";
+import path from "node:path";
 import { createRequire } from "node:module";
+import { fileURLToPath } from "node:url";
 
 const require = createRequire(import.meta.url);
 const Pair = require("../static/js/pair_mode.js");
@@ -189,4 +192,15 @@ test("saved link modes map onto Stereo and Independent and keep the yaws", () =>
   assert.equal(ms.pair_mode, "ms");
   assert.equal(ms.link_mode, "mirror");
   assert.equal(ms.yaw_l_deg, 90);
+});
+
+test("the third mic row reads None, Centre, and Room mic", () => {
+  const page = fs.readFileSync(
+    path.join(path.dirname(fileURLToPath(import.meta.url)), "../static/index.html"),
+    "utf8"
+  );
+  assert.match(page, /aria-label="3rd mic"/);
+  assert.match(page, /data-third="off"[^>]*>3rd mic: None</);
+  assert.match(page, /data-third="centre"[^>]*>3rd mic: Centre</);
+  assert.match(page, /data-third="room"[^>]*>3rd mic: Room mic</);
 });
