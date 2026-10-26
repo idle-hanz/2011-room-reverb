@@ -24,6 +24,7 @@
     this._dist = 5.5;
     this._meshes = {};
     this._planeHelper = null;
+    this.soloBand = null;
     if (!this.canvas || typeof THREE === "undefined") {
       if (this.meta) this.meta.textContent = "Three.js unavailable";
       return;
@@ -123,6 +124,11 @@
       if (self.onRefresh) self.onRefresh();
       else self.refresh();
     });
+  };
+
+  PolarFieldView.prototype.setSoloBand = function (index) {
+    this.soloBand = (index == null || index < 0) ? null : index;
+    this._rebuildMeshes();
   };
 
   PolarFieldView.prototype.setData = function (data) {
@@ -329,17 +335,19 @@
     }
     var colors = [];
     var indices = [];
+    var solo = this.soloBand;
     for (var bi = 0; bi < nB; bi++) {
-      var band = global.SpectrumColors
-        ? global.SpectrumColors.forIndex(bi, nB).rgb
-        : (global.FreqPalette
-          ? global.FreqPalette.rgb(global.FreqPalette.at(bi, nB))
+      var band = global.FreqPalette
+        ? global.FreqPalette.rgb(global.FreqPalette.at(bi, nB))
+        : (global.SpectrumColors
+          ? global.SpectrumColors.forIndex(bi, nB).rgb
           : { r: 225, g: 29, b: 72 });
       for (var ai = 0; ai < nAz; ai++) {
         colors.push(band.r / 255, band.g / 255, band.b / 255);
       }
     }
     for (var b = 0; b < nB - 1; b++) {
+      if (solo != null) break;
       for (var a = 0; a < nAz; a++) {
         var a2 = (a + 1) % nAz;
         var i0 = b * nAz + a;
@@ -372,20 +380,25 @@
       linePos.push(positions[ix], positions[ix + 1], positions[ix + 2]);
     }
     for (var rb = 0; rb < nB; rb++) {
+      if (solo != null && rb !== solo) continue;
       for (var ra = 0; ra < nAz; ra++) {
         pushAt(rb, ra);
         pushAt(rb, ra + 1);
       }
     }
-    for (var sb = 0; sb < nB - 1; sb++) {
-      pushAt(sb, 0);
-      pushAt(sb + 1, 0);
+    if (solo == null) {
+      for (var sb = 0; sb < nB - 1; sb++) {
+        pushAt(sb, 0);
+        pushAt(sb + 1, 0);
+      }
     }
     var lineGeo = new THREE.BufferGeometry();
     lineGeo.setAttribute("position", new THREE.Float32BufferAttribute(linePos, 3));
+    var lineColor = color;
+    if (solo != null && global.FreqPalette) lineColor = global.FreqPalette.intAt(solo, nB);
     mesh.add(new THREE.LineSegments(
       lineGeo,
-      new THREE.LineBasicMaterial({ color: color, transparent: true, opacity: 0.35 })
+      new THREE.LineBasicMaterial({ color: lineColor, transparent: true, opacity: 0.9 })
     ));
     return mesh;
   };

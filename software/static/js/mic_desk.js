@@ -104,11 +104,10 @@
   }
 
   function ringColor(i, n) {
-    var S = global.SpectrumColors;
-    if (S && n === RING_HZ.length) return S.forHz(RING_HZ[i] || RING_HZ[RING_HZ.length - 1]).css;
-    if (S) return S.forIndex(i, n || 8).css;
     var P = global.FreqPalette;
     if (P) return P.hexAt(i, n || 8);
+    var S = global.SpectrumColors;
+    if (S) return S.forIndex(i, n || 8).css;
     return "#e11d48";
   }
 
@@ -197,6 +196,7 @@
     var liveReadout = "";
     var polarField = null;
     var polarStatus = "pending";
+    var soloBand = null;
     var drawnDb = { L: null, C: null, R: null };
     var drawnPts = { L: [], C: [], R: [] };
 
@@ -889,6 +889,7 @@
         }
         var pts = [];
         for (bi = 0; bi < dbGrid.length; bi++) {
+          if (soloBand != null && bi !== soloBand) continue;
           ctx.beginPath();
           for (ai = 0; ai <= nAzD; ai++) {
             var kd = ai % nAzD;
@@ -911,6 +912,7 @@
         var nAz = grid[0].length;
         var bi, ai, theta, screen, g, sx, sy;
         for (bi = 0; bi < grid.length; bi++) {
+          if (soloBand != null && bi !== soloBand) continue;
           ctx.beginPath();
           for (ai = 0; ai <= nAz; ai++) {
             var k = ai % nAz;
@@ -1717,6 +1719,10 @@
       redraw: redraw,
       probe: probe,
       setPolar: setPolar,
+      setSoloBand: function (index) {
+        soloBand = (index == null || index < 0) ? null : index;
+        redraw();
+      },
       setPolarStatus: function (status) { polarStatus = status || "pending"; redraw(); },
       drawnGrid: drawnGrid,
       drawnPoints: function (which) { return drawnPts[String(which || "L").toUpperCase()] || []; },

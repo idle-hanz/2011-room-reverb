@@ -1764,6 +1764,42 @@
     if (imageViewHint) imageViewHint.textContent = camHint;
   }
 
+  var polarSolo = null;
+
+  function paintPolarBandKey(labels) {
+    var host = document.getElementById("polarBandKey");
+    if (!host) return;
+    var labs = (labels && labels.length) ? labels : ["20", "63", "125", "250", "1k", "4k", "8k", "16k"];
+    var sig = labs.join("|") + ":" + (polarSolo == null ? "" : String(polarSolo));
+    if (host.getAttribute("data-key") === sig) return;
+    host.setAttribute("data-key", sig);
+    host.innerHTML = "";
+    labs.forEach(function (lab, i) {
+      var btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "polar-band";
+      btn.setAttribute("data-band", String(i));
+      if (polarSolo === i) btn.classList.add("is-solo");
+      else if (polarSolo != null) btn.classList.add("is-dim");
+      var sw = document.createElement("i");
+      sw.className = "mic-ring-swatch";
+      sw.style.background = window.FreqPalette
+        ? FreqPalette.cssAt(i, labs.length)
+        : "#e11d48";
+      btn.appendChild(sw);
+      btn.appendChild(document.createTextNode(" " + lab));
+      btn.addEventListener("click", function () {
+        polarSolo = (polarSolo === i) ? null : i;
+        host.removeAttribute("data-key");
+        paintPolarBandKey(labs);
+        if (micDesk && micDesk.setSoloBand) micDesk.setSoloBand(polarSolo);
+        if (polarView && polarView.setSoloBand) polarView.setSoloBand(polarSolo);
+        if (polarPage === "speakers" && polarCache) drawSpeakerPolar(polarCache);
+      });
+      host.appendChild(btn);
+    });
+  }
+
   function polarBannerText() {
     var mode = state.colour_mode || "MEASURED_SHELF";
     if (mode === "MEASURED_SHELF") return "Measured: real mic response, relative to on-axis";
@@ -1787,6 +1823,7 @@
     if (combined) combined.hidden = polarPage !== "combined";
     if (host) host.hidden = polarPage !== "each";
     if (speakers) speakers.hidden = polarPage !== "speakers";
+    paintPolarBandKey(polarCache && polarCache.ring_labels);
     placePolarTrio();
     if (polarPage === "speakers") drawSpeakerPolar(polarCache);
   }
@@ -1834,6 +1871,7 @@
       }
       var bi, ai, k, theta, g, sx, sy;
       for (bi = 0; bi < nB; bi++) {
+        if (polarSolo != null && bi !== polarSolo) continue;
         ctx.beginPath();
         for (ai = 0; ai <= nAz; ai++) {
           k = ai % nAz;
@@ -1844,7 +1882,8 @@
           if (ai === 0) ctx.moveTo(sx, sy);
           else ctx.lineTo(sx, sy);
         }
-        if (window.SpectrumColors) ctx.strokeStyle = SpectrumColors.forIndex(bi, nB).css;
+        if (window.FreqPalette) ctx.strokeStyle = FreqPalette.cssAt(bi, nB);
+        else if (window.SpectrumColors) ctx.strokeStyle = SpectrumColors.forIndex(bi, nB).css;
         else ctx.strokeStyle = "hsl(" + Math.round(255 * bi / Math.max(1, nB - 1)) + ",78%,58%)";
         ctx.lineWidth = bi === nB - 1 ? 2 : 1.25;
         ctx.stroke();
@@ -2892,6 +2931,7 @@
         micHero.setData(data);
       }
       if (polarView && polarView.setData) polarView.setData(data);
+      paintPolarBandKey(data.ring_labels);
       paintPolarBanner();
     } catch (err) {
       if (seq === polarReq && micDesk && micDesk.setPolarStatus) micDesk.setPolarStatus("fail");

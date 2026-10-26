@@ -1083,6 +1083,22 @@ select.cap-pattern:focus {
   display: inline-block;
   font-style: normal;
 }
+.polar-band-key { margin: 0 0 8px; }
+.polar-band {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  border: 0;
+  background: transparent;
+  color: var(--muted);
+  font: inherit;
+  font-size: 0.68rem;
+  cursor: pointer;
+  padding: 2px 4px;
+  border-radius: 6px;
+}
+.polar-band.is-solo { outline: 1px solid var(--text); color: var(--text); }
+.polar-band.is-dim { opacity: 0.35; }
 .capsule-toys {
   margin-top: 12px;
   padding-top: 8px;
