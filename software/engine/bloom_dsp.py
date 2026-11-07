@@ -767,15 +767,26 @@ def pack_pre(spec: dict, play: bool = False) -> list:
     for sos in _PRE_SOS[kind]:
         row.extend(sos)
     # Section C: output small-signal gain is unity at 1 kHz. The trim is on
-    # H2 so the shaper still sees the kernel level. Drive is divided back off
-    # at the output of both engines, so +6 dB Drive does not raise the linear
-    # level.
+    # H2. Drive is divided back off at the output of both engines, so +6 dB
+    # Drive does not raise the linear level.
     g = _cascade_gain_1k(kind, sr)
     if g > 1.0e-12:
         scale = 1.0 / g
         row[20] *= scale
         row[21] *= scale
         row[22] *= scale
+    if kind == "u610a":
+        # PC0 ledger: raw |H1| 686.053822727, fitted level 161.466931945.
+        # Scale H1 down by that ratio and put the same gain back on H2.
+        # vc stays the fit value. phi_c is unchanged. Flux reads this H1.
+        gap = 686.053822727 / 161.466931945
+        inv = 1.0 / gap
+        row[15] *= inv
+        row[16] *= inv
+        row[17] *= inv
+        row[20] *= gap
+        row[21] *= gap
+        row[22] *= gap
     return row
 
 
