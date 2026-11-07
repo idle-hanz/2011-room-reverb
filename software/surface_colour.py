@@ -751,8 +751,8 @@ def surface_filter_stages(
         if kind == "shaped":
             stages.extend(fit_absorb_stages(absorb, float(sr)))
         elif kind != "uniform":
-            # Stock plaster keeps the old absolute peaks. A flat card is the
-            # scalar in apply_surface_to_buffer, not seven peaks.
+            # Stock plaster keeps the old absolute peaks. One α on every band
+            # is the scalar in apply_surface_to_buffer, not seven peaks.
             hz_list = s.get("absorb_hz") or list(ABSORB_BAND_HZ)
             for i, hz in enumerate(hz_list):
                 if i >= len(absorb):

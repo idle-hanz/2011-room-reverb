@@ -924,7 +924,7 @@ def tap_reflect_gain(n, surfaces) -> float:
         if card.get("muted"):
             return 0.0
         # A shaped card's √(1−α) lives in the per-band filter. Do not also
-        # multiply the mean. Stock plaster and a flat card keep the mean.
+        # multiply the mean. Stock plaster and one α on every band keep the mean.
         if card_absorb_kind(card) == "shaped":
             continue
         absorb = card.get("absorb") or []
@@ -3084,11 +3084,11 @@ def play_listen_scene(p: dict, sr: int = SAMPLE_RATE_HZ) -> dict:
     except (TypeError, ValueError):
         asked_i = 32
     # 64/128 stay on today's 32-line Play (g/32). Packing a 64-grid into 32 slots would move the chip.
-    n_had = asked_i if asked_i in (8, 16, 32) else 32
-    g_open = float(max(0.0, min(1.0, float(p.get("fdn_g", 1.0))))) / float(n_had)
+    play_n = asked_i if asked_i in (8, 16, 32) else 32
+    g_open = float(max(0.0, min(1.0, float(p.get("fdn_g", 1.0))))) / float(play_n)
     decay_lock = bool(p.get("decay_lock"))
     decay_s = float(p.get("decay_s") or 0.0)
-    grid = grid_bias_for_hadamard_n(n_had)
+    grid = grid_bias_for_hadamard_n(play_n)
     humidity = float(p.get("humidity") or 0.0)
     # 2011 Air 1-pole and Reaktor parity are off the product. The bus field stays 0
     # so the worklet layout does not move. ISO shelves still follow air_shelf.
@@ -3159,17 +3159,17 @@ def play_listen_scene(p: dict, sr: int = SAMPLE_RATE_HZ) -> dict:
         stand = _place_stand(stand, p)
     shape = p.get("room_shape")
     taps = _play_shape_taps(
-        room, prep.source, stand, shape, c, n_had, mic_colour, grid, parity,
+        room, prep.source, stand, shape, c, play_n, mic_colour, grid, parity,
     )
     g, g_loop, line_t60, delays = locked_loop_gain(
-        g_open, taps, rate, c, n_had, decay_lock, decay_s,
+        g_open, taps, rate, c, play_n, decay_lock, decay_s,
         channel="c", t60_gate_s=0.0,
     )
     return {
         "room": room,
         "c": c,
         "surfaces": surfaces,
-        "n_had": n_had,
+        "n_had": play_n,
         "g_open": g_open,
         "g": g,
         "g_loop": g_loop,
