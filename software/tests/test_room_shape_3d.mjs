@@ -210,7 +210,7 @@ test("splay shows the hadamard quota Play uses, and paths hide the lattice", () 
     ["a:home", "b:home"]
   );
   assert.deepEqual(RD.latticeKeys("legs", ["a:home", "a:1"]), ["a:home"]);
-  assert.match(imageViews, /RoomDraw\.latticeKeys\(mode/);
+  assert.match(imageViews, /RoomDraw\.latticeKeys\(env\.mode/);
   assert.match(imageViews, /mode !== "lattice" && key !== "a:home"/);
   assert.match(imageViews, /n: nTap, stand: stand/);
   assert.doesNotMatch(imageViews, /if \(live && n !== 8/);
@@ -342,7 +342,7 @@ test("gable roof faces match poly_room and Play's quota", () => {
   assert.match(imageViews, /imageRooms\(polyShape\(\)/);
   assert.match(imageViews, /RoomDraw\.wallColor/);
   assert.doesNotMatch(imageViews, /if \(live && n !== 8/);
-  assert.match(imageViews, /RoomDraw\.latticeKeys\(mode/);
+  assert.match(imageViews, /RoomDraw\.latticeKeys\(env\.mode/);
 });
 
 test("hex faces match poly_room and Play's quota", () => {
@@ -413,7 +413,7 @@ test("hex faces match poly_room and Play's quota", () => {
   assert.match(room3d, /RoomDraw\.polyFaces/);
   assert.match(imageViews, /imageRooms\(polyShape\(\)/);
   assert.doesNotMatch(imageViews, /if \(live && n !== 8/);
-  assert.match(imageViews, /RoomDraw\.latticeKeys\(mode/);
+  assert.match(imageViews, /RoomDraw\.latticeKeys\(env\.mode/);
 });
 
 test("the page draws box through RoomDraw and splay through the polygon", () => {

@@ -15,8 +15,32 @@
     accent: 0x2dd4bf,
   };
 
+  var envStack = [];
+  function enter(env, fn) {
+    var args = [];
+    var i;
+    for (i = 2; i < arguments.length; i++) args.push(arguments[i]);
+    envStack.push(env);
+    try {
+      return fn.apply(null, args);
+    } finally {
+      envStack.pop();
+    }
+  }
+  function bindPass(env, fn) {
+    return function () {
+      envStack.push(env);
+      try {
+        return fn.apply(null, arguments);
+      } finally {
+        envStack.pop();
+      }
+    };
+  }
   function create(opts) {
-    var canvas = opts.canvas;
+    var env = {};
+    env.opts = opts;
+    env.canvas = env.opts.canvas;
     if (!global.THREE) {
       console.warn("Three.js missing — 3D view disabled");
       return {
@@ -25,100 +49,139 @@
         resize: function () {},
       };
     }
-    var THREE = global.THREE;
-    var getState = opts.getState;
-    var setState = opts.setState;
-    var onChange = opts.onChange;
-    var RoomMath = opts.RoomMath || global.RoomMath;
-    var focusMic = !!opts.focusMic;
+    env.THREE = global.THREE;
+    env.getState = env.opts.getState;
+    env.setState = env.opts.setState;
+    env.onChange = env.opts.onChange;
+    env.RoomMath = env.opts.RoomMath || global.RoomMath;
+    env.focusMic = !!env.opts.focusMic;
 
-    var renderer = new THREE.WebGLRenderer({
-      canvas: canvas,
+    env.renderer = new env.THREE.WebGLRenderer({
+      canvas: env.canvas,
       antialias: true,
       alpha: false,
       powerPreference: "high-performance",
       preserveDrawingBuffer: true,
     });
-    renderer.setPixelRatio(Math.min(global.devicePixelRatio || 1, 2));
-    renderer.setClearColor(0x0a0b0e, 1);
-    renderer.shadowMap.enabled = true;
-    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
-    if (renderer.outputColorSpace !== undefined) {
-      renderer.outputColorSpace = THREE.SRGBColorSpace;
+    env.renderer.setPixelRatio(Math.min(global.devicePixelRatio || 1, 2));
+    env.renderer.setClearColor(0x0a0b0e, 1);
+    env.renderer.shadowMap.enabled = true;
+    env.renderer.shadowMap.type = env.THREE.PCFSoftShadowMap;
+    if (env.renderer.outputColorSpace !== undefined) {
+      env.renderer.outputColorSpace = env.THREE.SRGBColorSpace;
     }
 
-    var scene = new THREE.Scene();
-    scene.fog = new THREE.Fog(0x0a0b0e, 18, 42);
+    env.scene = new env.THREE.Scene();
+    env.scene.fog = new env.THREE.Fog(0x0a0b0e, 18, 42);
 
-    var camera = new THREE.PerspectiveCamera(42, 1, 0.05, 400);
-    var camTarget = new THREE.Vector3(3, 1.2, 4);
+    env.camera = new env.THREE.PerspectiveCamera(42, 1, 0.05, 400);
+    env.camTarget = new env.THREE.Vector3(3, 1.2, 4);
     // Room view uses the floor-plan Z mapping (threeZ = L − z), so Front is
     // far and the default camera looks along −Z: Left stays on the left.
     // Mic close-up keeps +Z = Front. phi: above-ground only.
-    var ROOM_THETA0 = 0;
-    var ROOM_PHI0 = 1.12;
-    var camSpherical = { theta: ROOM_THETA0, phi: ROOM_PHI0, radius: 14 };
+    env.ROOM_THETA0 = 0;
+    env.ROOM_PHI0 = 1.12;
+    env.camSpherical = { theta: env.ROOM_THETA0, phi: env.ROOM_PHI0, radius: 14 };
 
     // Lighting — soft studio feel
-    var amb = new THREE.AmbientLight(0xb0b8c8, 0.48);
-    scene.add(amb);
-    var key = new THREE.DirectionalLight(0xfff4e6, 1.05);
-    key.position.set(6, 12, 4);
-    key.castShadow = true;
-    key.shadow.mapSize.set(1024, 1024);
-    key.shadow.camera.near = 0.5;
-    key.shadow.camera.far = 40;
-    key.shadow.bias = -0.0005;
-    scene.add(key);
-    var fill = new THREE.DirectionalLight(0x88aaff, 0.28);
-    fill.position.set(-8, 4, -6);
-    scene.add(fill);
-    var rim = new THREE.PointLight(0x2dd4bf, 0.35, 30);
-    rim.position.set(0, 2.5, 0);
-    scene.add(rim);
+    env.amb = new env.THREE.AmbientLight(0xb0b8c8, 0.48);
+    env.scene.add(env.amb);
+    env.key = new env.THREE.DirectionalLight(0xfff4e6, 1.05);
+    env.key.position.set(6, 12, 4);
+    env.key.castShadow = true;
+    env.key.shadow.mapSize.set(1024, 1024);
+    env.key.shadow.camera.near = 0.5;
+    env.key.shadow.camera.far = 40;
+    env.key.shadow.bias = -0.0005;
+    env.scene.add(env.key);
+    env.fill = new env.THREE.DirectionalLight(0x88aaff, 0.28);
+    env.fill.position.set(-8, 4, -6);
+    env.scene.add(env.fill);
+    env.rim = new env.THREE.PointLight(0x2dd4bf, 0.35, 30);
+    env.rim.position.set(0, 2.5, 0);
+    env.scene.add(env.rim);
 
     // Room group (rebuilt on dim change)
-    var roomGroup = new THREE.Group();
-    scene.add(roomGroup);
-    var actors = new THREE.Group();
-    scene.add(actors);
-    var haloGroup = new THREE.Group();
-    scene.add(haloGroup);
-    var haloData = null;
-    var haloPlane = "top";
-    var srcMesh = null;
-    var srcMeshB = null;
-    var micStand = null;
-    var micCentre = null;
-    var micL = null;
-    var micR = null;
-    var coneL = null;
-    var coneC = null;
-    var coneR = null;
-    var srcCone = null;
-    var srcConeB = null;
-    var labelSprites = [];
+    env.roomGroup = new env.THREE.Group();
+    env.scene.add(env.roomGroup);
+    env.actors = new env.THREE.Group();
+    env.scene.add(env.actors);
+    env.haloGroup = new env.THREE.Group();
+    env.scene.add(env.haloGroup);
+    env.haloData = null;
+    env.haloPlane = "top";
+    env.srcMesh = null;
+    env.srcMeshB = null;
+    env.micStand = null;
+    env.micCentre = null;
+    env.micL = null;
+    env.micR = null;
+    env.coneL = null;
+    env.coneC = null;
+    env.coneR = null;
+    env.srcCone = null;
+    env.srcConeB = null;
+    env.labelSprites = [];
 
-    var lastWHL = { W: -1, H: -1, L: -1 };
-    var lastShell = "";
-    function worldZ(z, L) {
-      if (focusMic) return z;
-      return (L != null ? L : lastWHL.L) - z;
+    env.lastWHL = { W: -1, H: -1, L: -1 };
+    env.lastShell = "";
+    
+    env.drag = null; // { kind, planeY }
+    env.orbiting = false;
+    env.panning = false;
+    env.lastPtr = { x: 0, y: 0 };
+    env.hoverKind = null;
+    env.raycaster = new env.THREE.Raycaster();
+    env.pointerNDC = new env.THREE.Vector2();
+    env.floorPlane = new env.THREE.Plane(new env.THREE.Vector3(0, 1, 0), 0);
+    env.hitPoint = new env.THREE.Vector3();
+    env.needsRender = true;
+    env.raf = 0;
+    env.disposed = false;
+
+    env.canvas.addEventListener("pointerdown", bindPass(env, onPointerDown));
+    env.canvas.addEventListener("pointermove", bindPass(env, onPointerMove));
+    env.canvas.addEventListener("pointerup", bindPass(env, onPointerUp));
+    env.canvas.addEventListener("pointercancel", bindPass(env, onPointerUp));
+    env.canvas.addEventListener("wheel", bindPass(env, onWheel), { passive: false });
+    env.canvas.addEventListener("contextmenu", function (e) { e.preventDefault(); });
+
+    // Initial
+    enter(env, resize);
+    enter(env, rebuildRoom, 6, 3, 8);
+    enter(env, updateCamera);
+    enter(env, redraw);
+    env.raf = requestAnimationFrame(bindPass(env, frame));
+
+    env.ro = null;
+    if (typeof ResizeObserver !== "undefined") {
+      env.ro = new ResizeObserver(function () {
+        env.needsRender = true;
+      });
+      env.ro.observe(env.canvas.parentElement || env.canvas);
     }
-    var drag = null; // { kind, planeY }
-    var orbiting = false;
-    var panning = false;
-    var lastPtr = { x: 0, y: 0 };
-    var hoverKind = null;
-    var raycaster = new THREE.Raycaster();
-    var pointerNDC = new THREE.Vector2();
-    var floorPlane = new THREE.Plane(new THREE.Vector3(0, 1, 0), 0);
-    var hitPoint = new THREE.Vector3();
-    var needsRender = true;
-    var raf = 0;
-    var disposed = false;
 
-    function makeLabel(text, color, depthTest) {
+    env.api = {
+      redraw: bindPass(env, redraw),
+      setHalo: bindPass(env, setHalo),
+      setHaloPlane: bindPass(env, setHaloPlane),
+      capsuleWorld: bindPass(env, capsuleWorld),
+      resize: function () { env.needsRender = true; },
+      dispose: function () {
+        env.disposed = true;
+        cancelAnimationFrame(env.raf);
+        if (env.ro) env.ro.disconnect();
+        env.renderer.dispose();
+      },
+    };
+    env.canvas._room3d = env.api;
+    return env.api;
+  }
+  function worldZ(z, L) { var env = envStack[envStack.length - 1];
+      if (env.focusMic) return z;
+      return (L != null ? L : env.lastWHL.L) - z;
+    }
+  function makeLabel(text, color, depthTest) { var env = envStack[envStack.length - 1];
       var c = document.createElement("canvas");
       c.width = 128;
       c.height = 48;
@@ -132,19 +195,18 @@
       ctx.fill();
       ctx.fillStyle = color;
       ctx.fillText(text, 64, 25);
-      var tex = new THREE.CanvasTexture(c);
+      var tex = new env.THREE.CanvasTexture(c);
       tex.needsUpdate = true;
-      var mat = new THREE.SpriteMaterial({
+      var mat = new env.THREE.SpriteMaterial({
         map: tex,
         transparent: true,
         depthTest: !!depthTest,
       });
-      var spr = new THREE.Sprite(mat);
+      var spr = new env.THREE.Sprite(mat);
       spr.scale.set(0.85, 0.32, 1);
       return spr;
     }
-
-    function roundRect(ctx, x, y, w, h, r) {
+  function roundRect(ctx, x, y, w, h, r) { var env = envStack[envStack.length - 1];
       ctx.beginPath();
       ctx.moveTo(x + r, y);
       ctx.arcTo(x + w, y, x + w, y + h, r);
@@ -153,12 +215,10 @@
       ctx.arcTo(x, y, x + w, y, r);
       ctx.closePath();
     }
-
-    function mapRoom(p, L) {
+  function mapRoom(p, L) { var env = envStack[envStack.length - 1];
       return [p[0], p[1], worldZ(p[2], L)];
     }
-
-    function polyMesh(ring, material) {
+  function polyMesh(ring, material) { var env = envStack[envStack.length - 1];
       var positions = [];
       var i;
       for (i = 1; i < ring.length - 1; i++) {
@@ -166,22 +226,20 @@
         positions.push(ring[i][0], ring[i][1], ring[i][2]);
         positions.push(ring[i + 1][0], ring[i + 1][1], ring[i + 1][2]);
       }
-      var geo = new THREE.BufferGeometry();
-      geo.setAttribute("position", new THREE.Float32BufferAttribute(positions, 3));
+      var geo = new env.THREE.BufferGeometry();
+      geo.setAttribute("position", new env.THREE.Float32BufferAttribute(positions, 3));
       geo.computeVertexNormals();
-      return new THREE.Mesh(geo, material);
+      return new env.THREE.Mesh(geo, material);
     }
-
-    function loopLine(ring, material) {
-      var pts = ring.map(function (p) { return new THREE.Vector3(p[0], p[1], p[2]); });
+  function loopLine(ring, material) { var env = envStack[envStack.length - 1];
+      var pts = ring.map(function (p) { return new env.THREE.Vector3(p[0], p[1], p[2]); });
       pts.push(pts[0].clone());
-      return new THREE.Line(new THREE.BufferGeometry().setFromPoints(pts), material);
+      return new env.THREE.Line(new env.THREE.BufferGeometry().setFromPoints(pts), material);
     }
-
-    function rebuildRoom(W, H, L, shape, surfaces) {
-      while (roomGroup.children.length) {
-        var ch = roomGroup.children[0];
-        roomGroup.remove(ch);
+  function rebuildRoom(W, H, L, shape, surfaces) { var env = envStack[envStack.length - 1];
+      while (env.roomGroup.children.length) {
+        var ch = env.roomGroup.children[0];
+        env.roomGroup.remove(ch);
         if (ch.geometry) ch.geometry.dispose();
         if (ch.material) {
           var mats = Array.isArray(ch.material) ? ch.material : [ch.material];
@@ -197,35 +255,35 @@
         var spr = makeLabel(text, color, true);
         spr.position.set(x, y, z);
         spr.scale.set(1.2, 0.44, 1);
-        roomGroup.add(spr);
+        env.roomGroup.add(spr);
       }
 
       if (shape !== "box" && global.RoomDraw) {
         var faces = RoomDraw.polyFaces(shape, W, H, L);
-        var edgeMatS = new THREE.LineBasicMaterial({
+        var edgeMatS = new env.THREE.LineBasicMaterial({
           color: 0x5a6478,
           transparent: true,
           opacity: 0.7
         });
         var labelName = { A: ["Left", "#38bdf8"], B: ["Front", "#2dd4bf"], C: ["Right", "#a78bfa"], D: ["Back", "#fb7185"] };
         faces.forEach(function (face) {
-          var ring = face.v.map(function (p) { return mapRoom(p, L); });
+          var ring = face.v.map(function (p) { return enter(env, mapRoom, p, L); });
           var col = RoomDraw.wallColor(surfaces, face.letter);
           var floorFace = face.letter === "E";
-          var mat = new THREE.MeshStandardMaterial({
+          var mat = new env.THREE.MeshStandardMaterial({
             color: col,
             roughness: floorFace ? 0.92 : 0.88,
             metalness: 0.05,
             transparent: !floorFace,
             opacity: floorFace ? 1 : (face.letter === "F" ? 0.28 : 0.55),
-            side: THREE.DoubleSide,
+            side: env.THREE.DoubleSide,
             depthWrite: floorFace
           });
-          var mesh = polyMesh(ring, mat);
+          var mesh = enter(env, polyMesh, ring, mat);
           mesh.receiveShadow = true;
           if (floorFace) mesh.name = "floor";
-          roomGroup.add(mesh);
-          roomGroup.add(loopLine(ring, edgeMatS));
+          env.roomGroup.add(mesh);
+          env.roomGroup.add(enter(env, loopLine, ring, edgeMatS));
           var named = labelName[face.letter];
           if (!named) return;
           var c = [0, 0, 0];
@@ -240,7 +298,7 @@
             c[1] / n - face.n[1] * 0.2,
             c[2] / n - face.n[2] * 0.2
           ];
-          var tp = mapRoom(outP, L);
+          var tp = enter(env, mapRoom, outP, L);
           wallLabel(named[0], named[1], tp[0], tp[1], tp[2]);
         });
         var floorFace0 = faces[0];
@@ -252,54 +310,54 @@
         });
         var fn = floorFace0.v.length || 1;
         var f3 = mapRoom([fc[0] / fn, 0, fc[2] / fn], L);
-        var aoGeoS = new THREE.CircleGeometry(Math.min(W, L) * 0.4, 48);
+        var aoGeoS = new env.THREE.CircleGeometry(Math.min(W, L) * 0.4, 48);
         aoGeoS.rotateX(-Math.PI / 2);
-        var aoS = new THREE.Mesh(aoGeoS, new THREE.MeshBasicMaterial({
+        var aoS = new env.THREE.Mesh(aoGeoS, new env.THREE.MeshBasicMaterial({
           color: 0x000000, transparent: true, opacity: 0.22, depthWrite: false
         }));
         aoS.position.set(f3[0], 0.003, f3[2]);
-        roomGroup.add(aoS);
+        env.roomGroup.add(aoS);
       } else if (global.RoomDraw) {
-      var built = RoomDraw.room3dBoxGeometries(THREE, W, H, L, function (z) { return worldZ(z, L); });
+      var built = RoomDraw.room3dBoxGeometries(env.THREE, W, H, L, function (z) { return enter(env, worldZ, z, L); });
       // Floor with soft AO-ish dark edge via vertex colors feel: dark plane + grid
-      var floorMat = new THREE.MeshStandardMaterial({
+      var floorMat = new env.THREE.MeshStandardMaterial({
         color: COLORS.floor,
         roughness: 0.92,
         metalness: 0.05,
       });
-      var floor = RoomDraw.placePart(THREE, built.floor, floorMat);
+      var floor = RoomDraw.placePart(env.THREE, built.floor, floorMat);
       floor.receiveShadow = true;
       floor.name = "floor";
-      roomGroup.add(floor);
+      env.roomGroup.add(floor);
 
       // Grid helper sized to room
       var gridDiv = Math.max(4, Math.round(Math.max(W, L)));
-      var grid = new THREE.GridHelper(Math.max(W, L), gridDiv, 0x4a5568, 0x2a3140);
+      var grid = new env.THREE.GridHelper(Math.max(W, L), gridDiv, 0x4a5568, 0x2a3140);
       grid.position.set(W * 0.5, 0.002, L * 0.5);
       // Scale non-uniformly so grid matches W×L
       grid.scale.set(W / Math.max(W, L), 1, L / Math.max(W, L));
-      roomGroup.add(grid);
+      env.roomGroup.add(grid);
 
       // Subtle walls (transparent boxes / planes)
-      var wallMat = new THREE.MeshStandardMaterial({
+      var wallMat = new env.THREE.MeshStandardMaterial({
         color: COLORS.wall,
         transparent: true,
         opacity: 0.38,
         roughness: 0.88,
         metalness: 0.05,
-        side: THREE.DoubleSide,
+        side: env.THREE.DoubleSide,
         depthWrite: false,
       });
-      var edgeMat = new THREE.LineBasicMaterial({
+      var edgeMat = new env.THREE.LineBasicMaterial({
         color: 0x5a6478,
         transparent: true,
         opacity: 0.55,
       });
 
       ["front", "back", "left", "right"].forEach(function (name) {
-        var m = RoomDraw.placePart(THREE, built[name], wallMat.clone());
+        var m = RoomDraw.placePart(env.THREE, built[name], wallMat.clone());
         m.receiveShadow = true;
-        roomGroup.add(m);
+        env.roomGroup.add(m);
       });
       var ly = H * 0.5;
       var out = 0.15;
@@ -309,174 +367,173 @@
       wallLabel("Right", "#a78bfa", W + out, ly, L * 0.5);
 
       // Ceiling (very subtle)
-      var ceil = RoomDraw.placePart(THREE, built.ceil, new THREE.MeshStandardMaterial({
+      var ceil = RoomDraw.placePart(env.THREE, built.ceil, new env.THREE.MeshStandardMaterial({
         color: 0x161820,
         transparent: true,
         opacity: 0.18,
-        side: THREE.DoubleSide,
+        side: env.THREE.DoubleSide,
         depthWrite: false,
       }));
-      roomGroup.add(ceil);
+      env.roomGroup.add(ceil);
 
       // Wireframe room edges
-      roomGroup.add(RoomDraw.placePart(THREE, built.edges, edgeMat));
+      env.roomGroup.add(RoomDraw.placePart(env.THREE, built.edges, edgeMat));
 
       // Soft floor shadow disk (fake AO)
-      var aoGeo = new THREE.CircleGeometry(Math.min(W, L) * 0.55, 48);
+      var aoGeo = new env.THREE.CircleGeometry(Math.min(W, L) * 0.55, 48);
       aoGeo.rotateX(-Math.PI / 2);
-      var aoMat = new THREE.MeshBasicMaterial({
+      var aoMat = new env.THREE.MeshBasicMaterial({
         color: 0x000000,
         transparent: true,
         opacity: 0.22,
         depthWrite: false,
       });
-      var ao = new THREE.Mesh(aoGeo, aoMat);
+      var ao = new env.THREE.Mesh(aoGeo, aoMat);
       ao.position.set(W * 0.5, 0.003, L * 0.5);
-      roomGroup.add(ao);
+      env.roomGroup.add(ao);
       }
 
-      rim.position.set(W * 0.5, H * 0.75, L * 0.5);
-      key.shadow.camera.left = -Math.max(W, L);
-      key.shadow.camera.right = Math.max(W, L);
-      key.shadow.camera.top = Math.max(W, L);
-      key.shadow.camera.bottom = -Math.max(W, L);
-      key.shadow.camera.updateProjectionMatrix();
+      env.rim.position.set(W * 0.5, H * 0.75, L * 0.5);
+      env.key.shadow.camera.left = -Math.max(W, L);
+      env.key.shadow.camera.right = Math.max(W, L);
+      env.key.shadow.camera.top = Math.max(W, L);
+      env.key.shadow.camera.bottom = -Math.max(W, L);
+      env.key.shadow.camera.updateProjectionMatrix();
 
-      var first = lastWHL.W < 0;
-      lastWHL = { W: W, H: H, L: L };
-      lastShell = shape + "|" + W + "|" + H + "|" + L;
-      if (shape !== "box" && global.RoomDraw) lastShell += "|" + RoomDraw.colorKey(surfaces);
+      var first = env.lastWHL.W < 0;
+      env.lastWHL = { W: W, H: H, L: L };
+      env.lastShell = shape + "|" + W + "|" + H + "|" + L;
+      if (shape !== "box" && global.RoomDraw) env.lastShell += "|" + RoomDraw.colorKey(surfaces);
       var diag = Math.sqrt(W * W + H * H + L * L);
       var fogFar = Math.max(42, diag * 2.2);
-      scene.fog.near = fogFar * 0.4;
-      scene.fog.far = fogFar;
-      camera.far = Math.max(400, fogFar * 2);
-      camera.updateProjectionMatrix();
+      env.scene.fog.near = fogFar * 0.4;
+      env.scene.fog.far = fogFar;
+      env.camera.far = Math.max(400, fogFar * 2);
+      env.camera.updateProjectionMatrix();
       // Keep orbit when resizing; only re-centre / fit on first build
-      if (focusMic) {
+      if (env.focusMic) {
         /* close-up framing is applied each redraw from mic pose */
       } else if (first) {
-        camTarget.set(W * 0.5, H * 0.42, L * 0.5);
-        camSpherical.radius = Math.max(10, Math.max(L, H) * 1.05 + W * 0.55);
-        camSpherical.theta = ROOM_THETA0;
-        camSpherical.phi = ROOM_PHI0;
+        env.camTarget.set(W * 0.5, H * 0.42, L * 0.5);
+        env.camSpherical.radius = Math.max(10, Math.max(L, H) * 1.05 + W * 0.55);
+        env.camSpherical.theta = env.ROOM_THETA0;
+        env.camSpherical.phi = env.ROOM_PHI0;
       } else {
-        camTarget.x = W * 0.5;
-        camTarget.y = Math.min(camTarget.y, H * 0.9);
-        camTarget.z = L * 0.5;
+        env.camTarget.x = W * 0.5;
+        env.camTarget.y = Math.min(env.camTarget.y, H * 0.9);
+        env.camTarget.z = L * 0.5;
       }
     }
-
-    function ensureActors() {
-      if (srcMesh) return;
+  function ensureActors() { var env = envStack[envStack.length - 1];
+      if (env.srcMesh) return;
       // Source
-      var srcGeo = new THREE.SphereGeometry(0.14, 24, 16);
-      var srcMat = new THREE.MeshStandardMaterial({
+      var srcGeo = new env.THREE.SphereGeometry(0.14, 24, 16);
+      var srcMat = new env.THREE.MeshStandardMaterial({
         color: COLORS.src,
         emissive: COLORS.src,
         emissiveIntensity: 0.35,
         roughness: 0.35,
         metalness: 0.2,
       });
-      srcMesh = new THREE.Mesh(srcGeo, srcMat);
-      srcMesh.castShadow = true;
-      srcMesh.name = "source";
-      actors.add(srcMesh);
-      var srcShadow = new THREE.Mesh(
-        new THREE.CircleGeometry(0.2, 24),
-        new THREE.MeshBasicMaterial({ color: 0x000000, transparent: true, opacity: 0.35, depthWrite: false })
+      env.srcMesh = new env.THREE.Mesh(srcGeo, srcMat);
+      env.srcMesh.castShadow = true;
+      env.srcMesh.name = "source";
+      env.actors.add(env.srcMesh);
+      var srcShadow = new env.THREE.Mesh(
+        new env.THREE.CircleGeometry(0.2, 24),
+        new env.THREE.MeshBasicMaterial({ color: 0x000000, transparent: true, opacity: 0.35, depthWrite: false })
       );
       srcShadow.rotation.x = -Math.PI / 2;
       srcShadow.position.y = 0.015;
       srcShadow.name = "srcShadow";
-      actors.add(srcShadow);
-      actors.userData.srcShadow = srcShadow;
-      var srcStem = new THREE.Mesh(
-        new THREE.CylinderGeometry(0.012, 0.012, 1, 8),
-        new THREE.MeshStandardMaterial({
+      env.actors.add(srcShadow);
+      env.actors.userData.srcShadow = srcShadow;
+      var srcStem = new env.THREE.Mesh(
+        new env.THREE.CylinderGeometry(0.012, 0.012, 1, 8),
+        new env.THREE.MeshStandardMaterial({
           color: 0xfbbf24, transparent: true, opacity: 0.35, roughness: 0.6, metalness: 0.1,
         })
       );
       srcStem.name = "srcStem";
-      actors.add(srcStem);
-      actors.userData.srcStem = srcStem;
+      env.actors.add(srcStem);
+      env.actors.userData.srcStem = srcStem;
       var srcLabel = makeLabel("Src", "#fbbf24");
       srcLabel.position.y = 0.38;
-      srcMesh.add(srcLabel);
-      labelSprites.push(srcLabel);
-      actors.userData.srcLabel = srcLabel;
+      env.srcMesh.add(srcLabel);
+      env.labelSprites.push(srcLabel);
+      env.actors.userData.srcLabel = srcLabel;
       var srcLabelA = makeLabel("A", "#fbbf24");
       srcLabelA.position.y = 0.38;
       srcLabelA.visible = false;
-      srcMesh.add(srcLabelA);
-      labelSprites.push(srcLabelA);
-      actors.userData.srcLabelA = srcLabelA;
+      env.srcMesh.add(srcLabelA);
+      env.labelSprites.push(srcLabelA);
+      env.actors.userData.srcLabelA = srcLabelA;
 
-      var srcGeoB = new THREE.SphereGeometry(0.13, 24, 16);
-      var srcMatB = new THREE.MeshStandardMaterial({
+      var srcGeoB = new env.THREE.SphereGeometry(0.13, 24, 16);
+      var srcMatB = new env.THREE.MeshStandardMaterial({
         color: COLORS.srcB,
         emissive: COLORS.srcB,
         emissiveIntensity: 0.35,
         roughness: 0.35,
         metalness: 0.2,
       });
-      srcMeshB = new THREE.Mesh(srcGeoB, srcMatB);
-      srcMeshB.castShadow = true;
-      srcMeshB.name = "sourceB";
-      srcMeshB.visible = false;
-      actors.add(srcMeshB);
-      var srcShadowB = new THREE.Mesh(
-        new THREE.CircleGeometry(0.18, 24),
-        new THREE.MeshBasicMaterial({ color: 0x000000, transparent: true, opacity: 0.35, depthWrite: false })
+      env.srcMeshB = new env.THREE.Mesh(srcGeoB, srcMatB);
+      env.srcMeshB.castShadow = true;
+      env.srcMeshB.name = "sourceB";
+      env.srcMeshB.visible = false;
+      env.actors.add(env.srcMeshB);
+      var srcShadowB = new env.THREE.Mesh(
+        new env.THREE.CircleGeometry(0.18, 24),
+        new env.THREE.MeshBasicMaterial({ color: 0x000000, transparent: true, opacity: 0.35, depthWrite: false })
       );
       srcShadowB.rotation.x = -Math.PI / 2;
       srcShadowB.position.y = 0.015;
       srcShadowB.name = "srcShadowB";
       srcShadowB.visible = false;
-      actors.add(srcShadowB);
-      actors.userData.srcShadowB = srcShadowB;
-      var srcStemB = new THREE.Mesh(
-        new THREE.CylinderGeometry(0.012, 0.012, 1, 8),
-        new THREE.MeshStandardMaterial({
+      env.actors.add(srcShadowB);
+      env.actors.userData.srcShadowB = srcShadowB;
+      var srcStemB = new env.THREE.Mesh(
+        new env.THREE.CylinderGeometry(0.012, 0.012, 1, 8),
+        new env.THREE.MeshStandardMaterial({
           color: COLORS.srcB, transparent: true, opacity: 0.35, roughness: 0.6, metalness: 0.1,
         })
       );
       srcStemB.name = "srcStemB";
       srcStemB.visible = false;
-      actors.add(srcStemB);
-      actors.userData.srcStemB = srcStemB;
+      env.actors.add(srcStemB);
+      env.actors.userData.srcStemB = srcStemB;
       var srcLabelB = makeLabel("B", "#f43f5e");
       srcLabelB.position.y = 0.38;
-      srcMeshB.add(srcLabelB);
-      labelSprites.push(srcLabelB);
+      env.srcMeshB.add(srcLabelB);
+      env.labelSprites.push(srcLabelB);
 
       // Mic stand group
-      micStand = new THREE.Group();
-      micStand.name = "mic";
-      actors.add(micStand);
+      env.micStand = new env.THREE.Group();
+      env.micStand.name = "mic";
+      env.actors.add(env.micStand);
 
-      var poleGeo = new THREE.CylinderGeometry(0.018, 0.022, 1, 10);
-      var poleMat = new THREE.MeshStandardMaterial({
+      var poleGeo = new env.THREE.CylinderGeometry(0.018, 0.022, 1, 10);
+      var poleMat = new env.THREE.MeshStandardMaterial({
         color: 0x8b92a5,
         roughness: 0.55,
         metalness: 0.45,
       });
-      var pole = new THREE.Mesh(poleGeo, poleMat);
+      var pole = new env.THREE.Mesh(poleGeo, poleMat);
       pole.name = "pole";
       pole.castShadow = true;
-      micStand.add(pole);
+      env.micStand.add(pole);
 
-      var baseGeo = new THREE.CylinderGeometry(0.12, 0.14, 0.03, 16);
-      var base = new THREE.Mesh(baseGeo, poleMat);
+      var baseGeo = new env.THREE.CylinderGeometry(0.12, 0.14, 0.03, 16);
+      var base = new env.THREE.Mesh(baseGeo, poleMat);
       base.position.y = 0.015;
-      micStand.add(base);
+      env.micStand.add(base);
 
       function capsule(color, name) {
-        var g = new THREE.Group();
+        var g = new env.THREE.Group();
         g.name = name;
-        var body = new THREE.Mesh(
-          new THREE.SphereGeometry(0.07, 16, 12),
-          new THREE.MeshStandardMaterial({
+        var body = new env.THREE.Mesh(
+          new env.THREE.SphereGeometry(0.07, 16, 12),
+          new env.THREE.MeshStandardMaterial({
             color: color,
             emissive: color,
             emissiveIntensity: 0.2,
@@ -488,33 +545,33 @@
         g.add(body);
         return g;
       }
-      micCentre = capsule(COLORS.mic, "micCentre");
-      micL = capsule(COLORS.L, "micL");
-      micR = capsule(COLORS.R, "micR");
-      micStand.add(micCentre);
-      micStand.add(micL);
-      micStand.add(micR);
+      env.micCentre = capsule(COLORS.mic, "micCentre");
+      env.micL = capsule(COLORS.L, "micL");
+      env.micR = capsule(COLORS.R, "micR");
+      env.micStand.add(env.micCentre);
+      env.micStand.add(env.micL);
+      env.micStand.add(env.micR);
 
       var micLabel = makeLabel("Mic", "#60a5fa");
       micLabel.position.y = 0.28;
-      micCentre.add(micLabel);
-      labelSprites.push(micLabel);
+      env.micCentre.add(micLabel);
+      env.labelSprites.push(micLabel);
 
       var lLab = makeLabel("L", "#a78bfa");
       lLab.position.y = 0.22;
       lLab.scale.set(0.55, 0.22, 1);
-      micL.add(lLab);
+      env.micL.add(lLab);
       var rLab = makeLabel("R", "#34d399");
       rLab.position.y = 0.22;
       rLab.scale.set(0.55, 0.22, 1);
-      micR.add(rLab);
+      env.micR.add(rLab);
 
       // Look cones (open toward +Z with toe-in)
       function lookCone(color) {
-        var geo = new THREE.ConeGeometry(0.28, 0.7, 20, 1, true);
+        var geo = new env.THREE.ConeGeometry(0.28, 0.7, 20, 1, true);
         geo.translate(0, -0.275, 0);
         geo.rotateX(-Math.PI / 2);
-        var mat = new THREE.MeshStandardMaterial({
+        var mat = new env.THREE.MeshStandardMaterial({
           color: color,
           transparent: true,
           opacity: 0.42,
@@ -522,24 +579,24 @@
           emissiveIntensity: 0.15,
           roughness: 1,
           metalness: 0,
-          side: THREE.DoubleSide,
+          side: env.THREE.DoubleSide,
           depthWrite: false,
         });
-        var m = new THREE.Mesh(geo, mat);
+        var m = new env.THREE.Mesh(geo, mat);
         return m;
       }
-      coneL = lookCone(COLORS.L);
-      coneC = lookCone(COLORS.C);
-      coneR = lookCone(COLORS.R);
-      micL.add(coneL);
-      micCentre.add(coneC);
-      micR.add(coneR);
+      env.coneL = lookCone(COLORS.L);
+      env.coneC = lookCone(COLORS.C);
+      env.coneR = lookCone(COLORS.R);
+      env.micL.add(env.coneL);
+      env.micCentre.add(env.coneC);
+      env.micR.add(env.coneR);
 
       function sourceCone(color) {
-        var geo = new THREE.ConeGeometry(0.12, 0.48, 16, 1, true);
+        var geo = new env.THREE.ConeGeometry(0.12, 0.48, 16, 1, true);
         geo.translate(0, -0.2, 0);
         geo.rotateX(-Math.PI / 2);
-        var mat = new THREE.MeshStandardMaterial({
+        var mat = new env.THREE.MeshStandardMaterial({
           color: color,
           transparent: true,
           opacity: 0.55,
@@ -547,40 +604,39 @@
           emissiveIntensity: 0.2,
           roughness: 1,
           metalness: 0,
-          side: THREE.DoubleSide,
+          side: env.THREE.DoubleSide,
           depthWrite: false,
         });
-        var m = new THREE.Mesh(geo, mat);
+        var m = new env.THREE.Mesh(geo, mat);
         m.visible = false;
-        actors.add(m);
+        env.actors.add(m);
         return m;
       }
-      srcCone = sourceCone(COLORS.src);
-      srcConeB = sourceCone(COLORS.srcB);
+      env.srcCone = sourceCone(COLORS.src);
+      env.srcConeB = sourceCone(COLORS.srcB);
 
       // Floor path line Src → Mic (XZ)
-      var linkGeo = new THREE.BufferGeometry().setFromPoints([
-        new THREE.Vector3(0, 0.01, 0),
-        new THREE.Vector3(0, 0.01, 1),
+      var linkGeo = new env.THREE.BufferGeometry().setFromPoints([
+        new env.THREE.Vector3(0, 0.01, 0),
+        new env.THREE.Vector3(0, 0.01, 1),
       ]);
-      var linkMat = new THREE.LineBasicMaterial({
+      var linkMat = new env.THREE.LineBasicMaterial({
         color: 0x2dd4bf,
         transparent: true,
         opacity: 0.35,
       });
-      actors.userData.link = new THREE.Line(linkGeo, linkMat);
-      actors.add(actors.userData.link);
+      env.actors.userData.link = new env.THREE.Line(linkGeo, linkMat);
+      env.actors.add(env.actors.userData.link);
 
       // Crossbar
-      var bar = new THREE.Mesh(
-        new THREE.BoxGeometry(1, 0.015, 0.015),
-        new THREE.MeshStandardMaterial({ color: 0x6b7280, metalness: 0.5, roughness: 0.4 })
+      var bar = new env.THREE.Mesh(
+        new env.THREE.BoxGeometry(1, 0.015, 0.015),
+        new env.THREE.MeshStandardMaterial({ color: 0x6b7280, metalness: 0.5, roughness: 0.4 })
       );
       bar.name = "crossbar";
-      micStand.add(bar);
+      env.micStand.add(bar);
     }
-
-    function updateActors(geo) {
+  function updateActors(geo) { var env = envStack[envStack.length - 1];
       ensureActors();
       var s = geo.state;
       // Same geo as Floor / Side: source.y = sy, mic_centre.y = my.
@@ -588,18 +644,18 @@
       var sy = geo.source.y;
       var my = geo.mic_centre.y;
 
-      srcMesh.position.set(geo.source.x, sy, worldZ(geo.source.z, s.L));
-      srcMesh.visible = true;
-      if (actors.userData.srcLabel) actors.userData.srcLabel.visible = !geo.source_b;
-      if (actors.userData.srcLabelA) actors.userData.srcLabelA.visible = !!geo.source_b;
-      if (actors.userData.srcShadow) {
-        actors.userData.srcShadow.visible = true;
-        actors.userData.srcShadow.position.set(geo.source.x, 0.015, worldZ(geo.source.z, s.L));
+      env.srcMesh.position.set(geo.source.x, sy, worldZ(geo.source.z, s.L));
+      env.srcMesh.visible = true;
+      if (env.actors.userData.srcLabel) env.actors.userData.srcLabel.visible = !geo.source_b;
+      if (env.actors.userData.srcLabelA) env.actors.userData.srcLabelA.visible = !!geo.source_b;
+      if (env.actors.userData.srcShadow) {
+        env.actors.userData.srcShadow.visible = true;
+        env.actors.userData.srcShadow.position.set(geo.source.x, 0.015, worldZ(geo.source.z, s.L));
       }
-      if (actors.userData.srcStem) {
-        actors.userData.srcStem.visible = true;
-        actors.userData.srcStem.position.set(geo.source.x, sy * 0.5, worldZ(geo.source.z, s.L));
-        actors.userData.srcStem.scale.y = Math.max(0.05, sy);
+      if (env.actors.userData.srcStem) {
+        env.actors.userData.srcStem.visible = true;
+        env.actors.userData.srcStem.position.set(geo.source.x, sy * 0.5, worldZ(geo.source.z, s.L));
+        env.actors.userData.srcStem.scale.y = Math.max(0.05, sy);
       }
       var showB = !!geo.source_b;
       if (showB) {
@@ -608,30 +664,30 @@
         var bz = geo.source.z - geo.source_b.z;
         if (bx * bx + bys * bys + bz * bz < 1e-4) showB = false;
       }
-      if (srcMeshB) {
-        srcMeshB.visible = showB;
+      if (env.srcMeshB) {
+        env.srcMeshB.visible = showB;
         if (showB) {
           var by = geo.source_b.y;
-          srcMeshB.position.set(geo.source_b.x, by, worldZ(geo.source_b.z, s.L));
+          env.srcMeshB.position.set(geo.source_b.x, by, worldZ(geo.source_b.z, s.L));
         }
       }
-      if (actors.userData.srcShadowB) {
-        actors.userData.srcShadowB.visible = showB;
+      if (env.actors.userData.srcShadowB) {
+        env.actors.userData.srcShadowB.visible = showB;
         if (showB) {
-          actors.userData.srcShadowB.position.set(geo.source_b.x, 0.015, worldZ(geo.source_b.z, s.L));
+          env.actors.userData.srcShadowB.position.set(geo.source_b.x, 0.015, worldZ(geo.source_b.z, s.L));
         }
       }
-      if (actors.userData.srcStemB) {
-        actors.userData.srcStemB.visible = showB;
+      if (env.actors.userData.srcStemB) {
+        env.actors.userData.srcStemB.visible = showB;
         if (showB) {
           var by2 = geo.source_b.y;
-          actors.userData.srcStemB.position.set(geo.source_b.x, by2 * 0.5, worldZ(geo.source_b.z, s.L));
-          actors.userData.srcStemB.scale.y = Math.max(0.05, by2);
+          env.actors.userData.srcStemB.position.set(geo.source_b.x, by2 * 0.5, worldZ(geo.source_b.z, s.L));
+          env.actors.userData.srcStemB.scale.y = Math.max(0.05, by2);
         }
       }
 
-      micStand.position.set(geo.mic_centre.x, 0, worldZ(geo.mic_centre.z, s.L));
-      var pole = micStand.getObjectByName("pole");
+      env.micStand.position.set(geo.mic_centre.x, 0, worldZ(geo.mic_centre.z, s.L));
+      var pole = env.micStand.getObjectByName("pole");
       if (pole) {
         pole.scale.y = Math.max(0.05, my);
         pole.position.y = my * 0.5;
@@ -641,7 +697,7 @@
       /* On-stand locals stay (0, y, ±dz), (−half, y, 0), (half, y, 0).
          A Room strip is offset from this stand group to its room spot.
          spot world Z uses the same worldZ as the stand. */
-      var standWorld = { x: micStand.position.x, z: micStand.position.z };
+      var standWorld = { x: env.micStand.position.x, z: env.micStand.position.z };
       function putCapsule(mesh, cap, lx, ly, lz) {
         var pose = global.RRViewPose;
         var room = !!(pose && pose.isRoom && pose.isRoom(s, cap));
@@ -660,10 +716,10 @@
         );
         mesh.position.set(local.x, local.y, local.z);
       }
-      putCapsule(micCentre, "c", 0, geo.mic_centre.y, focusMic ? dz : -dz);
-      putCapsule(micL, "l", -half, geo.mic_left.y, 0);
-      putCapsule(micR, "r", half, geo.mic_right.y, 0);
-      var bar = micStand.getObjectByName("crossbar");
+      putCapsule(env.micCentre, "c", 0, geo.mic_centre.y, env.focusMic ? dz : -dz);
+      putCapsule(env.micL, "l", -half, geo.mic_left.y, 0);
+      putCapsule(env.micR, "r", half, geo.mic_right.y, 0);
+      var bar = env.micStand.getObjectByName("crossbar");
       if (bar) {
         bar.position.set(0, my, 0);
         bar.scale.x = Math.max(0.05, s.space);
@@ -672,7 +728,7 @@
       // Orient look cones from look vectors (XZ). Same aim for stand and room.
       function aim(cone, look) {
         if (!cone) return;
-        var yaw = Math.atan2(look.x, focusMic ? look.z : -look.z);
+        var yaw = Math.atan2(look.x, env.focusMic ? look.z : -look.z);
         cone.rotation.set(0, yaw, 0);
       }
       function roomLook(cap, standLook) {
@@ -683,9 +739,9 @@
         var rad = (Number(spot.yaw) || 0) * Math.PI / 180;
         return global.RRLook.lookFromYaw(rad);
       }
-      aim(coneL, roomLook("l", geo.look_l));
-      aim(coneC, roomLook("c", geo.look_c || { x: 0, z: 1 }));
-      aim(coneR, roomLook("r", geo.look_r));
+      aim(env.coneL, roomLook("l", geo.look_l));
+      aim(env.coneC, roomLook("c", geo.look_c || { x: 0, z: 1 }));
+      aim(env.coneR, roomLook("r", geo.look_r));
 
       function aimSource(cone, origin, yawDeg, pitchDeg, show) {
         if (!cone) return;
@@ -703,196 +759,177 @@
         return String(id || "omni").toLowerCase() !== "omni";
       }
       var poseB = global.RoomMath.effectiveBPose(s);
-      aimSource(srcCone, srcMesh.position, s.source_yaw, s.source_pitch, srcShow(s.source_radiation));
-      if (srcConeB) {
-        var originB = showB && srcMeshB ? srcMeshB.position : srcMesh.position;
+      aimSource(env.srcCone, env.srcMesh.position, s.source_yaw, s.source_pitch, srcShow(s.source_radiation));
+      if (env.srcConeB) {
+        var originB = showB && env.srcMeshB ? env.srcMeshB.position : env.srcMesh.position;
         aimSource(
-          srcConeB, originB, poseB.yaw, poseB.pitch,
+          env.srcConeB, originB, poseB.yaw, poseB.pitch,
           showB && srcShow(poseB.preset)
         );
       }
 
-      if (actors.userData.link) {
-        var pts = actors.userData.link.geometry.attributes.position;
+      if (env.actors.userData.link) {
+        var pts = env.actors.userData.link.geometry.attributes.position;
         pts.setXYZ(0, geo.source.x, 0.02, worldZ(geo.source.z, s.L));
         pts.setXYZ(1, geo.mic_centre.x, 0.02, worldZ(geo.mic_centre.z, s.L));
         pts.needsUpdate = true;
       }
     }
-
-    function updateCamera() {
-      var s = camSpherical;
+  function updateCamera() { var env = envStack[envStack.length - 1];
+      var s = env.camSpherical;
       s.radius = Math.max(2.5, Math.min(220, s.radius));
-      camera.up.set(0, 1, 0);
-      if (focusMic) {
+      env.camera.up.set(0, 1, 0);
+      if (env.focusMic) {
         s.phi = Math.max(0.12, Math.min(Math.PI * 0.48, s.phi));
       } else {
         /* Room: above the floor only. ε < phi ≤ π/2 (ceiling down to horizon). */
         s.phi = Math.max(0.08, Math.min(Math.PI / 2, s.phi));
       }
       var sinPhi = Math.sin(s.phi);
-      camera.position.set(
-        camTarget.x + s.radius * sinPhi * Math.sin(s.theta),
-        camTarget.y + s.radius * Math.cos(s.phi),
-        camTarget.z + s.radius * sinPhi * Math.cos(s.theta)
+      env.camera.position.set(
+        env.camTarget.x + s.radius * sinPhi * Math.sin(s.theta),
+        env.camTarget.y + s.radius * Math.cos(s.phi),
+        env.camTarget.z + s.radius * sinPhi * Math.cos(s.theta)
       );
-      camera.lookAt(camTarget);
+      env.camera.lookAt(env.camTarget);
     }
-
-    function resize() {
-      var rect = canvas.getBoundingClientRect();
+  function resize() { var env = envStack[envStack.length - 1];
+      var rect = env.canvas.getBoundingClientRect();
       var w = Math.max(2, Math.floor(rect.width * (global.devicePixelRatio || 1)));
       var h = Math.max(2, Math.floor(rect.height * (global.devicePixelRatio || 1)));
       // Use CSS size for aspect; set drawing buffer
       var cssW = Math.max(2, Math.floor(rect.width));
       var cssH = Math.max(2, Math.floor(rect.height));
-      if (canvas.width !== cssW * Math.min(global.devicePixelRatio || 1, 2) ||
-          canvas.height !== cssH * Math.min(global.devicePixelRatio || 1, 2)) {
-        renderer.setSize(cssW, cssH, false);
+      if (env.canvas.width !== cssW * Math.min(global.devicePixelRatio || 1, 2) ||
+          env.canvas.height !== cssH * Math.min(global.devicePixelRatio || 1, 2)) {
+        env.renderer.setSize(cssW, cssH, false);
       }
-      camera.aspect = cssW / Math.max(1, cssH);
-      camera.updateProjectionMatrix();
-      needsRender = true;
+      env.camera.aspect = cssW / Math.max(1, cssH);
+      env.camera.updateProjectionMatrix();
+      env.needsRender = true;
     }
-
-    function setPointerFromEvent(evt) {
-      var rect = canvas.getBoundingClientRect();
-      pointerNDC.x = ((evt.clientX - rect.left) / rect.width) * 2 - 1;
-      pointerNDC.y = -((evt.clientY - rect.top) / rect.height) * 2 + 1;
+  function setPointerFromEvent(evt) { var env = envStack[envStack.length - 1];
+      var rect = env.canvas.getBoundingClientRect();
+      env.pointerNDC.x = ((evt.clientX - rect.left) / rect.width) * 2 - 1;
+      env.pointerNDC.y = -((evt.clientY - rect.top) / rect.height) * 2 + 1;
     }
-
-    function rayHitFloor(planeY) {
-      floorPlane.constant = -planeY;
-      floorPlane.normal.set(0, 1, 0);
-      raycaster.setFromCamera(pointerNDC, camera);
-      if (raycaster.ray.intersectPlane(floorPlane, hitPoint)) {
-        return hitPoint;
+  function rayHitFloor(planeY) { var env = envStack[envStack.length - 1];
+      env.floorPlane.constant = -planeY;
+      env.floorPlane.normal.set(0, 1, 0);
+      env.raycaster.setFromCamera(env.pointerNDC, env.camera);
+      if (env.raycaster.ray.intersectPlane(env.floorPlane, env.hitPoint)) {
+        return env.hitPoint;
       }
       return null;
     }
-
-    function pickActor() {
-      raycaster.setFromCamera(pointerNDC, camera);
+  function pickActor() { var env = envStack[envStack.length - 1];
+      env.raycaster.setFromCamera(env.pointerNDC, env.camera);
       var targets = [];
-      if (srcMesh) targets.push(srcMesh);
-      if (micStand) targets.push(micStand);
-      var hits = raycaster.intersectObjects(targets, true);
+      if (env.srcMesh) targets.push(env.srcMesh);
+      if (env.micStand) targets.push(env.micStand);
+      var hits = env.raycaster.intersectObjects(targets, true);
       if (!hits.length) return null;
       var obj = hits[0].object;
       while (obj) {
-        if (obj === srcMesh || obj.name === "source") return "source";
-        if (obj === micStand || obj.name === "mic") return "mic";
+        if (obj === env.srcMesh || obj.name === "source") return "source";
+        if (obj === env.micStand || obj.name === "mic") return "mic";
         obj = obj.parent;
       }
       return null;
     }
-
-    function applyXZ(kind, x, z) {
-      var st = Object.assign({}, getState());
+  function applyXZ(kind, x, z) { var env = envStack[envStack.length - 1];
+      var st = Object.assign({}, env.getState());
       if (kind === "source") {
-        st.sx = RoomMath.clamp(x, 0, st.W);
-        st.sz = RoomMath.clamp(z, 0, st.L);
+        st.sx = env.RoomMath.clamp(x, 0, st.W);
+        st.sz = env.RoomMath.clamp(z, 0, st.L);
       } else {
-        st.mcx = RoomMath.clamp(x, 0, st.W);
-        st.mcz = RoomMath.clamp(z, 0, st.L);
+        st.mcx = env.RoomMath.clamp(x, 0, st.W);
+        st.mcz = env.RoomMath.clamp(z, 0, st.L);
       }
-      setState(RoomMath.clampRoom(st));
-      onChange();
-      needsRender = true;
+      env.setState(env.RoomMath.clampRoom(st));
+      env.onChange();
+      env.needsRender = true;
     }
-
-    function onPointerDown(evt) {
+  function onPointerDown(evt) { var env = envStack[envStack.length - 1];
       setPointerFromEvent(evt);
-      lastPtr.x = evt.clientX;
-      lastPtr.y = evt.clientY;
+      env.lastPtr.x = evt.clientX;
+      env.lastPtr.y = evt.clientY;
 
       // Camera only: no source/mic placement in 3D (use Floor / Side / Mic tab).
       // Left = orbit; Shift+left = pan; RMB/MMB/Alt+left = orbit; scroll = zoom.
       if (evt.button === 0 && evt.shiftKey) {
-        panning = true;
-        canvas.classList.add("dragging");
-        try { canvas.setPointerCapture(evt.pointerId); } catch (e) {}
+        env.panning = true;
+        env.canvas.classList.add("dragging");
+        try { env.canvas.setPointerCapture(evt.pointerId); } catch (e) {}
         evt.preventDefault();
         return;
       }
       if (evt.button === 0 || evt.button === 2 || evt.button === 1) {
-        orbiting = true;
-        canvas.classList.add("dragging");
-        try { canvas.setPointerCapture(evt.pointerId); } catch (e) {}
+        env.orbiting = true;
+        env.canvas.classList.add("dragging");
+        try { env.canvas.setPointerCapture(evt.pointerId); } catch (e) {}
         evt.preventDefault();
         return;
       }
     }
-
-    function onPointerMove(evt) {
+  function onPointerMove(evt) { var env = envStack[envStack.length - 1];
       setPointerFromEvent(evt);
-      var dx = evt.clientX - lastPtr.x;
-      var dy = evt.clientY - lastPtr.y;
-      lastPtr.x = evt.clientX;
-      lastPtr.y = evt.clientY;
+      var dx = evt.clientX - env.lastPtr.x;
+      var dy = evt.clientY - env.lastPtr.y;
+      env.lastPtr.x = evt.clientX;
+      env.lastPtr.y = evt.clientY;
 
-      if (orbiting) {
-        camSpherical.theta -= dx * 0.008;
-        if (focusMic) {
-          camSpherical.phi += dy * 0.008;
+      if (env.orbiting) {
+        env.camSpherical.theta -= dx * 0.008;
+        if (env.focusMic) {
+          env.camSpherical.phi += dy * 0.008;
         } else {
-          camSpherical.phi -= dy * 0.008;
+          env.camSpherical.phi -= dy * 0.008;
         }
         updateCamera();
-        needsRender = true;
+        env.needsRender = true;
         return;
       }
-      if (panning) {
-        var forward = new THREE.Vector3();
-        camera.getWorldDirection(forward);
-        var right = new THREE.Vector3().crossVectors(forward, camera.up).normalize();
-        var up = new THREE.Vector3().copy(camera.up).normalize();
-        var scale = camSpherical.radius * 0.0018;
-        camTarget.addScaledVector(right, -dx * scale);
-        camTarget.addScaledVector(up, dy * scale);
+      if (env.panning) {
+        var forward = new env.THREE.Vector3();
+        env.camera.getWorldDirection(forward);
+        var right = new env.THREE.Vector3().crossVectors(forward, env.camera.up).normalize();
+        var up = new env.THREE.Vector3().copy(env.camera.up).normalize();
+        var scale = env.camSpherical.radius * 0.0018;
+        env.camTarget.addScaledVector(right, -dx * scale);
+        env.camTarget.addScaledVector(up, dy * scale);
         updateCamera();
-        needsRender = true;
+        env.needsRender = true;
         return;
       }
       // No object drag in 3D — cursor stays default / grabbing while orbiting
-      if (!orbiting && !panning) {
-        canvas.style.cursor = "grab";
+      if (!env.orbiting && !env.panning) {
+        env.canvas.style.cursor = "grab";
       }
     }
-
-    function onPointerUp(evt) {
-      drag = null;
-      orbiting = false;
-      panning = false;
-      canvas.classList.remove("dragging");
-      needsRender = true;
+  function onPointerUp(evt) { var env = envStack[envStack.length - 1];
+      env.drag = null;
+      env.orbiting = false;
+      env.panning = false;
+      env.canvas.classList.remove("dragging");
+      env.needsRender = true;
     }
-
-    function onWheel(evt) {
+  function onWheel(evt) { var env = envStack[envStack.length - 1];
       evt.preventDefault();
       var factor = evt.deltaY > 0 ? 1.08 : 1 / 1.08;
-      camSpherical.radius *= factor;
+      env.camSpherical.radius *= factor;
       updateCamera();
-      needsRender = true;
+      env.needsRender = true;
     }
-
-    canvas.addEventListener("pointerdown", onPointerDown);
-    canvas.addEventListener("pointermove", onPointerMove);
-    canvas.addEventListener("pointerup", onPointerUp);
-    canvas.addEventListener("pointercancel", onPointerUp);
-    canvas.addEventListener("wheel", onWheel, { passive: false });
-    canvas.addEventListener("contextmenu", function (e) { e.preventDefault(); });
-
-    function clearHalo() {
-      while (haloGroup.children.length) {
-        var ch = haloGroup.children[0];
-        haloGroup.remove(ch);
+  function clearHalo() { var env = envStack[envStack.length - 1];
+      while (env.haloGroup.children.length) {
+        var ch = env.haloGroup.children[0];
+        env.haloGroup.remove(ch);
         if (ch.geometry) ch.geometry.dispose();
         if (ch.material) ch.material.dispose();
       }
     }
-
-    function sampleMag(row, theta) {
+  function sampleMag(row, theta) { var env = envStack[envStack.length - 1];
       var n = row.length;
       var ang = Math.abs(theta);
       var turns = ang / (Math.PI * 2);
@@ -906,16 +943,15 @@
       if (!isFinite(b)) b = 0;
       return a * (1 - f) + b * f;
     }
-
-    function rebuildHalo(geo) {
+  function rebuildHalo(geo) { var env = envStack[envStack.length - 1];
       clearHalo();
-      if (!focusMic || !haloData || !geo || !geo.mic_centre) return;
-      var freqs = haloData.centres_hz || [];
-      var gL = haloData.L, gC = haloData.C, gR = haloData.R;
+      if (!env.focusMic || !env.haloData || !geo || !geo.mic_centre) return;
+      var freqs = env.haloData.centres_hz || [];
+      var gL = env.haloData.L, gC = env.haloData.C, gR = env.haloData.R;
       if (!gL || !gL.length || !freqs.length) return;
-      camera.updateMatrixWorld(true);
-      var right = new THREE.Vector3().setFromMatrixColumn(camera.matrixWorld, 0);
-      var up = new THREE.Vector3().setFromMatrixColumn(camera.matrixWorld, 1);
+      env.camera.updateMatrixWorld(true);
+      var right = new env.THREE.Vector3().setFromMatrixColumn(env.camera.matrixWorld, 0);
+      var up = new env.THREE.Vector3().setFromMatrixColumn(env.camera.matrixWorld, 1);
       var nB = Math.min(freqs.length, gL.length, (gC || gL).length, (gR || gL).length);
       var nAz = 96;
       var c = geo.mic_centre;
@@ -967,15 +1003,15 @@
           var k = ai % nAz;
           phi = (k / nAz) * Math.PI * 2;
           var rad = rings[bi][k] / peak * reach;
-          pts.push(new THREE.Vector3(
+          pts.push(new env.THREE.Vector3(
             c.x + (Math.cos(phi) * right.x + Math.sin(phi) * up.x) * rad,
             c.y + (Math.cos(phi) * right.y + Math.sin(phi) * up.y) * rad,
             c.z + (Math.cos(phi) * right.z + Math.sin(phi) * up.z) * rad
           ));
         }
-        haloGroup.add(new THREE.Line(
-          new THREE.BufferGeometry().setFromPoints(pts),
-          new THREE.LineBasicMaterial({
+        env.haloGroup.add(new env.THREE.Line(
+          new env.THREE.BufferGeometry().setFromPoints(pts),
+          new env.THREE.LineBasicMaterial({
             color: (global.FreqPalette ? global.FreqPalette.intAt(bi, nB) : 0xe11d48),
             transparent: true,
             opacity: 0.92
@@ -983,105 +1019,84 @@
         ));
       }
     }
-
-    function frameHalo() {
-      if (!focusMic || !haloGroup || !haloGroup.children.length) return;
-      var box = new THREE.Box3().setFromObject(haloGroup);
+  function frameHalo() { var env = envStack[envStack.length - 1];
+      if (!env.focusMic || !env.haloGroup || !env.haloGroup.children.length) return;
+      var box = new env.THREE.Box3().setFromObject(env.haloGroup);
       if (box.isEmpty()) return;
-      var sphere = box.getBoundingSphere(new THREE.Sphere());
+      var sphere = box.getBoundingSphere(new env.THREE.Sphere());
       if (!isFinite(sphere.radius) || sphere.radius <= 0) return;
-      camTarget.copy(sphere.center);
-      var fov = (camera.fov || 42) * Math.PI / 180;
+      env.camTarget.copy(sphere.center);
+      var fov = (env.camera.fov || 42) * Math.PI / 180;
       var dist = sphere.radius / Math.sin(fov * 0.5);
-      camSpherical.radius = Math.max(0.8, dist * 1.2);
-      camSpherical._micFramed = true;
+      env.camSpherical.radius = Math.max(0.8, dist * 1.2);
+      env.camSpherical._micFramed = true;
       updateCamera();
     }
-
-    function setHalo(data) {
-      haloData = data || null;
+  function setHalo(data) { var env = envStack[envStack.length - 1];
+      env.haloData = data || null;
       redraw();
     }
-
-    function setHaloPlane() {
+  function setHaloPlane() { var env = envStack[envStack.length - 1];
       /* The 3D slice follows the camera. Top / Side does not move it. */
     }
-
-    function redraw() {
-      if (disposed) return;
-      var geo = RoomMath.compute(getState());
+  function redraw() { var env = envStack[envStack.length - 1];
+      if (env.disposed) return;
+      var geo = env.RoomMath.compute(env.getState());
       var s = geo.state;
       var shape = global.RoomDraw ? RoomDraw.normalize(s.room_shape) : "box";
       var shell = shape + "|" + s.W + "|" + s.H + "|" + s.L;
       if (shape !== "box" && global.RoomDraw) shell += "|" + RoomDraw.colorKey(s.surfaces);
-      if (shell !== lastShell) {
+      if (shell !== env.lastShell) {
         rebuildRoom(s.W, s.H, s.L, shape, s.surfaces);
         updateCamera();
       }
       updateActors(geo);
-      if (focusMic && geo.mic_centre) {
-        camTarget.set(geo.mic_centre.x, geo.mic_centre.y || s.my || 1.5, geo.mic_centre.z);
+      if (env.focusMic && geo.mic_centre) {
+        env.camTarget.set(geo.mic_centre.x, geo.mic_centre.y || s.my || 1.5, geo.mic_centre.z);
         var wantR = Math.max(1.2, Math.min(3.8, (s.space || 0.2) * 4 + 1.6));
-        if (!camSpherical._micFramed) {
-          camSpherical.radius = wantR;
-          camSpherical.phi = 0.58;
-          camSpherical.theta = 0.35;
-          camSpherical._micFramed = true;
+        if (!env.camSpherical._micFramed) {
+          env.camSpherical.radius = wantR;
+          env.camSpherical.phi = 0.58;
+          env.camSpherical.theta = 0.35;
+          env.camSpherical._micFramed = true;
         } else {
           /* gently keep radius in close-up band without fighting user zoom */
-          if (camSpherical.radius > 5.5) camSpherical.radius = wantR;
-          if (camSpherical.radius < 0.8) camSpherical.radius = 0.8;
+          if (env.camSpherical.radius > 5.5) env.camSpherical.radius = wantR;
+          if (env.camSpherical.radius < 0.8) env.camSpherical.radius = 0.8;
         }
         updateCamera();
         /* hide source for a cleaner desk close-up */
-        if (srcMesh) srcMesh.visible = false;
-        if (srcMeshB) srcMeshB.visible = false;
-        if (actors.userData.srcShadow) actors.userData.srcShadow.visible = false;
-        if (actors.userData.srcShadowB) actors.userData.srcShadowB.visible = false;
-        if (actors.userData.srcStem) actors.userData.srcStem.visible = false;
-        if (actors.userData.srcStemB) actors.userData.srcStemB.visible = false;
-        if (actors.userData.link) actors.userData.link.visible = false;
+        if (env.srcMesh) env.srcMesh.visible = false;
+        if (env.srcMeshB) env.srcMeshB.visible = false;
+        if (env.actors.userData.srcShadow) env.actors.userData.srcShadow.visible = false;
+        if (env.actors.userData.srcShadowB) env.actors.userData.srcShadowB.visible = false;
+        if (env.actors.userData.srcStem) env.actors.userData.srcStem.visible = false;
+        if (env.actors.userData.srcStemB) env.actors.userData.srcStemB.visible = false;
+        if (env.actors.userData.link) env.actors.userData.link.visible = false;
       }
-      if (roomGroup) roomGroup.visible = !focusMic;
-      labelSprites.forEach(function (spr) { spr.visible = !focusMic; });
-      if (focusMic) {
+      if (env.roomGroup) env.roomGroup.visible = !env.focusMic;
+      env.labelSprites.forEach(function (spr) { spr.visible = !env.focusMic; });
+      if (env.focusMic) {
         rebuildHalo(geo);
         frameHalo();
       }
-      needsRender = true;
+      env.needsRender = true;
     }
-
-    function frame() {
-      if (disposed) return;
-      raf = requestAnimationFrame(frame);
-      if (!needsRender) return;
-      needsRender = false;
+  function frame() { var env = envStack[envStack.length - 1];
+      if (env.disposed) return;
+      env.raf = requestAnimationFrame(bindPass(env, frame));
+      if (!env.needsRender) return;
+      env.needsRender = false;
       resize();
       updateCamera();
-      if (focusMic && haloData) rebuildHalo(RoomMath.compute(getState()));
-      renderer.render(scene, camera);
+      if (env.focusMic && env.haloData) rebuildHalo(env.RoomMath.compute(env.getState()));
+      env.renderer.render(env.scene, env.camera);
     }
-
-    // Initial
-    resize();
-    rebuildRoom(6, 3, 8);
-    updateCamera();
-    redraw();
-    raf = requestAnimationFrame(frame);
-
-    var ro = null;
-    if (typeof ResizeObserver !== "undefined") {
-      ro = new ResizeObserver(function () {
-        needsRender = true;
-      });
-      ro.observe(canvas.parentElement || canvas);
-    }
-
-    function capsuleWorld() {
+  function capsuleWorld() { var env = envStack[envStack.length - 1];
       function one(mesh) {
         if (!mesh) return null;
         mesh.updateWorldMatrix(true, false);
-        var p = new THREE.Vector3();
+        var p = new env.THREE.Vector3();
         mesh.getWorldPosition(p);
         return {
           x: p.x, y: p.y, z: p.z,
@@ -1089,27 +1104,10 @@
         };
       }
       return {
-        l: one(micL), c: one(micCentre), r: one(micR),
-        focusMic: !!focusMic
+        l: one(env.micL), c: one(env.micCentre), r: one(env.micR),
+        focusMic: !!env.focusMic
       };
     }
-
-    var api = {
-      redraw: redraw,
-      setHalo: setHalo,
-      setHaloPlane: setHaloPlane,
-      capsuleWorld: capsuleWorld,
-      resize: function () { needsRender = true; },
-      dispose: function () {
-        disposed = true;
-        cancelAnimationFrame(raf);
-        if (ro) ro.disconnect();
-        renderer.dispose();
-      },
-    };
-    canvas._room3d = api;
-    return api;
-  }
 
   global.Room3D = { create: create };
 })(window);

@@ -20,47 +20,149 @@
     ["reference", "Reference"]
   ];
 
+  var envStack = [];
+  function enter(env, fn) {
+    var args = [];
+    var i;
+    for (i = 2; i < arguments.length; i++) args.push(arguments[i]);
+    envStack.push(env);
+    try {
+      return fn.apply(null, args);
+    } finally {
+      envStack.pop();
+    }
+  }
+  function bindPass(env, fn) {
+    return function () {
+      envStack.push(env);
+      try {
+        return fn.apply(null, arguments);
+      } finally {
+        envStack.pop();
+      }
+    };
+  }
   function create(opts) {
-    opts = opts || {};
-    var getState = opts.getState;
-    var setState = opts.setState;
-    var onChange = opts.onChange || function () {};
-    var onDragEnd = opts.onDragEnd || function () {};
-    var RoomMath = opts.RoomMath || global.RoomMath;
-    var vis = opts.vis || { a: null, b: null };
+    var env = {};
+    env.opts = opts;
+    env.opts = env.opts || {};
+    env.getState = env.opts.getState;
+    env.setState = env.opts.setState;
+    env.onChange = env.opts.onChange || function () {};
+    env.onDragEnd = env.opts.onDragEnd || function () {};
+    env.RoomMath = env.opts.RoomMath || global.RoomMath;
+    env.vis = env.opts.vis || { a: null, b: null };
 
-    var which = "a";
-    var plane = "h";
-    var freq = 1000;
-    var catalog = [];
-    var curveKey = "";
-    var curveReq = 0;
-    var hearReq = 0;
-    var hearTimer = 0;
-    var editor = null;
+    env.which = "a";
+    env.plane = "h";
+    env.freq = 1000;
+    env.catalog = [];
+    env.curveKey = "";
+    env.curveReq = 0;
+    env.hearReq = 0;
+    env.hearTimer = 0;
+    env.editor = null;
 
-    var presetSel = document.getElementById("sourcePreset");
-    var yawRange = document.getElementById("sourceYaw");
-    var pitchRange = document.getElementById("sourcePitch");
-    var sizeRange = document.getElementById("sourceSize");
-    var yawNum = document.getElementById("sourceYawNum");
-    var pitchNum = document.getElementById("sourcePitchNum");
-    var sizeNum = document.getElementById("sourceSizeNum");
-    var onsetEl = document.getElementById("sourceOnset");
-    var offEl = document.getElementById("sourceOffMic");
-    var hearEl = document.getElementById("sourceHear");
-    var diffuseEl = document.getElementById("sourceDiffuse");
-    var aimEl = document.getElementById("sourceAim");
-    var badgeEl = document.getElementById("sourceBadge");
-    var polarCanvas = document.getElementById("sourcePolar");
-    var chipA = document.getElementById("sourceChipA");
-    var chipB = document.getElementById("sourceChipB");
-    var polarPanel = document.getElementById("sourcePolarPanel");
+    env.presetSel = document.getElementById("sourcePreset");
+    env.yawRange = document.getElementById("sourceYaw");
+    env.pitchRange = document.getElementById("sourcePitch");
+    env.sizeRange = document.getElementById("sourceSize");
+    env.yawNum = document.getElementById("sourceYawNum");
+    env.pitchNum = document.getElementById("sourcePitchNum");
+    env.sizeNum = document.getElementById("sourceSizeNum");
+    env.onsetEl = document.getElementById("sourceOnset");
+    env.offEl = document.getElementById("sourceOffMic");
+    env.hearEl = document.getElementById("sourceHear");
+    env.diffuseEl = document.getElementById("sourceDiffuse");
+    env.aimEl = document.getElementById("sourceAim");
+    env.badgeEl = document.getElementById("sourceBadge");
+    env.polarCanvas = document.getElementById("sourcePolar");
+    env.chipA = document.getElementById("sourceChipA");
+    env.chipB = document.getElementById("sourceChipB");
+    env.polarPanel = document.getElementById("sourcePolarPanel");
 
-    function stNow() { return getState(); }
-    function isB() { return which === "b" && stNow().two_sources; }
+    enter(env, bindRange, env.yawRange, env.yawNum, function (v) {
+      var st = Object.assign({}, enter(env, stNow));
+      enter(env, writePose, st, v, null);
+      enter(env, commit, st);
+    });
+    enter(env, bindRange, env.pitchRange, env.pitchNum, function (v) {
+      var st = Object.assign({}, enter(env, stNow));
+      enter(env, writePose, st, null, v);
+      enter(env, commit, st);
+    });
+    enter(env, bindRange, env.sizeRange, env.sizeNum, function (v) {
+      var st = Object.assign({}, enter(env, stNow));
+      st.source_size_m = Math.max(0.005, Math.min(0.6, v));
+      env.curveKey = "";
+      enter(env, commit, st);
+    });
+    if (env.presetSel) env.presetSel.addEventListener("change", function () { enter(env, applyPreset, env.presetSel.value); });
 
-    function poseNow(st) {
+    enter(env, chip, "sourceFaceMic", function () {
+      var st = Object.assign({}, enter(env, stNow));
+      var f = enter(env, faceOf, st);
+      enter(env, writePose, st, f.yaw, f.pitch);
+      enter(env, commit, st);
+    });
+    enter(env, chip, "sourceFaceAway", function () {
+      var st = Object.assign({}, enter(env, stNow));
+      var f = enter(env, faceOf, st);
+      enter(env, writePose, st, f.yaw + 180, -f.pitch);
+      enter(env, commit, st);
+    });
+    enter(env, chip, "sourceOmni", function () { enter(env, applyPreset, "omni"); });
+    if (env.chipA) env.chipA.addEventListener("click", function () {
+      env.which = "a"; env.curveKey = ""; enter(env, fillPresets, env.catalog); enter(env, redraw);
+    });
+    if (env.chipB) env.chipB.addEventListener("click", function () {
+      env.which = "b"; env.curveKey = ""; enter(env, fillPresets, env.catalog); enter(env, redraw);
+    });
+
+    document.querySelectorAll("[data-src-freq]").forEach(function (btn) {
+      var fi = FREQS.indexOf(Number(btn.getAttribute("data-src-freq")));
+      if (fi >= 0) btn.style.boxShadow = "inset 0 -3px 0 " + freqColor(fi);
+      btn.addEventListener("click", function () {
+        env.freq = Number(btn.getAttribute("data-src-freq")) || 1000;
+        document.querySelectorAll("[data-src-freq]").forEach(function (b) {
+          b.classList.toggle("active", b === btn);
+        });
+        enter(env, scheduleHear);
+        enter(env, drawPolar);
+      });
+    });
+    document.querySelectorAll("[data-src-plane]").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        env.plane = btn.getAttribute("data-src-plane") === "v" ? "v" : "h";
+        document.querySelectorAll("[data-src-plane]").forEach(function (b) {
+          b.classList.toggle("active", b === btn);
+        });
+        enter(env, drawPolar);
+      });
+    });
+
+    if (global.RoomEditor && document.getElementById("srcFloorCanvas")) {
+      env.editor = global.RoomEditor.create({
+        floorCanvas: document.getElementById("srcFloorCanvas"),
+        elevCanvas: document.getElementById("srcElevCanvas"),
+        getState: env.getState,
+        setState: env.setState,
+        onChange: env.onChange,
+        onDragEnd: env.onDragEnd,
+        sourceMeta: function (w) { return env.vis[w] || null; }
+      });
+    }
+
+    fetch("/api/catalogue/sources").then(function (r) { return r.json(); }).then(function (data) {
+      enter(env, fillPresets, (data && data.presets) || []);
+      enter(env, syncWidgets);
+    }).catch(function () {});
+
+    return { redraw: bindPass(env, redraw), editor: env.editor };
+  }
+  function stNow() { var env = envStack[envStack.length - 1]; return env.getState(); }
+  function isB() { var env = envStack[envStack.length - 1]; return env.which === "b" && stNow().two_sources; }
+  function poseNow(st) { var env = envStack[envStack.length - 1];
       if (!isB()) {
         return {
           preset: String(st.source_radiation || "omni"),
@@ -69,16 +171,16 @@
           follow: false
         };
       }
-      var pose = RoomMath.effectiveBPose(st);
+      var pose = env.RoomMath.effectiveBPose(st);
       var raw = st.source_radiation_b;
       pose.follow = raw == null || raw === "";
       return pose;
     }
-    function presetOf(st) { return poseNow(st).preset; }
-    function yawOf(st) { return poseNow(st).yaw; }
-    function pitchOf(st) { return poseNow(st).pitch; }
-    function faceOf(st) {
-      var geo = RoomMath.compute(st);
+  function presetOf(st) { var env = envStack[envStack.length - 1]; return poseNow(st).preset; }
+  function yawOf(st) { var env = envStack[envStack.length - 1]; return poseNow(st).yaw; }
+  function pitchOf(st) { var env = envStack[envStack.length - 1]; return poseNow(st).pitch; }
+  function faceOf(st) { var env = envStack[envStack.length - 1];
+      var geo = env.RoomMath.compute(st);
       var src = isB() && geo.source_b ? geo.source_b : geo.source;
       var mic = geo.mic_centre;
       var dx = mic.x - src.x, dy = mic.y - src.y, dz = mic.z - src.z;
@@ -87,8 +189,8 @@
         pitch: Math.atan2(dy, Math.hypot(dx, dz)) * 180 / Math.PI
       };
     }
-    function wrap(d) { return ((Number(d) + 540) % 360) - 180; }
-    function writePose(st, yaw, pitch) {
+  function wrap(d) { var env = envStack[envStack.length - 1]; return ((Number(d) + 540) % 360) - 180; }
+  function writePose(st, yaw, pitch) { var env = envStack[envStack.length - 1];
       if (isB()) {
         if (yaw != null) st.source_yaw_b = wrap(yaw);
         if (pitch != null) st.source_pitch_b = Math.max(-89, Math.min(89, pitch));
@@ -97,26 +199,24 @@
         if (pitch != null) st.source_pitch = Math.max(-89, Math.min(89, pitch));
       }
     }
-    function commit(st) {
-      setState(RoomMath.clampRoom(st));
-      onChange();
+  function commit(st) { var env = envStack[envStack.length - 1];
+      env.setState(env.RoomMath.clampRoom(st));
+      env.onChange();
     }
-    function pack() { return vis[isB() ? "b" : "a"]; }
-
-    function tagLabel(tag) {
+  function pack() { var env = envStack[envStack.length - 1]; return env.vis[isB() ? "b" : "a"]; }
+  function tagLabel(tag) { var env = envStack[envStack.length - 1];
       var t = String(tag || "");
       if (t.indexOf("MEASURED") >= 0) return "measured fit";
       if (t.indexOf("EXACT") >= 0) return "exact";
       return "assumed";
     }
-
-    function fillPresets(rows) {
-      catalog = rows || [];
-      if (!presetSel) return;
-      var prev = presetSel.value;
-      presetSel.innerHTML = "";
+  function fillPresets(rows) { var env = envStack[envStack.length - 1];
+      env.catalog = rows || [];
+      if (!env.presetSel) return;
+      var prev = env.presetSel.value;
+      env.presetSel.innerHTML = "";
       var by = {};
-      catalog.forEach(function (row) {
+      env.catalog.forEach(function (row) {
         var c = row.category || "reference";
         if (!by[c]) by[c] = [];
         by[c].push(row);
@@ -125,7 +225,7 @@
         var same = document.createElement("option");
         same.value = "";
         same.textContent = "Same as A";
-        presetSel.insertBefore(same, presetSel.firstChild);
+        env.presetSel.insertBefore(same, env.presetSel.firstChild);
       }
       GROUPS.forEach(function (g) {
         var list = by[g[0]];
@@ -140,12 +240,11 @@
           opt.title = (row.dataset || "") + (rmse != null ? (" · hold-out " + Number(rmse).toFixed(2) + " dB") : "");
           og.appendChild(opt);
         });
-        presetSel.appendChild(og);
+        env.presetSel.appendChild(og);
       });
-      if (prev) presetSel.value = prev;
+      if (prev) env.presetSel.value = prev;
     }
-
-    function applyPreset(id) {
+  function applyPreset(id) { var env = envStack[envStack.length - 1];
       var st = Object.assign({}, stNow());
       if (isB() && (id == null || id === "")) {
         st.source_radiation_b = null;
@@ -162,77 +261,74 @@
       }
       commit(st);
     }
-
-    function setNum(el, value) {
+  function setNum(el, value) { var env = envStack[envStack.length - 1];
       if (!el || document.activeElement === el) return;
       el.value = String(value);
     }
-
-    function syncWidgets() {
+  function syncWidgets() { var env = envStack[envStack.length - 1];
       var st = stNow();
       var pose = poseNow(st);
       var id = pose.preset;
-      if (presetSel && document.activeElement !== presetSel) {
-        presetSel.value = pose.follow ? "" : id;
+      if (env.presetSel && document.activeElement !== env.presetSel) {
+        env.presetSel.value = pose.follow ? "" : id;
       }
       var yaw = Math.round(yawOf(st));
       var pitch = Math.round(pitchOf(st));
-      setNum(yawRange, yaw);
-      setNum(pitchRange, pitch);
-      setNum(yawNum, yaw);
-      setNum(pitchNum, pitch);
+      setNum(env.yawRange, yaw);
+      setNum(env.pitchRange, pitch);
+      setNum(env.yawNum, yaw);
+      setNum(env.pitchNum, pitch);
       var meta = pack();
       var size = st.source_size_m;
       if (size == null || size === "" || !isFinite(Number(size))) {
         size = meta && meta.a_eq_m ? meta.a_eq_m : 0.02;
       }
-      setNum(sizeRange, Number(size).toFixed(3));
-      setNum(sizeNum, Number(size).toFixed(3));
-      if (chipA) chipA.classList.toggle("active", !isB());
-      if (chipB) {
-        chipB.hidden = !st.two_sources;
-        chipB.classList.toggle("active", isB());
+      setNum(env.sizeRange, Number(size).toFixed(3));
+      setNum(env.sizeNum, Number(size).toFixed(3));
+      if (env.chipA) env.chipA.classList.toggle("active", !isB());
+      if (env.chipB) {
+        env.chipB.hidden = !st.two_sources;
+        env.chipB.classList.toggle("active", isB());
       }
-      if (!st.two_sources) which = "a";
+      if (!st.two_sources) env.which = "a";
       var row = null;
-      for (var i = 0; i < catalog.length; i++) if (catalog[i].id === id) row = catalog[i];
-      if (badgeEl) {
+      for (var i = 0; i < env.catalog.length; i++) if (env.catalog[i].id === id) row = env.catalog[i];
+      if (env.badgeEl) {
         var tag = row ? tagLabel(row.tag) : (id === "omni" ? "exact" : "");
-        badgeEl.textContent = tag;
-        badgeEl.className = "honesty-badge " + (tag === "measured fit" ? "honesty-measured" : "honesty-assumed");
-        badgeEl.hidden = !tag;
+        env.badgeEl.textContent = tag;
+        env.badgeEl.className = "honesty-badge " + (tag === "measured fit" ? "honesty-measured" : "honesty-assumed");
+        env.badgeEl.hidden = !tag;
       }
       var omni = id.toLowerCase() === "omni";
-      if (polarPanel) polarPanel.classList.toggle("source-omni", omni);
+      if (env.polarPanel) env.polarPanel.classList.toggle("source-omni", omni);
       var face = faceOf(st);
       var off = ((yawOf(st) - face.yaw + 540) % 360) - 180;
-      if (offEl) {
-        offEl.textContent = omni
+      if (env.offEl) {
+        env.offEl.textContent = omni
           ? "Omni. No facing."
           : (Math.round(yawOf(st)) + "° yaw · " + Math.round(pitchOf(st)) + "° pitch · " +
              (off >= 0 ? "+" : "") + Math.round(off) + "° off the mic");
       }
-      if (onsetEl) {
+      if (env.onsetEl) {
         if (omni) {
-          onsetEl.hidden = true;
+          env.onsetEl.hidden = true;
         } else {
-          onsetEl.hidden = false;
+          env.onsetEl.hidden = false;
           var onset = meta && meta.onset_hz ? Math.round(meta.onset_hz) : 0;
-          onsetEl.textContent = onset ? ("Beaming onset ≈ " + onset + " Hz  (c / 2πa)") : "Size uses the preset radius until you move this.";
+          env.onsetEl.textContent = onset ? ("Beaming onset ≈ " + onset + " Hz  (c / 2πa)") : "Size uses the preset radius until you move this.";
         }
       }
-      if (aimEl) {
+      if (env.aimEl) {
         var az = meta && meta.aim_az != null ? Number(meta.aim_az).toFixed(1) : "0";
         var el = meta && meta.aim_el != null ? Number(meta.aim_el).toFixed(1) : "0";
-        aimEl.textContent = "Aim offset " + az + "° az, " + el + "° el (from the preset).";
+        env.aimEl.textContent = "Aim offset " + az + "° az, " + el + "° el (from the preset).";
       }
-      if (diffuseEl && meta && meta.diffuse_text) diffuseEl.textContent = meta.diffuse_text;
+      if (env.diffuseEl && meta && meta.diffuse_text) env.diffuseEl.textContent = meta.diffuse_text;
     }
-
-    function drawPolar() {
-      if (!polarCanvas) return;
-      var ctx = polarCanvas.getContext("2d");
-      var w = polarCanvas.width, h = polarCanvas.height;
+  function drawPolar() { var env = envStack[envStack.length - 1];
+      if (!env.polarCanvas) return;
+      var ctx = env.polarCanvas.getContext("2d");
+      var w = env.polarCanvas.width, h = env.polarCanvas.height;
       ctx.clearRect(0, 0, w, h);
       ctx.fillStyle = "#0a0b0e";
       ctx.fillRect(0, 0, w, h);
@@ -260,9 +356,9 @@
         ctx.fillText("Omni", cx, cy);
         return;
       }
-      var table = plane === "v" ? meta.vertical : meta.horizontal;
+      var table = env.plane === "v" ? meta.vertical : meta.horizontal;
       var st = stNow();
-      var spin = plane === "v" ? pitchOf(st) : yawOf(st);
+      var spin = env.plane === "v" ? pitchOf(st) : yawOf(st);
       if (!table) return;
       FREQS.forEach(function (f, fi) {
         var curve = table[String(f)] || table[f];
@@ -274,7 +370,7 @@
           var db = Number(curve[i]);
           var r = Math.max(0, Math.min(1, (db + 30) / 30)) * R;
           var x, y;
-          if (plane === "v") {
+          if (env.plane === "v") {
             x = cx + r * Math.cos(ang);
             y = cy - r * Math.sin(ang);
           } else {
@@ -286,82 +382,80 @@
         }
         ctx.closePath();
         ctx.strokeStyle = freqColor(fi);
-        ctx.lineWidth = f === freq ? 2.6 : 1.15;
-        ctx.globalAlpha = f === freq ? 1 : 0.75;
+        ctx.lineWidth = f === env.freq ? 2.6 : 1.15;
+        ctx.globalAlpha = f === env.freq ? 1 : 0.75;
         ctx.stroke();
         ctx.globalAlpha = 1;
       });
     }
-
-    function curvesBody() {
+  function curvesBody() { var env = envStack[envStack.length - 1];
       var st = Object.assign({}, stNow());
       st.which = isB() ? "b" : "a";
-      st.freq = freq;
+      st.freq = env.freq;
       return st;
     }
-    function takePattern(data) {
+  function takePattern(data) { var env = envStack[envStack.length - 1];
       if (!data || data.ok === false) return;
       var key = (isB() ? "b" : "a");
-      vis[key] = data;
-      if (hearEl && data.direct_db != null) {
-        hearEl.textContent = Number(data.direct_db).toFixed(1) + " dB at " +
-          Math.round(data.freq || freq) + " Hz on the direct to the mic.";
+      env.vis[key] = data;
+      if (env.hearEl && data.direct_db != null) {
+        env.hearEl.textContent = Number(data.direct_db).toFixed(1) + " dB at " +
+          Math.round(data.freq || env.freq) + " Hz on the direct to the mic.";
       }
-      if (diffuseEl && data.diffuse_text) diffuseEl.textContent = data.diffuse_text;
+      if (env.diffuseEl && data.diffuse_text) env.diffuseEl.textContent = data.diffuse_text;
       syncWidgets();
       drawPolar();
-      if (editor) editor.redraw();
+      if (env.editor) env.editor.redraw();
     }
-    function fetchCurves() {
+  function fetchCurves() { var env = envStack[envStack.length - 1];
       var st = stNow();
       var id = presetOf(st);
       var size = st.source_size_m == null ? "" : String(st.source_size_m);
       var key = (isB() ? "b:" : "a:") + id + ":" + size;
-      if (key === curveKey && pack() && pack().horizontal) {
+      if (key === env.curveKey && pack() && pack().horizontal) {
         scheduleHear();
         drawPolar();
         return;
       }
-      curveKey = key;
-      var req = ++curveReq;
+      env.curveKey = key;
+      var req = ++env.curveReq;
       fetch("/api/params/source", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(curvesBody())
       }).then(function (r) { return r.json(); }).then(function (data) {
-        if (req !== curveReq) return;
-        takePattern(data);
+        if (req !== env.curveReq) return;
+        enter(env, takePattern, data);
       }).catch(function () {});
     }
-    function scheduleHear() {
-      clearTimeout(hearTimer);
-      hearTimer = setTimeout(function () {
-        var req = ++hearReq;
+  function scheduleHear() { var env = envStack[envStack.length - 1];
+      clearTimeout(env.hearTimer);
+      env.hearTimer = setTimeout(function () {
+        var req = ++env.hearReq;
         fetch("/api/params/source", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(curvesBody())
+          body: JSON.stringify(enter(env, curvesBody))
         }).then(function (r) { return r.json(); }).then(function (data) {
-          if (req !== hearReq) return;
+          if (req !== env.hearReq) return;
           if (!data || data.ok === false) return;
-          var cur = pack();
+          var cur = enter(env, pack);
           if (cur && data.direct_db != null) {
             cur.direct_db = data.direct_db;
             cur.diffuse_text = data.diffuse_text || cur.diffuse_text;
             cur.off_mic_deg = data.off_mic_deg;
           } else {
-            vis[isB() ? "b" : "a"] = data;
+            env.vis[enter(env, isB) ? "b" : "a"] = data;
           }
-          if (hearEl && data.direct_db != null) {
-            hearEl.textContent = Number(data.direct_db).toFixed(1) + " dB at " +
-              Math.round(data.freq || freq) + " Hz on the direct to the mic.";
+          if (env.hearEl && data.direct_db != null) {
+            env.hearEl.textContent = Number(data.direct_db).toFixed(1) + " dB at " +
+              Math.round(data.freq || env.freq) + " Hz on the direct to the mic.";
           }
-          if (diffuseEl && data.diffuse_text) diffuseEl.textContent = data.diffuse_text;
+          if (env.diffuseEl && data.diffuse_text) env.diffuseEl.textContent = data.diffuse_text;
         }).catch(function () {});
       }, 30);
     }
-
-    function bindRange(range, num, apply) {
+  function bindRange(range, num, apply) { var env = envStack[envStack.length - 1];
       function from(el) {
         var v = Number(el.value);
         if (!isFinite(v)) return;
@@ -370,96 +464,16 @@
       if (range) range.addEventListener("input", function () { from(range); });
       if (num) num.addEventListener("change", function () { from(num); });
     }
-    bindRange(yawRange, yawNum, function (v) {
-      var st = Object.assign({}, stNow());
-      writePose(st, v, null);
-      commit(st);
-    });
-    bindRange(pitchRange, pitchNum, function (v) {
-      var st = Object.assign({}, stNow());
-      writePose(st, null, v);
-      commit(st);
-    });
-    bindRange(sizeRange, sizeNum, function (v) {
-      var st = Object.assign({}, stNow());
-      st.source_size_m = Math.max(0.005, Math.min(0.6, v));
-      curveKey = "";
-      commit(st);
-    });
-    if (presetSel) presetSel.addEventListener("change", function () { applyPreset(presetSel.value); });
-
-    function chip(id, fn) {
+  function chip(id, fn) { var env = envStack[envStack.length - 1];
       var el = document.getElementById(id);
       if (el) el.addEventListener("click", fn);
     }
-    chip("sourceFaceMic", function () {
-      var st = Object.assign({}, stNow());
-      var f = faceOf(st);
-      writePose(st, f.yaw, f.pitch);
-      commit(st);
-    });
-    chip("sourceFaceAway", function () {
-      var st = Object.assign({}, stNow());
-      var f = faceOf(st);
-      writePose(st, f.yaw + 180, -f.pitch);
-      commit(st);
-    });
-    chip("sourceOmni", function () { applyPreset("omni"); });
-    if (chipA) chipA.addEventListener("click", function () {
-      which = "a"; curveKey = ""; fillPresets(catalog); redraw();
-    });
-    if (chipB) chipB.addEventListener("click", function () {
-      which = "b"; curveKey = ""; fillPresets(catalog); redraw();
-    });
-
-    document.querySelectorAll("[data-src-freq]").forEach(function (btn) {
-      var fi = FREQS.indexOf(Number(btn.getAttribute("data-src-freq")));
-      if (fi >= 0) btn.style.boxShadow = "inset 0 -3px 0 " + freqColor(fi);
-      btn.addEventListener("click", function () {
-        freq = Number(btn.getAttribute("data-src-freq")) || 1000;
-        document.querySelectorAll("[data-src-freq]").forEach(function (b) {
-          b.classList.toggle("active", b === btn);
-        });
-        scheduleHear();
-        drawPolar();
-      });
-    });
-    document.querySelectorAll("[data-src-plane]").forEach(function (btn) {
-      btn.addEventListener("click", function () {
-        plane = btn.getAttribute("data-src-plane") === "v" ? "v" : "h";
-        document.querySelectorAll("[data-src-plane]").forEach(function (b) {
-          b.classList.toggle("active", b === btn);
-        });
-        drawPolar();
-      });
-    });
-
-    if (global.RoomEditor && document.getElementById("srcFloorCanvas")) {
-      editor = global.RoomEditor.create({
-        floorCanvas: document.getElementById("srcFloorCanvas"),
-        elevCanvas: document.getElementById("srcElevCanvas"),
-        getState: getState,
-        setState: setState,
-        onChange: onChange,
-        onDragEnd: onDragEnd,
-        sourceMeta: function (w) { return vis[w] || null; }
-      });
-    }
-
-    fetch("/api/catalogue/sources").then(function (r) { return r.json(); }).then(function (data) {
-      fillPresets((data && data.presets) || []);
-      syncWidgets();
-    }).catch(function () {});
-
-    function redraw() {
+  function redraw() { var env = envStack[envStack.length - 1];
       syncWidgets();
       drawPolar();
       fetchCurves();
-      if (editor) editor.redraw();
+      if (env.editor) env.editor.redraw();
     }
-
-    return { redraw: redraw, editor: editor };
-  }
 
   global.SourceDesk = { create: create };
 })(window);

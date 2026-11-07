@@ -78,6 +78,6 @@ test("preset load writes the room patch and does not copy the stand", () => {
 test("the plan draws a room centre mic at its room spot and labels it Room mic", () => {
   assert.match(plan, /st\["place_" \+ cap\] === "room"/);
   assert.match(plan, /cap === "c" && st\.third_mic === "room"/);
-  assert.match(plan, /roomSpotOf\(geo\.state, cap\)/);
+  assert.match(plan, /enter\(env, roomSpotOf, geo\.state, cap\)/);
   assert.match(plan, /cap === "c" \? "Room mic" : cap\.toUpperCase\(\)/);
 });

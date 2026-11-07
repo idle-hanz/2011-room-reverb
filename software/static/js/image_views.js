@@ -9,40 +9,158 @@
   var SRC = 0xfbbf24;
   var SRC_B = 0xf43f5e;
 
+  var envStack = [];
+  function enter(env, fn) {
+    var args = [];
+    var i;
+    for (i = 2; i < arguments.length; i++) args.push(arguments[i]);
+    envStack.push(env);
+    try {
+      return fn.apply(null, args);
+    } finally {
+      envStack.pop();
+    }
+  }
+  function bindPass(env, fn) {
+    return function () {
+      envStack.push(env);
+      try {
+        return fn.apply(null, arguments);
+      } finally {
+        envStack.pop();
+      }
+    };
+  }
   function create(opts) {
-    var canvas = opts.canvas;
+    var env = {};
+    env.opts = opts;
+    env.canvas = env.opts.canvas;
     if (!global.THREE) {
       console.warn("Three.js missing — image views disabled");
       return null;
     }
-    var THREE = global.THREE;
-    var getState = opts.getState || function () { return global.RRState || null; };
+    env.THREE = global.THREE;
+    env.getState = env.opts.getState || function () { return global.RRState || null; };
 
-    var renderer;
+    env.renderer;
     try {
-      renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true, alpha: false, preserveDrawingBuffer: true });
+      env.renderer = new env.THREE.WebGLRenderer({ canvas: env.canvas, antialias: true, alpha: false, preserveDrawingBuffer: true });
     } catch (err) {
       console.error("ImageViews WebGLRenderer failed", err);
       throw err;
     }
-    renderer.setPixelRatio(Math.min(global.devicePixelRatio || 1, 2));
-    renderer.setClearColor(0x0a0b0e, 1);
-    if (renderer.outputColorSpace !== undefined) renderer.outputColorSpace = THREE.SRGBColorSpace;
+    env.renderer.setPixelRatio(Math.min(global.devicePixelRatio || 1, 2));
+    env.renderer.setClearColor(0x0a0b0e, 1);
+    if (env.renderer.outputColorSpace !== undefined) env.renderer.outputColorSpace = env.THREE.SRGBColorSpace;
 
-    var scene = new THREE.Scene();
-    scene.fog = new THREE.Fog(0x0a0b0e, 28, 90);
-    var camera = new THREE.PerspectiveCamera(42, 1, 0.05, 400);
-    var camTarget = new THREE.Vector3(3, 1.2, 4);
+    env.scene = new env.THREE.Scene();
+    env.scene.fog = new env.THREE.Fog(0x0a0b0e, 28, 90);
+    env.camera = new env.THREE.PerspectiveCamera(42, 1, 0.05, 400);
+    env.camTarget = new env.THREE.Vector3(3, 1.2, 4);
     // Same Z mapping as Floor / room 3D: worldZ = L − z, Front far, Y-up.
     // Orbit is the only camera frame (theta / phi / radius). Pan reads the camera, it does not rebuild it.
-    var camSph = { theta: 0, phi: 1.12, radius: 22 };
-    var fittedRoom = null;
-    var hasFit = false;
+    env.camSph = { theta: 0, phi: 1.12, radius: 22 };
+    env.fittedRoom = null;
+    env.hasFit = false;
 
-    function worldZ(z, L) {
+    env.scene.add(new env.THREE.AmbientLight(0xb0b8c8, 0.55));
+    env.key = new env.THREE.DirectionalLight(0xfff4e6, 0.85); env.key.position.set(8, 14, 6); env.scene.add(env.key);
+    env.fill = new env.THREE.DirectionalLight(0x88aaff, 0.25); env.fill.position.set(-10, 4, -8); env.scene.add(env.fill);
+    env.rim = new env.THREE.PointLight(0x2dd4bf, 0.4, 60); env.scene.add(env.rim);
+
+    env.root = new env.THREE.Group(); env.scene.add(env.root);
+    env.mode = "lattice";
+    env.data = null;
+    env.fadeRows = {};
+    env.fadeMats = [];
+    env.roomCache = {};
+    env.shownRooms = [];
+    env.drawnCount = null;
+    env.wasFading = false;
+
+    env.needsRender = true;
+    env.disposed = false;
+    env.raf = 0;
+    env.orbiting = false;
+    env.panning = false;
+    env.lastPtr = { x: 0, y: 0 };
+    env.pathHits = [];
+    env.tip = document.createElement("div");
+    env.tip.className = "path-tip";
+    env.tip.hidden = true;
+    if (env.canvas.parentElement) env.canvas.parentElement.appendChild(env.tip);
+
+    /* Paths / last legs: a readable room. Front is z=0 in this view (worldZ of L). */
+
+    /* Chip size. The lattice follows the stored selection. Play audio still clamps 64 and 128 to 32. */
+
+    /* First data, Reset, or a room axis that more than doubles. Sidebar nudges keep the camera. */
+
+    env.canvas.addEventListener("pointerleave", bindPass(env, hideTip));
+
+    env.canvas.addEventListener("pointerdown", bindPass(env, onPointerDown));
+    env.canvas.addEventListener("pointermove", bindPass(env, onPointerMove));
+    env.canvas.addEventListener("pointerup", bindPass(env, onPointerUp));
+    env.canvas.addEventListener("pointercancel", bindPass(env, onPointerUp));
+    env.canvas.addEventListener("wheel", bindPass(env, onWheel), { passive: false });
+    env.canvas.addEventListener("dblclick", function (evt) {
+      evt.preventDefault();
+      enter(env, forceFit);
+    });
+    env.canvas.addEventListener("contextmenu", function (e) { e.preventDefault(); });
+
+    env.raf = requestAnimationFrame(bindPass(env, frame));
+
+    env.ro = null;
+    if (typeof ResizeObserver !== "undefined") {
+      env.ro = new ResizeObserver(function () { env.needsRender = true; });
+      env.ro.observe(env.canvas.parentElement || env.canvas);
+    }
+
+    env.api = {
+      setMode: function (m) {
+        env.mode = (m === "legs") ? "legs" : (m === "paths" ? "paths" : "lattice");
+        enter(env, rebuild);
+      },
+      setData: function (d) { env.data = d; enter(env, rebuild); },
+      resize: function () {
+        enter(env, resize);
+        env.needsRender = true;
+      },
+      zoom: function (dir) {
+        env.camSph.radius *= dir < 0 ? 1.08 : (1 / 1.08);
+        enter(env, updateCamera);
+        env.needsRender = true;
+      },
+      resetCamera: function () { enter(env, forceFit); },
+      drawnCount: function () { return env.drawnCount; },
+      tapCount: function () { return enter(env, isPoly) ? enter(env, hadamardShown) : null; },
+      cameraState: function () {
+        var lim = enter(env, radiusLimits);
+        return {
+          theta: env.camSph.theta,
+          phi: env.camSph.phi,
+          radius: env.camSph.radius,
+          target: [env.camTarget.x, env.camTarget.y, env.camTarget.z],
+          minR: lim.minR,
+          maxR: lim.maxR
+        };
+      },
+      dispose: function () {
+        env.disposed = true;
+        cancelAnimationFrame(env.raf);
+        if (env.ro) env.ro.disconnect();
+        enter(env, clearRoot);
+        env.renderer.dispose();
+      }
+    };
+    global.ImageViews.current = env.api;
+    return env.api;
+  }
+  function worldZ(z, L) { var env = envStack[envStack.length - 1];
       return L - z;
     }
-    function mapPt(p, L) {
+  function mapPt(p, L) { var env = envStack[envStack.length - 1];
       if (!p) return p;
       if (typeof p.z === "number") return { x: p.x, y: p.y, z: worldZ(p.z, L) };
       if (Array.isArray(p) && p.length >= 3) {
@@ -50,7 +168,7 @@
       }
       return p;
     }
-    function mapCell(min, max, L) {
+  function mapCell(min, max, L) { var env = envStack[envStack.length - 1];
       var z0 = worldZ(min.z, L);
       var z1 = worldZ(max.z, L);
       return {
@@ -58,50 +176,22 @@
         max: { x: max.x, y: max.y, z: Math.max(z0, z1) }
       };
     }
-
-    scene.add(new THREE.AmbientLight(0xb0b8c8, 0.55));
-    var key = new THREE.DirectionalLight(0xfff4e6, 0.85); key.position.set(8, 14, 6); scene.add(key);
-    var fill = new THREE.DirectionalLight(0x88aaff, 0.25); fill.position.set(-10, 4, -8); scene.add(fill);
-    var rim = new THREE.PointLight(0x2dd4bf, 0.4, 60); scene.add(rim);
-
-    var root = new THREE.Group(); scene.add(root);
-    var mode = "lattice";
-    var data = null;
-    var fadeRows = {};
-    var fadeMats = [];
-    var roomCache = {};
-    var shownRooms = [];
-    var drawnCount = null;
-    var wasFading = false;
-
-    function sceneState() {
-      return getState() || null;
+  function sceneState() { var env = envStack[envStack.length - 1];
+      return env.getState() || null;
     }
-    function isPoly() {
+  function isPoly() { var env = envStack[envStack.length - 1];
       return !!(global.RoomDraw && RoomDraw.normalize(sceneState() && sceneState().room_shape) !== "box");
     }
-    function polyShape() {
+  function polyShape() { var env = envStack[envStack.length - 1];
       return global.RoomDraw ? RoomDraw.normalize(sceneState() && sceneState().room_shape) : "box";
     }
-    function nowMs() {
+  function nowMs() { var env = envStack[envStack.length - 1];
       return (global.performance && performance.now) ? performance.now() : Date.now();
     }
-    var needsRender = true;
-    var disposed = false;
-    var raf = 0;
-    var orbiting = false;
-    var panning = false;
-    var lastPtr = { x: 0, y: 0 };
-    var pathHits = [];
-    var tip = document.createElement("div");
-    tip.className = "path-tip";
-    tip.hidden = true;
-    if (canvas.parentElement) canvas.parentElement.appendChild(tip);
-
-    function clearRoot() {
-      while (root.children.length) {
-        var ch = root.children[0];
-        root.remove(ch);
+  function clearRoot() { var env = envStack[envStack.length - 1];
+      while (env.root.children.length) {
+        var ch = env.root.children[0];
+        env.root.remove(ch);
         ch.traverse(function (o) {
           if (o.geometry) o.geometry.dispose();
           if (o.material) {
@@ -111,35 +201,31 @@
         });
       }
     }
-
-    function boxEdges(min, max, color, opacity) {
-      var built = RoomDraw.cellEdges(THREE, min, max);
-      var mat = new THREE.LineBasicMaterial({ color: color, transparent: true, opacity: opacity == null ? 0.45 : opacity });
-      var line = new THREE.LineSegments(built.geo, mat);
+  function boxEdges(min, max, color, opacity) { var env = envStack[envStack.length - 1];
+      var built = RoomDraw.cellEdges(env.THREE, min, max);
+      var mat = new env.THREE.LineBasicMaterial({ color: color, transparent: true, opacity: opacity == null ? 0.45 : opacity });
+      var line = new env.THREE.LineSegments(built.geo, mat);
       line.position.set(built.pos[0], built.pos[1], built.pos[2]);
       return line;
     }
-
-    function marker(color, r) {
-      return new THREE.Mesh(
-        new THREE.SphereGeometry(r || 0.12, 16, 12),
-        new THREE.MeshStandardMaterial({ color: color, emissive: color, emissiveIntensity: 0.35, roughness: 0.4, metalness: 0.2 })
+  function marker(color, r) { var env = envStack[envStack.length - 1];
+      return new env.THREE.Mesh(
+        new env.THREE.SphereGeometry(r || 0.12, 16, 12),
+        new env.THREE.MeshStandardMaterial({ color: color, emissive: color, emissiveIntensity: 0.35, roughness: 0.4, metalness: 0.2 })
       );
     }
-
-    function linePts(pts, color, opacity) {
-      var L = (data && data.room) ? data.room.L : 0;
+  function linePts(pts, color, opacity) { var env = envStack[envStack.length - 1];
+      var L = (env.data && env.data.room) ? env.data.room.L : 0;
       var arr = [];
       for (var i = 0; i < pts.length; i++) {
         var q = mapPt(pts[i], L);
-        arr.push(new THREE.Vector3(q.x, q.y, q.z));
+        arr.push(new env.THREE.Vector3(q.x, q.y, q.z));
       }
-      var geo = new THREE.BufferGeometry().setFromPoints(arr);
-      var mat = new THREE.LineBasicMaterial({ color: color, transparent: true, opacity: opacity == null ? 0.85 : opacity });
-      return new THREE.Line(geo, mat);
+      var geo = new env.THREE.BufferGeometry().setFromPoints(arr);
+      var mat = new env.THREE.LineBasicMaterial({ color: color, transparent: true, opacity: opacity == null ? 0.85 : opacity });
+      return new env.THREE.Line(geo, mat);
     }
-
-    function makeLabel(text, color) {
+  function makeLabel(text, color) { var env = envStack[envStack.length - 1];
       var c = document.createElement("canvas"); c.width = 160; c.height = 48;
       var ctx = c.getContext("2d");
       ctx.clearRect(0, 0, 160, 48);
@@ -150,37 +236,34 @@
       if (ctx.roundRect) ctx.roundRect(8, 8, 144, 32, 8); else ctx.rect(8, 8, 144, 32);
       ctx.fill();
       ctx.fillStyle = color; ctx.fillText(text, 80, 25);
-      var tex = new THREE.CanvasTexture(c);
-      var spr = new THREE.Sprite(new THREE.SpriteMaterial({ map: tex, transparent: true, depthTest: false }));
+      var tex = new env.THREE.CanvasTexture(c);
+      var spr = new env.THREE.Sprite(new env.THREE.SpriteMaterial({ map: tex, transparent: true, depthTest: false }));
       spr.scale.set(1.1, 0.33, 1);
       return spr;
     }
-
-    function homeBox(room) {
+  function homeBox(room) { var env = envStack[envStack.length - 1];
       return boxEdges({ x: 0, y: 0, z: 0 }, { x: room.W, y: room.H, z: room.L }, HOME, 0.95);
     }
-
-    /* Paths / last legs: a readable room. Front is z=0 in this view (worldZ of L). */
-    function addRoomShell(room) {
+  function addRoomShell(room) { var env = envStack[envStack.length - 1];
       if (isPoly()) { addSplayShell(room); return; }
-      root.add(homeBox(room));
-      var built = RoomDraw.imageBoxGeometries(THREE, room.W, room.H, room.L);
+      env.root.add(homeBox(room));
+      var built = RoomDraw.imageBoxGeometries(env.THREE, room.W, room.H, room.L);
       built.home.geo.dispose();
-      var floor = RoomDraw.placePart(THREE, built.floor, new THREE.MeshStandardMaterial({
+      var floor = RoomDraw.placePart(env.THREE, built.floor, new env.THREE.MeshStandardMaterial({
         color: 0x2a3142, roughness: 0.86, metalness: 0.04
       }));
-      root.add(floor);
-      var wallMat = new THREE.MeshBasicMaterial({
+      env.root.add(floor);
+      var wallMat = new env.THREE.MeshBasicMaterial({
         color: 0x9aa3b8, transparent: true, opacity: 0.07,
-        side: THREE.DoubleSide, depthWrite: false
+        side: env.THREE.DoubleSide, depthWrite: false
       });
       ["z0", "zL", "x0", "xW", "ceil"].forEach(function (name) {
-        root.add(RoomDraw.placePart(THREE, built[name], wallMat));
+        env.root.add(RoomDraw.placePart(env.THREE, built[name], wallMat));
       });
       function tag(text, x, y, z) {
         var spr = makeLabel(text, "#c5cad6");
         spr.position.set(x, y, z);
-        root.add(spr);
+        env.root.add(spr);
       }
       var ly = Math.max(0.4, room.H * 0.62);
       tag("A Left", 0.05, ly, room.L * 0.5);
@@ -190,55 +273,50 @@
       tag("E Floor", room.W * 0.5, 0.28, room.L * 0.35);
       tag("F Ceiling", room.W * 0.5, Math.max(0.5, room.H - 0.2), room.L * 0.65);
     }
-
-    function addActors(source, mics, selected) {
-      var L = (data && data.room) ? data.room.L : 0;
+  function addActors(source, mics, selected) { var env = envStack[envStack.length - 1];
+      var L = (env.data && env.data.room) ? env.data.room.L : 0;
       var s = marker(SRC, 0.14);
-      s.position.set(source.x, source.y, worldZ(source.z, L)); root.add(s);
-      var sLab = makeLabel(data && data.source_b ? "A" : "Src", "#fbbf24");
-      sLab.position.set(source.x, source.y + 0.35, worldZ(source.z, L)); root.add(sLab);
-      if (data && data.source_b) {
-        var b = data.source_b;
+      s.position.set(source.x, source.y, worldZ(source.z, L)); env.root.add(s);
+      var sLab = makeLabel(env.data && env.data.source_b ? "A" : "Src", "#fbbf24");
+      sLab.position.set(source.x, source.y + 0.35, worldZ(source.z, L)); env.root.add(sLab);
+      if (env.data && env.data.source_b) {
+        var b = env.data.source_b;
         var bm = marker(SRC_B, 0.13);
-        bm.position.set(b.x, b.y, worldZ(b.z, L)); root.add(bm);
+        bm.position.set(b.x, b.y, worldZ(b.z, L)); env.root.add(bm);
         var bLab = makeLabel("B", "#f43f5e");
-        bLab.position.set(b.x, b.y + 0.35, worldZ(b.z, L)); root.add(bLab);
+        bLab.position.set(b.x, b.y + 0.35, worldZ(b.z, L)); env.root.add(bLab);
       }
       ["L", "C", "R"].forEach(function (id) {
-        if (selected.indexOf(id) < 0 && mode !== "lattice") return;
+        if (selected.indexOf(id) < 0 && env.mode !== "lattice") return;
         var m = mics[id]; if (!m) return;
-        var mesh = marker(MIC_COLORS[id], id === "C" ? 0.11 : 0.09);
-        mesh.position.set(m.x, m.y, worldZ(m.z, L)); root.add(mesh);
+        var mesh = enter(env, marker, MIC_COLORS[id], id === "C" ? 0.11 : 0.09);
+        mesh.position.set(m.x, m.y, enter(env, worldZ, m.z, L)); env.root.add(mesh);
         if (selected.indexOf(id) >= 0) {
           var col = id === "L" ? "#a78bfa" : id === "R" ? "#34d399" : "#60a5fa";
-          var lab = makeLabel(id, col);
-          lab.position.set(m.x, m.y + 0.32, worldZ(m.z, L)); root.add(lab);
+          var lab = enter(env, makeLabel, id, col);
+          lab.position.set(m.x, m.y + 0.32, enter(env, worldZ, m.z, L)); env.root.add(lab);
         }
       });
     }
-
-    function addWallLabels(room) {
+  function addWallLabels(room) { var env = envStack[envStack.length - 1];
       var ly = room.H * 0.55;
       var f = makeLabel("Front", "#2dd4bf");
       f.position.set(room.W * 0.5, ly, worldZ(room.L, room.L));
-      root.add(f);
+      env.root.add(f);
       var b = makeLabel("Back", "#fb7185");
       b.position.set(room.W * 0.5, ly, worldZ(0, room.L));
-      root.add(b);
+      env.root.add(b);
     }
-
-    function mapRing(ring, L) {
-      return ring.map(function (p) { return [p[0], p[1], worldZ(p[2], L)]; });
+  function mapRing(ring, L) { var env = envStack[envStack.length - 1];
+      return ring.map(function (p) { return [p[0], p[1], enter(env, worldZ, p[2], L)]; });
     }
-
-    function ringLine(ring, color, opacity) {
-      var pts = ring.map(function (p) { return new THREE.Vector3(p[0], p[1], p[2]); });
+  function ringLine(ring, color, opacity) { var env = envStack[envStack.length - 1];
+      var pts = ring.map(function (p) { return new env.THREE.Vector3(p[0], p[1], p[2]); });
       pts.push(pts[0].clone());
-      var mat = new THREE.LineBasicMaterial({ color: color, transparent: true, opacity: opacity });
-      return { line: new THREE.Line(new THREE.BufferGeometry().setFromPoints(pts), mat), mat: mat };
+      var mat = new env.THREE.LineBasicMaterial({ color: color, transparent: true, opacity: opacity });
+      return { line: new env.THREE.Line(new env.THREE.BufferGeometry().setFromPoints(pts), mat), mat: mat };
     }
-
-    function polyFill(ring, color, opacity) {
+  function polyFill(ring, color, opacity) { var env = envStack[envStack.length - 1];
       var positions = [];
       var i;
       for (i = 1; i < ring.length - 1; i++) {
@@ -246,31 +324,28 @@
         positions.push(ring[i][0], ring[i][1], ring[i][2]);
         positions.push(ring[i + 1][0], ring[i + 1][1], ring[i + 1][2]);
       }
-      var geo = new THREE.BufferGeometry();
-      geo.setAttribute("position", new THREE.Float32BufferAttribute(positions, 3));
+      var geo = new env.THREE.BufferGeometry();
+      geo.setAttribute("position", new env.THREE.Float32BufferAttribute(positions, 3));
       geo.computeVertexNormals();
-      var mat = new THREE.MeshStandardMaterial({
+      var mat = new env.THREE.MeshStandardMaterial({
         color: color, roughness: 0.9, metalness: 0.04,
-        transparent: opacity < 1, opacity: opacity, side: THREE.DoubleSide, depthWrite: opacity >= 1
+        transparent: opacity < 1, opacity: opacity, side: env.THREE.DoubleSide, depthWrite: opacity >= 1
       });
-      return new THREE.Mesh(geo, mat);
+      return new env.THREE.Mesh(geo, mat);
     }
-
-    function splayReceivers() {
-      var selected = (data && data.selected_mics) || ["C"];
+  function splayReceivers() { var env = envStack[envStack.length - 1];
+      var selected = (env.data && env.data.selected_mics) || ["C"];
       var out = [];
       selected.forEach(function (id) {
-        var m = data.mics && data.mics[id];
+        var m = env.data.mics && env.data.mics[id];
         if (!m) return;
         out.push({ id: id, p: [m.x, m.y, m.z] });
       });
       return { selected: selected, receivers: out };
     }
-
-    /* Chip size. The lattice follows the stored selection. Play audio still clamps 64 and 128 to 32. */
-    function hadamardShown() {
+  function hadamardShown() { var env = envStack[envStack.length - 1];
       var n = 32;
-      if (data && data.hadamard_n != null && data.hadamard_n !== "") n = Number(data.hadamard_n);
+      if (env.data && env.data.hadamard_n != null && env.data.hadamard_n !== "") n = Number(env.data.hadamard_n);
       else {
         var st = sceneState();
         if (st && st.hadamard_n != null) n = Number(st.hadamard_n);
@@ -278,10 +353,9 @@
       if (n !== 8 && n !== 16 && n !== 32 && n !== 64 && n !== 128) n = 32;
       return n;
     }
-
-    function standPoint() {
+  function standPoint() { var env = envStack[envStack.length - 1];
       var st = sceneState() || {};
-      var room = data.room;
+      var room = env.data.room;
       var x = Number(st.mcx);
       var y = Number(st.my);
       var z = Number(st.mcz);
@@ -290,81 +364,77 @@
       if (!isFinite(z)) z = room.L * 0.5;
       return [x, y, z];
     }
-
-    function takeSplay() {
-      var room = data.room;
+  function takeSplay() { var env = envStack[envStack.length - 1];
+      var room = env.data.room;
       var ear = splayReceivers();
-      var cap = (data.c || 340) * 1;
+      var cap = (env.data.c || 340) * 1;
       var nTap = hadamardShown();
       var stand = standPoint();
       var packs = [];
-      shownRooms = [];
+      env.shownRooms = [];
       function one(prefix, source) {
         var pack = RoomDraw.imageRooms(polyShape(), room.W, room.H, room.L, source, ear.receivers, {
           order: 4, maxDist: cap, n: nTap, stand: stand
         });
         (pack.rooms || []).forEach(function (r) {
           var key = prefix + ":" + r.key;
-          roomCache[key] = r;
-          shownRooms.push({ prefix: prefix, key: key, rec: r });
+          env.roomCache[key] = r;
+          env.shownRooms.push({ prefix: prefix, key: key, rec: r });
         });
         packs.push({ prefix: prefix, pack: pack });
       }
-      one("a", [data.source.x, data.source.y, data.source.z]);
-      if (data.source_b) one("b", [data.source_b.x, data.source_b.y, data.source_b.z]);
-      var keys = shownRooms.map(function (row) { return row.key; });
+      one("a", [env.data.source.x, env.data.source.y, env.data.source.z]);
+      if (env.data.source_b) one("b", [env.data.source_b.x, env.data.source_b.y, env.data.source_b.z]);
+      var keys = env.shownRooms.map(function (row) { return row.key; });
       var now = nowMs();
-      fadeRows = RoomDraw.stepFade(fadeRows, RoomDraw.latticeKeys(mode, keys), now);
-      Object.keys(roomCache).forEach(function (k) {
-        if (!fadeRows[k] && shownRooms.every(function (row) { return row.key !== k; })) delete roomCache[k];
+      env.fadeRows = RoomDraw.stepFade(env.fadeRows, RoomDraw.latticeKeys(env.mode, keys), now);
+      Object.keys(env.roomCache).forEach(function (k) {
+        if (!env.fadeRows[k] && env.shownRooms.every(function (row) { return row.key !== k; })) delete env.roomCache[k];
       });
-      drawnCount = (packs[0] && packs[0].pack.rooms) ? packs[0].pack.rooms.length : 0;
+      env.drawnCount = (packs[0] && packs[0].pack.rooms) ? packs[0].pack.rooms.length : 0;
       return { packs: packs, now: now, selected: ear.selected, surfaces: (sceneState() || {}).surfaces };
     }
-
-    function trackFade(mat, key, base) {
-      fadeMats.push({ mat: mat, key: key, base: base });
-      var row = fadeRows[key];
+  function trackFade(mat, key, base) { var env = envStack[envStack.length - 1];
+      env.fadeMats.push({ mat: mat, key: key, base: base });
+      var row = env.fadeRows[key];
       mat.opacity = base * RoomDraw.gainOf(row, nowMs());
     }
-
-    function addMirroredRooms(wireOnly) {
-      fadeMats = [];
+  function addMirroredRooms(wireOnly) { var env = envStack[envStack.length - 1];
+      env.fadeMats = [];
       var got = takeSplay();
-      var room = data.room;
-      Object.keys(fadeRows).forEach(function (key) {
+      var room = env.data.room;
+      Object.keys(env.fadeRows).forEach(function (key) {
         /* Box hides the lattice on Paths and Last legs. One home shell. */
-        if (mode !== "lattice" && key !== "a:home") return;
-        var rec = roomCache[key];
+        if (env.mode !== "lattice" && key !== "a:home") return;
+        var rec = env.roomCache[key];
         if (!rec) return;
         var force = key.charAt(0) === "b" ? SRC_B : null;
         var col = force != null ? force : (rec.order % 2 === 0 ? (rec.key === "home" ? HOME : POL_POS) : POL_NEG);
         if (rec.key === "home" && force == null) col = HOME;
         var base = rec.key === "home" ? 0.95 : (force != null ? 0.22 : 0.32);
         rec.rings.forEach(function (ring) {
-          var drawn = ringLine(mapRing(ring, room.L), col, base);
-          trackFade(drawn.mat, key, base);
-          root.add(drawn.line);
+          var drawn = enter(env, ringLine, enter(env, mapRing, ring, room.L), col, base);
+          enter(env, trackFade, drawn.mat, key, base);
+          env.root.add(drawn.line);
         });
         if (!wireOnly && rec.key === "home") {
           var faces = got.packs[0].pack.faces;
           faces.forEach(function (face, i) {
             var opacity = face.letter === "E" ? 1 : (face.letter === "F" ? 0.22 : 0.45);
-            var mesh = polyFill(mapRing(rec.rings[i], room.L), RoomDraw.wallColor(got.surfaces, face.letter), opacity);
-            root.add(mesh);
+            var mesh = enter(env, polyFill, enter(env, mapRing, rec.rings[i], room.L), RoomDraw.wallColor(got.surfaces, face.letter), opacity);
+            env.root.add(mesh);
           });
         }
         if (rec.key !== "home") {
-          var p = mapPt({ x: rec.pos[0], y: rec.pos[1], z: rec.pos[2] }, room.L);
-          var mark = marker(col, 0.08);
+          var p = enter(env, mapPt, { x: rec.pos[0], y: rec.pos[1], z: rec.pos[2] }, room.L);
+          var mark = enter(env, marker, col, 0.08);
           mark.position.set(p.x, p.y, p.z);
-          root.add(mark);
+          env.root.add(mark);
         }
       });
       return got;
     }
-
-    function addSplayShell(room) {
+  function addSplayShell(room) { var env = envStack[envStack.length - 1];
       var got = addMirroredRooms(false);
       var faces = got.packs[0].pack.faces;
       var names = { A: ["A Left", "#38bdf8"], B: ["B Front", "#2dd4bf"], C: ["C Right", "#a78bfa"], D: ["D Back", "#fb7185"], E: ["E Floor", "#78716c"], F: ["F Ceiling", "#e2e8f0"] };
@@ -374,18 +444,17 @@
         var c = [0, 0, 0];
         face.v.forEach(function (p) { c[0] += p[0]; c[1] += p[1]; c[2] += p[2]; });
         var n = face.v.length || 1;
-        var tp = mapPt({ x: c[0] / n, y: c[1] / n, z: c[2] / n }, room.L);
-        var spr = makeLabel(named[0], named[1]);
+        var tp = enter(env, mapPt, { x: c[0] / n, y: c[1] / n, z: c[2] / n }, room.L);
+        var spr = enter(env, makeLabel, named[0], named[1]);
         spr.position.set(tp.x, tp.y, tp.z);
-        root.add(spr);
+        env.root.add(spr);
       });
     }
-
-    function addSplayPathLines(lastOnly) {
-      var room = data.room;
-      var selected = data.selected_mics || ["C"];
+  function addSplayPathLines(lastOnly) { var env = envStack[envStack.length - 1];
+      var room = env.data.room;
+      var selected = env.data.selected_mics || ["C"];
       selected.forEach(function (micId) {
-        shownRooms.forEach(function (row) {
+        env.shownRooms.forEach(function (row) {
           var rec = row.rec;
           if (!rec || !rec.heard[micId]) return;
           var path = rec.heard[micId];
@@ -398,332 +467,309 @@
             ? (lastOnly ? 1 : 0.95)
             : (lastOnly ? (0.4 + 0.35 / (1 + rec.order)) : (0.35 + 0.4 / (1 + rec.order)));
           if (force != null && rec.key !== "home") base *= 0.75;
-          root.add(linePts(pts, col, base));
+          env.root.add(enter(env, linePts, pts, col, base));
           if (lastOnly) {
-            var mark = marker(col, 0.045);
-            var tp = mapPt(pts[0], room.L);
+            var mark = enter(env, marker, col, 0.045);
+            var tp = enter(env, mapPt, pts[0], room.L);
             mark.position.set(tp.x, tp.y, tp.z);
-            root.add(mark);
+            env.root.add(mark);
           }
-          rememberHit({ order: rec.order, is_direct: rec.key === "home", polarity: rec.order % 2 === 0 ? 1 : -1 }, pts, micId);
+          enter(env, rememberHit, { order: rec.order, is_direct: rec.key === "home", polarity: rec.order % 2 === 0 ? 1 : -1 }, pts, micId);
         });
       });
     }
-
-
-    function perMicTaps(d, micId) {
+  function perMicTaps(d, micId) { var env = envStack[envStack.length - 1];
       var pm = (d && (d.per_mic || d.by_mic || d.paths_by_mic)) || {};
       return pm[micId] || [];
     }
-
-    function imageXyz(im) {
+  function imageXyz(im) { var env = envStack[envStack.length - 1];
       if (!im) return null;
       return im.image_xyz || im.xyz || im.pos || im.position || null;
     }
-
-    function cellBounds(im) {
+  function cellBounds(im) { var env = envStack[envStack.length - 1];
       var cell = (im && (im.cell || im.bounds)) || {};
       var mn = cell.min || cell.lo || cell.lower;
       var mx = cell.max || cell.hi || cell.upper;
       return (mn && mx) ? { min: mn, max: mx } : null;
     }
-
-    function legEnds(leg) {
+  function legEnds(leg) { var env = envStack[envStack.length - 1];
       if (!leg) return null;
       var fr = leg.from || leg.start || leg.a;
       var to = leg.to || leg.end || leg.b;
       if (!fr || !to) return null;
       return [fr, to];
     }
-
-    function roomSpan(room) {
+  function roomSpan(room) { var env = envStack[envStack.length - 1];
       return Math.max(room.W, room.H, room.L);
     }
-
-    function roomDiag(room) {
+  function roomDiag(room) { var env = envStack[envStack.length - 1];
       return Math.sqrt(room.W * room.W + room.H * room.H + room.L * room.L);
     }
-
-    function latticeFitRadius(room) {
+  function latticeFitRadius(room) { var env = envStack[envStack.length - 1];
       return Math.max(14, roomSpan(room) * 3.2 * 1.05);
     }
-
-    function radiusLimits() {
-      var room = data && data.room;
+  function radiusLimits() { var env = envStack[envStack.length - 1];
+      var room = env.data && env.data.room;
       if (!room) return { minR: 2.5, maxR: 120 };
       var minR = 0.2 * roomDiag(room);
-      var maxR = (mode === "lattice") ? (3 * latticeFitRadius(room)) : (8 * roomSpan(room));
+      var maxR = (env.mode === "lattice") ? (3 * latticeFitRadius(room)) : (8 * roomSpan(room));
       if (!(maxR > minR)) maxR = minR * 4;
       return { minR: minR, maxR: maxR };
     }
-
-    function roomScaleJump(room) {
-      if (!fittedRoom) return true;
+  function roomScaleJump(room) { var env = envStack[envStack.length - 1];
+      if (!env.fittedRoom) return true;
       function ratio(a, b) {
         var lo = Math.min(Math.abs(a), Math.abs(b));
         var hi = Math.max(Math.abs(a), Math.abs(b));
         if (lo < 1e-9) return hi > 1e-9 ? Infinity : 1;
         return hi / lo;
       }
-      return ratio(room.W, fittedRoom.W) > 2
-        || ratio(room.H, fittedRoom.H) > 2
-        || ratio(room.L, fittedRoom.L) > 2;
+      return ratio(room.W, env.fittedRoom.W) > 2
+        || ratio(room.H, env.fittedRoom.H) > 2
+        || ratio(room.L, env.fittedRoom.L) > 2;
     }
-
-    function fitCamera(lattice) {
-      if (!data || !data.room) return;
-      var room = data.room;
-      camTarget.set(room.W * 0.5, room.H * 0.4, room.L * 0.5);
+  function fitCamera(lattice) { var env = envStack[envStack.length - 1];
+      if (!env.data || !env.data.room) return;
+      var room = env.data.room;
+      env.camTarget.set(room.W * 0.5, room.H * 0.4, room.L * 0.5);
       if (lattice) {
-        camSph.radius = latticeFitRadius(room);
-        camSph.theta = 0; camSph.phi = 0.42;
+        env.camSph.radius = latticeFitRadius(room);
+        env.camSph.theta = 0; env.camSph.phi = 0.42;
       } else {
-        camSph.radius = Math.max(8, roomDiag(room) * 1.25);
+        env.camSph.radius = Math.max(8, roomDiag(room) * 1.25);
         /* Three-quarter view: see the floor and two walls, not a front-on camera. */
-        camSph.theta = 0.78; camSph.phi = 0.92;
+        env.camSph.theta = 0.78; env.camSph.phi = 0.92;
       }
-      fittedRoom = { W: room.W, H: room.H, L: room.L };
-      hasFit = true;
-      rim.position.set(room.W * 0.5, room.H * 0.7, room.L * 0.5);
+      env.fittedRoom = { W: room.W, H: room.H, L: room.L };
+      env.hasFit = true;
+      env.rim.position.set(room.W * 0.5, room.H * 0.7, room.L * 0.5);
       updateCamera();
     }
-
-    /* First data, Reset, or a room axis that more than doubles. Sidebar nudges keep the camera. */
-    function fitIfNeeded(lattice) {
-      if (!data || !data.room) return;
-      if (hasFit && !roomScaleJump(data.room)) return;
+  function fitIfNeeded(lattice) { var env = envStack[envStack.length - 1];
+      if (!env.data || !env.data.room) return;
+      if (env.hasFit && !roomScaleJump(env.data.room)) return;
       fitCamera(lattice);
     }
-
-    function forceFit() {
-      hasFit = false;
-      fittedRoom = null;
-      fitCamera(mode === "lattice");
+  function forceFit() { var env = envStack[envStack.length - 1];
+      env.hasFit = false;
+      env.fittedRoom = null;
+      fitCamera(env.mode === "lattice");
     }
-
-    function updateCamera() {
-      var s = camSph;
+  function updateCamera() { var env = envStack[envStack.length - 1];
+      var s = env.camSph;
       var lim = radiusLimits();
       s.phi = Math.max(0.08, Math.min(Math.PI / 2, s.phi));
       s.radius = Math.max(lim.minR, Math.min(lim.maxR, s.radius));
-      camera.up.set(0, 1, 0);
+      env.camera.up.set(0, 1, 0);
       var sinPhi = Math.sin(s.phi);
-      camera.position.set(
-        camTarget.x + s.radius * sinPhi * Math.sin(s.theta),
-        camTarget.y + s.radius * Math.cos(s.phi),
-        camTarget.z + s.radius * sinPhi * Math.cos(s.theta)
+      env.camera.position.set(
+        env.camTarget.x + s.radius * sinPhi * Math.sin(s.theta),
+        env.camTarget.y + s.radius * Math.cos(s.phi),
+        env.camTarget.z + s.radius * sinPhi * Math.cos(s.theta)
       );
-      camera.lookAt(camTarget);
-      camera.near = Math.max(0.02, Math.min(1.0, s.radius * 0.002));
-      camera.far = Math.max(4 * s.radius, camera.near * 8);
-      camera.updateProjectionMatrix();
-      if (scene.fog) {
-        scene.fog.near = 0.9 * s.radius;
-        scene.fog.far = 3 * s.radius;
+      env.camera.lookAt(env.camTarget);
+      env.camera.near = Math.max(0.02, Math.min(1.0, s.radius * 0.002));
+      env.camera.far = Math.max(4 * s.radius, env.camera.near * 8);
+      env.camera.updateProjectionMatrix();
+      if (env.scene.fog) {
+        env.scene.fog.near = 0.9 * s.radius;
+        env.scene.fog.far = 3 * s.radius;
       }
     }
-
-    function buildLattice() {
-      pathHits = [];
+  function buildLattice() { var env = envStack[envStack.length - 1];
+      env.pathHits = [];
       hideTip();
-      if (!data) return;
+      if (!env.data) return;
       clearRoot();
       if (isPoly()) {
         addMirroredRooms(true);
-        addWallLabels(data.room);
-        addActors(data.source, data.mics, data.selected_mics || ["C"]);
+        addWallLabels(env.data.room);
+        addActors(env.data.source, env.data.mics, env.data.selected_mics || ["C"]);
         fitIfNeeded(true);
         return;
       }
-      drawnCount = null;
-      fadeRows = {};
-      fadeMats = [];
-      roomCache = {};
-      var room = data.room;
-      root.add(homeBox(room));
-      var grid = new THREE.GridHelper(Math.max(room.W, room.L), 8, 0x3a4155, 0x222833);
+      env.drawnCount = null;
+      env.fadeRows = {};
+      env.fadeMats = [];
+      env.roomCache = {};
+      var room = env.data.room;
+      env.root.add(homeBox(room));
+      var grid = new env.THREE.GridHelper(Math.max(room.W, room.L), 8, 0x3a4155, 0x222833);
       grid.position.set(room.W * 0.5, 0.01, room.L * 0.5);
       grid.scale.set(room.W / Math.max(room.W, room.L), 1, room.L / Math.max(room.W, room.L));
-      root.add(grid);
+      env.root.add(grid);
       function addLattice(list, force) {
         (list || []).forEach(function (im) {
           var col = force != null ? force : (im.is_home ? HOME : (im.polarity > 0 ? POL_POS : POL_NEG));
           var op = force != null ? (im.is_home ? 0.8 : 0.22) : (im.is_home ? 0.95 : 0.32);
-          var cb = cellBounds(im);
+          var cb = enter(env, cellBounds, im);
           if (cb) {
-            var mapped = mapCell(cb.min, cb.max, room.L);
-            root.add(boxEdges(mapped.min, mapped.max, col, op));
+            var mapped = enter(env, mapCell, cb.min, cb.max, room.L);
+            env.root.add(enter(env, boxEdges, mapped.min, mapped.max, col, op));
           }
-          var xyz = imageXyz(im);
+          var xyz = enter(env, imageXyz, im);
           if (xyz) {
-            var m = marker(col, im.is_home ? 0.1 : 0.08);
-            var p = mapPt(xyz, room.L);
+            var m = enter(env, marker, col, im.is_home ? 0.1 : 0.08);
+            var p = enter(env, mapPt, xyz, room.L);
             m.position.set(p.x, p.y, p.z);
-            root.add(m);
+            env.root.add(m);
           }
         });
       }
-      addLattice(data.lattice || data.images || []);
-      if (data.lattice_b) addLattice(data.lattice_b, SRC_B);
+      addLattice(env.data.lattice || env.data.images || []);
+      if (env.data.lattice_b) addLattice(env.data.lattice_b, SRC_B);
       addWallLabels(room);
-      addActors(data.source, data.mics, data.selected_mics || ["C"]);
+      addActors(env.data.source, env.data.mics, env.data.selected_mics || ["C"]);
       fitIfNeeded(true);
     }
-
-    function rememberHit(tap, pts, micId) {
-      var L = (data && data.room) ? data.room.L : 0;
+  function rememberHit(tap, pts, micId) { var env = envStack[envStack.length - 1];
+      var L = (env.data && env.data.room) ? env.data.room.L : 0;
       (pts || []).forEach(function (pt) {
-        var q = mapPt(pt, L);
+        var q = enter(env, mapPt, pt, L);
         if (!q || typeof q.x !== "number") return;
-        pathHits.push({ x: q.x, y: q.y, z: q.z, tap: tap, mic: micId });
+        env.pathHits.push({ x: q.x, y: q.y, z: q.z, tap: tap, mic: micId });
       });
     }
-    function fmtDb(v) {
+  function fmtDb(v) { var env = envStack[envStack.length - 1];
       if (v == null || !isFinite(Number(v))) return "—";
       var n = Number(v);
       return (n >= 0 ? "+" : "−") + Math.abs(n).toFixed(1) + " dB";
     }
-    function fmtDeg(v) {
+  function fmtDeg(v) { var env = envStack[envStack.length - 1];
       if (v == null || !isFinite(Number(v))) return "—";
       return Math.round(Number(v)) + "°";
     }
-
-    function buildPaths() {
-      if (!data) return;
-      pathHits = [];
+  function buildPaths() { var env = envStack[envStack.length - 1];
+      if (!env.data) return;
+      env.pathHits = [];
       clearRoot();
       if (isPoly()) {
-        addSplayShell(data.room);
+        addSplayShell(env.data.room);
         addSplayPathLines(false);
-        addActors(data.source, data.mics, data.selected_mics || ["C"]);
+        addActors(env.data.source, env.data.mics, env.data.selected_mics || ["C"]);
         fitIfNeeded(false);
         return;
       }
-      drawnCount = null;
-      var room = data.room;
+      env.drawnCount = null;
+      var room = env.data.room;
       addRoomShell(room);
-      var selected = data.selected_mics || ["C"];
+      var selected = env.data.selected_mics || ["C"];
       function addPathSet(taps, force, micId) {
         (taps || []).forEach(function (t) {
           if (!t.path || t.path.length < 2) return;
           var col = force != null ? force : (t.is_direct ? SRC : (t.polarity > 0 ? POL_POS : POL_NEG));
           var op = t.is_direct ? 0.95 : 0.35 + 0.4 / (1 + t.order);
           if (force != null && !t.is_direct) op *= 0.75;
-          root.add(linePts(t.path, col, op));
-          rememberHit(t, t.path, micId);
+          env.root.add(enter(env, linePts, t.path, col, op));
+          enter(env, rememberHit, t, t.path, micId);
         });
       }
       selected.forEach(function (micId) {
-        addPathSet(perMicTaps(data, micId), null, micId);
-        if (data.per_mic_b) addPathSet(data.per_mic_b[micId] || [], SRC_B, micId);
+        addPathSet(enter(env, perMicTaps, env.data, micId), null, micId);
+        if (env.data.per_mic_b) addPathSet(env.data.per_mic_b[micId] || [], SRC_B, micId);
       });
-      addActors(data.source, data.mics, selected);
+      addActors(env.data.source, env.data.mics, selected);
       fitIfNeeded(false);
     }
-
-    function buildLegs() {
-      if (!data) return;
-      pathHits = [];
+  function buildLegs() { var env = envStack[envStack.length - 1];
+      if (!env.data) return;
+      env.pathHits = [];
       clearRoot();
       if (isPoly()) {
-        addSplayShell(data.room);
+        addSplayShell(env.data.room);
         addSplayPathLines(true);
-        var selected = data.selected_mics || ["C"];
+        var selected = env.data.selected_mics || ["C"];
         selected.forEach(function (micId) {
-          var mic = data.mics[micId];
+          var mic = env.data.mics[micId];
           if (!mic) return;
-          var hemi = new THREE.Mesh(
-            new THREE.SphereGeometry(0.55, 24, 16, 0, Math.PI * 2, 0, Math.PI * 0.5),
-            new THREE.MeshBasicMaterial({ color: MIC_COLORS[micId], transparent: true, opacity: 0.08, side: THREE.DoubleSide, depthWrite: false })
+          var hemi = new env.THREE.Mesh(
+            new env.THREE.SphereGeometry(0.55, 24, 16, 0, Math.PI * 2, 0, Math.PI * 0.5),
+            new env.THREE.MeshBasicMaterial({ color: MIC_COLORS[micId], transparent: true, opacity: 0.08, side: env.THREE.DoubleSide, depthWrite: false })
           );
-          hemi.position.set(mic.x, mic.y, worldZ(mic.z, data.room.L));
-          root.add(hemi);
+          hemi.position.set(mic.x, mic.y, enter(env, worldZ, mic.z, env.data.room.L));
+          env.root.add(hemi);
         });
-        addActors(data.source, data.mics, selected);
+        addActors(env.data.source, env.data.mics, selected);
         fitIfNeeded(false);
         return;
       }
-      drawnCount = null;
-      var room = data.room;
+      env.drawnCount = null;
+      var room = env.data.room;
       addRoomShell(room);
-      var selected = data.selected_mics || ["C"];
+      var selected = env.data.selected_mics || ["C"];
       function addLegSet(taps, force, micId) {
         (taps || []).forEach(function (t) {
           var leg = t.last_leg || t.lastLeg || t.leg; if (!leg) return;
-          var ends = legEnds(leg); if (!ends) return;
+          var ends = enter(env, legEnds, leg); if (!ends) return;
           var col = force != null ? force : (t.is_direct ? SRC : (t.polarity > 0 ? POL_POS : POL_NEG));
           var op = t.is_direct ? 1.0 : 0.4 + 0.35 / (1 + t.order);
           if (force != null && !t.is_direct) op *= 0.75;
-          root.add(linePts(ends, col, op));
-          var mark = marker(col, 0.045);
-          var tp = mapPt(ends[0], room.L);
+          env.root.add(enter(env, linePts, ends, col, op));
+          var mark = enter(env, marker, col, 0.045);
+          var tp = enter(env, mapPt, ends[0], room.L);
           mark.position.set(tp.x, tp.y, tp.z);
-          root.add(mark);
-          rememberHit(t, ends, micId);
+          env.root.add(mark);
+          enter(env, rememberHit, t, ends, micId);
         });
       }
       selected.forEach(function (micId) {
-        var mic = data.mics[micId];
-        addLegSet(perMicTaps(data, micId), null, micId);
-        if (data.per_mic_b) addLegSet(data.per_mic_b[micId] || [], SRC_B, micId);
+        var mic = env.data.mics[micId];
+        addLegSet(enter(env, perMicTaps, env.data, micId), null, micId);
+        if (env.data.per_mic_b) addLegSet(env.data.per_mic_b[micId] || [], SRC_B, micId);
         if (mic) {
-          var hemi = new THREE.Mesh(
-            new THREE.SphereGeometry(0.55, 24, 16, 0, Math.PI * 2, 0, Math.PI * 0.5),
-            new THREE.MeshBasicMaterial({ color: MIC_COLORS[micId], transparent: true, opacity: 0.08, side: THREE.DoubleSide, depthWrite: false })
+          var hemi = new env.THREE.Mesh(
+            new env.THREE.SphereGeometry(0.55, 24, 16, 0, Math.PI * 2, 0, Math.PI * 0.5),
+            new env.THREE.MeshBasicMaterial({ color: MIC_COLORS[micId], transparent: true, opacity: 0.08, side: env.THREE.DoubleSide, depthWrite: false })
           );
-          hemi.position.set(mic.x, mic.y, worldZ(mic.z, room.L));
-          root.add(hemi);
+          hemi.position.set(mic.x, mic.y, enter(env, worldZ, mic.z, room.L));
+          env.root.add(hemi);
         }
       });
-      addActors(data.source, data.mics, selected);
+      addActors(env.data.source, env.data.mics, selected);
       fitIfNeeded(false);
     }
-
-    function rebuild() {
-      if (mode === "lattice") buildLattice();
-      else if (mode === "paths") buildPaths();
+  function rebuild() { var env = envStack[envStack.length - 1];
+      if (env.mode === "lattice") buildLattice();
+      else if (env.mode === "paths") buildPaths();
       else buildLegs();
-      needsRender = true;
+      env.needsRender = true;
     }
-
-    function resize() {
-      var rect = canvas.getBoundingClientRect();
+  function resize() { var env = envStack[envStack.length - 1];
+      var rect = env.canvas.getBoundingClientRect();
       var cssW = Math.floor(rect.width);
       var cssH = Math.floor(rect.height);
       /* Skip while panel is hidden / layout not ready — avoid bogus 0×0→2×2 context. */
       if (cssW < 2 || cssH < 2) return;
       var pr = Math.min(global.devicePixelRatio || 1, 2);
-      if (canvas.width !== cssW * pr || canvas.height !== cssH * pr) renderer.setSize(cssW, cssH, false);
-      camera.aspect = cssW / Math.max(1, cssH);
-      camera.updateProjectionMatrix();
-      needsRender = true;
+      if (env.canvas.width !== cssW * pr || env.canvas.height !== cssH * pr) env.renderer.setSize(cssW, cssH, false);
+      env.camera.aspect = cssW / Math.max(1, cssH);
+      env.camera.updateProjectionMatrix();
+      env.needsRender = true;
     }
-
-    function onPointerDown(evt) {
-      lastPtr.x = evt.clientX; lastPtr.y = evt.clientY;
+  function onPointerDown(evt) { var env = envStack[envStack.length - 1];
+      env.lastPtr.x = evt.clientX; env.lastPtr.y = evt.clientY;
       var pan = evt.button === 2 || (evt.button === 0 && evt.shiftKey);
       var orbit = evt.button === 1 || (evt.button === 0 && !evt.shiftKey);
       if (!pan && !orbit) return;
-      panning = pan;
-      orbiting = orbit;
-      canvas.classList.add("dragging");
-      try { canvas.setPointerCapture(evt.pointerId); } catch (e) {}
+      env.panning = pan;
+      env.orbiting = orbit;
+      env.canvas.classList.add("dragging");
+      try { env.canvas.setPointerCapture(evt.pointerId); } catch (e) {}
       evt.preventDefault();
     }
-
-    function hideTip() { tip.hidden = true; }
-    function hoverPath(evt) {
-      if (mode === "lattice" || orbiting || panning || !pathHits.length) { hideTip(); return; }
+  function hideTip() { var env = envStack[envStack.length - 1]; env.tip.hidden = true; }
+  function hoverPath(evt) { var env = envStack[envStack.length - 1];
+      if (env.mode === "lattice" || env.orbiting || env.panning || !env.pathHits.length) { hideTip(); return; }
       updateCamera();
-      var rect = canvas.getBoundingClientRect();
+      var rect = env.canvas.getBoundingClientRect();
       var mx = evt.clientX - rect.left;
       var my = evt.clientY - rect.top;
       var best = null;
       var bestD = 14;
-      var v = new THREE.Vector3();
-      for (var i = 0; i < pathHits.length; i++) {
-        var h = pathHits[i];
-        v.set(h.x, h.y, h.z).project(camera);
+      var v = new env.THREE.Vector3();
+      for (var i = 0; i < env.pathHits.length; i++) {
+        var h = env.pathHits[i];
+        v.set(h.x, h.y, h.z).project(env.camera);
         if (v.z < -1 || v.z > 1) continue;
         var sx = (v.x * 0.5 + 0.5) * rect.width;
         var sy = (-v.y * 0.5 + 0.5) * rect.height;
@@ -733,135 +779,70 @@
       if (!best) { hideTip(); return; }
       var t = best.h.tap || {};
       var order = t.order != null ? t.order : "—";
-      tip.hidden = false;
-      tip.textContent = (t.is_direct ? "Direct" : ("Image order " + order)) +
+      env.tip.hidden = false;
+      env.tip.textContent = (t.is_direct ? "Direct" : ("Image order " + order)) +
         " · mic " + (best.h.mic || "") +
         "\naz " + fmtDeg(t.src_az_deg) + "   el " + fmtDeg(t.src_el_deg) +
         "\n1 kHz " + fmtDb(t.src_db_1k) + "   4 kHz " + fmtDb(t.src_db_4k);
-      tip.style.left = Math.round(best.sx + 12) + "px";
-      tip.style.top = Math.round(best.sy + 12) + "px";
+      env.tip.style.left = Math.round(best.sx + 12) + "px";
+      env.tip.style.top = Math.round(best.sy + 12) + "px";
     }
-
-    function onPointerMove(evt) {
-      var dx = evt.clientX - lastPtr.x, dy = evt.clientY - lastPtr.y;
-      lastPtr.x = evt.clientX; lastPtr.y = evt.clientY;
-      if (orbiting) {
-        camSph.theta -= dx * 0.008; camSph.phi -= dy * 0.008;
-        updateCamera(); needsRender = true; hideTip(); return;
+  function onPointerMove(evt) { var env = envStack[envStack.length - 1];
+      var dx = evt.clientX - env.lastPtr.x, dy = evt.clientY - env.lastPtr.y;
+      env.lastPtr.x = evt.clientX; env.lastPtr.y = evt.clientY;
+      if (env.orbiting) {
+        env.camSph.theta -= dx * 0.008; env.camSph.phi -= dy * 0.008;
+        updateCamera(); env.needsRender = true; hideTip(); return;
       }
-      if (panning) {
-        var forward = new THREE.Vector3(); camera.getWorldDirection(forward);
-        var right = new THREE.Vector3().crossVectors(forward, camera.up).normalize();
-        var up = new THREE.Vector3().copy(camera.up).normalize();
-        var scale = camSph.radius * 0.0018;
-        camTarget.addScaledVector(right, -dx * scale);
-        camTarget.addScaledVector(up, dy * scale);
-        updateCamera(); needsRender = true; hideTip(); return;
+      if (env.panning) {
+        var forward = new env.THREE.Vector3(); env.camera.getWorldDirection(forward);
+        var right = new env.THREE.Vector3().crossVectors(forward, env.camera.up).normalize();
+        var up = new env.THREE.Vector3().copy(env.camera.up).normalize();
+        var scale = env.camSph.radius * 0.0018;
+        env.camTarget.addScaledVector(right, -dx * scale);
+        env.camTarget.addScaledVector(up, dy * scale);
+        updateCamera(); env.needsRender = true; hideTip(); return;
       }
       hoverPath(evt);
     }
-
-    function onPointerUp() { orbiting = false; panning = false; canvas.classList.remove("dragging"); }
-    canvas.addEventListener("pointerleave", hideTip);
-    function onWheel(evt) {
+  function onPointerUp() { var env = envStack[envStack.length - 1]; env.orbiting = false; env.panning = false; env.canvas.classList.remove("dragging"); }
+  function onWheel(evt) { var env = envStack[envStack.length - 1];
       evt.preventDefault();
-      camSph.radius *= evt.deltaY > 0 ? 1.08 : 1 / 1.08;
-      updateCamera(); needsRender = true;
+      env.camSph.radius *= evt.deltaY > 0 ? 1.08 : 1 / 1.08;
+      updateCamera(); env.needsRender = true;
     }
-
-    canvas.addEventListener("pointerdown", onPointerDown);
-    canvas.addEventListener("pointermove", onPointerMove);
-    canvas.addEventListener("pointerup", onPointerUp);
-    canvas.addEventListener("pointercancel", onPointerUp);
-    canvas.addEventListener("wheel", onWheel, { passive: false });
-    canvas.addEventListener("dblclick", function (evt) {
-      evt.preventDefault();
-      forceFit();
-    });
-    canvas.addEventListener("contextmenu", function (e) { e.preventDefault(); });
-
-    function fadePending() {
+  function fadePending() { var env = envStack[envStack.length - 1];
       var now = nowMs();
-      var keys = Object.keys(fadeRows);
+      var keys = Object.keys(env.fadeRows);
       var i;
       for (i = 0; i < keys.length; i++) {
-        if (now - fadeRows[keys[i]].t0 < RoomDraw.FADE_MS) return true;
+        if (now - env.fadeRows[keys[i]].t0 < RoomDraw.FADE_MS) return true;
       }
       return false;
     }
-
-    function paintFades() {
+  function paintFades() { var env = envStack[envStack.length - 1];
       var now = nowMs();
-      fadeMats.forEach(function (row) {
-        row.mat.opacity = row.base * RoomDraw.gainOf(fadeRows[row.key], now);
+      env.fadeMats.forEach(function (row) {
+        row.mat.opacity = row.base * RoomDraw.gainOf(env.fadeRows[row.key], now);
       });
     }
-
-    function frame() {
-      if (disposed) return;
-      raf = requestAnimationFrame(frame);
+  function frame() { var env = envStack[envStack.length - 1];
+      if (env.disposed) return;
+      env.raf = requestAnimationFrame(bindPass(env, frame));
       var fading = isPoly() && fadePending();
       if (fading) {
         paintFades();
-        needsRender = true;
-        wasFading = true;
-      } else if (wasFading) {
-        wasFading = false;
+        env.needsRender = true;
+        env.wasFading = true;
+      } else if (env.wasFading) {
+        env.wasFading = false;
         rebuild();
       }
-      if (!needsRender) return;
-      needsRender = false;
+      if (!env.needsRender) return;
+      env.needsRender = false;
       resize(); updateCamera();
-      renderer.render(scene, camera);
+      env.renderer.render(env.scene, env.camera);
     }
-    raf = requestAnimationFrame(frame);
-
-    var ro = null;
-    if (typeof ResizeObserver !== "undefined") {
-      ro = new ResizeObserver(function () { needsRender = true; });
-      ro.observe(canvas.parentElement || canvas);
-    }
-
-    var api = {
-      setMode: function (m) {
-        mode = (m === "legs") ? "legs" : (m === "paths" ? "paths" : "lattice");
-        rebuild();
-      },
-      setData: function (d) { data = d; rebuild(); },
-      resize: function () {
-        resize();
-        needsRender = true;
-      },
-      zoom: function (dir) {
-        camSph.radius *= dir < 0 ? 1.08 : (1 / 1.08);
-        updateCamera();
-        needsRender = true;
-      },
-      resetCamera: function () { forceFit(); },
-      drawnCount: function () { return drawnCount; },
-      tapCount: function () { return isPoly() ? hadamardShown() : null; },
-      cameraState: function () {
-        var lim = radiusLimits();
-        return {
-          theta: camSph.theta,
-          phi: camSph.phi,
-          radius: camSph.radius,
-          target: [camTarget.x, camTarget.y, camTarget.z],
-          minR: lim.minR,
-          maxR: lim.maxR
-        };
-      },
-      dispose: function () {
-        disposed = true;
-        cancelAnimationFrame(raf);
-        if (ro) ro.disconnect();
-        clearRoot();
-        renderer.dispose();
-      }
-    };
-    global.ImageViews.current = api;
-    return api;
-  }
 
   global.ImageViews = { create: create };
 })(window);
