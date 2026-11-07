@@ -110,6 +110,39 @@ from prox import (  # noqa: E402
 )
 
 
+def locked_loop_gain(
+    g: float,
+    taps,
+    sr: float,
+    c: float,
+    n: int,
+    decay_lock: bool,
+    decay_s: float,
+    *,
+    channel: str = "mean",
+    t60_gate_s: float = 0.05,
+):
+    """Decay lock. Returns g_used, g_loop, line_t60, delays.
+
+    channel is the delay bus: "mean" on Render, "c" on Play and solo_match.
+    t60_gate_s is the line_t60 test for the lossless loop: 0.05 and 0.0.
+    The unlocked Play slider is clamped by the caller. This helper clamps
+    only the locked gain.
+    """
+    n = int(n)
+    delays = fdn_delays_from_taps(taps, sr=sr, c=c, n=n, channel=channel)
+    g_used = float(g)
+    line_t60 = 0.0
+    if decay_lock and float(decay_s) > 0.05:
+        g_used = structure_gain_for_rt60(delays, float(decay_s), sr, n) / float(n)
+        lim = 0.99 / math.sqrt(float(n))
+        g_used = float(max(0.0, min(lim, g_used)))
+        line_t60 = float(decay_s)
+    lossless = 1.0 / math.sqrt(float(n))
+    g_loop = lossless if line_t60 > float(t60_gate_s) else g_used
+    return g_used, g_loop, line_t60, delays
+
+
 def _mix_pair(desk, gl, gc, gr, pl, pc, pr, hl, hc, hr):
     """(weights, makeup weights or None, section-7 or None).
 
@@ -2078,19 +2111,13 @@ def _render_core(
             bz = min(max(bz, 0.0), float(L))
             taps, prep = taps_at_metres()
             taps_b, prep_b = taps_for(bx, by, bz)
-            delays = fdn_delays_from_taps(taps, sr=sr, c=c, n=n_had)
             g_open = g
-            g_split = g
-            line_t60 = 0.0
-            if decay_lock and float(decay_s) > 0.05:
-                g_split = structure_gain_for_rt60(delays, float(decay_s), sr, n_had) / float(n_had)
-                lim = 0.99 / math.sqrt(float(n_had))
-                g_split = float(max(0.0, min(lim, g_split)))
-                line_t60 = float(decay_s)
+            g_split, g_loop, line_t60, delays = locked_loop_gain(
+                g, taps, sr, c, n_had, decay_lock, decay_s,
+                channel="mean", t60_gate_s=0.05,
+            )
             t60_used = render_t60_s(delays, g_open, n_had, sr, decay_s, decay_lock)
             fdn_ms = planned_fdn_ms(early_ms, ir_length_ms, t60_used)
-            # Loop runs lossless when line absorption carries the decay; makeup keeps g_split.
-            g_loop = (1.0 / math.sqrt(float(n_had))) if line_t60 > 0.05 else g_split
             weights, mk_w, _desk_w = _mix_pair(
                 desk,
                 mic_gain_l, mic_gain_c, mic_gain_r,
@@ -2318,14 +2345,12 @@ def _render_core(
             taps, prep = taps_at_metres()
         else:
             taps, prep = taps_at(sox, soz)
-        delays = fdn_delays_from_taps(taps, sr=sr, c=c, n=n_had)
         g_open = g
-        line_t60 = 0.0
-        if decay_lock and float(decay_s) > 0.05:
-            g = structure_gain_for_rt60(delays, float(decay_s), sr, n_had) / float(n_had)
-            lim = 0.99 / math.sqrt(float(n_had))
-            g = float(max(0.0, min(lim, g)))
-            line_t60 = float(decay_s)
+        g, g_loop, line_t60, delays = locked_loop_gain(
+            g, taps, sr, c, n_had, decay_lock, decay_s,
+            channel="mean", t60_gate_s=0.05,
+        )
+        loop_g = g_loop if line_t60 > 0.05 else None
         t60_used = render_t60_s(delays, g_open, n_had, sr, decay_s, decay_lock)
         fdn_ms = planned_fdn_ms(early_ms, ir_length_ms, t60_used)
         src_plan = _source_plan(
@@ -2363,7 +2388,7 @@ def _render_core(
                 mic_phase_l=mic_phase_l, mic_phase_c=mic_phase_c, mic_phase_r=mic_phase_r,
                 colour=mic_colour,
                 line_t60=line_t60,
-                loop_g=(1.0 / math.sqrt(float(n_had))) if line_t60 > 0.05 else None,
+                loop_g=loop_g,
                 air_climate=air_climate,
                 air_iso=air_iso,
                 src_plan=src_plan,
@@ -2414,7 +2439,7 @@ def _render_core(
                 mic_phase_l=mic_phase_l, mic_phase_c=mic_phase_c, mic_phase_r=mic_phase_r,
                 colour=mic_colour,
                 line_t60=line_t60,
-                loop_g=(1.0 / math.sqrt(float(n_had))) if line_t60 > 0.05 else None,
+                loop_g=loop_g,
                 air_climate=air_climate,
                 air_iso=air_iso,
                 src_plan=src_plan,
@@ -2433,7 +2458,6 @@ def _render_core(
             )
             yL = fft_convolve(dry, ir_L)
             yR = fft_convolve(dry, ir_R)
-            g_loop = (1.0 / math.sqrt(float(n_had))) if line_t60 > 0.05 else g
             _w_move, mk_w, _desk_move = _mix_pair(
                 desk,
                 mic_gain_l, mic_gain_c, mic_gain_r,
@@ -2554,13 +2578,11 @@ def _render_core(
             soz_still=soz,
         )
         taps, last_prep = taps_at(sox_v, soz_v)
-        delays = fdn_delays_from_taps(taps, sr=sr, c=c, n=n_had)
-        line_t60 = 0.0
-        if decay_lock and float(decay_s) > 0.05:
-            g = structure_gain_for_rt60(delays, float(decay_s), sr, n_had) / float(n_had)
-            lim = 0.99 / math.sqrt(float(n_had))
-            g = float(max(0.0, min(lim, g)))
-            line_t60 = float(decay_s)
+        g, g_loop, line_t60, delays = locked_loop_gain(
+            g, taps, sr, c, n_had, decay_lock, decay_s,
+            channel="mean", t60_gate_s=0.05,
+        )
+        loop_g = g_loop if line_t60 > 0.05 else None
         hop_plan = _source_plan(
             source_radiation, source_yaw, source_pitch, taps, last_prep, sr, source_size_m,
         )
@@ -2594,7 +2616,7 @@ def _render_core(
             mic_phase_l=mic_phase_l, mic_phase_c=mic_phase_c, mic_phase_r=mic_phase_r,
             colour=mic_colour,
             line_t60=line_t60,
-            loop_g=(1.0 / math.sqrt(float(n_had))) if line_t60 > 0.05 else None,
+            loop_g=loop_g,
             air_climate=air_climate,
             air_iso=air_iso,
             src_plan=hop_plan,
@@ -3200,15 +3222,15 @@ def live_fdn_params(
             # Local only. The posted lock stays what the client sent.
             decay_lock = True
             decay_s = mid
-    if decay_lock and decay_s > 0.05:
-        dly_mean = fdn_delays_from_taps(taps, sr=rate, c=c, n=n_had, channel="c")
-        g = structure_gain_for_rt60(dly_mean, decay_s, rate, n_had) / float(n_had)
+    g, g_loop, line_t60, _dly = locked_loop_gain(
+        g, taps, rate, c, n_had, decay_lock, decay_s,
+        channel="c", t60_gate_s=0.0,
+    )
+    # Unlocked Play still clamps the slider. Locked g is already inside the helper.
     lim = 0.99 / math.sqrt(float(n_had))
     g = float(max(0.0, min(lim, g)))
-    # Decay lock: the loop runs lossless (g = 1/√N) and each line carries
-    # 10^(-3 d/(sr T60)) (live_stereo.c line_t60). makeup/decay_out keep g.
-    line_t60 = float(decay_s) if (decay_lock and decay_s > 0.05) else 0.0
-    g_loop = (1.0 / math.sqrt(float(n_had))) if line_t60 > 0.0 else g
+    if line_t60 <= 0.0:
+        g_loop = g
     di = direct_line_index(taps, n_had)
     _w_mix, mk_w, desk_section = _mix_pair(
         p,

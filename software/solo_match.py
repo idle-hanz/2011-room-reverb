@@ -27,13 +27,14 @@ from early_field import (
     direct_field_from_params,
     grid_bias_for_hadamard_n,
 )
-from fdn import fdn_delays_from_taps, mixer_lcr_fold, structure_gain_for_rt60
+from fdn import fdn_delays_from_taps, mixer_lcr_fold
 from mic_colour.colour import MicColour
 from poly_room import compute_poly_taps, poly_on
 from render_pipeline import (
     DEFAULT_DEPTH,
     _place_stand,
     movement_peak_ms,
+    locked_loop_gain,
     render_fdn_ir,
     smooth_active,
     tap_reflect_gain,
@@ -210,14 +211,10 @@ def _scene(p: dict, sr: int = SAMPLE_RATE_HZ) -> dict:
     g = float(max(0.0, min(1.0, float(p.get("fdn_g", 1.0))))) / float(n_had)
     decay_lock = bool(p.get("decay_lock"))
     decay_s = float(p.get("decay_s") or 0.0)
-    delays = fdn_delays_from_taps(taps, sr=rate, c=c, n=n_had, channel="c")
-    line_t60 = 0.0
-    if decay_lock and decay_s > 0.05:
-        g = structure_gain_for_rt60(delays, decay_s, rate, n_had) / float(n_had)
-        lim = 0.99 / math.sqrt(float(n_had))
-        g = float(max(0.0, min(lim, g)))
-        line_t60 = float(decay_s)
-    g_loop = (1.0 / math.sqrt(float(n_had))) if line_t60 > 0.0 else g
+    g, g_loop, line_t60, _delays = locked_loop_gain(
+        g, taps, rate, c, n_had, decay_lock, decay_s,
+        channel="c", t60_gate_s=0.0,
+    )
     air_on = p.get("air_iso")
     return {
         "p": p,
