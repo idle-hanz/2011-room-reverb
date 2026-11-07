@@ -2085,259 +2085,251 @@ def _render_core(
         stand_px = _place_stand(_unplaced_stand(prep_src), desk)
         return capsule_gains(stand_px, prep_src.source, prox_l, prox_c, prox_r)
 
-    if not path_on or path_preset == "still":
-        # ASSUMED: stereo file as two sources. Moving path (path_on and not still)
-        # never reaches here with a split; it keeps the mono downmix.
-        if (
-            bool(two_sources)
-            and dry_l is not None
-            and dry_r is not None
-            and sx is not None
-            and sz is not None
-            and mcz is not None
-        ):
-            sy_a = float(my) if sy is None else float(sy)
-            if mirror_b:
-                bx, by, bz = mirror_source_b(float(W), float(sx), sy_a, float(sz))
-            else:
-                bx = float(D("sx_b")) if sx_b is None else float(sx_b)
-                by = float(D("sy_b")) if sy_b is None else float(sy_b)
-                bz = float(D("sz_b")) if sz_b is None else float(sz_b)
-            bx = min(max(bx, 0.0), float(W))
-            by = min(max(by, 0.0), float(H))
-            bz = min(max(bz, 0.0), float(L))
-            taps, prep = taps_at_metres()
-            taps_b, prep_b = taps_for(bx, by, bz)
-            g_open = g
-            g_split, g_loop, line_t60, delays = locked_loop_gain(
-                g, taps, sr, c, n_had, decay_lock, decay_s,
-                channel="mean", t60_gate_s=0.05,
-            )
-            t60_used = render_t60_s(delays, g_open, n_had, sr, decay_s, decay_lock)
-            fdn_ms = planned_fdn_ms(early_ms, ir_length_ms, t60_used)
-            weights, mk_w, _desk_w = _mix_pair(
-                desk,
-                mic_gain_l, mic_gain_c, mic_gain_r,
-                mic_pan_l, mic_pan_c, mic_pan_r,
-                mic_phase_l, mic_phase_c, mic_phase_r,
-            )
-            mk = makeup_at_stand(
-                _unplaced_stand(prep), desk, room, prep.source,
-                c=c, grid=grid, hadamard_n=n_had,
-                include_offaxis_shelf=mic_colour.include_offaxis_shelf,
-                include_pattern=not mic_colour.measured,
-                reaktor_parity=reaktor_parity,
-                surfaces=surfaces, g=g_split, ir_length_ms=fdn_ms, sr=sr,
-                weights=mk_w,
-                room_shape=room_shape,
-            )
-            plan_a = _source_plan(
-                source_radiation, source_yaw, source_pitch, taps, prep, sr, source_size_m,
-            )
-            preset_b, yaw_b, pitch_b = _b_pose(
-                source_radiation, source_yaw, source_pitch,
-                source_radiation_b, source_yaw_b, source_pitch_b, mirror_b,
-            )
-            plan_b = _source_plan(
-                preset_b, yaw_b, pitch_b,
-                taps_b, prep_b, sr, source_size_m,
-            )
+    def _render_two_sources():
+        sy_a = float(my) if sy is None else float(sy)
+        if mirror_b:
+            bx, by, bz = mirror_source_b(float(W), float(sx), sy_a, float(sz))
+        else:
+            bx = float(D("sx_b")) if sx_b is None else float(sx_b)
+            by = float(D("sy_b")) if sy_b is None else float(sy_b)
+            bz = float(D("sz_b")) if sz_b is None else float(sz_b)
+        bx = min(max(bx, 0.0), float(W))
+        by = min(max(by, 0.0), float(H))
+        bz = min(max(bz, 0.0), float(L))
+        taps, prep = taps_at_metres()
+        taps_b, prep_b = taps_for(bx, by, bz)
+        g_open = g
+        g_split, g_loop, line_t60, delays = locked_loop_gain(
+            g, taps, sr, c, n_had, decay_lock, decay_s,
+            channel="mean", t60_gate_s=0.05,
+        )
+        t60_used = render_t60_s(delays, g_open, n_had, sr, decay_s, decay_lock)
+        fdn_ms = planned_fdn_ms(early_ms, ir_length_ms, t60_used)
+        weights, mk_w, _desk_w = _mix_pair(
+            desk,
+            mic_gain_l, mic_gain_c, mic_gain_r,
+            mic_pan_l, mic_pan_c, mic_pan_r,
+            mic_phase_l, mic_phase_c, mic_phase_r,
+        )
+        mk = makeup_at_stand(
+            _unplaced_stand(prep), desk, room, prep.source,
+            c=c, grid=grid, hadamard_n=n_had,
+            include_offaxis_shelf=mic_colour.include_offaxis_shelf,
+            include_pattern=not mic_colour.measured,
+            reaktor_parity=reaktor_parity,
+            surfaces=surfaces, g=g_split, ir_length_ms=fdn_ms, sr=sr,
+            weights=mk_w,
+            room_shape=room_shape,
+        )
+        plan_a = _source_plan(
+            source_radiation, source_yaw, source_pitch, taps, prep, sr, source_size_m,
+        )
+        preset_b, yaw_b, pitch_b = _b_pose(
+            source_radiation, source_yaw, source_pitch,
+            source_radiation_b, source_yaw_b, source_pitch_b, mirror_b,
+        )
+        plan_b = _source_plan(
+            preset_b, yaw_b, pitch_b,
+            taps_b, prep_b, sr, source_size_m,
+        )
 
-            def direct_early(taps_src, src_plan, mirror_x=False, prox_g=None):
-                di_src = direct_line_index(taps_src, n_had)
-                spikes = None
-                if taps_src and 0 <= di_src < len(taps_src):
-                    spikes = direct_capsule_spikes(taps_src[di_src])
-                gL = float(prox_g[0]) if prox_g is not None else 0.0
-                gR = float(prox_g[2]) if prox_g is not None else 0.0
-                Ld, Rd = render_listen_direct_ir(
-                    taps_src, sr, fdn_ms, n_lines=n_had, weights=weights, colour=mic_colour,
-                    spikes=spikes,
-                    src_direct=None if src_plan is None else src_plan.direct,
-                    prox_g=prox_g,
-                )
-                Ld = float(direct_wet) * Ld
-                Rd = float(direct_wet) * Rd
-                if float(early_wet) <= 1e-12:
-                    return Ld, Rd
-                Le, Re = render_early_ir(
-                    taps_src, room, sr, c, early_ms, DEFAULT_DEPTH, humidity, wall_cache, ap_cache,
-                    surfaces=surfaces,
-                    diffusion_seed=seed,
-                    lambda_ref=lam,
-                    mic_left=prep.mic_left,
-                    mic_right=prep.mic_right,
-                    capsule_mm=capsule_mm,
-                    air_lp=air_lp,
-                    air_shelf=air_shelf,
+        def direct_early(taps_src, src_plan, mirror_x=False, prox_g=None):
+            di_src = direct_line_index(taps_src, n_had)
+            spikes = None
+            if taps_src and 0 <= di_src < len(taps_src):
+                spikes = direct_capsule_spikes(taps_src[di_src])
+            gL = float(prox_g[0]) if prox_g is not None else 0.0
+            gR = float(prox_g[2]) if prox_g is not None else 0.0
+            Ld, Rd = render_listen_direct_ir(
+                taps_src, sr, fdn_ms, n_lines=n_had, weights=weights, colour=mic_colour,
+                spikes=spikes,
+                src_direct=None if src_plan is None else src_plan.direct,
+                prox_g=prox_g,
+            )
+            Ld = float(direct_wet) * Ld
+            Rd = float(direct_wet) * Rd
+            if float(early_wet) <= 1e-12:
+                return Ld, Rd
+            Le, Re = render_early_ir(
+                taps_src, room, sr, c, early_ms, DEFAULT_DEPTH, humidity, wall_cache, ap_cache,
+                surfaces=surfaces,
+                diffusion_seed=seed,
+                lambda_ref=lam,
+                mic_left=prep.mic_left,
+                mic_right=prep.mic_right,
+                capsule_mm=capsule_mm,
+                air_lp=air_lp,
+                air_shelf=air_shelf,
+                colour=mic_colour,
+                air_climate=air_climate,
+                air_iso=air_iso,
+                src_images=None if src_plan is None else src_plan.images,
+                mirror_x=bool(mirror_x),
+                surfaces_solo=surfaces_solo,
+                surfaces_mute=surfaces_mute,
+                g_l=gL,
+                g_r=gR,
+            )
+            n_ir = max(len(Ld), len(Le))
+
+            def _pad(a):
+                if len(a) >= n_ir:
+                    return a
+                o = np.zeros(n_ir, dtype=np.float64)
+                o[: len(a)] = a
+                return o
+
+            Ld, Rd, Le, Re = _pad(Ld), _pad(Rd), _pad(Le), _pad(Re)
+            eL = weights["ll"] * Le + weights["rl"] * Re
+            eR = weights["lr"] * Le + weights["rr"] * Re
+            return Ld + float(early_wet) * mk * eL, Rd + float(early_wet) * mk * eR
+
+        deA_L, deA_R = direct_early(taps, plan_a, False, _prox_of(prep))
+        deB_L, deB_R = direct_early(taps_b, plan_b, bool(mirror_b), _prox_of(prep_b))
+
+        if movement_ms <= 0.0 and not insert_on:
+            def _fdn_stereo(taps_src, src_plan):
+                left, right = render_fdn_ir(
+                    taps_src, room, sr, c, fdn_ms, g_loop, DEFAULT_DEPTH, delays,
+                    n_lines=n_had, surfaces=surfaces, humidity=humidity,
+                    air_lp=air_lp, air_shelf=air_shelf,
+                    diffusion_master=diffusion_master,
+                    mic_response_hz=mic_response_hz,
+                    apply_mic=False,
+                    weights=weights,
                     colour=mic_colour,
+                    line_t60=line_t60,
                     air_climate=air_climate,
                     air_iso=air_iso,
-                    src_images=None if src_plan is None else src_plan.images,
-                    mirror_x=bool(mirror_x),
-                    surfaces_solo=surfaces_solo,
-                    surfaces_mute=surfaces_mute,
-                    g_l=gL,
-                    g_r=gR,
+                    src_diffuse=None if src_plan is None else src_plan.diffuse,
+                    reaktor_parity=bool(reaktor_parity),
+                    smooth=bool(smooth_on),
+                    tail_sos=tail_pack,
                 )
-                n_ir = max(len(Ld), len(Le))
+                return float(fdn_wet) * mk * left, float(fdn_wet) * mk * right
 
-                def _pad(a):
-                    if len(a) >= n_ir:
-                        return a
-                    o = np.zeros(n_ir, dtype=np.float64)
-                    o[: len(a)] = a
-                    return o
+            fA_L, fA_R = _fdn_stereo(taps, plan_a)
+            fB_L, fB_R = _fdn_stereo(taps_b, plan_b)
+            exc_a, exc_b, down, ga, gb = two_source_excitation(dry_l, dry_r, source_balance)
 
-                Ld, Rd, Le, Re = _pad(Ld), _pad(Rd), _pad(Le), _pad(Re)
-                eL = weights["ll"] * Le + weights["rl"] * Re
-                eR = weights["lr"] * Le + weights["rr"] * Re
-                return Ld + float(early_wet) * mk * eL, Rd + float(early_wet) * mk * eR
+            def _conv3(ir_a, ir_b, ir_fa, ir_fb):
+                ya = fft_convolve(exc_a, ir_a)
+                yb = fft_convolve(exc_b, ir_b)
+                yfa = fft_convolve(0.5 * exc_a, ir_fa)
+                yfb = fft_convolve(0.5 * exc_b, ir_fb)
+                n_y = max(len(ya), len(yb), len(yfa), len(yfb))
+                o = np.zeros(n_y, dtype=np.float64)
+                o[: len(ya)] += ya
+                o[: len(yb)] += yb
+                o[: len(yfa)] += yfa
+                o[: len(yfb)] += yfb
+                return o
 
-            deA_L, deA_R = direct_early(taps, plan_a, False, _prox_of(prep))
-            deB_L, deB_R = direct_early(taps_b, plan_b, bool(mirror_b), _prox_of(prep_b))
+            yL = _conv3(deA_L, deB_L, fA_L, fB_L)
+            yR = _conv3(deA_R, deB_R, fA_R, fB_R)
+        else:
+            exc_a, exc_b, down, ga, gb = two_source_excitation(dry_l, dry_r, source_balance)
 
-            if movement_ms <= 0.0 and not insert_on:
-                def _fdn_stereo(taps_src, src_plan):
-                    left, right = render_fdn_ir(
-                        taps_src, room, sr, c, fdn_ms, g_loop, DEFAULT_DEPTH, delays,
-                        n_lines=n_had, surfaces=surfaces, humidity=humidity,
-                        air_lp=air_lp, air_shelf=air_shelf,
-                        diffusion_master=diffusion_master,
-                        mic_response_hz=mic_response_hz,
-                        apply_mic=False,
-                        weights=weights,
-                        colour=mic_colour,
-                        line_t60=line_t60,
-                        air_climate=air_climate,
-                        air_iso=air_iso,
-                        src_diffuse=None if src_plan is None else src_plan.diffuse,
-                        reaktor_parity=bool(reaktor_parity),
-                        smooth=bool(smooth_on),
-                        tail_sos=tail_pack,
-                    )
-                    return float(fdn_wet) * mk * left, float(fdn_wet) * mk * right
+            def _driven(taps_src, src_plan, drive, det=None):
+                left, right = render_fdn_ir(
+                    taps_src, room, sr, c, fdn_ms, g_loop, DEFAULT_DEPTH, delays,
+                    n_lines=n_had, surfaces=surfaces, humidity=humidity,
+                    air_lp=air_lp, air_shelf=air_shelf,
+                    diffusion_master=diffusion_master,
+                    mic_response_hz=mic_response_hz,
+                    apply_mic=False,
+                    weights=weights,
+                    colour=mic_colour,
+                    line_t60=line_t60,
+                    air_climate=air_climate,
+                    air_iso=air_iso,
+                    src_diffuse=None if src_plan is None else src_plan.diffuse,
+                    reaktor_parity=bool(reaktor_parity),
+                    smooth=bool(smooth_on),
+                    movement_ms=movement_ms,
+                    drive=drive,
+                    bloom_spec=bloom_spec,
+                    bloom_det=det,
+                    array_spec=array_spec,
+                    room_spec=room_spec,
+                    bus_place=bus_place,
+                    tail_sos=tail_pack,
+                )
+                return float(fdn_wet) * mk * left, float(fdn_wet) * mk * right
 
-                fA_L, fA_R = _fdn_stereo(taps, plan_a)
-                fB_L, fB_R = _fdn_stereo(taps_b, plan_b)
-                exc_a, exc_b, down, ga, gb = two_source_excitation(dry_l, dry_r, source_balance)
+            bloom_det = None
+            if bloom_spec is not None:
+                na = int(np.asarray(exc_a).shape[0])
+                nb = int(np.asarray(exc_b).shape[0])
+                nlink = na if na > nb else nb
+                aa = np.zeros(nlink, dtype=np.float64)
+                bb = np.zeros(nlink, dtype=np.float64)
+                aa[:na] = np.abs(np.asarray(exc_a, dtype=np.float64))
+                bb[:nb] = np.abs(np.asarray(exc_b, dtype=np.float64))
+                bloom_det = np.maximum(aa, bb)
+            fA_L, fA_R = _driven(taps, plan_a, 0.5 * exc_a, bloom_det)
+            fB_L, fB_R = _driven(taps_b, plan_b, 0.5 * exc_b, bloom_det)
 
-                def _conv3(ir_a, ir_b, ir_fa, ir_fb):
-                    ya = fft_convolve(exc_a, ir_a)
-                    yb = fft_convolve(exc_b, ir_b)
-                    yfa = fft_convolve(0.5 * exc_a, ir_fa)
-                    yfb = fft_convolve(0.5 * exc_b, ir_fb)
-                    n_y = max(len(ya), len(yb), len(yfa), len(yfb))
-                    o = np.zeros(n_y, dtype=np.float64)
-                    o[: len(ya)] += ya
-                    o[: len(yb)] += yb
-                    o[: len(yfa)] += yfa
-                    o[: len(yfb)] += yfb
-                    return o
+            def _sum4(ir_a, ir_b, fa, fb):
+                ya = fft_convolve(exc_a, ir_a)
+                yb = fft_convolve(exc_b, ir_b)
+                n_y = max(len(ya), len(yb), len(fa), len(fb))
+                o = np.zeros(n_y, dtype=np.float64)
+                o[: len(ya)] += ya
+                o[: len(yb)] += yb
+                o[: len(fa)] += fa
+                o[: len(fb)] += fb
+                return o
 
-                yL = _conv3(deA_L, deB_L, fA_L, fB_L)
-                yR = _conv3(deA_R, deB_R, fA_R, fB_R)
-            else:
-                exc_a, exc_b, down, ga, gb = two_source_excitation(dry_l, dry_r, source_balance)
+            yL = _sum4(deA_L, deB_L, fA_L, fB_L)
+            yR = _sum4(deA_R, deB_R, fA_R, fB_R)
+        n_dry_b = len(down)
+        keep = n_dry_b + int(sr * fdn_ms * 0.001)
+        yL = yL[:keep]
+        yR = yR[:keep]
+        dry_pad = np.zeros(keep, dtype=np.float64)
+        dry_pad[:n_dry_b] = down
+        mix_L = float(dry_gain) * dry_pad + yL
+        mix_R = float(dry_gain) * dry_pad + yR
+        mix_L, mix_R = fade_render_tail(mix_L, mix_R, yL, yR, dry_pad, float(dry_gain), n_dry_b, sr)
+        mix_L, mix_R, peak, scale, lim_db, lim_n = apply_soft_limit(mix_L, mix_R)
+        colour = colour_from_stereo(yL, yR, sr)
+        info = {
+            "mode": "two_sources",
+            "source": prep.source,
+            "source_b": prep_b.source,
+            "mic_centre": prep.mic_centre,
+            "mcz": prep.mcz,
+            "mcx": prep.mcx,
+            "gain_a": ga,
+            "gain_b": gb,
+            "two_sources": True,
+            "peak_before_norm": peak,
+            "norm_scale": scale,
+            "c": c,
+            "sr": sr,
+            "hadamard_n": n_had,
+            "n_taps": len(taps),
+            "colour": colour,
+            "surfaces_assumed": True,
+            "diffusion_seed": seed,
+            "lambda_ref": lam,
+            "colour_mode": mic_colour.mode,
+            "colour_notice": getattr(mic_colour, "notice", ""),
+            "mic_preset_l": mic_colour.preset_ids["l"],
+            "mic_preset_c": mic_colour.preset_ids["c"],
+            "mic_preset_r": mic_colour.preset_ids["r"],
+            "fdn_ms": fdn_ms,
+            "t60_s": t60_used,
+            "limiter_db": lim_db,
+            "limiter_samples": lim_n,
+        }
+        if progress_cb:
+            progress_cb(1.0)
+        return mix_L, mix_R, info
 
-                def _driven(taps_src, src_plan, drive, det=None):
-                    left, right = render_fdn_ir(
-                        taps_src, room, sr, c, fdn_ms, g_loop, DEFAULT_DEPTH, delays,
-                        n_lines=n_had, surfaces=surfaces, humidity=humidity,
-                        air_lp=air_lp, air_shelf=air_shelf,
-                        diffusion_master=diffusion_master,
-                        mic_response_hz=mic_response_hz,
-                        apply_mic=False,
-                        weights=weights,
-                        colour=mic_colour,
-                        line_t60=line_t60,
-                        air_climate=air_climate,
-                        air_iso=air_iso,
-                        src_diffuse=None if src_plan is None else src_plan.diffuse,
-                        reaktor_parity=bool(reaktor_parity),
-                        smooth=bool(smooth_on),
-                        movement_ms=movement_ms,
-                        drive=drive,
-                        bloom_spec=bloom_spec,
-                        bloom_det=det,
-                        array_spec=array_spec,
-                        room_spec=room_spec,
-                        bus_place=bus_place,
-                        tail_sos=tail_pack,
-                    )
-                    return float(fdn_wet) * mk * left, float(fdn_wet) * mk * right
-
-                bloom_det = None
-                if bloom_spec is not None:
-                    na = int(np.asarray(exc_a).shape[0])
-                    nb = int(np.asarray(exc_b).shape[0])
-                    nlink = na if na > nb else nb
-                    aa = np.zeros(nlink, dtype=np.float64)
-                    bb = np.zeros(nlink, dtype=np.float64)
-                    aa[:na] = np.abs(np.asarray(exc_a, dtype=np.float64))
-                    bb[:nb] = np.abs(np.asarray(exc_b, dtype=np.float64))
-                    bloom_det = np.maximum(aa, bb)
-                fA_L, fA_R = _driven(taps, plan_a, 0.5 * exc_a, bloom_det)
-                fB_L, fB_R = _driven(taps_b, plan_b, 0.5 * exc_b, bloom_det)
-
-                def _sum4(ir_a, ir_b, fa, fb):
-                    ya = fft_convolve(exc_a, ir_a)
-                    yb = fft_convolve(exc_b, ir_b)
-                    n_y = max(len(ya), len(yb), len(fa), len(fb))
-                    o = np.zeros(n_y, dtype=np.float64)
-                    o[: len(ya)] += ya
-                    o[: len(yb)] += yb
-                    o[: len(fa)] += fa
-                    o[: len(fb)] += fb
-                    return o
-
-                yL = _sum4(deA_L, deB_L, fA_L, fB_L)
-                yR = _sum4(deA_R, deB_R, fA_R, fB_R)
-            n_dry_b = len(down)
-            keep = n_dry_b + int(sr * fdn_ms * 0.001)
-            yL = yL[:keep]
-            yR = yR[:keep]
-            dry_pad = np.zeros(keep, dtype=np.float64)
-            dry_pad[:n_dry_b] = down
-            mix_L = float(dry_gain) * dry_pad + yL
-            mix_R = float(dry_gain) * dry_pad + yR
-            mix_L, mix_R = fade_render_tail(mix_L, mix_R, yL, yR, dry_pad, float(dry_gain), n_dry_b, sr)
-            mix_L, mix_R, peak, scale, lim_db, lim_n = apply_soft_limit(mix_L, mix_R)
-            colour = colour_from_stereo(yL, yR, sr)
-            info = {
-                "mode": "two_sources",
-                "source": prep.source,
-                "source_b": prep_b.source,
-                "mic_centre": prep.mic_centre,
-                "mcz": prep.mcz,
-                "mcx": prep.mcx,
-                "gain_a": ga,
-                "gain_b": gb,
-                "two_sources": True,
-                "peak_before_norm": peak,
-                "norm_scale": scale,
-                "c": c,
-                "sr": sr,
-                "hadamard_n": n_had,
-                "n_taps": len(taps),
-                "colour": colour,
-                "surfaces_assumed": True,
-                "diffusion_seed": seed,
-                "lambda_ref": lam,
-                "colour_mode": mic_colour.mode,
-                "colour_notice": getattr(mic_colour, "notice", ""),
-                "mic_preset_l": mic_colour.preset_ids["l"],
-                "mic_preset_c": mic_colour.preset_ids["c"],
-                "mic_preset_r": mic_colour.preset_ids["r"],
-                "fdn_ms": fdn_ms,
-                "t60_s": t60_used,
-                "limiter_db": lim_db,
-                "limiter_samples": lim_n,
-            }
-            if progress_cb:
-                progress_cb(1.0)
-            return mix_L, mix_R, info
-
+    def _render_still():
+        nonlocal g
         if sx is not None and sz is not None and mcz is not None:
             taps, prep = taps_at_metres()
         else:
@@ -2546,140 +2538,157 @@ def _render_core(
             progress_cb(1.0)
         return mix_L, mix_R, info
 
-    # Moving path — block/OLA (ASSUMED hop/frame like moving_room_demo).
-    # One file length, from the rest-position lines. Lock-on T60 is decay_s.
-    taps_len, _prep_len = taps_at(sox, soz)
-    delays_len = fdn_delays_from_taps(taps_len, sr=sr, c=c, n=n_had)
-    t60_used = render_t60_s(delays_len, g, n_had, sr, decay_s, decay_lock)
-    fdn_ms = planned_fdn_ms(early_ms, ir_length_ms, t60_used)
-    hop = max(1, int(round(DEFAULT_HOP_MS * 0.001 * sr)))
-    frame = max(hop, int(round(DEFAULT_FRAME_MS * 0.001 * sr)))
-    win = hann_window(frame)
-    ir_max = int(sr * fdn_ms / 1000.0) + 1
-    out_n = n_dry + ir_max + frame
-    wet_L = np.zeros(out_n, dtype=np.float64)
-    wet_R = np.zeros(out_n, dtype=np.float64)
-    starts = list(range(0, n_dry, hop))
-    last_prep = None
-    for i, start in enumerate(starts):
-        t_frac = (start + 0.5 * frame) / float(n_dry)
-        sox_v, soz_v = path_sox_soz(
-            t_frac,
-            path_preset,
-            cx=sox,
-            cz=soz,
-            rx=ellipse_rx,
-            rz=ellipse_rz,
-            rate=ellipse_rate,
-            sox_still=sox,
-            soz_still=soz,
-        )
-        taps, last_prep = taps_at(sox_v, soz_v)
-        g, g_loop, line_t60, delays = locked_loop_gain(
-            g, taps, sr, c, n_had, decay_lock, decay_s,
-            channel="mean", t60_gate_s=0.05,
-        )
-        loop_g = g_loop if line_t60 > 0.05 else None
-        hop_plan = _source_plan(
-            source_radiation, source_yaw, source_pitch, taps, last_prep, sr, source_size_m,
-        )
-        ir_L, ir_R = combined_ir(
-            taps,
-            room,
-            sr,
-            c,
-            wall_cache,
-            ap_cache,
-            delays,
-            early_ms=early_ms,
-            fdn_ms=fdn_ms,
-            fdn_g=g,
-            early_wet=early_wet,
-            fdn_wet=fdn_wet,
-            direct_wet=direct_wet,
-            hadamard_n=n_had,
-            surfaces=surfaces,
-            diffusion_seed=seed,
-            lambda_ref=lam,
-            mic_left=last_prep.mic_left,
-            mic_right=last_prep.mic_right,
-            humidity=humidity,
-            air_lp=air_lp,
-            air_shelf=air_shelf,
-            mic_response_hz=mic_response_hz,
-            diffusion_master=diffusion_master,
-            mic_gain_l=mic_gain_l, mic_gain_c=mic_gain_c, mic_gain_r=mic_gain_r,
-            mic_pan_l=mic_pan_l, mic_pan_c=mic_pan_c, mic_pan_r=mic_pan_r,
-            mic_phase_l=mic_phase_l, mic_phase_c=mic_phase_c, mic_phase_r=mic_phase_r,
-            colour=mic_colour,
-            line_t60=line_t60,
-            loop_g=loop_g,
-            air_climate=air_climate,
-            air_iso=air_iso,
-            src_plan=hop_plan,
-            surfaces_solo=surfaces_solo,
-            surfaces_mute=surfaces_mute,
-            reaktor_parity=bool(reaktor_parity),
-            desk=desk,
-            smooth=bool(smooth_on),
-            makeup_stand=_unplaced_stand(last_prep),
-            makeup_source=last_prep.source,
-            makeup_grid=grid,
-            makeup_shelf=mic_colour.include_offaxis_shelf,
-            prox_g=_prox_of(last_prep),
-            tail_sos=tail_pack,
-            room_shape=room_shape,
-        )
-        end = min(start + frame, n_dry)
-        block = np.zeros(frame, dtype=np.float64)
-        block[: end - start] = dry[start:end]
-        block *= win
-        yL = fft_convolve(block, ir_L)
-        yR = fft_convolve(block, ir_R)
-        wet_L[start : start + len(yL)] += yL
-        wet_R[start : start + len(yR)] += yR
-        if progress_cb and (i % 10 == 0 or i == len(starts) - 1):
-            progress_cb((i + 1) / len(starts))
+    def _render_moving():
+        nonlocal g
+        # Moving path — block/OLA (ASSUMED hop/frame like moving_room_demo).
+        # One file length, from the rest-position lines. Lock-on T60 is decay_s.
+        taps_len, _prep_len = taps_at(sox, soz)
+        delays_len = fdn_delays_from_taps(taps_len, sr=sr, c=c, n=n_had)
+        t60_used = render_t60_s(delays_len, g, n_had, sr, decay_s, decay_lock)
+        fdn_ms = planned_fdn_ms(early_ms, ir_length_ms, t60_used)
+        hop = max(1, int(round(DEFAULT_HOP_MS * 0.001 * sr)))
+        frame = max(hop, int(round(DEFAULT_FRAME_MS * 0.001 * sr)))
+        win = hann_window(frame)
+        ir_max = int(sr * fdn_ms / 1000.0) + 1
+        out_n = n_dry + ir_max + frame
+        wet_L = np.zeros(out_n, dtype=np.float64)
+        wet_R = np.zeros(out_n, dtype=np.float64)
+        starts = list(range(0, n_dry, hop))
+        last_prep = None
+        for i, start in enumerate(starts):
+            t_frac = (start + 0.5 * frame) / float(n_dry)
+            sox_v, soz_v = path_sox_soz(
+                t_frac,
+                path_preset,
+                cx=sox,
+                cz=soz,
+                rx=ellipse_rx,
+                rz=ellipse_rz,
+                rate=ellipse_rate,
+                sox_still=sox,
+                soz_still=soz,
+            )
+            taps, last_prep = taps_at(sox_v, soz_v)
+            g, g_loop, line_t60, delays = locked_loop_gain(
+                g, taps, sr, c, n_had, decay_lock, decay_s,
+                channel="mean", t60_gate_s=0.05,
+            )
+            loop_g = g_loop if line_t60 > 0.05 else None
+            hop_plan = _source_plan(
+                source_radiation, source_yaw, source_pitch, taps, last_prep, sr, source_size_m,
+            )
+            ir_L, ir_R = combined_ir(
+                taps,
+                room,
+                sr,
+                c,
+                wall_cache,
+                ap_cache,
+                delays,
+                early_ms=early_ms,
+                fdn_ms=fdn_ms,
+                fdn_g=g,
+                early_wet=early_wet,
+                fdn_wet=fdn_wet,
+                direct_wet=direct_wet,
+                hadamard_n=n_had,
+                surfaces=surfaces,
+                diffusion_seed=seed,
+                lambda_ref=lam,
+                mic_left=last_prep.mic_left,
+                mic_right=last_prep.mic_right,
+                humidity=humidity,
+                air_lp=air_lp,
+                air_shelf=air_shelf,
+                mic_response_hz=mic_response_hz,
+                diffusion_master=diffusion_master,
+                mic_gain_l=mic_gain_l, mic_gain_c=mic_gain_c, mic_gain_r=mic_gain_r,
+                mic_pan_l=mic_pan_l, mic_pan_c=mic_pan_c, mic_pan_r=mic_pan_r,
+                mic_phase_l=mic_phase_l, mic_phase_c=mic_phase_c, mic_phase_r=mic_phase_r,
+                colour=mic_colour,
+                line_t60=line_t60,
+                loop_g=loop_g,
+                air_climate=air_climate,
+                air_iso=air_iso,
+                src_plan=hop_plan,
+                surfaces_solo=surfaces_solo,
+                surfaces_mute=surfaces_mute,
+                reaktor_parity=bool(reaktor_parity),
+                desk=desk,
+                smooth=bool(smooth_on),
+                makeup_stand=_unplaced_stand(last_prep),
+                makeup_source=last_prep.source,
+                makeup_grid=grid,
+                makeup_shelf=mic_colour.include_offaxis_shelf,
+                prox_g=_prox_of(last_prep),
+                tail_sos=tail_pack,
+                room_shape=room_shape,
+            )
+            end = min(start + frame, n_dry)
+            block = np.zeros(frame, dtype=np.float64)
+            block[: end - start] = dry[start:end]
+            block *= win
+            yL = fft_convolve(block, ir_L)
+            yR = fft_convolve(block, ir_R)
+            wet_L[start : start + len(yL)] += yL
+            wet_R[start : start + len(yR)] += yR
+            if progress_cb and (i % 10 == 0 or i == len(starts) - 1):
+                progress_cb((i + 1) / len(starts))
 
-    keep = n_dry + int(sr * fdn_ms * 0.001)
-    wet_L = wet_L[:keep]
-    wet_R = wet_R[:keep]
-    dry_pad = np.zeros(keep, dtype=np.float64)
-    dry_pad[:n_dry] = dry
-    ola_comp = 2.0 / 3.0  # ASSUMED Hann OLA coherent gain compensation
-    colour = colour_from_stereo(wet_L, wet_R, sr)
-    wet_sL = ola_comp * wet_L
-    wet_sR = ola_comp * wet_R
-    mix_L = dry_gain * dry_pad + wet_sL
-    mix_R = dry_gain * dry_pad + wet_sR
-    mix_L, mix_R = fade_render_tail(mix_L, mix_R, wet_sL, wet_sR, dry_pad, float(dry_gain), n_dry, sr)
-    mix_L, mix_R, peak, scale, lim_db, lim_n = apply_soft_limit(mix_L, mix_R)
-    info = {
-        "mode": path_preset,
-        "source": last_prep.source if last_prep else None,
-        "mic_centre": last_prep.mic_centre if last_prep else None,
-        "mcz": last_prep.mcz if last_prep else None,
-        "peak_before_norm": peak,
-        "norm_scale": scale,
-        "c": c,
-        "sr": sr,
-        "hops": len(starts),
-        "hadamard_n": n_had,
-        "colour": colour,
-        "surfaces_assumed": True,
-        "diffusion_seed": seed,
-        "lambda_ref": lam,
-        "colour_mode": mic_colour.mode,
-        "colour_notice": getattr(mic_colour, "notice", ""),
-        "mic_preset_l": mic_colour.preset_ids["l"],
-        "mic_preset_c": mic_colour.preset_ids["c"],
-        "mic_preset_r": mic_colour.preset_ids["r"],
-        "fdn_ms": fdn_ms,
-        "t60_s": t60_used,
-        "limiter_db": lim_db,
-        "limiter_samples": lim_n,
-    }
-    return mix_L, mix_R, info
+        keep = n_dry + int(sr * fdn_ms * 0.001)
+        wet_L = wet_L[:keep]
+        wet_R = wet_R[:keep]
+        dry_pad = np.zeros(keep, dtype=np.float64)
+        dry_pad[:n_dry] = dry
+        ola_comp = 2.0 / 3.0  # ASSUMED Hann OLA coherent gain compensation
+        colour = colour_from_stereo(wet_L, wet_R, sr)
+        wet_sL = ola_comp * wet_L
+        wet_sR = ola_comp * wet_R
+        mix_L = dry_gain * dry_pad + wet_sL
+        mix_R = dry_gain * dry_pad + wet_sR
+        mix_L, mix_R = fade_render_tail(mix_L, mix_R, wet_sL, wet_sR, dry_pad, float(dry_gain), n_dry, sr)
+        mix_L, mix_R, peak, scale, lim_db, lim_n = apply_soft_limit(mix_L, mix_R)
+        info = {
+            "mode": path_preset,
+            "source": last_prep.source if last_prep else None,
+            "mic_centre": last_prep.mic_centre if last_prep else None,
+            "mcz": last_prep.mcz if last_prep else None,
+            "peak_before_norm": peak,
+            "norm_scale": scale,
+            "c": c,
+            "sr": sr,
+            "hops": len(starts),
+            "hadamard_n": n_had,
+            "colour": colour,
+            "surfaces_assumed": True,
+            "diffusion_seed": seed,
+            "lambda_ref": lam,
+            "colour_mode": mic_colour.mode,
+            "colour_notice": getattr(mic_colour, "notice", ""),
+            "mic_preset_l": mic_colour.preset_ids["l"],
+            "mic_preset_c": mic_colour.preset_ids["c"],
+            "mic_preset_r": mic_colour.preset_ids["r"],
+            "fdn_ms": fdn_ms,
+            "t60_s": t60_used,
+            "limiter_db": lim_db,
+            "limiter_samples": lim_n,
+        }
+        return mix_L, mix_R, info
+
+    if not path_on or path_preset == "still":
+        # ASSUMED: stereo file as two sources. Moving path (path_on and not still)
+        # never reaches here with a split; it keeps the mono downmix.
+        if (
+            bool(two_sources)
+            and dry_l is not None
+            and dry_r is not None
+            and sx is not None
+            and sz is not None
+            and mcz is not None
+        ):
+            return _render_two_sources()
+        return _render_still()
+    return _render_moving()
 
 
 def _identity_n(spec) -> int:
