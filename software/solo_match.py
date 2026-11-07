@@ -12,46 +12,26 @@ output GainNode over 50 ms. This module does not write the live FDN dict.
 
 from __future__ import annotations
 
-import json
 import math
 import threading
+from dataclasses import astuple
 from typing import Callable, Optional
 
 import numpy as np
 
-from early_field import (
-    SAMPLE_RATE_HZ,
-    SPEED_OF_SOUND_M_S,
-    MicStand,
-    compute_taps,
-    direct_field_from_params,
-    grid_bias_for_hadamard_n,
-)
+from early_field import SAMPLE_RATE_HZ
 from fdn import fdn_delays_from_taps, mixer_lcr_fold
-from mic_colour.colour import MicColour
-from poly_room import compute_poly_taps, poly_on
 from render_pipeline import (
     DEFAULT_DEPTH,
-    _place_stand,
-    movement_peak_ms,
-    locked_loop_gain,
+    play_listen_scene,
     render_fdn_ir,
-    smooth_active,
     tap_reflect_gain,
 )
-from surface_colour import (
-    SURFACE_LETTERS,
-    default_surfaces,
-    image_in_early,
-    parse_mute,
-    parse_solo,
-    parse_surfaces,
-)
+from surface_colour import image_in_early, parse_mute, parse_solo
 
 WINDOW_S = 0.5
 CAP_DB = 24.0
 CAP_LIN = 10.0 ** (CAP_DB / 20.0)
-SMOOTH_S = 0.05
 
 _TAIL: dict = {}
 _TAIL_LOCK = threading.Lock()
@@ -101,141 +81,27 @@ def lin_to_db(gain: float) -> float:
     return 20.0 * math.log10(float(gain))
 
 
-def _n_had(p: dict) -> int:
-    try:
-        n = int(p.get("hadamard_n", 32))
-    except (TypeError, ValueError):
-        n = 32
-    return n if n in (8, 16, 32) else 32
-
-
-def _rate(p: dict, sr: int) -> int:
-    raw = p.get("sample_rate")
-    try:
-        v = int(raw) if raw not in (None, "") else 0
-    except (TypeError, ValueError):
-        v = 0
-    return v if v >= 8000 else int(sr)
-
-
-def _surfaces(p: dict):
-    raw = p.get("surfaces")
-    if raw is None:
-        return default_surfaces()
-    return parse_surfaces(raw)
-
-
-def _colour(p: dict, rate: int):
-    if str(p.get("mic_setup") or "") == "binaural":
-        from mic_colour.binaural import BinauralColour
-
-        return BinauralColour(
-            str(p.get("binaural_preset") or "SADIE2_KU100"),
-            rate,
-        )
-    return MicColour(
-        p.get("colour_mode"),
-        p.get("mic_preset_l"),
-        p.get("mic_preset_c"),
-        p.get("mic_preset_r"),
-        rate,
-        hpf_engaged=bool(p.get("mic_hpf_engaged")),
-        hpf_sides=p.get("mic_hpf_sides"),
-        hpf_centre=p.get("mic_hpf_centre"),
-        colour_impl=p.get("colour_impl") or "sos",
-        hpf_l=p.get("mic_hpf_l"),
-        hpf_r=p.get("mic_hpf_r"),
-    )
-
-
 def _scene(p: dict, sr: int = SAMPLE_RATE_HZ) -> dict:
     """Taps and loop gain. Same un-gated cards Play uses for inject and the tank."""
-    room = (float(p["W"]), float(p["H"]), float(p["L"]))
-    c = SPEED_OF_SOUND_M_S
-    n_had = _n_had(p)
-    rate = _rate(p, sr)
-    surfaces = _surfaces(p)
-    colour = _colour(p, rate)
-    prep = direct_field_from_params(p)
-    binaural = str(p.get("mic_setup") or "") == "binaural"
-    if binaural:
-        stand = MicStand.binaural(
-            cx=float(prep.mic_centre[0]),
-            cy=float(prep.mic_centre[1]),
-            cz=float(prep.mic_centre[2]),
-            head_yaw_deg=float(p.get("head_yaw_deg") or 0.0),
-            preset=str(p.get("binaural_preset") or "SADIE2_KU100"),
-        )
-    else:
-        stand = MicStand.from_prepare(
-            prep,
-            car_omni=p.get("car_omni") or 1.0,
-            pattern_l=p.get("pattern_l"),
-            pattern_c=p.get("pattern_c"),
-            pattern_r=p.get("pattern_r"),
-            yaw_l_deg=p.get("yaw_l_deg"),
-            yaw_c_deg=p.get("yaw_c_deg"),
-            yaw_r_deg=p.get("yaw_r_deg"),
-            family_l=p.get("family_l"),
-            family_c=p.get("family_c"),
-            family_r=p.get("family_r"),
-            polar_l=p.get("polar_l"),
-            polar_c=p.get("polar_c"),
-            polar_r=p.get("polar_r"),
-            centre_dz=p.get("centre_dz") or 0.0,
-            ms_decode=bool(p.get("ms_decode")),
-            capsule_mm=p.get("capsule_mm") or 17.0,
-        )
-        stand = _place_stand(stand, p)
-    shelf = bool(getattr(colour, "include_offaxis_shelf", True))
-    pattern = not bool(getattr(colour, "measured", False))
-    shape = p.get("room_shape")
-    if poly_on(shape):
-        taps = compute_poly_taps(
-            room, prep.source, stand, shape,
-            c=c, n=n_had,
-            include_offaxis_shelf=shelf,
-            include_pattern=pattern,
-        )
-    else:
-        taps = compute_taps(
-            room, prep.source, stand, c=c,
-            grid=grid_bias_for_hadamard_n(n_had),
-            origin="corner",
-            z_face_4l=False,
-            hadamard_n=n_had,
-            include_offaxis_shelf=shelf,
-            include_pattern=pattern,
-            reaktor_parity=False,
-        )
-    g = float(max(0.0, min(1.0, float(p.get("fdn_g", 1.0))))) / float(n_had)
-    decay_lock = bool(p.get("decay_lock"))
-    decay_s = float(p.get("decay_s") or 0.0)
-    g, g_loop, line_t60, _delays = locked_loop_gain(
-        g, taps, rate, c, n_had, decay_lock, decay_s,
-        channel="c", t60_gate_s=0.0,
-    )
-    air_on = p.get("air_iso")
+    built = play_listen_scene(p, sr)
     return {
         "p": p,
-        "room": room,
-        "c": c,
-        "n_had": n_had,
-        "rate": rate,
-        "surfaces": surfaces,
-        "colour": colour,
-        "taps": taps,
-        "g_loop": g_loop,
-        "line_t60": line_t60,
-        "humidity": float(p.get("humidity") or 0.0),
-        "air_shelf": float(p.get("air_shelf") if p.get("air_shelf") is not None else 1.0),
-        "air_climate": str(p.get("air_climate") or "studio_20C_50RH"),
-        "air_iso": True if air_on is None else bool(air_on),
-        "diffusion_master": float(
-            p.get("diffusion_master") if p.get("diffusion_master") is not None else -0.25
-        ),
-        "smooth": smooth_active(p, surfaces),
-        "movement_ms": movement_peak_ms(p, surfaces),
+        "room": built["room"],
+        "c": built["c"],
+        "n_had": built["n_had"],
+        "rate": built["rate"],
+        "surfaces": built["surfaces"],
+        "colour": built["colour"],
+        "taps": built["taps"],
+        "g_loop": built["g_loop"],
+        "line_t60": built["line_t60"],
+        "humidity": built["humidity"],
+        "air_shelf": built["air_shelf"],
+        "air_climate": built["air_climate"],
+        "air_iso": built["air_iso"],
+        "diffusion_master": built["diffusion_master"],
+        "smooth": built["smooth"],
+        "movement_ms": built["movement_ms"],
     }
 
 
@@ -280,52 +146,82 @@ def _energy(left, right) -> float:
     return float(np.dot(left, left) + np.dot(right, right))
 
 
-def _tail_key(scene: dict) -> str:
-    surf = scene["surfaces"]
-    cards = {}
-    for letter in SURFACE_LETTERS:
-        card = surf.get(letter) if isinstance(surf, dict) else None
-        if not isinstance(card, dict):
-            cards[letter] = None
-            continue
-        cards[letter] = {
-            "absorb": [float(x) for x in (card.get("absorb") or [])],
-            "eq": card.get("eq"),
-            "structure_dif": card.get("structure_dif"),
-            "diffusion": card.get("diffusion"),
-        }
-    p = scene["p"]
-    blob = {
-        "room": scene["room"],
-        "n": scene["n_had"],
-        "sr": scene["rate"],
-        "g": scene["g_loop"],
-        "t60": scene["line_t60"],
-        "humidity": scene["humidity"],
-        "air_shelf": scene["air_shelf"],
-        "air_climate": scene["air_climate"],
-        "air_iso": scene["air_iso"],
-        "diffusion_master": scene["diffusion_master"],
-        "smooth": scene["smooth"],
-        "movement_ms": scene["movement_ms"],
-        "shape": p.get("room_shape"),
-        "sx": p.get("sx"),
-        "sy": p.get("sy"),
-        "sz": p.get("sz"),
-        "mcx": p.get("mcx"),
-        "my": p.get("my"),
-        "mcz": p.get("mcz"),
-        "space": p.get("space"),
-        "cards": cards,
-        "colour": [
-            p.get("colour_mode"),
-            p.get("mic_preset_l"),
-            p.get("mic_preset_c"),
-            p.get("mic_preset_r"),
-            p.get("mic_setup"),
-        ],
-    }
-    return json.dumps(blob, sort_keys=True, default=str)
+def _hashable(value):
+    """Dict key. Lists and sets become tuples. Unknown objects become repr."""
+    if isinstance(value, dict):
+        return tuple((str(k), _hashable(value[k])) for k in sorted(value, key=str))
+    if isinstance(value, (list, tuple)):
+        return tuple(_hashable(v) for v in value)
+    if isinstance(value, (set, frozenset)):
+        return tuple(sorted((_hashable(v) for v in value), key=repr))
+    if isinstance(value, float):
+        return float(value)
+    if isinstance(value, (str, int, bool)) or value is None:
+        return value
+    item = getattr(value, "item", None)
+    if callable(item):
+        try:
+            return _hashable(item())
+        except (TypeError, ValueError):
+            pass
+    return repr(value)
+
+
+def _colour_key(colour) -> tuple:
+    hpf = getattr(colour, "_hpf_on", None)
+    if isinstance(hpf, dict):
+        hpf_key = tuple((k, bool(hpf[k])) for k in ("l", "c", "r") if k in hpf)
+    else:
+        hpf_key = None
+    ids = getattr(colour, "preset_ids", None)
+    if isinstance(ids, dict):
+        id_key = tuple((k, str(ids[k])) for k in ("l", "c", "r") if k in ids)
+    else:
+        id_key = None
+    return (
+        type(colour).__name__,
+        getattr(colour, "mode", None),
+        getattr(colour, "impl", None),
+        int(getattr(colour, "sr", 0) or 0),
+        bool(getattr(colour, "measured", False)),
+        bool(getattr(colour, "include_offaxis_shelf", True)),
+        bool(getattr(colour, "hpf_sides", False)),
+        bool(getattr(colour, "hpf_centre", False)),
+        str(getattr(colour, "preset_id", "") or ""),
+        id_key,
+        hpf_key,
+    )
+
+
+def _tail_key(scene: dict) -> tuple:
+    """Fields render_fdn_ir takes for this tail. Constants included."""
+    taps = scene["taps"]
+    tap_key = tuple(_hashable(astuple(t)) for t in taps) if taps else ()
+    return (
+        tap_key,
+        _hashable(scene["room"]),
+        int(scene["rate"]),
+        float(scene["c"]),
+        float(WINDOW_S * 1000.0),
+        float(scene["g_loop"]),
+        float(DEFAULT_DEPTH),
+        None,
+        int(scene["n_had"]),
+        _hashable(scene["surfaces"]),
+        float(scene["humidity"]),
+        0.0,
+        float(scene["air_shelf"]),
+        float(scene["diffusion_master"]),
+        False,
+        None,
+        _colour_key(scene["colour"]),
+        float(scene["line_t60"]),
+        str(scene["air_climate"]),
+        bool(scene["air_iso"]),
+        False,
+        bool(scene["smooth"]),
+        float(scene["movement_ms"] or 0.0),
+    )
 
 
 def _tail(scene: dict):

@@ -3045,29 +3045,33 @@ def _live_surf_pack(p, room, surfaces, taps, rate, n_had, line_t60, peaking, tap
         return {"surf_on": 0, "surf_refused": "design:" + type(exc).__name__}
 
 
-def live_fdn_params(
-    p: dict,
-    sr: int = SAMPLE_RATE_HZ,
-) -> dict:
-    """Compact running-FDN coefficients for the browser worklet. ASSUMED live path.
+def _play_shape_taps(room, source, stand_i, shape, c, n_had, colour, grid, parity):
+    """Shoebox or polygon taps. Same arguments Render uses for a placed stand."""
+    if poly_on(shape):
+        return compute_poly_taps(
+            room, source, stand_i, shape,
+            c=c, n=n_had,
+            include_offaxis_shelf=colour.include_offaxis_shelf,
+            include_pattern=not colour.measured,
+        )
+    return compute_taps(
+        room, source, stand_i, c=c, grid=grid, origin="corner",
+        z_face_4l=False, hadamard_n=n_had,
+        include_offaxis_shelf=colour.include_offaxis_shelf,
+        include_pattern=not colour.measured,
+        reaktor_parity=parity,
+    )
 
-    Same geometry / inject / Dffs / cut-only peaking as the offline IR.
-    Air 1-pole + shelf run in the worklet (not baked into inject). Play
-    honours hadamard_n 8, 16, and 32. 64 and 128 stay on the 32-line network.
-    Makeup is running Mixer level (not IR-window RMS).
-    A polygon ``room_shape`` (splay, lede, live) builds the taps with
-    ``compute_poly_taps``, the same call Render uses. Absent or box stays
-    ``compute_taps``, so those live dicts stay the shoebox bytes.
-    When p["sample_rate"] is present and at least 8000, delays, the
-    decay-lock mean, air, the shelf, and peaking use that integer. Missing
-    or below 8000 stays on `sr` (44100 when the caller omits it). Measured
-    colour already designs at the posted rate.
+
+def play_listen_scene(p: dict, sr: int = SAMPLE_RATE_HZ) -> dict:
+    """Mic stand, taps, colour, and decay-lock g for Play and solo_match.
+
+    Channel is "c" and the line_t60 gate is 0. Treatment that rewrites the
+    lock, and the unlocked slider clamp, stay in live_fdn_params.
     """
     room: Vec3 = (float(p["W"]), float(p["H"]), float(p["L"]))
     c = SPEED_OF_SOUND_M_S
     surfaces = parse_surfaces(p.get("surfaces")) if p.get("surfaces") is not None else default_surfaces()
-    # FDN inject, Dffs and makeup use the un-gated cards. Solo/Mute is an
-    # early-field gate (SURF), not a hole in the tail.
     asked = p.get("hadamard_n", 32)
     try:
         asked_i = int(asked)
@@ -3075,7 +3079,7 @@ def live_fdn_params(
         asked_i = 32
     # 64/128 stay on today's 32-line Play (g/32). Packing a 64-grid into 32 slots would move the chip.
     n_had = asked_i if asked_i in (8, 16, 32) else 32
-    g = float(max(0.0, min(1.0, float(p.get("fdn_g", 1.0))))) / float(n_had)
+    g_open = float(max(0.0, min(1.0, float(p.get("fdn_g", 1.0))))) / float(n_had)
     decay_lock = bool(p.get("decay_lock"))
     decay_s = float(p.get("decay_s") or 0.0)
     grid = grid_bias_for_hadamard_n(n_had)
@@ -3090,7 +3094,9 @@ def live_fdn_params(
     parity = False
     smooth_on = smooth_active(p, surfaces)
     move_ms = movement_peak_ms(p, surfaces)
-    diffusion_master = float(p.get("diffusion_master") if p.get("diffusion_master") is not None else DIFFUSION_MASTER_LIVE)
+    diffusion_master = float(
+        p.get("diffusion_master") if p.get("diffusion_master") is not None else DIFFUSION_MASTER_LIVE
+    )
     mic_response_hz = float(p.get("mic_response_hz") or 10000.0)
     ir_length_ms = float(p.get("ir_length_ms") if p.get("ir_length_ms") is not None else 1500.0)
     colour_sr = p.get("sample_rate")
@@ -3113,7 +3119,7 @@ def live_fdn_params(
             p.get("mic_preset_l"),
             p.get("mic_preset_c"),
             p.get("mic_preset_r"),
-            colour_sr_i if colour_sr_i >= 8000 else int(sr),
+            rate,
             hpf_engaged=bool(p.get("mic_hpf_engaged")),
             hpf_sides=p.get("mic_hpf_sides"),
             hpf_centre=p.get("mic_hpf_centre"),
@@ -3146,26 +3152,100 @@ def live_fdn_params(
     if not binaural_on:
         stand = _place_stand(stand, p)
     shape = p.get("room_shape")
+    taps = _play_shape_taps(
+        room, prep.source, stand, shape, c, n_had, mic_colour, grid, parity,
+    )
+    g, g_loop, line_t60, delays = locked_loop_gain(
+        g_open, taps, rate, c, n_had, decay_lock, decay_s,
+        channel="c", t60_gate_s=0.0,
+    )
+    return {
+        "room": room,
+        "c": c,
+        "surfaces": surfaces,
+        "n_had": n_had,
+        "g_open": g_open,
+        "g": g,
+        "g_loop": g_loop,
+        "line_t60": line_t60,
+        "delays": delays,
+        "decay_lock": decay_lock,
+        "decay_s": decay_s,
+        "grid": grid,
+        "humidity": humidity,
+        "air_lp": air_lp,
+        "air_shelf": air_shelf,
+        "air_climate": air_climate,
+        "air_iso": air_iso,
+        "parity": parity,
+        "smooth": smooth_on,
+        "movement_ms": move_ms,
+        "diffusion_master": diffusion_master,
+        "mic_response_hz": mic_response_hz,
+        "ir_length_ms": ir_length_ms,
+        "rate": rate,
+        "binaural": binaural_on,
+        "colour": mic_colour,
+        "prep": prep,
+        "stand": stand,
+        "stand_raw": stand_for_makeup,
+        "shape": shape,
+        "taps": taps,
+    }
+
+
+def live_fdn_params(
+    p: dict,
+    sr: int = SAMPLE_RATE_HZ,
+) -> dict:
+    """Compact running-FDN coefficients for the browser worklet. ASSUMED live path.
+
+    Same geometry / inject / Dffs / cut-only peaking as the offline IR.
+    Air 1-pole + shelf run in the worklet (not baked into inject). Play
+    honours hadamard_n 8, 16, and 32. 64 and 128 stay on the 32-line network.
+    Makeup is running Mixer level (not IR-window RMS).
+    A polygon ``room_shape`` (splay, lede, live) builds the taps with
+    ``compute_poly_taps``, the same call Render uses. Absent or box stays
+    ``compute_taps``, so those live dicts stay the shoebox bytes.
+    When p["sample_rate"] is present and at least 8000, delays, the
+    decay-lock mean, air, the shelf, and peaking use that integer. Missing
+    or below 8000 stays on `sr` (44100 when the caller omits it). Measured
+    colour already designs at the posted rate.
+    """
+    built = play_listen_scene(p, sr)
+    room = built["room"]
+    c = built["c"]
+    surfaces = built["surfaces"]
+    # FDN inject, Dffs and makeup use the un-gated cards. Solo/Mute is an
+    # early-field gate (SURF), not a hole in the tail.
+    n_had = built["n_had"]
+    grid = built["grid"]
+    humidity = built["humidity"]
+    air_lp = built["air_lp"]
+    air_shelf = built["air_shelf"]
+    air_climate = built["air_climate"]
+    air_iso = built["air_iso"]
+    parity = built["parity"]
+    smooth_on = built["smooth"]
+    move_ms = built["movement_ms"]
+    diffusion_master = built["diffusion_master"]
+    mic_response_hz = built["mic_response_hz"]
+    ir_length_ms = built["ir_length_ms"]
+    rate = built["rate"]
+    binaural_on = built["binaural"]
+    mic_colour = built["colour"]
+    prep = built["prep"]
+    stand = built["stand"]
+    stand_for_makeup = built["stand_raw"]
+    shape = built["shape"]
+    taps = built["taps"]
 
     def _shape_taps(source, stand_i):
         # Same call as _placed_taps. The pack is 32 lines. A longer list
         # would be cut on the way into the worklet.
-        if poly_on(shape):
-            return compute_poly_taps(
-                room, source, stand_i, shape,
-                c=c, n=n_had,
-                include_offaxis_shelf=mic_colour.include_offaxis_shelf,
-                include_pattern=not mic_colour.measured,
-            )
-        return compute_taps(
-            room, source, stand_i, c=c, grid=grid, origin="corner",
-            z_face_4l=False, hadamard_n=n_had,
-            include_offaxis_shelf=mic_colour.include_offaxis_shelf,
-            include_pattern=not mic_colour.measured,
-            reaktor_parity=parity,
+        return _play_shape_taps(
+            room, source, stand_i, shape, c, n_had, mic_colour, grid, parity,
         )
-
-    taps = _shape_taps(prep.source, stand)
     dff_per_tap = [tap_dff(t.n, surfaces, master=diffusion_master) for t in taps]
     solo_l = parse_solo(p.get("surfaces_solo"))
     mute_s = parse_mute(p.get("surfaces_mute"))
@@ -3216,16 +3296,21 @@ def live_fdn_params(
             "shelf2": shelf2,
         }
     mean_ms = mean_ms_acc / float(max(1, mean_ms_n))
+    decay_lock = built["decay_lock"]
+    decay_s = built["decay_s"]
+    g = built["g"]
+    g_loop = built["g_loop"]
+    line_t60 = built["line_t60"]
     if _treat_sets_length(p):
         mid = _treat_material_mid(p, room, surfaces)
         if mid > 0.05:
             # Local only. The posted lock stays what the client sent.
             decay_lock = True
             decay_s = mid
-    g, g_loop, line_t60, _dly = locked_loop_gain(
-        g, taps, rate, c, n_had, decay_lock, decay_s,
-        channel="c", t60_gate_s=0.0,
-    )
+            g, g_loop, line_t60, _dly = locked_loop_gain(
+                built["g_open"], taps, rate, c, n_had, decay_lock, decay_s,
+                channel="c", t60_gate_s=0.0,
+            )
     # Unlocked Play still clamps the slider. Locked g is already inside the helper.
     lim = 0.99 / math.sqrt(float(n_had))
     g = float(max(0.0, min(lim, g)))
