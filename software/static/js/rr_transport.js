@@ -320,9 +320,6 @@ function syncUINow() {
     if (ah) ah.checked = !!state.align_horizontal;
     var lr = document.getElementById("link_lr_yaw");
     if (lr) lr.checked = state.link_lr_yaw !== false;
-    var hpOn = document.getElementById("mic_hp_on");
-    if (hpOn) hpOn.checked = !!state.mic_hp_on;
-    setM("mic_hp_hz", state.mic_hp_hz, 0);
     setM("mic_response_hz", state.mic_response_hz, 0);
     setM("capsule_mm", state.capsule_mm != null ? state.capsule_mm : 17, 1);
     if (typeof liveMetresMic !== "undefined" && liveMetresMic) {

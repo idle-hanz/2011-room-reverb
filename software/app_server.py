@@ -277,11 +277,7 @@ def _capsule_from_body(body: dict) -> dict:
         "polar_c": pol_c,
         "polar_r": pol_r,
         "centre_dz": dz,
-        "mic_hp_on": _b(body.get("mic_hp_on"), D("mic_hp_on")),
-        "mic_hp_hz": max(span_of("mic_hp_hz")[0], min(span_of("mic_hp_hz")[1], _f(body.get("mic_hp_hz"), D("mic_hp_hz")))),
         "mic_response_hz": max(span_of("mic_response_hz")[0], min(span_of("mic_response_hz")[1], _f(body.get("mic_response_hz"), D("mic_response_hz")))),
-        "mic_proximity": max(span_of("mic_proximity")[0], min(span_of("mic_proximity")[1], _f(
-            body.get("mic_proximity") if "mic_proximity" in body else miss("mic_proximity"), miss("mic_proximity")))),
         "ms_decode": _b(body.get("ms_decode"), D("ms_decode")) or str(body.get("mic_setup") or "") == "ms_classic",
         "capsule_mm": max(span_of("capsule_mm")[0], min(span_of("capsule_mm")[1], _f(body.get("capsule_mm"), D("capsule_mm")))),
     }
@@ -490,10 +486,7 @@ def _params_room_fields(
         "polar_c": cap["polar_c"],
         "polar_r": cap["polar_r"],
         "centre_dz": cap["centre_dz"],
-        "mic_hp_on": cap["mic_hp_on"],
-        "mic_hp_hz": cap["mic_hp_hz"],
         "mic_response_hz": cap["mic_response_hz"],
-        "mic_proximity": cap["mic_proximity"],
         "prox_l": _b(body.get("prox_l"), D("prox_l")),
         "prox_c": _b(body.get("prox_c"), D("prox_c")),
         "prox_r": _b(body.get("prox_r"), D("prox_r")),

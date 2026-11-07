@@ -1451,41 +1451,6 @@
       "path": "both"
     },
     {
-      "name": "mic_hp_on",
-      "default": false,
-      "range": null,
-      "unit": "",
-      "tab": "Mic",
-      "route": [
-        "/api/params/live",
-        "/api/render",
-        "/api/params/images",
-        "/api/params/phys",
-        "/api/display/polar",
-        "/api/room/result"
-      ],
-      "path": "both"
-    },
-    {
-      "name": "mic_hp_hz",
-      "default": 40.0,
-      "range": [
-        12,
-        250
-      ],
-      "unit": "Hz",
-      "tab": "Mic",
-      "route": [
-        "/api/params/live",
-        "/api/render",
-        "/api/params/images",
-        "/api/params/phys",
-        "/api/display/polar",
-        "/api/room/result"
-      ],
-      "path": "both"
-    },
-    {
       "name": "mic_response_hz",
       "default": 10000.0,
       "range": [
@@ -1493,25 +1458,6 @@
         20000
       ],
       "unit": "Hz",
-      "tab": "Mic",
-      "route": [
-        "/api/params/live",
-        "/api/render",
-        "/api/params/images",
-        "/api/params/phys",
-        "/api/display/polar",
-        "/api/room/result"
-      ],
-      "path": "both"
-    },
-    {
-      "name": "mic_proximity",
-      "default": 0.25,
-      "range": [
-        0,
-        1
-      ],
-      "unit": "",
       "tab": "Mic",
       "route": [
         "/api/params/live",
@@ -6233,41 +6179,6 @@
       ],
       "path": "both"
     },
-    "mic_hp_on": {
-      "name": "mic_hp_on",
-      "default": false,
-      "range": null,
-      "unit": "",
-      "tab": "Mic",
-      "route": [
-        "/api/params/live",
-        "/api/render",
-        "/api/params/images",
-        "/api/params/phys",
-        "/api/display/polar",
-        "/api/room/result"
-      ],
-      "path": "both"
-    },
-    "mic_hp_hz": {
-      "name": "mic_hp_hz",
-      "default": 40.0,
-      "range": [
-        12,
-        250
-      ],
-      "unit": "Hz",
-      "tab": "Mic",
-      "route": [
-        "/api/params/live",
-        "/api/render",
-        "/api/params/images",
-        "/api/params/phys",
-        "/api/display/polar",
-        "/api/room/result"
-      ],
-      "path": "both"
-    },
     "mic_response_hz": {
       "name": "mic_response_hz",
       "default": 10000.0,
@@ -6276,25 +6187,6 @@
         20000
       ],
       "unit": "Hz",
-      "tab": "Mic",
-      "route": [
-        "/api/params/live",
-        "/api/render",
-        "/api/params/images",
-        "/api/params/phys",
-        "/api/display/polar",
-        "/api/room/result"
-      ],
-      "path": "both"
-    },
-    "mic_proximity": {
-      "name": "mic_proximity",
-      "default": 0.25,
-      "range": [
-        0,
-        1
-      ],
-      "unit": "",
       "tab": "Mic",
       "route": [
         "/api/params/live",

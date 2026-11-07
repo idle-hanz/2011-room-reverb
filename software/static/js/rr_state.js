@@ -40,7 +40,7 @@ var state = {
   link_mode: S("link_mode"), polar_radius: S("polar_radius"), desk_touched: S("desk_touched"),
   place_l: S("place_l"), place_c: S("place_c"), place_r: S("place_r"),
   room_slot: S("room_slot"), room_x: S("room_x"), room_z: S("room_z"), room_y: S("room_y"), room_yaw: S("room_yaw"),
-  mic_hp_on: S("mic_hp_on"), mic_hp_hz: S("mic_hp_hz"), mic_response_hz: S("mic_response_hz"), mic_proximity: S("mic_proximity"),
+  mic_response_hz: S("mic_response_hz"),
   prox_l: S("prox_l"), prox_c: S("prox_c"), prox_r: S("prox_r"),
   capsule_mm: S("capsule_mm"), ms_decode: S("ms_decode"),
   colour_mode: S("colour_mode"),

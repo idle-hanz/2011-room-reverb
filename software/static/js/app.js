@@ -336,7 +336,6 @@ if (sideSplitEl) {
 }
 bindCheck("align_horizontal", "align_horizontal");
 bindCheck("link_lr_yaw", "link_lr_yaw");
-bindCheck("mic_hp_on", "mic_hp_on");
 if (sidePreset) {
   sidePreset.addEventListener("change", function (e) {
     applyCapsulePreset(["l", "r"], e.target.value);
@@ -403,7 +402,7 @@ bindHpf("mic_hpf_r", "mic_hpf_r");
 bindProx("prox_l", "prox_l");
 bindProx("prox_c", "prox_c");
 bindProx("prox_r", "prox_r");
-["mic_hp_hz", "mic_response_hz", "capsule_mm"].forEach(function (id) {
+["mic_response_hz", "capsule_mm"].forEach(function (id) {
   var el = document.getElementById(id);
   if (!el) return;
   el.addEventListener("input", function (e) {

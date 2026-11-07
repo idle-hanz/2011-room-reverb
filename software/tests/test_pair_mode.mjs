@@ -205,11 +205,14 @@ test("the third mic row reads None, Centre, and Room mic", () => {
   assert.match(page, /data-third="centre"[^>]*>3rd mic: Centre</);
   assert.match(page, /data-third="room"[^>]*>3rd mic: Room mic</);
   assert.doesNotMatch(page, /id="mic_proximity"/);
-  assert.match(app, /mic_proximity:\s*S\("mic_proximity"\)/);
+  assert.doesNotMatch(app, /mic_proximity:\s*S\("mic_proximity"\)/);
+  assert.doesNotMatch(app, /mic_hp_on:\s*S\("mic_hp_on"\)/);
+  assert.doesNotMatch(app, /mic_hp_hz:\s*S\("mic_hp_hz"\)/);
   const table = JSON.parse(fs.readFileSync(
     path.join(path.dirname(fileURLToPath(import.meta.url)), "../static/settings.json"),
     "utf8"
   ));
-  const prox = table.by_name.mic_proximity;
-  assert.equal(Object.prototype.hasOwnProperty.call(prox, "page") ? prox.page : prox.default, 0.25);
+  assert.equal(table.by_name.mic_proximity, undefined);
+  assert.equal(table.by_name.mic_hp_on, undefined);
+  assert.equal(table.by_name.mic_hp_hz, undefined);
 });
