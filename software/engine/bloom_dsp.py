@@ -787,6 +787,16 @@ def pack_pre(spec: dict, play: bool = False) -> list:
         row[20] *= gap
         row[21] *= gap
         row[22] *= gap
+        # PC3: −39 dB so an app −18 dBFS peak matches the fit's −57 dBFS
+        # reference. The inverse on H2 keeps the 1 kHz small-signal gain at 0 dB.
+        trim = 10.0 ** (-39.0 / 20.0)
+        row[15] *= trim
+        row[16] *= trim
+        row[17] *= trim
+        inv_trim = 1.0 / trim
+        row[20] *= inv_trim
+        row[21] *= inv_trim
+        row[22] *= inv_trim
     return row
 
 
