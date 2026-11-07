@@ -39,6 +39,9 @@ try:
 except ImportError:  # pragma: no cover
     np = None  # type: ignore
 
+from rbj import rbj_highshelf, rbj_lowshelf as rbj_lowshelf_safe, rbj_peaking
+
+
 def stub_note() -> str:
     """Print path only. Import fdn lazily: fdn imports this module at load."""
     try:
@@ -1501,22 +1504,6 @@ def normalize_biquad(
     return b0 * inv, b1 * inv, b2 * inv, a1 * inv, a2 * inv
 
 
-def rbj_peaking(sr: float, f0: float, q: float, gain_db: float) -> Tuple[float, float, float, float, float, float]:
-    """RBJ peaking EQ. gain_db negative = cut. Returns b0,b1,b2,a0,a1,a2."""
-    A = 10.0 ** (gain_db / 40.0)
-    w0 = 2.0 * math.pi * f0 / sr
-    cosw = math.cos(w0)
-    sinw = math.sin(w0)
-    alpha = sinw / (2.0 * q) if q > 1e-9 else 0.0
-    b0 = 1.0 + alpha * A
-    b1 = -2.0 * cosw
-    b2 = 1.0 - alpha * A
-    a0 = 1.0 + alpha / A
-    a1 = -2.0 * cosw
-    a2 = 1.0 - alpha / A
-    return b0, b1, b2, a0, a1, a2
-
-
 def rbj_lowpass(sr: float, f0: float, q: float = 0.707) -> Tuple[float, float, float, float, float, float]:
     """RBJ low-pass. Used as Mic Response HF limit (ASSUMED)."""
     w0 = 2.0 * math.pi * max(20.0, min(float(f0), float(sr) * 0.45)) / sr
@@ -1602,40 +1589,6 @@ def apply_capsule_colour(
     if not stages:
         return L, R
     return cascade_biquads(L, stages), cascade_biquads(R, stages)
-
-
-def rbj_lowshelf_safe(sr: float, f0: float, gain_db: float, slope: float = 1.0) -> Tuple[float, float, float, float, float, float]:
-    """RBJ low-shelf. Local copy so capsule colour does not import surface_colour."""
-    A = 10.0 ** (gain_db / 40.0)
-    w0 = 2.0 * math.pi * f0 / sr
-    cosw = math.cos(w0)
-    sinw = math.sin(w0)
-    alpha = (sinw / 2.0) * math.sqrt(max((A + 1.0 / A) * (1.0 / slope - 1.0) + 2.0, 0.0))
-    two_sqrt_A_alpha = 2.0 * math.sqrt(A) * alpha
-    b0 = A * ((A + 1.0) - (A - 1.0) * cosw + two_sqrt_A_alpha)
-    b1 = 2.0 * A * ((A - 1.0) - (A + 1.0) * cosw)
-    b2 = A * ((A + 1.0) - (A - 1.0) * cosw - two_sqrt_A_alpha)
-    a0 = (A + 1.0) + (A - 1.0) * cosw + two_sqrt_A_alpha
-    a1 = -2.0 * ((A - 1.0) + (A + 1.0) * cosw)
-    a2 = (A + 1.0) + (A - 1.0) * cosw - two_sqrt_A_alpha
-    return b0, b1, b2, a0, a1, a2
-
-
-def rbj_highshelf(sr: float, f0: float, gain_db: float, slope: float = 1.0) -> Tuple[float, float, float, float, float, float]:
-    """RBJ high-shelf. gain_db negative = HF cut. ASSUMED humidity tilt."""
-    A = 10.0 ** (gain_db / 40.0)
-    w0 = 2.0 * math.pi * f0 / sr
-    cosw = math.cos(w0)
-    sinw = math.sin(w0)
-    alpha = (sinw / 2.0) * math.sqrt(max((A + 1.0 / A) * (1.0 / slope - 1.0) + 2.0, 0.0))
-    two_sqrt_A_alpha = 2.0 * math.sqrt(A) * alpha
-    b0 = A * ((A + 1.0) + (A - 1.0) * cosw + two_sqrt_A_alpha)
-    b1 = -2.0 * A * ((A - 1.0) + (A + 1.0) * cosw)
-    b2 = A * ((A + 1.0) + (A - 1.0) * cosw - two_sqrt_A_alpha)
-    a0 = (A + 1.0) - (A - 1.0) * cosw + two_sqrt_A_alpha
-    a1 = 2.0 * ((A - 1.0) - (A + 1.0) * cosw)
-    a2 = (A + 1.0) - (A - 1.0) * cosw - two_sqrt_A_alpha
-    return b0, b1, b2, a0, a1, a2
 
 
 def biquad_process(

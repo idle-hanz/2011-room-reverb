@@ -22,10 +22,16 @@ import copy
 import hashlib
 import json
 import math
+import sys
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Sequence, Tuple
 
 import numpy as np
+
+_ENGINE = Path(__file__).resolve().parent / "engine"
+if str(_ENGINE) not in sys.path:
+    sys.path.insert(0, str(_ENGINE))
+from rbj import rbj_highshelf, rbj_lowshelf, rbj_peaking  # noqa: E402
 
 Biquad = Tuple[float, float, float, float, float, float]
 
@@ -69,54 +75,6 @@ THIRD_OCTAVE_HZ: Tuple[float, ...] = (
     800, 1000, 1250, 1600, 2000, 2500, 3150, 4000, 5000, 6300, 8000, 10000,
     12500, 16000, 20000,
 )
-
-
-def rbj_peaking(sr: float, f0: float, q: float, gain_db: float) -> Biquad:
-    A = 10.0 ** (gain_db / 40.0)
-    w0 = 2.0 * math.pi * f0 / sr
-    cosw = math.cos(w0)
-    sinw = math.sin(w0)
-    alpha = sinw / (2.0 * q) if q > 1e-9 else 0.0
-    b0 = 1.0 + alpha * A
-    b1 = -2.0 * cosw
-    b2 = 1.0 - alpha * A
-    a0 = 1.0 + alpha / A
-    a1 = -2.0 * cosw
-    a2 = 1.0 - alpha / A
-    return b0, b1, b2, a0, a1, a2
-
-
-def rbj_highshelf(sr: float, f0: float, gain_db: float, slope: float = 1.0) -> Biquad:
-    A = 10.0 ** (gain_db / 40.0)
-    w0 = 2.0 * math.pi * f0 / sr
-    cosw = math.cos(w0)
-    sinw = math.sin(w0)
-    alpha = (sinw / 2.0) * math.sqrt(max((A + 1.0 / A) * (1.0 / slope - 1.0) + 2.0, 0.0))
-    two_sqrt_A_alpha = 2.0 * math.sqrt(A) * alpha
-    b0 = A * ((A + 1.0) + (A - 1.0) * cosw + two_sqrt_A_alpha)
-    b1 = -2.0 * A * ((A - 1.0) + (A + 1.0) * cosw)
-    b2 = A * ((A + 1.0) + (A - 1.0) * cosw - two_sqrt_A_alpha)
-    a0 = (A + 1.0) - (A - 1.0) * cosw + two_sqrt_A_alpha
-    a1 = 2.0 * ((A - 1.0) - (A + 1.0) * cosw)
-    a2 = (A + 1.0) - (A - 1.0) * cosw - two_sqrt_A_alpha
-    return b0, b1, b2, a0, a1, a2
-
-
-def rbj_lowshelf(sr: float, f0: float, gain_db: float, slope: float = 1.0) -> Biquad:
-    """RBJ low-shelf. ASSUMED helper for surface EQ."""
-    A = 10.0 ** (gain_db / 40.0)
-    w0 = 2.0 * math.pi * f0 / sr
-    cosw = math.cos(w0)
-    sinw = math.sin(w0)
-    alpha = (sinw / 2.0) * math.sqrt(max((A + 1.0 / A) * (1.0 / slope - 1.0) + 2.0, 0.0))
-    two_sqrt_A_alpha = 2.0 * math.sqrt(A) * alpha
-    b0 = A * ((A + 1.0) - (A - 1.0) * cosw + two_sqrt_A_alpha)
-    b1 = 2.0 * A * ((A - 1.0) - (A + 1.0) * cosw)
-    b2 = A * ((A + 1.0) - (A - 1.0) * cosw - two_sqrt_A_alpha)
-    a0 = (A + 1.0) + (A - 1.0) * cosw + two_sqrt_A_alpha
-    a1 = -2.0 * ((A - 1.0) + (A + 1.0) * cosw)
-    a2 = (A + 1.0) + (A - 1.0) * cosw - two_sqrt_A_alpha
-    return b0, b1, b2, a0, a1, a2
 
 
 def biquad_process(x: np.ndarray, coeffs: Biquad) -> np.ndarray:
