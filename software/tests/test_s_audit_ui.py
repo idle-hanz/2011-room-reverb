@@ -539,6 +539,15 @@ def test_a12_visible_controls_post_or_are_ui_only(audit_server):
         report = pg.evaluate(
             """async (allowIds) => {
               window.confirm = () => true;
+              /* Defaults arrive on a late fetch and can put a slider back. Wait before nudging. */
+              const defaultsDeadline = Date.now() + 8000;
+              while (Date.now() < defaultsDeadline) {
+                const done = performance.getEntriesByType('resource').some((e) =>
+                  String(e.name).indexOf('/api/settings') >= 0 && e.responseEnd > 0);
+                if (done) break;
+                await new Promise((r) => setTimeout(r, 50));
+              }
+              await new Promise((r) => setTimeout(r, 400));
               window.LiveFDN.isRunning = () => true;
               const posts = [];
               const orig = window.fetch;
@@ -584,7 +593,8 @@ def test_a12_visible_controls_post_or_are_ui_only(audit_server):
                 if (el.classList.contains('rn-face')) return true;
                 if (el.id === 'spaceZoomOut' || el.id === 'spaceZoomIn' || el.id === 'spaceFit' || el.id === 'micAll') return true;
                 if (el.closest('#polarToggles') || el.closest('#micToggles')) return true;
-                if (el.closest('#polarExtras')) return true;
+                if (el.classList.contains('polar-band')) return true;
+                if (el.closest('#polarExtras') || el.closest('#polarBandKey')) return true;
                 if (el.getAttribute('data-space-mode')) return true;
                 if (el.getAttribute('data-polar-page')) return true;
                 if (el.getAttribute('data-src-freq') || el.getAttribute('data-src-plane')) return true;
@@ -733,7 +743,7 @@ def test_a12_visible_controls_post_or_are_ui_only(audit_server):
                   el.dispatchEvent(new Event('input', { bubbles: true }));
                   el.dispatchEvent(new Event('change', { bubbles: true }));
                 }
-                const body = await settle(el.id === 'slAddPanel');
+                const body = await settle(!uiOnly(el));
                 const mat = el.getAttribute && el.getAttribute('data-material');
                 if (mat && body !== prev) materialPosted = true;
                 if (body === prev && !uiOnly(el)) quiet.push(labelOf(el));
