@@ -10,6 +10,8 @@ from pathlib import Path
 
 import numpy as np
 
+import render_pipeline
+
 ROOT = Path(__file__).resolve().parents[1]
 DLL = Path(r"C:\Users\IdleHanz\AppData\Local\Temp\live_stereo.dll")
 N = 32
@@ -227,11 +229,15 @@ def inj_one(bus, line, amp=1.0):
 
 def test_soft_knee():
     eng = Engine()
-    assert abs(eng.lib.live_soft(c_float(0.4)) - 0.4) < 1e-6
+    got = eng.lib.live_soft(c_float(0.4))
+    assert abs(got - 0.4) < 1e-6
+    assert abs(render_pipeline.soft_limit(0.4) - got) < 1e-6
     got = eng.lib.live_soft(c_float(1.2))
     assert abs(got - soft_py(1.2)) < 1e-4
+    assert abs(render_pipeline.soft_limit(1.2) - got) < 1e-4
     got = eng.lib.live_soft(c_float(-1.05))
     assert abs(got - soft_py(-1.05)) < 1e-4
+    assert abs(render_pipeline.soft_limit(-1.05) - got) < 1e-4
 
 
 def test_direct_fold_and_not_written_back():
