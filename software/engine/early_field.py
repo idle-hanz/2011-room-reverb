@@ -3,7 +3,7 @@
 Early-field image-source prototype for the 2011 room reverb rebuild (v2).
 
 Implements the AGREED design (see README for tags and assumptions).
-FDN / Hadamard: see fdn.py (audio) and fdn_stub.py (legacy inject API notes).
+FDN / Hadamard: see fdn.py. The CLI prints fdn.stub_note.
 
 Constants / tags (2026-09-17 Structure locks):
   SPEED_OF_SOUND_M_S = 340.0  — VERIFIED (Distances Const)
@@ -39,11 +39,13 @@ try:
 except ImportError:  # pragma: no cover
     np = None  # type: ignore
 
-try:
-    from fdn_stub import stub_note
-except ImportError:  # pragma: no cover
-    def stub_note() -> str:  # type: ignore
-        return "FDN omitted (fdn_stub not importable)."
+def stub_note() -> str:
+    """Print path only. Import fdn lazily: fdn imports this module at load."""
+    try:
+        import fdn
+    except (ImportError, SystemExit):
+        return "FDN omitted (fdn not importable)."
+    return fdn.stub_note()
 
 
 # --- Speed / rate ------------------------------------------------------------

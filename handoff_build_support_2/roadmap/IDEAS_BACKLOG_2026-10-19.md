@@ -137,7 +137,7 @@ Checked against: `HANDOVER.md` (Current pin 2026-10-18), `roadmap\BUILD_RUN_LOG.
 | — | 3×4×2.5 guitar clipping | **Resolved for listening**: AMBIENCE used the cleaned guitar and the limiter stayed off on every file | `ambience\listen\` | — |
 | — | Roughly once-per-second Play click | Parked in memory notes (not the 1 s delay cap, not live-param zipper) | project memory | Re-check if Idle still hears it |
 | — | Test hygiene | Many September xfail "not landed" probes hide real state; `*_draft.py` test copies; full suite ~30 min (a quick tier would help) | `AUDIT_2026-10-17.md` §D | Triage session (S) |
-| — | Dead / legacy code | `tweak_app.py` stub panels, `fdn.py` 16-bit wav writer (L12), `loop_mix` unused, `polygonal_stub.py`, `fdn_stub` | `AUDIT_2026-10-17.md` §B | Tidy or label (S) |
+| — | Dead / legacy code | `fdn.py` 16-bit wav writer (L12), `loop_mix` unused. Batch 1 deleted `tweak_app.py`, `moving_room_demo.py`, `polygonal_stub.py`, `fdn_stub.py` (2026-11-07). Docs still name the Gradio file. | `AUDIT_2026-10-17.md` §B | Tidy or label (S) |
 
 ## 8. Docs & sharing
 

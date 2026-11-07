@@ -6,4 +6,4 @@ if [[ ! -x .venv/bin/python ]]; then
   .venv/bin/pip install --upgrade pip
   .venv/bin/pip install -r requirements.txt
 fi
-exec .venv/bin/python tweak_app.py
+exec .venv/bin/python app_server.py
