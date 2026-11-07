@@ -1,0 +1,12 @@
+SADIE II Database (University of York AudioLab), doi:10.5281/zenodo.12092466, v2-2.
+Copyright 2018, University of York. Licensed under the Apache License, Version 2.0 (see SADIE_II_Apache-2.0.txt).
+
+Files in this pack derived from SADIE II subjects D1 (Neumann KU100) and D2 (KEMAR):
+  presets/binaural/SADIE2_KU100.json, presets/binaural/SADIE2_KEMAR.json,
+  presets/binaural/sos_tables/{44100,48000}/SADIE2_KU100*.json, .../SADIE2_KEMAR*.json
+Changes (Apache-2.0 s.4(b)): derived by the 2011 Room Reverb project from D1/D2 HRIR SOFA files
+(D*_44K_16bit_256tap_FIR_SOFA.sofa, D*_48K_24bit_256tap_FIR_SOFA.sofa): diffuse-field level normalisation,
+1/6-octave smoothing, left/right mirror averaging at 60 grid nodes, RBJ biquad fit per ear and rate,
+ITD analysis. No raw HRIRs are redistributed.
+Reference: C. Armstrong et al., "A Perceptual Evaluation of Individual and
+Non-Individual HRTFs: A Case Study of the SADIE II Database", Appl. Sci. 8(11):2029, 2018, doi:10.3390/app8112029.
