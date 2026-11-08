@@ -797,6 +797,115 @@ def test_a12_visible_controls_post_or_are_ui_only(audit_server):
         p.stop()
 
 
+@pytest.mark.slow
+def test_mirror_porous_and_panel_post_when_they_can(audit_server):
+    """A box mirror click and a roomy add both change the live post.
+
+    A plan token disables mirror. A full room disables both add buttons.
+    The enlarged heat note names the shoebox approximation.
+    """
+    p, b = _chrome()
+    try:
+        pg = b.new_page(viewport={"width": 1600, "height": 1000})
+        pg.goto(audit_server["url"])
+        pg.wait_for_function(
+            """() => performance.getEntriesByType('resource').some((e) =>
+              String(e.name).indexOf('/api/settings') >= 0 && e.responseEnd > 0)""",
+            timeout=20000,
+        )
+        pg.wait_for_timeout(400)
+        pg.evaluate(
+            """() => {
+              window.__livePosts = [];
+              const orig = window.fetch;
+              window.fetch = function (url, opts) {
+                const u = String(url);
+                if (u.indexOf('/api/params/live') >= 0) {
+                  window.__livePosts.push(opts && opts.body ? String(opts.body) : '');
+                  return Promise.resolve(new Response(JSON.stringify({ ok: true, decay_s: 1.8 }), {
+                    status: 200, headers: { 'Content-Type': 'application/json' }
+                  }));
+                }
+                return orig.apply(this, arguments);
+              };
+              window.LiveFDN.isRunning = () => true;
+            }"""
+        )
+        pg.click("#floorFrame .diagram-expand")
+        pg.evaluate("() => syncUINow()")
+        note = pg.locator("#floorHeatNote").inner_text()
+        assert "First-order shoebox images" in note, note
+        assert "geometric 1/r" in note, note
+        assert pg.locator("#floorHeatNote").is_hidden() is False
+        pg.evaluate(
+            """() => {
+              state.room_shape = RoomShape.storedShape('plan', state.W, state.H, state.L, 'box');
+              syncUINow();
+            }"""
+        )
+        hidden_note = pg.locator("#floorHeatNote").inner_text()
+        assert "not a shoebox" in hidden_note, hidden_note
+        assert pg.evaluate("() => document.getElementById('mirrorLr').disabled") is True
+        pg.click("#floorFrame .diagram-expand")
+        pg.evaluate(
+            """() => {
+              state.room_shape = 'box';
+              state.surf_treatment = [];
+              syncUINow();
+            }"""
+        )
+        pg.click('.view-tab[data-view="surfaces"]')
+        pg.wait_for_timeout(200)
+        assert pg.evaluate("() => document.getElementById('mirrorLr').disabled") is False
+        n = pg.evaluate("() => window.__livePosts.length")
+        pg.click("#mirrorLr")
+        pg.wait_for_function("(n) => window.__livePosts.length > n", arg=n, timeout=4000)
+        body = pg.evaluate("() => JSON.parse(window.__livePosts[window.__livePosts.length - 1])")
+        assert body.get("mirror_lr") is False, body.get("mirror_lr")
+        pg.evaluate(
+            """() => {
+              state.surf_treatment = [];
+              window.RRColourSurfaces.select('B');
+            }"""
+        )
+        n = pg.evaluate("() => window.__livePosts.length")
+        pg.click("#slAddPorous")
+        pg.wait_for_function("(n) => window.__livePosts.length > n", arg=n, timeout=4000)
+        body = pg.evaluate("() => JSON.parse(window.__livePosts[window.__livePosts.length - 1])")
+        porous = [
+            r for r in (body.get("surf_treatment") or [])
+            if r.get("type") == "porous" and r.get("face") == "B"
+        ]
+        assert porous, body.get("surf_treatment")
+        n = pg.evaluate("() => window.__livePosts.length")
+        pg.click("#slAddPanel")
+        pg.wait_for_function(
+            """(n) => {
+              if (window.__livePosts.length <= n) return false;
+              const row = JSON.parse(window.__livePosts[window.__livePosts.length - 1]);
+              return (row.surf_treatment || []).some((r) => r.type === 'membrane' || r.type === 'helmholtz');
+            }""",
+            arg=n,
+            timeout=8000,
+        )
+        pg.evaluate(
+            """() => {
+              state.surf_treatment = ['A', 'B', 'C', 'D', 'E', 'F'].map((face) => ({
+                id: 'full_' + face, face: face, type: 'porous',
+                material: 'absorber_panel_2in', coverage: 0.9, on: true
+              }));
+              window.RRColourSurfaces.select('B');
+            }"""
+        )
+        assert pg.evaluate("() => document.getElementById('slAddPorous').disabled") is True
+        assert pg.evaluate("() => document.getElementById('slAddPanel').disabled") is True
+        title = pg.evaluate("() => document.getElementById('slAddPanel').title")
+        assert "full" in title.lower(), title
+    finally:
+        b.close()
+        p.stop()
+
+
 def test_b1_chrome_plays_24bit_wav(audit_server, tmp_path):
     import numpy as np
     sys.path[:0] = [str(SW)]

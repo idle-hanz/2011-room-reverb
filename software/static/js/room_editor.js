@@ -995,9 +995,25 @@
     }
   function drawHeat(ctx, geo) { var env = envStack[envStack.length - 1];
       var frame = env.floorCanvas.closest ? env.floorCanvas.closest(".diagram-frame") : null;
-      if (!frame || !frame.classList.contains("is-enlarged")) return;
-      if (!global.RoomDraw || !RoomDraw.reverbDistance || !RoomDraw.drrDb) return;
-      var st = geo.state;
+      var noteEl = document.getElementById("floorHeatNote");
+      var enlarged = !!(frame && frame.classList.contains("is-enlarged"));
+      var st = geo.state || {};
+      if (!enlarged) {
+        if (noteEl) noteEl.hidden = true;
+        return;
+      }
+      var note = (global.RoomShape && RoomShape.heatMapNote) ? RoomShape.heatMapNote(st.room_shape) : null;
+      if (!note || !global.RoomDraw || !RoomDraw.reverbDistance || !RoomDraw.drrDb) {
+        if (noteEl) {
+          noteEl.hidden = false;
+          noteEl.textContent = "Shoebox image map hidden. This outline is not a shoebox.";
+        }
+        return;
+      }
+      if (noteEl) {
+        noteEl.hidden = false;
+        noteEl.textContent = note;
+      }
       var src = geo.source;
       var room = { W: st.W, H: st.H, L: st.L };
       var images = enter(env, faceImages, src, room);
@@ -1026,6 +1042,11 @@
           ctx.fillRect(Math.min(p0.px, p1.px), Math.min(p0.py, p1.py), Math.abs(p1.px - p0.px) + 1, Math.abs(p1.py - p0.py) + 1);
         }
       }
+      ctx.save();
+      ctx.font = "12px sans-serif";
+      ctx.fillStyle = "rgba(226,232,240,0.92)";
+      ctx.fillText(note, 12, Math.max(16, env.floorCanvas.height - 16));
+      ctx.restore();
     }
   function drawMicRings(ctx, geo, spots) { var env = envStack[envStack.length - 1];
       if (!global.RoomDraw || !RoomDraw.linFromDb) return;

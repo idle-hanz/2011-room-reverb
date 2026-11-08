@@ -299,6 +299,11 @@
     POROUS.forEach(function (p) { var o = el("option", null, p[1]); o.value = p[0]; sel.appendChild(o); });
     sel.value = "absorber_panel_4in_gap4in";
     var bp = el("button", "chip", "+ Porous"); bp.type = "button"; bp.id = "slAddPorous";
+    var porousRoom = MAX_COVER - used;
+    bp.disabled = k === "E" || porousRoom < 0.01;
+    bp.title = k === "E"
+      ? "Porous panels are wall and ceiling only (library rule)."
+      : (porousRoom < 0.01 ? ("Face " + k + " is full (90 %).") : "");
     bp.addEventListener("click", function () {
       if (k === "E") { flash("Porous panels are wall and ceiling only (library rule)."); return; }
       var room = MAX_COVER - faceCover(k); if (room < 0.01) { flash("Face " + k + " is full (90 %)."); return; }
@@ -307,10 +312,36 @@
     });
     var f0 = el("input"); f0.type = "number"; f0.min = "30"; f0.max = "299"; f0.step = "1"; f0.value = "125"; f0.id = "slPanelF0";
     var bt = el("button", "chip", "+ Tuned panel"); bt.type = "button"; bt.id = "slAddPanel";
-    bt.title = "Membrane below 180 Hz, Helmholtz above (Cox & D'Antonio ch. 7)";
+    function panelFaceFree() {
+      var i;
+      for (i = 0; i < LETTERS.length; i++) {
+        if (MAX_COVER - faceCover(LETTERS[i]) >= 0.1) return true;
+      }
+      return false;
+    }
+    function paintPanelBtn() {
+      var hz = Number(f0.value);
+      var faceFull = (MAX_COVER - faceCover(k)) < 0.01;
+      var noFace = !panelFaceFree();
+      bt.disabled = hz >= 300 || faceFull || noFace;
+      if (hz >= 300) bt.title = "No practical panel for that frequency (< 300 Hz only).";
+      else if (faceFull) bt.title = "Face " + k + " is full (90 %).";
+      else if (noFace) bt.title = "Every face is full (90 %).";
+      else bt.title = "Membrane below 180 Hz, Helmholtz above (Cox & D'Antonio ch. 7)";
+    }
+    paintPanelBtn();
+    f0.addEventListener("input", paintPanelBtn);
     bt.addEventListener("click", function () {
-      post("/api/room/panel", { f0: Number(f0.value) }).then(function (d) {
-        if (!d.row) { flash("No practical panel for that frequency (< 300 Hz only)."); return; }
+      var hz = Number(f0.value);
+      if (hz >= 300) { flash("No practical panel for that frequency (< 300 Hz only)."); return; }
+      if ((MAX_COVER - faceCover(k)) < 0.01) { flash("Face " + k + " is full (90 %)."); return; }
+      if (!panelFaceFree()) { flash("Every face is full (90 %)."); return; }
+      post("/api/room/panel", { f0: hz }).then(function (d) {
+        if (!d.row) {
+          if (!panelFaceFree()) flash("Every face is full (90 %).");
+          else flash("No practical panel for that frequency (< 300 Hz only).");
+          return;
+        }
         var r = d.row; r.face = k; r.suggested = false; r.id = uid("pan");
         var room = MAX_COVER - faceCover(k); r.coverage = Math.round(Math.min(r.coverage, room) * 1000) / 1000;
         if (r.coverage <= 0) { flash("Face " + k + " is full (90 %)."); return; }

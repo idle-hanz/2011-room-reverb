@@ -13,6 +13,8 @@ const page = readFileSync(join(here, "../static/index.html"), "utf8");
 const room = readFileSync(join(here, "../static/js/rr_room.js"), "utf8");
 const app = readFileSync(join(here, "../static/js/app.js"), "utf8");
 const editor = readFileSync(join(here, "../static/js/room_editor.js"), "utf8");
+const sl = readFileSync(join(here, "../static/js/sl_room_result.js"), "utf8");
+const RD = require("../static/js/room_draw.js");
 
 test("ratios are not the 6 by 3 by 8 default and modes use 340", () => {
   const bolt = RS.ratioSize("bolt", 6, 3, 8);
@@ -75,4 +77,42 @@ test("a plan is five to eight corners and panels use the treatment rows", () => 
   assert.match(editor, /RoomShape\.hitPlan/);
   assert.match(editor, /RoomShape\.movePlanPoint/);
   assert.match(page, /id="roomAddDiffuser"/);
+});
+
+test("a plan or tilt token hides mirror and draws the slope", () => {
+  const plan = RS.storedShape("plan", 6, 3, 8, "box");
+  assert.equal(RS.normalize(plan), "plan");
+  assert.equal(RS.showMirrorToggle(plan), false);
+  assert.equal(RS.showMirrorToggle("tilt:4:0.2"), false);
+  assert.equal(RS.showMirrorToggle("plan"), true);
+  assert.match(room, /showMirrorToggle\(state\.room_shape\)/);
+  assert.equal(room.includes("showMirrorToggle(name)"), false);
+  const elev = RS.elevOutline("tilt:0:0.2", 3, 8);
+  assert.equal(elev[2][0], 8);
+  assert.ok(Math.abs(elev[2][1] - 3) < 1e-9);
+  assert.ok(Math.abs(elev[3][1] - 2.4) < 1e-9);
+  const inset = Math.min(2.4, Math.abs(8 * Math.tan(4 * Math.PI / 180)));
+  const floor = RS.floorOutline("tilt:4:0.2", 6, 8);
+  assert.ok(Math.abs(floor[0][0] - inset) < 1e-9);
+  assert.ok(Math.abs(floor[1][0] - (6 - inset)) < 1e-9);
+  assert.deepEqual(floor[2], [6, 8]);
+  assert.deepEqual(floor[3], [0, 8]);
+});
+
+test("the heat map uses a reflected denominator and stays a shoebox field", () => {
+  const note = "First-order shoebox images, geometric 1/r, no absorption, no air, no tail";
+  assert.equal(RS.heatMapNote("box"), note);
+  assert.equal(RS.heatMapNote(RS.storedShape("plan", 6, 3, 8, "box")), null);
+  assert.equal(RS.heatMapNote("tilt:4:0.2"), null);
+  assert.equal(RS.heatMapNote("splay"), null);
+  const rev = RD.reverbDistance([2, 2, 2, 2, 2, 2]);
+  assert.ok(Math.abs(rev - (1 / 3)) < 1e-12);
+  const drr = RD.drrDb(1, rev);
+  assert.ok(drr != null);
+  assert.notEqual(drr, RD.levelDb(1));
+  assert.match(editor, /RoomShape\.heatMapNote/);
+  assert.match(editor, /Shoebox image map hidden/);
+  assert.match(page, /id="floorHeatNote"/);
+  assert.match(sl, /bp\.disabled/);
+  assert.match(sl, /Every face is full \(90 %\)\./);
 });

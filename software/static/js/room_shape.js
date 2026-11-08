@@ -469,8 +469,8 @@
     return [
       [0, 0],
       [L, 0],
-      [L, ceilingAt(name, L, H, L)],
-      [0, ceilingAt(name, 0, H, L)]
+      [L, ceilingAt(shape, L, H, L)],
+      [0, ceilingAt(shape, 0, H, L)]
     ];
   }
 
@@ -659,6 +659,12 @@
     return normalize(shape) === "box";
   }
 
+  /* Enlarged floor field. Six first-order shoebox images. Null on any other outline. */
+  function heatMapNote(shape) {
+    if (normalize(shape) !== "box") return null;
+    return "First-order shoebox images, geometric 1/r, no absorption, no air, no tail";
+  }
+
   function sidesLinked(shape, mirror) {
     var name = normalize(shape);
     if (name !== "box") return lrSymmetric(name);
@@ -771,6 +777,7 @@
     maxSpace: maxSpace,
     lrSymmetric: lrSymmetric,
     showMirrorToggle: showMirrorToggle,
+    heatMapNote: heatMapNote,
     sidesLinked: sidesLinked,
     wallRows: wallRows,
     paintShapeRows: paintShapeRows,

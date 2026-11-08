@@ -185,7 +185,7 @@ function paintRoomShape() {
   var delCorner = document.getElementById("roomPlanDel");
   if (addCorner) addCorner.hidden = !planOn;
   if (delCorner) delCorner.hidden = !planOn;
-  var hideSwitch = !!(window.RoomShape && RoomShape.showMirrorToggle && !RoomShape.showMirrorToggle(name));
+  var hideSwitch = !!(window.RoomShape && RoomShape.showMirrorToggle && !RoomShape.showMirrorToggle(state.room_shape));
   var mirrorRow = document.getElementById("mirrorLrRow");
   var mirrorBox = document.getElementById("mirrorLr");
   if (mirrorRow) mirrorRow.hidden = hideSwitch;
