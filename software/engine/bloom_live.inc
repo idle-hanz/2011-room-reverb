@@ -189,16 +189,46 @@ static double bloom_rc(LiveStereo *st, double tgt) {
     return st->dG;
 }
 
-static double bloom_swell(LiveStereo *st, double vt) {
+static double bloom_swell(LiveStereo *st, double vt, double tgt) {
     const double *c = st->bC;
     double cur = vt > st->dVc ? (vt - st->dVc) / c[10] : 0.0;
     double iu = (st->dVc - st->dVu) / c[13];
     double dt = c[15];
-    double v;
+    double v, raw, pred;
+    /* Follower is unchanged. Slots 16..22 are the output release. */
     st->dVc += dt * (cur - st->dVc / c[12] - iu) / c[11];
     st->dVu += dt * iu / c[14];
     v = st->dVc < 0.0 ? 0.0 : st->dVc;
-    return 18.1 * ls_ln(1.0 + v / 8.06);
+    raw = 18.1 * ls_ln(1.0 + v / 8.06);
+    if (tgt >= st->dU) {
+        st->dU = tgt;
+        st->dCnt = 0;
+    } else {
+        st->dCnt += 1;
+        if (st->dCnt > (int)c[16]) {
+            st->dU += (0.0 - st->dU) * c[17];
+            if (st->dU < tgt) st->dU = tgt;
+        }
+    }
+    pred = c[18] + c[19] * st->dU + c[20] * st->dU * st->dU;
+    if (st->dMode != 1) {
+        if (pred < raw - c[21]) st->dMode = 1;
+        else {
+            st->dMode = 0;
+            st->dG = raw;
+        }
+    } else if (pred > st->dG + c[21]) {
+        st->dMode = 0;
+        st->dG = raw;
+    } else {
+        st->dG += (pred - st->dG) * c[22];
+        if (st->dG < pred) st->dG = pred;
+        if (raw <= st->dG) {
+            st->dMode = 0;
+            st->dG = raw;
+        }
+    }
+    return st->dG;
 }
 
 static double bloom_gr(LiveStereo *st, double x) {
@@ -210,7 +240,7 @@ static double bloom_gr(LiveStereo *st, double x) {
     if (pid == 1) return bloom_glue(st, tgt);
     if (pid == 2) return bloom_rc(st, tgt);
     if (pid == 3) return bloom_nuke(st, tgt);
-    return bloom_swell(st, 8.06 * (ls_exp(tgt / 18.1) - 1.0));
+    return bloom_swell(st, 8.06 * (ls_exp(tgt / 18.1) - 1.0), tgt);
 }
 
 static double bloom_pd(LiveStereo *st, int bus, int bank, int line, double y) {
@@ -472,11 +502,14 @@ static void bloom_sample(LiveStereo *st, double x, int t) {
     lo = -st->bC[2];
     if (lo > 0.0) lo = 0.0;
     wet = hi - gr;
-    /* Natural (pid 0): makeup is min(amount, GR), so the tail stays at or under 0 dB.
+    /* Natural (pid 0) and swell (pid 4): makeup is min(amount, GR).
        The same test as wet_gain_db. Other models keep the amount ceiling. */
-    if ((int)(st->bC[0] + 0.5) == 0) {
-        if (wet > 0.0) wet = 0.0;
-    } else if (wet > hi) wet = hi;
+    {
+        int pid = (int)(st->bC[0] + 0.5);
+        if (pid == 0 || pid == 4) {
+            if (wet > 0.0) wet = 0.0;
+        } else if (wet > hi) wet = hi;
+    }
     if (wet < lo) wet = lo;
     g = ls_from_db(wet);
     st->bG[t] = g;

@@ -4004,6 +4004,9 @@ static void run_partition(LiveStereo *st, const float *inL, const float *inR, fl
                 double aa = xA < 0.0 ? -xA : xA;
                 double bb = xB < 0.0 ? -xB : xB;
                 det = aa > bb ? aa : bb;
+            } else if ((int)(st->bC[0] + 0.5) == 4) {
+                /* Swell filters the signed sample. Abs after the high-pass. */
+                det = x;
             } else det = x < 0.0 ? -x : x;
             bloom_sample(st, det, t);
         }

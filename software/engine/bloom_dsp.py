@@ -52,6 +52,16 @@ _GLUE_A0 = -0.02037669
 _GLUE_A1 = 0.86391699
 _GLUE_A2 = 0.00238948
 
+# Swell output release. RT and RU also set the steady GR, so they stay.
+# Quadratic is the 3 s cycle-peak fit (max error 0.020 dB): destination only.
+_SWELL_REL_S = 0.140
+_SWELL_HOLD_S = 0.020
+_SWELL_ENV_S = 0.004
+_SWELL_TH = 0.30
+_SWELL_A0 = -0.00527670
+_SWELL_A1 = 0.95430746
+_SWELL_A2 = 0.00132036
+
 _PRESETS = ("natural", "glue", "room_crush", "nuke", "swell")
 _PRE_TYPES = ("off", "u610a", "neve1073")
 
@@ -129,13 +139,13 @@ def wet_gain_db(amount_db_v: float, gr_positive: float, max_duck_db: float, pres
     """Tail gain in dB. gr_positive is the detector's GR (0 or above).
 
     The Bloom law uses GR_dB <= 0, so the sign flips here.
-    Natural's makeup is min(amount, GR), so the tail cannot go above 0 dB.
+    Natural and swell: makeup is min(amount, GR), so the tail cannot go above 0 dB.
     """
     gr = -max(0.0, float(gr_positive))
     hi = float(amount_db_v)
     lo = -max(0.0, float(max_duck_db))
     g = hi + gr
-    if preset == "natural":
+    if preset == "natural" or preset == "swell":
         if g > 0.0:
             g = 0.0
     elif g > hi:
@@ -417,10 +427,11 @@ def step_room_crush(st: DetState, tgt: float, c: dict) -> float:
     return st.g
 
 
-def step_swell(st: DetState, vt: float, c: dict) -> float:
-    """UAD-round3-fit, fit_swell.json. No 10 dB clamp inside this computer.
+def step_swell(st: DetState, vt: float, c: dict, tgt: float) -> float:
+    """UAD-round3-fit follower, then a fast output release toward the predicted floor.
 
-    The tail safety cap is wet_gain_db, max_duck_db 10 for Swell.
+    RT and RU stay, so attack and steady GR stay. The output leaves the
+    follower only while the floor sits more than th below it.
     """
     cur = (vt - st.vc) / c["Ratt"] if vt > st.vc else 0.0
     iu = (st.vc - st.vu) / c["RU"]
@@ -431,7 +442,34 @@ def step_swell(st: DetState, vt: float, c: dict) -> float:
         v = 0.0
     else:
         v = st.vc
-    return 18.1 * math.log1p(v / 8.06)
+    raw = 18.1 * math.log1p(v / 8.06)
+    if tgt >= st.u:
+        st.u = tgt
+        st.cnt = 0
+    else:
+        st.cnt += 1
+        if st.cnt > int(c["hold_n"]):
+            st.u += (0.0 - st.u) * c["k_env"]
+            if st.u < tgt:
+                st.u = tgt
+    pred = c["a0"] + c["a1"] * st.u + c["a2"] * st.u * st.u
+    th = c["th"]
+    if st.mode != 1:
+        if pred < raw - th:
+            st.mode = 1
+        else:
+            st.g = raw
+    elif pred > st.g + th:
+        st.mode = 0
+        st.g = raw
+    else:
+        st.g += (pred - st.g) * c["k_rel"]
+        if st.g < pred:
+            st.g = pred
+        if raw <= st.g:
+            st.mode = 0
+            st.g = raw
+    return st.g
 
 
 def design(p: dict, sr: float) -> dict | None:
@@ -514,6 +552,13 @@ def design(p: dict, sr: float) -> dict | None:
             "CU": float(fit["CU"]),
             "dt": 1.0 / sr_f,
             "sc_a": sidechain_b0(sr_f),
+            "hold_n": int(_SWELL_HOLD_S * sr_f + 0.5),
+            "k_env": k_one(_SWELL_ENV_S, sr_f),
+            "k_rel": k_one(_SWELL_REL_S * rel, sr_f),
+            "a0": _SWELL_A0,
+            "a1": _SWELL_A1,
+            "a2": _SWELL_A2,
+            "th": _SWELL_TH,
             "hpf": True,
         })
     elif name == "glue":
@@ -584,7 +629,7 @@ def step_gr(st: DetState, x: float, c: dict) -> float:
         return step_nuke(st, tgt, c)
     tgt = gc_soft(x_db, c["T"], c["R"], c["W"], c["R2"], c["K2"])
     vt = 8.06 * (math.exp(tgt / 18.1) - 1.0)
-    return step_swell(st, vt, c)
+    return step_swell(st, vt, c, tgt)
 
 
 _PID = {"natural": 0.0, "glue": 1.0, "room_crush": 2.0, "nuke": 3.0, "swell": 4.0}
@@ -683,6 +728,13 @@ def pack_coeffs(spec: dict, play: bool = False) -> list:
         c[13] = float(spec["RU"])
         c[14] = float(spec["CU"])
         c[15] = float(spec["dt"])
+        c[16] = float(spec["hold_n"])
+        c[17] = float(spec["k_env"])
+        c[18] = float(spec["a0"])
+        c[19] = float(spec["a1"])
+        c[20] = float(spec["a2"])
+        c[21] = float(spec["th"])
+        c[22] = float(spec["k_rel"])
     col = _colour_pack(spec, play=play)
     for i, v in enumerate(col):
         c[26 + i] = v
