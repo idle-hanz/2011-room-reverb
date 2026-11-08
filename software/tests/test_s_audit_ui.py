@@ -138,9 +138,24 @@ def _posted(url: str, wav: str, seq: list[str]) -> dict:
     return _public(caps[-1])
 
 
+# A place chip keeps these unless that place writes the key. Hall writes the cards.
+_PLACE_KEEP = {
+    "surfaces", "surfaces_solo", "surfaces_mute",
+    "surf_treatment", "surf_suggestions", "surf_amount",
+    "surf_cal", "surf_directional", "decay_mode", "treat_sets_decay",
+    "diffusion_seed", "lambda_ref",
+}
+_PLACE_OWNS = {
+    "hall": {"surfaces", "surfaces_solo", "surfaces_mute"},
+}
+
+
 @pytest.mark.slow
 def test_a1_place_orders_match_fresh(audit_server):
-    """All 9 X→Y posts equal Y clicked fresh. Studio decay_s is 1.80. Club decay_s is 1.80."""
+    """X→Y matches a fresh Y, except Surfaces keys the second place does not define.
+
+    Those stay as X left them. Studio decay_s is 1.80. Club decay_s is 1.80.
+    """
     url = audit_server["url"]
     wav = audit_server["wav"]
     places = ("studio", "club", "hall")
@@ -152,10 +167,12 @@ def test_a1_place_orders_match_fresh(audit_server):
     for x in places:
         for y in places:
             got = _posted(url, wav, [x, y])
+            owned = _PLACE_OWNS.get(y, set())
             diffs = []
-            keys = set(got) | set(fresh[y])
+            keys = set(got) | set(fresh[y]) | set(fresh[x])
             for k in sorted(keys):
-                if got.get(k) != fresh[y].get(k):
+                expect = fresh[x] if k in _PLACE_KEEP and k not in owned else fresh[y]
+                if got.get(k) != expect.get(k):
                     diffs.append(k)
             assert not diffs, f"{x}->{y} leaked {diffs[:12]}"
 

@@ -269,6 +269,45 @@ function applyPlacePositions(pos) {
   }
 }
 
+/* A place chip keeps these unless that place writes the key itself.
+   Hall's snapshot writes the six cards, solo and mute. */
+var SURFACE_KEEP = [
+  "surfaces", "surfaces_solo", "surfaces_mute",
+  "surf_treatment", "surf_suggestions", "surf_amount",
+  "surf_cal", "surf_directional", "decay_mode", "treat_sets_decay",
+  "diffusion_seed", "lambda_ref"
+];
+
+function placeOwnsSurfaceKey(name, key) {
+  if (name === "hall" && (key === "surfaces" || key === "surfaces_solo" || key === "surfaces_mute")) return true;
+  var p = PLACES[name];
+  return !!(p && Object.prototype.hasOwnProperty.call(p, key));
+}
+
+function captureSurfaceKeep(name) {
+  var kept = {};
+  var i, k, raw;
+  for (i = 0; i < SURFACE_KEEP.length; i++) {
+    k = SURFACE_KEEP[i];
+    if (placeOwnsSurfaceKey(name, k)) continue;
+    if (!Object.prototype.hasOwnProperty.call(state, k)) continue;
+    raw = JSON.stringify(state[k]);
+    if (raw === undefined) continue;
+    kept[k] = JSON.parse(raw);
+  }
+  return kept;
+}
+
+function restoreSurfaceKeep(kept) {
+  var k;
+  for (k in kept) {
+    if (Object.prototype.hasOwnProperty.call(kept, k)) state[k] = kept[k];
+  }
+  if (Object.prototype.hasOwnProperty.call(kept, "surfaces") && colourSurfaces && colourSurfaces.setSurfaces) {
+    colourSurfaces.setSurfaces(state.surfaces);
+  }
+}
+
 function samePlacePositions(a, b) {
   var i, k, ak, bk;
   if (!a || !b) return false;
@@ -296,6 +335,7 @@ function applyPlace(name) {
     }
     placePosStore[fromName] = captured;
   }
+  var keptSurfaces = captureSurfaceKeep(name);
   resetToFresh();
   state._place = name;
   lastPlace = name;
@@ -303,10 +343,14 @@ function applyPlace(name) {
     applyReaktorSnapshot();
   } else {
     var p = PLACES[name];
-    if (!p) return;
+    if (!p) {
+      restoreSurfaceKeep(keptSurfaces);
+      return;
+    }
     Object.keys(p).forEach(function (k) { state[k] = p[k]; });
     if (statusEl) statusEl.textContent = name.charAt(0).toUpperCase() + name.slice(1) + " loaded. Play live or Render.";
   }
+  restoreSurfaceKeep(keptSurfaces);
   var pos = placePosStore[name];
   if (!pos) {
     pos = mapPlacePositions(placeAnchor.pos, placeAnchor.box, placeBox(state));

@@ -2,7 +2,8 @@
    Auto-treat suggestions (Accept / Discard). Standalone; talks to /api/room/result, /api/room/treat,
    /api/room/panel. Needs window.RRState (app.js state) and window.RRColourSurfaces (the Surfaces tab
    instance): in the box copy one hook line in app.js syncUINow() sets both.
-   State it owns: state.decay_mode ("flat" | "surfaces"), state.surf_directional,
+   State it owns: state.decay_mode ("flat" | "surfaces"), state.surf_directional
+   (off until Calibrate; the Surfaces chip is the SL2 room average),
    state.surf_cal (seven factors from Calibrate; Play posts the same list at Amount 100),
    state.surf_treatment (rows, suggested:false),
    state.surf_suggestions (rows, suggested:true, never posted as treatment),
@@ -61,7 +62,8 @@
         var s = st(); if (!s || b.disabled) return;
         var enter = m[0] === "surfaces" && s.decay_mode !== "surfaces";
         s.decay_mode = m[0];
-        s.surf_directional = m[0] === "surfaces";
+        /* Surfaces is the room average. Calibrate is what turns directional on. */
+        if (m[0] !== "surfaces") s.surf_directional = false;
         paintMode(enter); schedule();
         if (window.RRPushLive) window.RRPushLive();
       });
@@ -383,6 +385,34 @@
   }
 
   /* ---------------------------------------------------------------- Room result */
+  /* Render T20 dots belong to the scene that measured them. A later edit drops them. */
+  function dotStamp() {
+    var s = st() || {};
+    return JSON.stringify({
+      W: s.W, H: s.H, L: s.L,
+      humidity: s.humidity, air_climate: s.air_climate, air_shelf: s.air_shelf,
+      decay_mode: s.decay_mode, decay_lock: s.decay_lock, decay_s: s.decay_s,
+      treat_sets_decay: s.treat_sets_decay,
+      surf_directional: s.surf_directional, surf_cal: s.surf_cal,
+      surf_amount: s.surf_amount, surf_treatment: s.surf_treatment,
+      surfaces: s.surfaces
+    });
+  }
+  function rememberDots(rt) {
+    var s = st(); if (!s || !rt) return;
+    s.surf_rendered_t20 = rt;
+    view.dotStamp = dotStamp();
+  }
+  function currentDots() {
+    var s = st();
+    if (!s || !s.surf_rendered_t20) return null;
+    if (!view.dotStamp || view.dotStamp !== dotStamp()) {
+      s.surf_rendered_t20 = null;
+      view.dotStamp = "";
+      return null;
+    }
+    return s.surf_rendered_t20;
+  }
   function calibrate() {
     var s = st();
     if (!s || s.decay_mode !== "surfaces") { flash("Calibrate is Surfaces only"); return; }
@@ -394,7 +424,7 @@
     post("/api/room/calibrate").then(function (d) {
       if (!d || !d.ok) { flash((d && d.error) || "Calibrate failed"); return; }
       s.surf_cal = d.surf_cal;
-      if (d.rendered_t20) s.surf_rendered_t20 = d.rendered_t20;
+      if (d.rendered_t20) rememberDots(d.rendered_t20);
       if (window.RRPushLive) window.RRPushLive();
       draw();
       var n = (d.n_within_10 != null) ? (d.n_within_10 + "/" + d.n_bands + " within \u00b110 %") : "stored";
@@ -479,7 +509,7 @@
     line(d.T_faces, "rgba(200,200,200,.55)", 1);
     line(d.T_faces_air, (ink || "#eee").trim() || "#eee", 2);
     d.f.forEach(function (f, i) { g.fillStyle = bandColour(f); g.beginPath(); g.arc(X(f), Y(Math.min(d.T_faces_air[i], ymax)), 2.6, 0, 7); g.fill(); });
-    var rt = d.rendered_t20 || (st() && st().surf_rendered_t20);
+    var rt = currentDots();
     if (rt && rt.f && rt.t20) rt.f.forEach(function (f, i) { g.strokeStyle = bandColour(f); g.lineWidth = 2; g.beginPath(); g.arc(X(f), Y(rt.t20[i]), 5, 0, 7); g.stroke(); g.lineWidth = 1; });
     // legend
     var lx = W - r - 290, ly = t + 4;
@@ -499,7 +529,10 @@
     schedule();
     return true;
   }
-  window.SLRoomResult = { boot: boot, refresh: refresh, paintRows: paintRows, accept: accept, autoTreat: autoTreat, view: view };
+  window.SLRoomResult = {
+    boot: boot, refresh: refresh, paintRows: paintRows, accept: accept, autoTreat: autoTreat, view: view,
+    rememberDots: rememberDots, currentDots: currentDots
+  };
   var tries = 0;
   (function wait() { if (st() && cs() && boot()) return; if (++tries < 100) setTimeout(wait, 100); })();
 })();

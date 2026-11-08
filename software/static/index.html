@@ -621,7 +621,7 @@
                 </select>
               </label>
               <label class="ctrl"><span>ISO depth</span><input type="range" id="air_shelf" min="0" max="1" step="0.01" value="1" /><output id="air_shelf_out">1.00</output></label>
-              <p class="hint">Air amount 0 = off. Right is drier air, so more high-frequency loss. ISO depth is the shelf mix on the early images. Direct has no air, and neither does the FDN return. The 2011 one-pole is under Advanced.</p>
+              <p class="hint">Air amount 0 = off. Right is drier air, so more high-frequency loss. ISO depth is the shelf mix on the early images. Direct has no air, and neither does the FDN return.</p>
             </div>
         </div>
         <div id="polarViews" hidden>
@@ -668,7 +668,7 @@
             <button type="button" class="chip" data-place="club">Club</button>
             <button type="button" class="chip" data-place="hall">Hall</button>
           </div>
-          <p class="hint" id="placeHint">A place chip sets the room size. Source, stand and mics stay relative to the centre. Mix, Surfaces and colour reset. Hall is the 2011 dump for those.</p>
+          <p class="hint" id="placeHint">A place chip sets the room size. Source, stand and mics stay relative to the centre. Mix and colour reset. Surfaces stay, unless that place defines its own. Hall is the 2011 dump for size, mix and surfaces.</p>
           <div class="place-row room-shape-row" id="roomShapeRow" role="group" aria-label="Room shape">
             <button type="button" class="chip active" data-room-shape="box" aria-pressed="true">Box</button>
             <button type="button" class="chip" data-room-shape="splay" aria-pressed="false">Splay</button>
@@ -1088,14 +1088,14 @@
   <script src="/static/js/rr_state.js?v=6"></script>
   <script src="/static/js/rr_mic.js?v=1"></script>
   <script src="/static/js/rr_mix.js?v=9"></script>
-  <script src="/static/js/rr_room.js?v=2"></script>
+  <script src="/static/js/rr_room.js?v=3"></script>
   <script src="/static/js/rr_source.js?v=1"></script>
   <script src="/static/js/rr_space.js?v=2"></script>
   <script src="/static/js/rr_polar.js?v=2"></script>
   <script src="/static/js/rr_transport.js?v=4"></script>
   <script src="/static/js/rr_settings.js?v=3"></script>
   <script src="/static/js/app.js?v=107"></script>
-  <script src="/static/js/sl_room_result.js?v=9"></script>
+  <script src="/static/js/sl_room_result.js?v=10"></script>
   <script src="/static/js/rr_controls.js?v=1"></script>
   <script src="/static/js/rr_controls_boot.js?v=1"></script>
 </body>

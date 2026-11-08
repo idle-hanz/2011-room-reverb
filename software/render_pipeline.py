@@ -2984,11 +2984,18 @@ def _ceiling_spec(p, room, surfaces, line_t60):
     )
 
 
-def _treat_sets_length(p) -> bool:
-    """Treatment-sets-decay. Surfaces only. Flat and a missing flag leave the lock."""
-    if not bool(p.get("treat_sets_decay")):
+def _lock_off_material(p) -> bool:
+    """Surfaces with the decay lock off.
+
+    Render already sets that length from the 500 Hz–1 kHz material mean.
+    Play uses the same length. The Treatment-sets-decay switch is one way
+    the page turns the lock off. Flat, and a lock that is on, keep the dial.
+    """
+    if str(p.get("decay_mode") or "flat").lower() != "surfaces":
         return False
-    return str(p.get("decay_mode") or "flat").lower() == "surfaces"
+    if bool(p.get("decay_lock")) and float(p.get("decay_s") or 0.0) > 0.05:
+        return False
+    return True
 
 
 def _treat_material_mid(p, room, surfaces) -> float:
@@ -3013,11 +3020,11 @@ def _live_surf_pack(p, room, surfaces, taps, rate, n_had, line_t60, peaking, tap
 
     phys_ceiling on, lock armed, N 32: the same designer, fed by
     phys_ceiling_pack. The key off leaves this body alone, so the live dict
-    does not grow a key. treat_sets_decay skips that ceiling and uses the
-    material mean, the Render lock-off path.
+    does not grow a key. Lock off skips that ceiling and uses the material
+    mean, the Render lock-off path.
     """
     if (
-        not _treat_sets_length(p)
+        not _lock_off_material(p)
         and bool(p.get("phys_ceiling"))
         and float(line_t60) > 0.05
         and int(n_had) == 32
@@ -3307,7 +3314,7 @@ def live_fdn_params(
     g = built["g"]
     g_loop = built["g_loop"]
     line_t60 = built["line_t60"]
-    if _treat_sets_length(p):
+    if _lock_off_material(p):
         mid = _treat_material_mid(p, room, surfaces)
         if mid > 0.05:
             # Local only. The posted lock stays what the client sent.
