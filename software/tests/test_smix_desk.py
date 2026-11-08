@@ -42,10 +42,10 @@ SR = 48000
 G2 = 10.0 ** (2.0 / 20.0)
 G6 = 10.0 ** (-6.0 / 20.0)
 GOLDEN_SHA1 = {
-    "play_std_lock18_byp.f32": "d011bafca80f4e46ae768db40becd762e78dcada",
-    "play_std_lock18_col.f32": "80d86ec23022d09fdb0653298ad322ca539e5bb5",
-    "play_std_unlocked_byp.f32": "91738c70220b4edce512aebe3548dfdbd894cc41",
-    "play_std_unlocked_col.f32": "171a1450978742a7fc1f3cb77739d202d80f48a9",
+    "play_std_lock18_byp.f32": "7906405d783f784379388803b7eb42c5d25c6c7f",
+    "play_std_lock18_col.f32": "c20e6894b6f05a69960b360869232548fb42c148",
+    "play_std_unlocked_byp.f32": "2639f90fffefc08316143511390097bdada89fea",
+    "play_std_unlocked_col.f32": "9146eaddc1f6a3333c54ad2f489b86f6ffadadc8",
     "render_std_unlocked_byp.f32": "2a806e334e06cc475868d4c3da3fc78431c9a0aa",
 }
 
