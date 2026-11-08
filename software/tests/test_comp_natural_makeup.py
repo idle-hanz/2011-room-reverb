@@ -1,4 +1,4 @@
-"""Natural makeup is min(amount, GR). Other models keep amount minus GR."""
+"""Natural makeup is min(amount, GR). Glue still boosts. Room Crush still ducks at -18."""
 from __future__ import annotations
 
 import json

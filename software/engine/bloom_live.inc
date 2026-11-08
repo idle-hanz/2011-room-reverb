@@ -508,9 +508,9 @@ static void bloom_sample(LiveStereo *st, double x, int t) {
     lo = -st->bC[2];
     if (lo > 0.0) lo = 0.0;
     wet = hi - gr;
-    /* Natural (pid 0), nuke (pid 3), and swell (pid 4): makeup is min(amount, GR).
-       The same test as wet_gain_db. Other models keep the amount ceiling. */
-    if (pid == 0 || pid == 3 || pid == 4) {
+    /* Natural, room crush, nuke, swell: makeup is min(amount, GR).
+       The same test as wet_gain_db. Glue keeps the amount ceiling. */
+    if (pid == 0 || pid == 2 || pid == 3 || pid == 4) {
         if (wet > 0.0) wet = 0.0;
     } else if (wet > hi) wet = hi;
     if (wet < lo) wet = lo;
