@@ -220,6 +220,7 @@ function loadDeskPreset(id) {
     cThirdBeforeRoom = "centre";
     Object.assign(state, roomPatch);
   }
+  clearPreamp();
 }
 
 function deskWeights(src) {
@@ -652,6 +653,65 @@ function lrView(cap) {
   return { route: route, shown: shown, pot: info.pot, panLive: route === "pan" && info.pot === "balance" };
 }
 
+/* Page keys stay route_*. Off posts nothing. Engine names are in routing_scene.js. */
+function clearPreamp() {
+  ["array", "room", "master"].forEach(function (name) {
+    state["route_" + name + "_pre"] = "none";
+    state["route_" + name + "_drive"] = 0;
+    state["route_" + name + "_comp"] = "off";
+    state["route_" + name + "_amount"] = 0;
+  });
+}
+
+function paintRouting() {
+  ["array", "room", "master"].forEach(function (name) {
+    var pre = document.getElementById("route_" + name + "_pre");
+    var drive = document.getElementById("route_" + name + "_drive");
+    var driveOut = document.getElementById("route_" + name + "_drive_out");
+    var comp = document.getElementById("route_" + name + "_comp");
+    var amt = document.getElementById("route_" + name + "_amount");
+    var amtOut = document.getElementById("route_" + name + "_amount_out");
+    var preVal = state["route_" + name + "_pre"] || "none";
+    var compVal = state["route_" + name + "_comp"] || "off";
+    if (pre && document.activeElement !== pre) pre.value = preVal;
+    if (comp && document.activeElement !== comp) comp.value = compVal;
+    if (drive) {
+      if (document.activeElement !== drive) drive.value = String(state["route_" + name + "_drive"] || 0);
+      drive.disabled = preVal === "none";
+      if (driveOut) driveOut.textContent = Number(drive.value).toFixed(1);
+    }
+    if (amt) {
+      if (document.activeElement !== amt) amt.value = String(state["route_" + name + "_amount"] || 0);
+      amt.disabled = compVal === "off";
+      if (amtOut) amtOut.textContent = String(Math.round(Number(amt.value)));
+    }
+  });
+}
+
+function bindRouting() {
+  var panel = document.getElementById("routingPanel");
+  if (!panel || panel._routeBound) return;
+  panel._routeBound = true;
+  function onRoute(e) {
+    var id = e.target && e.target.id;
+    if (!id || id.indexOf("route_") !== 0) return;
+    var v = e.target.value;
+    var prev = state[id];
+    if (id.indexOf("_drive") > 0 || id.indexOf("_amount") > 0) state[id] = Number(v);
+    else state[id] = v;
+    var armName = id === "route_array_comp" ? "array"
+      : id === "route_room_comp" ? "room"
+      : id === "route_master_comp" ? "master" : "";
+    if (armName && window.RRRouting && RRRouting.armStrip) {
+      RRRouting.armStrip(state, armName, prev);
+    }
+    syncUI();
+    scheduleLiveParams();
+  }
+  panel.addEventListener("change", onRoute);
+  panel.addEventListener("input", onRoute);
+}
+
 function paintDesk() {
   var i, key, fader, trim, pan, read, mute, knob, needle;
   for (i = 0; i < DESK_FADERS.length; i++) {
@@ -726,6 +786,7 @@ function paintDesk() {
     if (rRead) rRead.textContent = "off";
   }
   paintDeskRoutes();
+  paintRouting();
 }
 
 function paintDeskRoutes() {
@@ -974,6 +1035,7 @@ function bindDesk() {
     });
   });
   bindDeskRest();
+  bindRouting();
 }
 
 function bindDeskRest() {

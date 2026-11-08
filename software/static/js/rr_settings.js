@@ -61,6 +61,7 @@ function applyReaktorSnapshot() {
   if (colourSurfaces && colourSurfaces.setSurfaces) {
     colourSurfaces.setSurfaces(state.surfaces);
   }
+  clearPreamp();
   syncHadamardUI();
   syncUI();
   if (statusEl) {
@@ -79,6 +80,7 @@ function resetToFresh() {
     if (!Object.prototype.hasOwnProperty.call(fresh, k)) delete state[k];
   });
   Object.keys(fresh).forEach(function (k) { state[k] = fresh[k]; });
+  clearPreamp();
   migrateRoomState(state);
   hallSnapshot = false;
   decayFromUser = false;
