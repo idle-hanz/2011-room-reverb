@@ -42,6 +42,15 @@ _GLUE_T1 = 0.0428
 _GLUE_T2 = 5.1
 _GLUE_C1 = 0.47e-6
 _GLUE_C2 = 6.8e-6
+# Output release. tau1 and tau2 also set the steady GR, so they stay.
+# Quadratic is the 3 s cycle-peak fit (max error 0.056 dB): destination only.
+_GLUE_REL_S = 0.140
+_GLUE_HOLD_S = 0.020
+_GLUE_ENV_S = 0.004
+_GLUE_TH = 0.30
+_GLUE_A0 = -0.02037669
+_GLUE_A1 = 0.86391699
+_GLUE_A2 = 0.00238948
 
 _PRESETS = ("natural", "glue", "room_crush", "nuke", "swell")
 _PRE_TYPES = ("off", "u610a", "neve1073")
@@ -311,6 +320,12 @@ def step_natural(st: DetState, x_db: float, c: dict) -> float:
 
 
 def step_glue(st: DetState, tgt: float, c: dict) -> float:
+    """Series follower, then a fast output release toward the predicted floor.
+
+    The follower is unchanged, so attack and steady GR stay. The output
+    leaves it only while the floor sits more than th below, and it returns
+    when the follower catches up or the floor rises.
+    """
     v = st.v1 + st.v2
     cur = 0.0
     if tgt > v:
@@ -318,7 +333,35 @@ def step_glue(st: DetState, tgt: float, c: dict) -> float:
     dt = c["dt"]
     st.v1 = (st.v1 + dt * cur / c["C1"]) / (1.0 + dt / c["tau1"])
     st.v2 = (st.v2 + dt * cur / c["C2"]) / (1.0 + dt / c["tau2"])
-    return st.v1 + st.v2
+    raw = st.v1 + st.v2
+    if tgt >= st.u:
+        st.u = tgt
+        st.cnt = 0
+    else:
+        st.cnt += 1
+        if st.cnt > int(c["hold_n"]):
+            st.u += (0.0 - st.u) * c["k_env"]
+            if st.u < tgt:
+                st.u = tgt
+    env = st.u
+    pred = c["a0"] + c["a1"] * env + c["a2"] * env * env
+    th = c["th"]
+    if st.mode != 1:
+        if pred < raw - th:
+            st.mode = 1
+        else:
+            st.g = raw
+    elif pred > st.g + th:
+        st.mode = 0
+        st.g = raw
+    else:
+        st.g += (pred - st.g) * c["k_rel"]
+        if st.g < pred:
+            st.g = pred
+        if raw <= st.g:
+            st.mode = 0
+            st.g = raw
+    return st.g
 
 
 def step_nuke(st: DetState, tgt: float, c: dict) -> float:
@@ -490,6 +533,13 @@ def design(p: dict, sr: float) -> dict | None:
             "C2": c2,
             "Cs": c1 * c2 / (c1 + c2),
             "dt": 1.0 / sr_f,
+            "hold_n": int(_GLUE_HOLD_S * sr_f + 0.5),
+            "k_env": k_one(_GLUE_ENV_S, sr_f),
+            "k_rel": k_one(_GLUE_REL_S * rel, sr_f),
+            "a0": _GLUE_A0,
+            "a1": _GLUE_A1,
+            "a2": _GLUE_A2,
+            "th": _GLUE_TH,
             "hpf": False,
         })
     else:
@@ -603,6 +653,13 @@ def pack_coeffs(spec: dict, play: bool = False) -> list:
         c[14] = float(spec["C2"])
         c[15] = float(spec["Cs"])
         c[16] = float(spec["dt"])
+        c[17] = float(spec["hold_n"])
+        c[18] = float(spec["k_env"])
+        c[19] = float(spec["a0"])
+        c[20] = float(spec["a1"])
+        c[21] = float(spec["a2"])
+        c[22] = float(spec["th"])
+        c[23] = float(spec["k_rel"])
     elif name == "room_crush":
         c[10] = float(spec["k1"])
         c[11] = float(spec["k2"])

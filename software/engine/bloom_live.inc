@@ -109,10 +109,41 @@ static double bloom_glue(LiveStereo *st, double tgt) {
     double v = st->dV1 + st->dV2;
     double cur = 0.0;
     double dt = c[16];
+    double raw, pred;
+    /* Follower is unchanged. Slots 17..23 are the output release. */
     if (tgt > v) cur = (tgt - v) * c[15] / c[10];
     st->dV1 = (st->dV1 + dt * cur / c[13]) / (1.0 + dt / c[11]);
     st->dV2 = (st->dV2 + dt * cur / c[14]) / (1.0 + dt / c[12]);
-    return st->dV1 + st->dV2;
+    raw = st->dV1 + st->dV2;
+    if (tgt >= st->dU) {
+        st->dU = tgt;
+        st->dCnt = 0;
+    } else {
+        st->dCnt += 1;
+        if (st->dCnt > (int)c[17]) {
+            st->dU += (0.0 - st->dU) * c[18];
+            if (st->dU < tgt) st->dU = tgt;
+        }
+    }
+    pred = c[19] + c[20] * st->dU + c[21] * st->dU * st->dU;
+    if (st->dMode != 1) {
+        if (pred < raw - c[22]) st->dMode = 1;
+        else {
+            st->dMode = 0;
+            st->dG = raw;
+        }
+    } else if (pred > st->dG + c[22]) {
+        st->dMode = 0;
+        st->dG = raw;
+    } else {
+        st->dG += (pred - st->dG) * c[23];
+        if (st->dG < pred) st->dG = pred;
+        if (raw <= st->dG) {
+            st->dMode = 0;
+            st->dG = raw;
+        }
+    }
+    return st->dG;
 }
 
 static double bloom_nuke(LiveStereo *st, double tgt) {
