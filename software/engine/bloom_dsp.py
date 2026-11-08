@@ -910,6 +910,28 @@ def pack_pre(spec: dict, play: bool = False) -> list:
         row[20] *= inv_trim
         row[21] *= inv_trim
         row[22] *= inv_trim
+    if kind == "neve1073":
+        # CM5: raw |H1| 113.657206528785 is 6.247 dB under kernel G
+        # 233.316274689952 (klin_neve, delay 64, 1 kHz). Scale H1 up to G
+        # and put that gain back on H2. vc, phi and flux stay. Then −18 dB
+        # so an app −18 dBFS peak matches the capture reference at −36 dBFS.
+        # The inverse on H2 keeps the 1 kHz small-signal gain at 0 dB.
+        gap = 113.657206528784684 / 233.316274689952195
+        inv = 1.0 / gap
+        row[15] *= inv
+        row[16] *= inv
+        row[17] *= inv
+        row[20] *= gap
+        row[21] *= gap
+        row[22] *= gap
+        trim = 10.0 ** (-18.0 / 20.0)
+        row[15] *= trim
+        row[16] *= trim
+        row[17] *= trim
+        inv_trim = 1.0 / trim
+        row[20] *= inv_trim
+        row[21] *= inv_trim
+        row[22] *= inv_trim
     return row
 
 
