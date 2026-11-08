@@ -36,8 +36,109 @@ QUOTA = (1, 6, 11, 10, 4)
 Vec3 = Tuple[float, float, float]
 
 
+def _prefix_kind(raw):
+    """``tilt:`` and ``plan:`` are read before the word table.
+
+    A zero tilt with a flat ceiling, a bare word, or a bad outline is the
+    shoebox. Vertices stay in the request string. The live dict stores only
+    the word ``tilt`` or ``plan``.
+    """
+    text = "" if raw is None else str(raw).strip().lower()
+    if text.startswith("tilt:"):
+        bits = text.split(":")
+        try:
+            deg = float(bits[1]) if len(bits) > 1 and bits[1] != "" else 0.0
+            slope = float(bits[2]) if len(bits) > 2 and bits[2] != "" else 0.0
+        except ValueError:
+            return "box"
+        if abs(deg) <= 1e-6 and abs(slope) <= 1e-6:
+            return "box"
+        return "tilt"
+    if text.startswith("plan:"):
+        pts = _plan_points(text)
+        return "plan" if pts else "box"
+    return ""
+
+
+def _tilt_pair(raw):
+    text = "" if raw is None else str(raw).strip().lower()
+    if not text.startswith("tilt:"):
+        return 0.0, 0.0
+    bits = text.split(":")
+    try:
+        deg = float(bits[1]) if len(bits) > 1 and bits[1] != "" else 0.0
+        slope = float(bits[2]) if len(bits) > 2 and bits[2] != "" else 0.0
+    except ValueError:
+        return 0.0, 0.0
+    deg = max(-20.0, min(20.0, deg))
+    slope = max(-0.45, min(0.45, slope))
+    return deg, slope
+
+
+def _convex(pts) -> bool:
+    n = len(pts)
+    if n < 3:
+        return False
+    sign = 0
+    for i in range(n):
+        x1, z1 = pts[i]
+        x2, z2 = pts[(i + 1) % n]
+        x3, z3 = pts[(i + 2) % n]
+        cross = (x2 - x1) * (z3 - z2) - (z2 - z1) * (x3 - x2)
+        if abs(cross) <= 1e-8:
+            continue
+        s = 1 if cross > 0.0 else -1
+        if sign == 0:
+            sign = s
+        elif s != sign:
+            return False
+    return sign != 0
+
+
+def _plan_points(raw):
+    """Five to eight convex floor corners, or None."""
+    text = "" if raw is None else str(raw).strip().lower()
+    if text.startswith("plan:"):
+        text = text[5:]
+    elif isinstance(raw, (list, tuple)):
+        nums = []
+        for item in raw:
+            if isinstance(item, (list, tuple)) and len(item) >= 2:
+                nums.extend((float(item[0]), float(item[1])))
+            else:
+                return None
+        text = ",".join(str(n) for n in nums)
+    else:
+        return None
+    if not text:
+        return None
+    try:
+        nums = [float(part) for part in text.split(",") if part != ""]
+    except ValueError:
+        return None
+    if len(nums) < 10 or len(nums) > 16 or len(nums) % 2:
+        return None
+    pts = [(nums[i], nums[i + 1]) for i in range(0, len(nums), 2)]
+    if not _convex(pts):
+        return None
+    return pts
+
+
+def _tilt_floor(W: float, L: float, deg: float):
+    inset = min(0.4 * W, abs(L * math.tan(math.radians(deg))))
+    return [(inset, 0.0), (W - inset, 0.0), (W, L), (0.0, L)]
+
+
+def _slope_height(z: float, H: float, L: float, slope: float) -> float:
+    t = 0.0 if L <= 0.0 else float(z) / L
+    return H * (1.0 - slope * (1.0 - t))
+
+
 def normalize_shape(raw) -> str:
     """Absent, blank, box, or an unknown word is the shoebox."""
+    kind = _prefix_kind(raw)
+    if kind:
+        return kind
     if raw is None:
         return "box"
     key = "".join(ch for ch in str(raw).strip().lower() if ch.isalnum())
@@ -178,10 +279,79 @@ def box_faces(W: float, H: float, L: float) -> List[Face]:
     return _prism([(0.0, 0.0), (W, 0.0), (W, L), (0.0, L)], lambda x, z: H)
 
 
-def faces_for(shape, W: float, H: float, L: float) -> List[Face]:
-    """Presets are fractions of the shoebox that contains them."""
+def _mesh_volume(faces) -> float:
+    total = 0.0
+    for face in faces:
+        v = face.v
+        for i in range(1, len(v) - 1):
+            total += float(np.dot(v[0], np.cross(v[i], v[i + 1])))
+    return abs(total) / 6.0
+
+
+def _face_area(verts) -> float:
+    v = np.asarray(verts, float)
+    area = 0.0
+    for i in range(1, len(v) - 1):
+        area += float(np.linalg.norm(np.cross(v[i] - v[0], v[i + 1] - v[0])))
+    return 0.5 * area
+
+
+def _areas_from_faces(faces, W: float, H: float, L: float) -> dict:
+    """Six letters. A wall follows its largest normal axis. A missing letter keeps the box product."""
+    acc = {"A": 0.0, "B": 0.0, "C": 0.0, "D": 0.0, "E": 0.0, "F": 0.0}
+    box = {"A": L * H, "C": L * H, "B": W * H, "D": W * H, "E": W * L, "F": W * L}
+    for face in faces:
+        area = _face_area(face.v)
+        if face.name == "floor":
+            acc["E"] += area
+            continue
+        if face.name == "ceiling":
+            acc["F"] += area
+            continue
+        n = face.n
+        axis = int(np.argmax(np.abs(n)))
+        if axis == 0:
+            acc["A" if float(n[0]) < 0.0 else "C"] += area
+        elif axis == 2:
+            acc["D" if float(n[2]) < 0.0 else "B"] += area
+        else:
+            acc["F" if float(n[1]) > 0.0 else "E"] += area
+    for key in acc:
+        if acc[key] <= 1e-8:
+            acc[key] = box[key]
+    return acc
+
+
+def shape_metrics(shape, W: float, H: float, L: float):
+    """Real volume and the six areas. A box is exactly ``W*H*L`` and the six products."""
+    W, H, L = float(W), float(H), float(L)
+    if not poly_on(shape):
+        return W * H * L, {"A": L * H, "C": L * H, "B": W * H, "D": W * H, "E": W * L, "F": W * L}
+    faces = faces_for(shape, W, H, L)
+    return _mesh_volume(faces), _areas_from_faces(faces, W, H, L)
+
+
+def faces_for(shape, W: float, H: float, L: float, plan=None) -> List[Face]:
+    """Presets are fractions of the shoebox that contains them.
+
+    ``plan`` is ignored when ``shape`` is a box. Play never calls this for a box.
+    """
     name = normalize_shape(shape)
     W, H, L = float(W), float(H), float(L)
+    if name == "box":
+        return box_faces(W, H, L)
+    if name == "plan":
+        pts = _plan_points(plan) if plan is not None else _plan_points(shape)
+        if not pts:
+            return box_faces(W, H, L)
+        return _prism(pts, lambda x, z: H)
+    if name == "tilt":
+        deg, slope = _tilt_pair(shape)
+
+        def h(x, z, H=H, L=L, slope=slope):
+            return _slope_height(z, H, L, slope)
+
+        return _prism(_tilt_floor(W, L, deg), h)
     if name == "splay":
         # Prototype trapezoid 4→6 over length 6, ceiling 2.6→3.2, shifted into the box.
         def h(x, z, H=H, L=L):
@@ -296,7 +466,7 @@ def lr_symmetric(shape, W: float = 6.0, L: float = 8.0, H: float = 3.0) -> bool:
     if name == "box":
         return True
     W, H, L = float(W), float(H), float(L)
-    faces = faces_for(name, W, H, L)
+    faces = faces_for(shape, W, H, L)
     floors = [face for face in faces if face.name == "floor"]
     ceils = [face for face in faces if face.name == "ceiling"]
     if not floors or not ceils:
@@ -491,10 +661,15 @@ def compute_poly_taps(
     n: int = 32,
     include_offaxis_shelf: bool = True,
     include_pattern: bool = True,
+    plan=None,
 ) -> List[ImageTap]:
-    """Thirty-two (or ``n``) taps for one preset. Levels use 1/r. Delays use the stand."""
+    """Thirty-two (or ``n``) taps for one preset. Levels use 1/r. Delays use the stand.
+
+    ``plan`` is ignored unless ``shape`` is a plan token. A box never reaches
+    this function from Play or Render.
+    """
     W, H, L = float(room[0]), float(room[1]), float(room[2])
-    faces = faces_for(shape, W, H, L)
+    faces = faces_for(shape, W, H, L, plan=plan)
     src = clamp_inside(source, faces)
     stand_pt = clamp_inside((float(stand.cx), float(stand.cy), float(stand.cz)), faces)
     cap = float(c) * MAX_DELAY_MS * 0.001

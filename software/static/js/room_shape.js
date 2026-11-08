@@ -18,7 +18,308 @@
     return Math.tan(6 * Math.PI / 180);
   }
 
+  function prefixKind(raw) {
+    var text = String(raw == null ? "" : raw).trim().toLowerCase();
+    if (text.indexOf("tilt:") === 0) return tiltKind(text);
+    if (text.indexOf("plan:") === 0) return planKind(text);
+    return "";
+  }
+
+  function tiltPair(raw) {
+    var text = String(raw == null ? "" : raw).trim().toLowerCase();
+    if (text.indexOf("tilt:") !== 0) return null;
+    var bits = text.split(":");
+    var deg = bits.length > 1 && bits[1] !== "" ? Number(bits[1]) : 0;
+    var slope = bits.length > 2 && bits[2] !== "" ? Number(bits[2]) : 0;
+    if (!isFinite(deg) || !isFinite(slope)) return null;
+    if (Math.abs(deg) <= 1e-6 && Math.abs(slope) <= 1e-6) return null;
+    if (deg < -20) deg = -20;
+    if (deg > 20) deg = 20;
+    if (slope < -0.45) slope = -0.45;
+    if (slope > 0.45) slope = 0.45;
+    return { deg: deg, slope: slope };
+  }
+
+  function tiltKind(text) {
+    return tiltPair(text) ? "tilt" : "box";
+  }
+
+  function convex(pts) {
+    var n = pts.length;
+    var sign = 0;
+    var i;
+    if (n < 3) return false;
+    for (i = 0; i < n; i++) {
+      var a = pts[i];
+      var b = pts[(i + 1) % n];
+      var c = pts[(i + 2) % n];
+      var cross = (b[0] - a[0]) * (c[1] - b[1]) - (b[1] - a[1]) * (c[0] - b[0]);
+      if (Math.abs(cross) <= 1e-8) continue;
+      var s = cross > 0 ? 1 : -1;
+      if (sign === 0) sign = s;
+      else if (s !== sign) return false;
+    }
+    return sign !== 0;
+  }
+
+  function planPoints(raw) {
+    var text = String(raw == null ? "" : raw).trim().toLowerCase();
+    var nums;
+    var pts;
+    var i;
+    if (text.indexOf("plan:") !== 0) return null;
+    nums = text.slice(5).split(",");
+    if (nums.length < 10 || nums.length > 16 || nums.length % 2) return null;
+    pts = [];
+    for (i = 0; i < nums.length; i += 2) {
+      var x = Number(nums[i]);
+      var z = Number(nums[i + 1]);
+      if (!isFinite(x) || !isFinite(z)) return null;
+      pts.push([x, z]);
+    }
+    if (pts.length < 5 || pts.length > 8 || !convex(pts)) return null;
+    return pts;
+  }
+
+  function planKind(text) {
+    return planPoints(text) ? "plan" : "box";
+  }
+
+  function encodePlan(pts) {
+    return "plan:" + pts.map(function (p) {
+      return Number(p[0]).toFixed(2) + "," + Number(p[1]).toFixed(2);
+    }).join(",");
+  }
+
+  function encodeTilt(deg, slope) {
+    deg = Number(deg) || 0;
+    slope = Number(slope) || 0;
+    if (Math.abs(deg) <= 1e-6 && Math.abs(slope) <= 1e-6) return "box";
+    return "tilt:" + deg.toFixed(2) + ":" + slope.toFixed(3);
+  }
+
+  function nextStep(cur, steps) {
+    var i;
+    var best = 0;
+    var bestD = 1e9;
+    for (i = 0; i < steps.length; i++) {
+      var d = Math.abs(Number(cur) - steps[i]);
+      if (d < bestD) {
+        bestD = d;
+        best = i;
+      }
+    }
+    return steps[(best + 1) % steps.length];
+  }
+
+  function cycleTilt(current) {
+    var pair = tiltPair(current) || { deg: 0, slope: 0 };
+    return encodeTilt(nextStep(pair.deg, [0, 4, 8, 12]), pair.slope);
+  }
+
+  function cycleSlope(current) {
+    var pair = tiltPair(current) || { deg: 0, slope: 0 };
+    return encodeTilt(pair.deg, nextStep(pair.slope, [0, 0.1, 0.2]));
+  }
+
+  function tiltLabel(shape) {
+    var pair = tiltPair(shape);
+    if (!pair || Math.abs(pair.deg) <= 1e-6) return "Walls flat";
+    return "Walls " + String(Math.round(pair.deg)) + "\u00b0";
+  }
+
+  function slopeLabel(shape) {
+    var pair = tiltPair(shape);
+    if (!pair || Math.abs(pair.slope) <= 1e-6) return "Ceiling flat";
+    return "Ceiling " + String(Math.round(pair.slope * 100)) + "%";
+  }
+
+  /* LIKELY published points, not a measured room. Height is the 1.
+     Bolt area 1:1.25:1.6, Sepmeyer 1:1.28:1.54, Louden 1:1.4:1.9. */
+  function ratioSize(name, W, H, L) {
+    var table = {
+      bolt: [1.25, 1, 1.6],
+      sepmeyer: [1.28, 1, 1.54],
+      louden: [1.4, 1, 1.9]
+    };
+    var r = table[String(name || "").trim().toLowerCase()];
+    var V;
+    var s;
+    if (!r) return null;
+    V = Number(W) * Number(H) * Number(L);
+    if (!(V > 0)) V = 144;
+    s = Math.pow(V / (r[0] * r[1] * r[2]), 1 / 3);
+    function step(v, st, lo, hi) {
+      var n = Math.round(v / st) * st;
+      if (n < lo) n = lo;
+      if (n > hi) n = hi;
+      return Math.round(n * 1000) / 1000;
+    }
+    return {
+      W: step(r[0] * s, 0.1, 1, 80),
+      H: step(r[1] * s, 0.1, 1, 40),
+      L: step(r[2] * s, 0.5, 2, 120)
+    };
+  }
+
+  function axialModes(W, H, L, c) {
+    var speed = Number(c) > 0 ? Number(c) : 340;
+    function axis(dim) {
+      var out = [];
+      var n;
+      dim = Number(dim);
+      for (n = 1; n <= 3; n++) out.push(n * speed / (2 * dim));
+      return out;
+    }
+    return { W: axis(W), H: axis(H), L: axis(L), c: speed };
+  }
+
+  function axialText(W, H, L) {
+    var m = axialModes(W, H, L, 340);
+    function join(row) {
+      return row.map(function (hz) { return hz.toFixed(1); }).join(" ");
+    }
+    return "Axial " + join(m.W) + " Hz across \u00b7 " + join(m.H) + " Hz up \u00b7 " + join(m.L) + " Hz along (340 m/s)";
+  }
+
+  function regularPlan(n, W, L) {
+    var count = n | 0;
+    var cx;
+    var cz;
+    var rx;
+    var rz;
+    var pts = [];
+    var i;
+    if (count < 5) count = 5;
+    if (count > 8) count = 8;
+    W = Number(W);
+    L = Number(L);
+    cx = W * 0.5;
+    cz = L * 0.5;
+    rx = W * 0.42;
+    rz = L * 0.42;
+    for (i = 0; i < count; i++) {
+      var a = -Math.PI / 2 + i * 2 * Math.PI / count;
+      pts.push([cx + rx * Math.cos(a), cz + rz * Math.sin(a)]);
+    }
+    return pts;
+  }
+
+  function storedShape(picked, W, H, L, current) {
+    var raw = String(picked == null ? "" : picked).trim().toLowerCase();
+    if (raw === "plan") {
+      if (normalize(current) === "plan") return String(current);
+      return encodePlan(regularPlan(6, W, L));
+    }
+    return normalize(picked);
+  }
+
+  function movePlanPoint(token, index, x, z, W, L) {
+    var pts = planPoints(token);
+    var next;
+    var i;
+    if (!pts) return String(token || "box");
+    index = index | 0;
+    if (index < 0 || index >= pts.length) return String(token);
+    x = Math.max(0, Math.min(Number(W), Number(x)));
+    z = Math.max(0, Math.min(Number(L), Number(z)));
+    next = [];
+    for (i = 0; i < pts.length; i++) next.push(pts[i].slice());
+    next[index] = [x, z];
+    if (!convex(next)) return String(token);
+    return encodePlan(next);
+  }
+
+  function addPlanCorner(token) {
+    var pts = planPoints(token);
+    var best = 0;
+    var bestLen = -1;
+    var i;
+    var mid;
+    var next;
+    if (!pts || pts.length >= 8) return String(token || "box");
+    for (i = 0; i < pts.length; i++) {
+      var a = pts[i];
+      var b = pts[(i + 1) % pts.length];
+      var len = Math.hypot(b[0] - a[0], b[1] - a[1]);
+      if (len > bestLen) {
+        bestLen = len;
+        best = i;
+      }
+    }
+    mid = [
+      (pts[best][0] + pts[(best + 1) % pts.length][0]) * 0.5,
+      (pts[best][1] + pts[(best + 1) % pts.length][1]) * 0.5
+    ];
+    next = pts.slice(0, best + 1).concat([mid], pts.slice(best + 1));
+    if (!convex(next)) return String(token);
+    return encodePlan(next);
+  }
+
+  function delPlanCorner(token) {
+    var pts = planPoints(token);
+    var best = 0;
+    var bestLen = 1e9;
+    var i;
+    if (!pts || pts.length <= 5) return String(token || "box");
+    for (i = 0; i < pts.length; i++) {
+      var a = pts[(i + pts.length - 1) % pts.length];
+      var b = pts[(i + 1) % pts.length];
+      var len = Math.hypot(b[0] - a[0], b[1] - a[1]);
+      if (len < bestLen) {
+        bestLen = len;
+        best = i;
+      }
+    }
+    pts = pts.slice();
+    pts.splice(best, 1);
+    if (!convex(pts)) return String(token);
+    return encodePlan(pts);
+  }
+
+  function hitPlan(px, py, state, lay) {
+    var pts;
+    var best = -1;
+    var bestD = 12;
+    var i;
+    if (!state || normalize(state.room_shape) !== "plan" || !lay) return null;
+    pts = floorPx(state.room_shape, state.W, state.L, lay);
+    for (i = 0; i < pts.length; i++) {
+      var d = Math.hypot(px - pts[i].px, py - pts[i].py);
+      if (d <= bestD) {
+        bestD = d;
+        best = i;
+      }
+    }
+    return best < 0 ? null : { index: best };
+  }
+
+  function panelRow(kind) {
+    var name = String(kind || "").trim().toLowerCase();
+    if (name === "diffuser") {
+      return {
+        face: "A", type: "porous", material: "absorber_panel_2in_gap2in",
+        coverage: 0.2, on: true, build: "Diffuser"
+      };
+    }
+    if (name === "trap" || name === "bass") {
+      return {
+        face: "D", type: "membrane", f0: 80, q: 2, amax: 0.6,
+        coverage: 0.15, on: true, build: "Bass trap"
+      };
+    }
+    if (name === "cloud") {
+      return {
+        face: "F", type: "porous", material: "absorber_panel_4in_gap4in",
+        coverage: 0.25, on: true, build: "Cloud"
+      };
+    }
+    return null;
+  }
+
   function normalize(raw) {
+    var kind = prefixKind(raw);
+    if (kind) return kind;
     var key = String(raw == null ? "" : raw).trim().toLowerCase().replace(/[^a-z0-9]/g, "");
     if (
       key === "splay" || key === "splayed" || key === "rfz" || key === "control" ||
@@ -37,6 +338,13 @@
   function floorOutline(shape, W, L) {
     W = Number(W);
     L = Number(L);
+    var plan = planPoints(shape);
+    var tilt = tiltPair(shape);
+    if (plan) return plan.map(function (p) { return [p[0], p[1]]; });
+    if (tilt && Math.abs(tilt.deg) > 1e-6) {
+      var inset = Math.min(0.4 * W, Math.abs(L * Math.tan(tilt.deg * Math.PI / 180)));
+      return [[inset, 0], [W - inset, 0], [W, L], [0, L]];
+    }
     var name = normalize(shape);
     if (name === "splay") return [[W / 6, 0], [5 * W / 6, 0], [W, L], [0, L]];
     if (name === "lede") {
@@ -91,6 +399,11 @@
   function ceilingAt(shape, z, H, L) {
     H = Number(H);
     L = Number(L);
+    var tilt = tiltPair(shape);
+    if (tilt) {
+      var u = !(L > 0) ? 0 : Number(z) / L;
+      return H * (1 - tilt.slope * (1 - u));
+    }
     var name = normalize(shape);
     var t = !(L > 0) ? 0 : Number(z) / L;
     if (name === "splay") return H * (0.8125 + 0.1875 * t);
@@ -426,6 +739,24 @@
 
   return {
     normalize: normalize,
+    ratioSize: ratioSize,
+    axialModes: axialModes,
+    axialText: axialText,
+    storedShape: storedShape,
+    tiltPair: tiltPair,
+    tiltLabel: tiltLabel,
+    slopeLabel: slopeLabel,
+    cycleTilt: cycleTilt,
+    cycleSlope: cycleSlope,
+    planPoints: planPoints,
+    encodePlan: encodePlan,
+    encodeTilt: encodeTilt,
+    regularPlan: regularPlan,
+    movePlanPoint: movePlanPoint,
+    addPlanCorner: addPlanCorner,
+    delPlanCorner: delPlanCorner,
+    hitPlan: hitPlan,
+    panelRow: panelRow,
     floorOutline: floorOutline,
     floorPx: floorPx,
     planGuides: planGuides,

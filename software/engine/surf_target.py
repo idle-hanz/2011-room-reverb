@@ -27,8 +27,11 @@ FACES = ("A", "B", "C", "D", "E", "F")
 DEFAULT_SCATTER = 0.15                                                       # card "diffusion" fallback
 
 
-def face_areas(W: float, H: float, L: float) -> Dict[str, float]:
-    return {"A": L * H, "C": L * H, "B": W * H, "D": W * H, "E": W * L, "F": W * L}
+def face_areas(W: float, H: float, L: float, areas=None) -> Dict[str, float]:
+    """The six products. ``areas`` replaces them only when the caller passes a shape."""
+    if areas is None:
+        return {"A": L * H, "C": L * H, "B": W * H, "D": W * H, "E": W * L, "F": W * L}
+    return {k: float(areas[k]) for k in FACES}
 
 
 def air_db_per_m(f, humidity: float, climate: str = "studio_20C_50RH") -> np.ndarray:
@@ -91,11 +94,16 @@ def scatter_mean(surfaces: Dict[str, dict], S: Dict[str, float]) -> float:
 
 
 def room_target(W, H, L, surfaces, humidity, f, model: str = "arau_scatter", convert: bool = True,
-                air: Optional[np.ndarray] = None, include_air: bool = True) -> np.ndarray:
-    """Room-average T(f) in s. model: eyring | arau | arau_scatter (log-blend by mean scattering)."""
+                air: Optional[np.ndarray] = None, include_air: bool = True,
+                volume=None, areas=None) -> np.ndarray:
+    """Room-average T(f) in s. model: eyring | arau | arau_scatter (log-blend by mean scattering).
+
+    Omitted ``volume`` and ``areas`` stay ``W*H*L`` and the six products. Callers
+    that set the decay dial do not pass them.
+    """
     f = np.asarray(f, float)
-    V = W * H * L
-    S = face_areas(W, H, L)
+    V = (W * H * L) if volume is None else float(volume)
+    S = face_areas(W, H, L) if areas is None else face_areas(W, H, L, areas)
     St = sum(S.values())
     if include_air:
         m = (air if air is not None else air_db_per_m(f, humidity)) / (10 * math.log10(math.e))
@@ -109,6 +117,8 @@ def room_target(W, H, L, surfaces, humidity, f, model: str = "arau_scatter", con
     lnTA = 0.0
     for p, q in AX.values():
         Sx = S[p] + S[q]
+        if Sx <= 0.0:
+            continue
         ax_a = (S[p] * a[p] + S[q] * a[q]) / Sx
         Tx = 0.161 * V / (-St * np.log(1 - ax_a) + 4 * m * V)
         lnTA = lnTA + (Sx / St) * np.log(Tx)
@@ -140,8 +150,8 @@ def makivirta_target(f, t_mid: float, air_ratio: Optional[Callable] = None) -> n
     return T
 
 
-def air_ratio_fn(W, H, L, humidity, t_mid):
-    V = W * H * L
+def air_ratio_fn(W, H, L, humidity, t_mid, volume=None):
+    V = (W * H * L) if volume is None else float(volume)
     A_mid = 0.161 * V / t_mid
     m = lambda f: air_db_per_m(f, humidity) / (10 * math.log10(math.e))
     return lambda f: (0.161 * V / (A_mid + 4 * m(f) * V)) / t_mid
@@ -187,18 +197,29 @@ def modes(W, H, L, fmax: float = 300.0):
 
 # ---- API payload (/api/room/result) ------------------------------------------------------------
 def room_result(W, H, L, surfaces, humidity, decay_s: Optional[float] = None, decay_lock: bool = True,
-                cards_with_fn: Optional[Dict[str, dict]] = None, rendered_t20: Optional[dict] = None) -> dict:
-    """JSON-ready Room result. surfaces: parsed cards; cards_with_fn: same with absorb_fn (treatment)."""
+                cards_with_fn: Optional[Dict[str, dict]] = None, rendered_t20: Optional[dict] = None,
+                shape=None) -> dict:
+    """JSON-ready Room result. surfaces: parsed cards; cards_with_fn: same with absorb_fn (treatment).
+
+    A box, or no shape, keeps ``W*H*L``. A polygon passes its own volume and areas
+    into this estimate only.
+    """
     cards = cards_with_fn or surfaces
     f = THIRD_PANEL
     V = W * H * L
-    T_faces = room_target(W, H, L, cards, humidity, f, include_air=False)
-    T_all = room_target(W, H, L, cards, humidity, f)
-    Tm = float(np.mean(room_target(W, H, L, cards, humidity, np.array([500.0, 1000.0]))))
+    kw = {}
+    if shape is not None:
+        from poly_room import poly_on, shape_metrics
+        if poly_on(shape):
+            V, areas = shape_metrics(shape, W, H, L)
+            kw = {"volume": V, "areas": areas}
+    T_faces = room_target(W, H, L, cards, humidity, f, include_air=False, **kw)
+    T_all = room_target(W, H, L, cards, humidity, f, **kw)
+    Tm = float(np.mean(room_target(W, H, L, cards, humidity, np.array([500.0, 1000.0]), **kw)))
     anchor = float(decay_s) if (decay_lock and decay_s and decay_s > 0.05) else None
     scale = (anchor / Tm) if anchor else 1.0
     t_mid_target = anchor or Tm
-    tgt = makivirta_target(f, t_mid_target, air_ratio_fn(W, H, L, humidity, t_mid_target))
+    tgt = makivirta_target(f, t_mid_target, air_ratio_fn(W, H, L, humidity, t_mid_target, volume=kw.get("volume")))
     Tsh = float(np.mean(T_all[(f >= 500) & (f <= 1000)])) * scale
     within = [bool(abs(t * scale / g - 1) <= 0.10) for t, g in zip(T_all, tgt)]
     return {

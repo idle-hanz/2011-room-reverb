@@ -97,6 +97,16 @@
         return;
       }
       const onHandle = !!enter(env, hitFloor, p.x, p.y, geo);
+      const planHit = (!onHandle && global.RoomShape && RoomShape.hitPlan)
+        ? RoomShape.hitPlan(p.x, p.y, env.getState(), env.fl) : null;
+      if (planHit) {
+        env.drag = { kind: "plan", canvas: "floor", index: planHit.index };
+        env.floorCanvas.classList.add("dragging");
+        try { env.floorCanvas.setPointerCapture(evt.pointerId); } catch (e) {}
+        enter(env, redraw);
+        evt.preventDefault();
+        return;
+      }
       const wallHit = (!onHandle && global.RRDrag && global.RRDrag.hitWall)
         ? global.RRDrag.hitWall(p.x, p.y, env.fl) : null;
       if (wallHit) {
@@ -151,6 +161,13 @@
       const p = enter(env, canvasPos, env.floorCanvas, evt);
       if (env.drag && env.drag.canvas === "floor") {
         const st0 = env.getState();
+        if (env.drag.kind === "plan" && global.RoomShape && RoomShape.movePlanPoint) {
+          const m = enter(env, toM, p.x, p.y, env.fl);
+          const token = RoomShape.movePlanPoint(st0.room_shape, env.drag.index, m.x, m.z, st0.W, st0.L);
+          enter(env, mergePatch, { room_shape: token });
+          enter(env, redraw);
+          return;
+        }
         if (env.drag.kind === "wall" && global.RRDrag && env.drag.ctx) {
           const res = global.RRDrag.wallDragTo(env.drag.ctx, p.x, p.y, { shift: !!evt.shiftKey, mode: "stop" });
           env.drag.view = enter(env, viewForPatch, env.drag.ctx.lay, env.drag.ctx.s0, res.patch);
@@ -1058,6 +1075,16 @@
       ctx.fillStyle = kind === "null" ? "#fb7185" : "#fbbf24";
       ctx.fillText(kind === "null" ? "Null" : "Off-axis", px + 12, py - 14);
     }
+  function drawPlanPoints(ctx, geo) { var env = envStack[envStack.length - 1];
+      if (!global.RoomShape || RoomShape.normalize(geo.state.room_shape) !== "plan") return;
+      var pts = RoomShape.floorPx(geo.state.room_shape, geo.state.W, geo.state.L, env.fl);
+      ctx.fillStyle = "#e7e1d4";
+      pts.forEach(function (p) {
+        ctx.beginPath();
+        ctx.arc(p.px, p.py, 5, 0, Math.PI * 2);
+        ctx.fill();
+      });
+    }
   function drawFloor(geo) { var env = envStack[envStack.length - 1];
       const ctx = env.fctx;
       const cw = env.floorCanvas.width, ch = env.floorCanvas.height;
@@ -1072,6 +1099,7 @@
       traceClosed(ctx, outline);
       ctx.fill();
       ctx.stroke();
+      enter(env, drawPlanPoints, ctx, geo);
 
       const clipSplay = polyOn(geo.state);
       if (clipSplay) {

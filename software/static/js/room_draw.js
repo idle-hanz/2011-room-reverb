@@ -58,7 +58,17 @@
     return Math.tan(6 * Math.PI / 180);
   }
 
+  function shapeApi() {
+    if (typeof RoomShape !== "undefined" && RoomShape && RoomShape.floorOutline) return RoomShape;
+    return null;
+  }
+
   function floorPts(shape, W, L) {
+    var ext = shapeApi();
+    if (ext) {
+      var kind = ext.normalize(shape);
+      if (kind === "plan" || kind === "tilt") return ext.floorOutline(shape, W, L);
+    }
     var name = normalize(shape);
     if (name === "splay") return [[W / 6, 0], [5 * W / 6, 0], [W, L], [0, L]];
     if (name === "lede") {
@@ -83,6 +93,10 @@
   }
 
   function heightAt(shape, z, H, L) {
+    var ext = shapeApi();
+    if (ext && (ext.normalize(shape) === "plan" || ext.normalize(shape) === "tilt")) {
+      return ext.ceilingAt(shape, z, H, L);
+    }
     var name = normalize(shape);
     var t = !(L > 0) ? 0 : z / L;
     if (name === "splay") return H * (0.8125 + 0.1875 * t);

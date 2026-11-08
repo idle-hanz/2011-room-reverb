@@ -103,6 +103,10 @@ def test_unknown_word_is_the_box():
     assert normalize_shape("hex") == "hex"
     assert normalize_shape("Hexagon") == "hex"
     assert poly_on("hex")
+    assert normalize_shape("plan") == "box"
+    assert normalize_shape("tilt") == "box"
+    assert normalize_shape("tilt:0:0") == "box"
+    assert not poly_on("tilt:0:0")
 
 
 def _mirror_axis(s: float, size: float, k: int) -> float:

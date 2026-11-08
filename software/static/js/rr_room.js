@@ -155,12 +155,16 @@ function paintPlaceChips() {
 function roomShapeRows() {
   return [
     document.getElementById("roomShapeRow"),
-    document.getElementById("spaceShapeRow")
+    document.getElementById("spaceShapeRow"),
+    document.getElementById("roomPlanRow")
   ];
 }
 
 function applyRoomShape(picked) {
-  state.room_shape = (window.RoomShape && RoomShape.normalize) ? RoomShape.normalize(picked) : "box";
+  var name = (window.RoomShape && RoomShape.normalize) ? RoomShape.normalize(picked) : "box";
+  state.room_shape = (window.RoomShape && RoomShape.storedShape)
+    ? RoomShape.storedShape(picked, state.W, state.H, state.L, state.room_shape)
+    : name;
   if (window.RoomMath && RoomMath.clampRoom) Object.assign(state, RoomMath.clampRoom(state));
   syncUI();
   scheduleLiveParams();
@@ -170,6 +174,17 @@ function applyRoomShape(picked) {
 function paintRoomShape() {
   var name = (window.RoomShape && RoomShape.normalize) ? RoomShape.normalize(state.room_shape) : "box";
   if (window.RoomShape && RoomShape.paintShapeRows) RoomShape.paintShapeRows(roomShapeRows(), name);
+  var modes = document.getElementById("roomModes");
+  if (modes && window.RoomShape && RoomShape.axialText) modes.textContent = RoomShape.axialText(state.W, state.H, state.L);
+  var tiltBtn = document.getElementById("roomTiltBtn");
+  var slopeBtn = document.getElementById("roomSlopeBtn");
+  if (window.RoomShape && tiltBtn && RoomShape.tiltLabel) tiltBtn.textContent = RoomShape.tiltLabel(state.room_shape);
+  if (window.RoomShape && slopeBtn && RoomShape.slopeLabel) slopeBtn.textContent = RoomShape.slopeLabel(state.room_shape);
+  var planOn = name === "plan";
+  var addCorner = document.getElementById("roomPlanAdd");
+  var delCorner = document.getElementById("roomPlanDel");
+  if (addCorner) addCorner.hidden = !planOn;
+  if (delCorner) delCorner.hidden = !planOn;
   var hideSwitch = !!(window.RoomShape && RoomShape.showMirrorToggle && !RoomShape.showMirrorToggle(name));
   var mirrorRow = document.getElementById("mirrorLrRow");
   var mirrorBox = document.getElementById("mirrorLr");
@@ -182,6 +197,18 @@ function paintRoomShape() {
     paintRoomShape._shown = name;
     colourSurfaces.syncWallList();
   }
+}
+
+function addShapePanel(kind) {
+  if (!window.RoomShape || !RoomShape.panelRow) return;
+  var row = RoomShape.panelRow(kind);
+  if (!row) return;
+  if (!Array.isArray(state.surf_treatment)) state.surf_treatment = [];
+  row.id = String(kind) + "_" + state.surf_treatment.length;
+  state.surf_treatment.push(row);
+  if (colourSurfaces && colourSurfaces.select) colourSurfaces.select(row.face);
+  if (window.SLRoomResult && SLRoomResult.paintRows) SLRoomResult.paintRows();
+  syncUI();
 }
 
 function paintMicSetupLink() {

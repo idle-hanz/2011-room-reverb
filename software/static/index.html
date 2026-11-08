@@ -661,6 +661,26 @@
             <button type="button" class="chip" data-room-shape="gable" aria-pressed="false">Gable</button>
             <button type="button" class="chip" data-room-shape="hex" aria-pressed="false">Hex</button>
           </div>
+          <div class="place-row" id="roomRatioRow" role="group" aria-label="Shoebox ratios">
+            <button type="button" class="chip" data-ratio="bolt">Bolt</button>
+            <button type="button" class="chip" data-ratio="sepmeyer">Sepmeyer</button>
+            <button type="button" class="chip" data-ratio="louden">Louden</button>
+          </div>
+          <p class="hint" id="roomModes">Axial modes</p>
+          <div class="place-row" id="roomTiltRow" role="group" aria-label="Wall tilt and ceiling slope">
+            <button type="button" class="chip" id="roomTiltBtn">Walls flat</button>
+            <button type="button" class="chip" id="roomSlopeBtn">Ceiling flat</button>
+          </div>
+          <div class="place-row" id="roomPlanRow" role="group" aria-label="Floor plan">
+            <button type="button" class="chip" data-room-shape="plan" aria-pressed="false">Plan</button>
+            <button type="button" class="chip" id="roomPlanAdd" hidden>+ corner</button>
+            <button type="button" class="chip" id="roomPlanDel" hidden>− corner</button>
+          </div>
+          <div class="place-row" id="roomObjectRow" role="group" aria-label="Panels">
+            <button type="button" class="chip" id="roomAddDiffuser">Diffuser</button>
+            <button type="button" class="chip" id="roomAddTrap">Bass trap</button>
+            <button type="button" class="chip" id="roomAddCloud">Cloud</button>
+          </div>
           <button type="button" class="chip" id="roomMicSetupLink">Mic setup ›</button>
           <label class="ctrl"><span>Width <em>m</em></span><input type="range" id="W" min="1" max="80" step="0.1" value="6" /><output id="W_out">6.0</output></label>
           <label class="ctrl"><span>Ceiling <em>m</em></span><input type="range" id="H" min="1" max="40" step="0.1" value="3" /><output id="H_out">3.0</output></label>
@@ -1068,7 +1088,7 @@
     <div id="toast" class="toast" hidden role="status"></div>
   </div>
   <script src="/static/js/vendor/three.min.js"></script>
-  <script src="/static/js/room_shape.js?v=7"></script>
+  <script src="/static/js/room_shape.js?v=8"></script>
   <script src="/static/js/maths_look.js?v=2"></script>
   <script src="/static/js/maths_pattern.js?v=2"></script>
   <script src="/static/js/maths_distance.js?v=1"></script>
@@ -1079,9 +1099,9 @@
   <script src="/static/js/spectrum_colors.js?v=1"></script>
   <script src="/static/js/freq_palette.js?v=2"></script>
   <script src="/static/js/room_view_pose.js?v=1"></script>
-  <script src="/static/js/room_draw.js?v=7"></script>
+  <script src="/static/js/room_draw.js?v=8"></script>
   <script src="/static/js/room_3d.js?v=27"></script>
-  <script src="/static/js/room_editor.js?v=29"></script>
+  <script src="/static/js/room_editor.js?v=30"></script>
   <script src="/static/js/image_views.js?v=23"></script>
   <script src="/static/js/colour_surfaces.js?v=10"></script>
   <script src="/static/js/polar_field.js?v=18"></script>
@@ -1100,13 +1120,13 @@
   <script src="/static/js/rr_state.js?v=8"></script>
   <script src="/static/js/rr_mic.js?v=1"></script>
   <script src="/static/js/rr_mix.js?v=9"></script>
-  <script src="/static/js/rr_room.js?v=3"></script>
+  <script src="/static/js/rr_room.js?v=4"></script>
   <script src="/static/js/rr_source.js?v=1"></script>
   <script src="/static/js/rr_space.js?v=3"></script>
   <script src="/static/js/rr_polar.js?v=2"></script>
   <script src="/static/js/rr_transport.js?v=5"></script>
   <script src="/static/js/rr_settings.js?v=3"></script>
-  <script src="/static/js/app.js?v=109"></script>
+  <script src="/static/js/app.js?v=110"></script>
   <script src="/static/js/sl_room_result.js?v=10"></script>
   <script src="/static/js/rr_controls.js?v=1"></script>
   <script src="/static/js/rr_controls_boot.js?v=1"></script>

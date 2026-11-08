@@ -617,6 +617,60 @@ if (mirrorLr) {
 if (window.RoomShape && RoomShape.bindShapeRows) {
   RoomShape.bindShapeRows(roomShapeRows(), applyRoomShape);
 }
+document.querySelectorAll("#roomRatioRow [data-ratio]").forEach(function (btn) {
+  btn.addEventListener("click", function () {
+    if (!window.RoomShape || !RoomShape.ratioSize) return;
+    var next = RoomShape.ratioSize(btn.getAttribute("data-ratio"), state.W, state.H, state.L);
+    if (!next) return;
+    onRoomDim("W", next.W);
+    onRoomDim("H", next.H);
+    onRoomDim("L", next.L);
+  });
+});
+var roomTiltBtn = document.getElementById("roomTiltBtn");
+var roomSlopeBtn = document.getElementById("roomSlopeBtn");
+if (roomTiltBtn) {
+  roomTiltBtn.addEventListener("click", function () {
+    if (!window.RoomShape || !RoomShape.cycleTilt) return;
+    state.room_shape = RoomShape.cycleTilt(state.room_shape);
+    Object.assign(state, RoomMath.clampRoom(state));
+    syncUI();
+    scheduleLiveParams();
+  });
+}
+if (roomSlopeBtn) {
+  roomSlopeBtn.addEventListener("click", function () {
+    if (!window.RoomShape || !RoomShape.cycleSlope) return;
+    state.room_shape = RoomShape.cycleSlope(state.room_shape);
+    Object.assign(state, RoomMath.clampRoom(state));
+    syncUI();
+    scheduleLiveParams();
+  });
+}
+var roomPlanAdd = document.getElementById("roomPlanAdd");
+var roomPlanDel = document.getElementById("roomPlanDel");
+if (roomPlanAdd) {
+  roomPlanAdd.addEventListener("click", function () {
+    if (!window.RoomShape || !RoomShape.addPlanCorner) return;
+    state.room_shape = RoomShape.addPlanCorner(state.room_shape);
+    syncUI();
+    scheduleLiveParams();
+  });
+}
+if (roomPlanDel) {
+  roomPlanDel.addEventListener("click", function () {
+    if (!window.RoomShape || !RoomShape.delPlanCorner) return;
+    state.room_shape = RoomShape.delPlanCorner(state.room_shape);
+    syncUI();
+    scheduleLiveParams();
+  });
+}
+["diffuser", "trap", "cloud"].forEach(function (kind) {
+  var id = kind === "diffuser" ? "roomAddDiffuser" : (kind === "trap" ? "roomAddTrap" : "roomAddCloud");
+  var btn = document.getElementById(id);
+  if (!btn) return;
+  btn.addEventListener("click", function () { addShapePanel(kind); });
+});
 
 document.querySelectorAll("#placeRow [data-place]").forEach(function (btn) {
   btn.addEventListener("click", function () {

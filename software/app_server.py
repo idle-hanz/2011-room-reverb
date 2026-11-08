@@ -149,9 +149,10 @@ def _sides_mirrored(body: Any) -> bool:
     if not isinstance(body, dict):
         return False
     from poly_room import lr_symmetric, normalize_shape
-    shape = normalize_shape(body.get("room_shape")) if "room_shape" in body else "box"
+    raw = body.get("room_shape") if "room_shape" in body else "box"
+    shape = normalize_shape(raw)
     if shape != "box":
-        return lr_symmetric(shape)
+        return lr_symmetric(raw)
     if "mirror_lr" not in body:
         return False
     return _b(body.get("mirror_lr"), False)
@@ -1415,7 +1416,8 @@ def api_room_result(body: dict):
     cards = _SP.cards_with_treatment(p["surfaces"], rows)
     out = _ST.room_result(p["W"], p["H"], p["L"], p["surfaces"], float(p.get("humidity") or 0.0),
                           decay_s=p.get("decay_s"), decay_lock=bool(p.get("decay_lock")), cards_with_fn=cards,
-                          rendered_t20=body.get("rendered_t20") if isinstance(body.get("rendered_t20"), dict) else None)
+                          rendered_t20=body.get("rendered_t20") if isinstance(body.get("rendered_t20"), dict) else None,
+                          shape=p.get("room_shape"))
     out["decay_mode"] = p.get("decay_mode", "flat")
     out["rows"] = rows
     out["rows_problems"] = _SP.validate_rows(rows)
