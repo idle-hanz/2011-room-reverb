@@ -20,7 +20,7 @@
   var colourRev = "";
   var bank = null;
   var lastCapLine = "";
-  var WORKLET_VER = 63;
+  var WORKLET_VER = 64;
   var COLOUR_CAP = 192;
   var ROUTE_LEN = 326;
   var RMS_QUIET = 1e-5;
@@ -509,6 +509,7 @@
       msg.n_irs = colour.n_irs;
     }
     msg.snap = snapRoom;
+    if (typeof auditionOn !== "undefined" && auditionOn) msg.audition = 1;
     var nIrs = msg.n_irs | 0;
     var overCap = !!(msg.irs && msg.ir_len && nIrs > 0 && (msg.irs.length > 192 * 8192 || nIrs > 192));
     if (!overCap && (msg.colour_over | 0) > 192) overCap = true;

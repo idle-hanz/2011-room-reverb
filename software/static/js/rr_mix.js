@@ -653,8 +653,16 @@ function lrView(cap) {
   return { route: route, shown: shown, pot: info.pot, panLive: route === "pan" && info.pot === "balance" };
 }
 
-/* Page keys stay route_*. Off posts nothing. Engine names are in routing_scene.js. */
+/* Page keys stay route_*. Off posts nothing. Engine names are in routing_scene.js.
+   Audition is a Play flag, not a preset key. */
+var auditionOn = false;
+
 function clearPreamp() {
+  auditionOn = false;
+  if (typeof document !== "undefined") {
+    var audBox = document.getElementById("auditionStrip");
+    if (audBox) audBox.checked = false;
+  }
   ["array", "room", "master"].forEach(function (name) {
     state["route_" + name + "_pre"] = "none";
     state["route_" + name + "_drive"] = 0;
@@ -686,6 +694,8 @@ function paintRouting() {
       if (amtOut) amtOut.textContent = String(Math.round(Number(amt.value)));
     }
   });
+  var aud = document.getElementById("auditionStrip");
+  if (aud && document.activeElement !== aud) aud.checked = !!auditionOn;
 }
 
 function bindRouting() {
@@ -694,6 +704,11 @@ function bindRouting() {
   panel._routeBound = true;
   function onRoute(e) {
     var id = e.target && e.target.id;
+    if (id === "auditionStrip") {
+      auditionOn = !!e.target.checked;
+      scheduleLiveParams();
+      return;
+    }
     if (!id || id.indexOf("route_") !== 0) return;
     var v = e.target.value;
     var prev = state[id];

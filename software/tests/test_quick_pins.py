@@ -94,7 +94,7 @@ PIN_TABLE = {
     "mic_desk.js": 29,
     "source_desk.js": 6,
     "pack_room.js": 55,
-    "live_fdn.js": 65,
+    "live_fdn.js": 66,
     "lr_buttons.js": 1,
     "ms_presets.js": 3,
     "pair_mode.js": 2,
@@ -104,7 +104,7 @@ PIN_TABLE = {
     "settings_boot.js": 1,
     "rr_state.js": 6,
     "rr_mic.js": 1,
-    "rr_mix.js": 8,
+    "rr_mix.js": 9,
     "rr_room.js": 2,
     "rr_source.js": 1,
     "rr_space.js": 2,
@@ -120,7 +120,7 @@ PIN_TABLE = {
 
 def test_cache_pins():
     live = (SW / "static" / "js" / "live_fdn.js").read_text(encoding="utf-8")
-    assert "WORKLET_VER = 63" in live
+    assert "WORKLET_VER = 64" in live
 
 
 def test_index_versions_match_pin_table():

@@ -885,3 +885,79 @@ static void side_prepare(LiveStereo *st, const float *inL, const float *inR) {
     }
     side_det_load(st, &saved);
 }
+
+/* Dry strip. Own filter memory, so the reverb preamp is left as it was.
+   n <= 0 clears that memory. The FDN is not run. */
+static double audPr[2][9];
+static float audHb[2][4][2][46];
+static double audU;
+static int audHot;
+
+LS_EXPORT("live_audition")
+void live_audition(LiveStereo *st, const float *inL, const float *inR,
+                   float *outL, float *outR, int n) {
+    int i;
+    if (n <= 0) {
+        ls_zero(audPr, (int)sizeof(audPr));
+        ls_zero(audHb, (int)sizeof(audHb));
+        audU = 0.0;
+        audHot = 0;
+        return;
+    }
+    if (!st || !inL || !inR || !outL || !outR) return;
+    if (!audHot) {
+        ls_zero(audPr, (int)sizeof(audPr));
+        ls_zero(audHb, (int)sizeof(audHb));
+        audU = 0.0;
+        audHot = 1;
+    }
+    for (i = 0; i < n; i++) {
+        double xL = (double)inL[i];
+        double xR = (double)inR[i];
+        double yL = xL;
+        double yR = xR;
+        double g = 1.0;
+        if (st->preOn) {
+            yL = bloom_pre_at(st->pC, audPr[0], audHb[0], xL);
+            yR = bloom_pre_at(st->pC, audPr[1], audHb[1], xR);
+        }
+        if (st->bloomOn) {
+            int pid = (int)(st->bC[0] + 0.5);
+            int nuke = (pid == 3 && !st->two);
+            double xdet;
+            double target;
+            double step;
+            float saveL = 0.0f;
+            float saveR = 0.0f;
+            if (st->two) {
+                double xA = xL * st->gain_a;
+                double xB = xR * st->gain_b;
+                double aa = xA < 0.0 ? -xA : xA;
+                double bb = xB < 0.0 ? -xB : xB;
+                xdet = aa > bb ? aa : bb;
+            } else {
+                double det = 0.5 * (xL + xR);
+                xdet = (pid == 4) ? det : (det < 0.0 ? -det : det);
+            }
+            if (nuke) {
+                saveL = st->pendL[0];
+                saveR = st->pendR[0];
+                st->pendL[0] = (float)xL;
+                st->pendR[0] = (float)xR;
+            }
+            bloom_sample(st, xdet, 0);
+            if (nuke) {
+                st->pendL[0] = saveL;
+                st->pendR[0] = saveR;
+            }
+            target = st->bG[0];
+            step = (st->sr > 0) ? (1.0 / (0.015 * (double)st->sr)) : 1.0;
+            if (!(step > 0.0) || step > 1.0) step = 1.0;
+            audU += step;
+            if (audU > 1.0) audU = 1.0;
+            g = 1.0 + (target - 1.0) * audU;
+        }
+        outL[i] = (float)(yL * g);
+        outR[i] = (float)(yR * g);
+    }
+}
