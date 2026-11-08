@@ -1291,7 +1291,7 @@ select.cap-pattern:focus {
 }
 .source-grid {
   display: grid;
-  grid-template-columns: minmax(200px, 240px) minmax(0, 1fr) minmax(240px, 330px);
+  grid-template-columns: minmax(0, 1fr) minmax(240px, 330px);
   gap: 11px;
   align-items: stretch;
 }
@@ -1300,7 +1300,7 @@ select.cap-pattern:focus {
 }
 @media (min-width: 1101px) {
   .layout.source-wide .source-grid {
-    grid-template-columns: 200px minmax(0, 1fr) 210px;
+    grid-template-columns: minmax(0, 1fr) 280px;
   }
 }
 .source-grid > .panel { margin-bottom: 0; }

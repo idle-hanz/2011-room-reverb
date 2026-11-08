@@ -142,6 +142,7 @@ var imageViewTitle = document.getElementById("imageViewTitle");
 var imageViewHint = document.getElementById("imageViewHint");
 
 var sourceVis = { a: null, b: null };
+var roomBoxMode = "size"; /* Room size box. "source" shows the source controls. */
 var editor = RoomEditor.create({
   floorCanvas: document.getElementById("floorCanvas"),
   elevCanvas: document.getElementById("elevCanvas"),
@@ -159,7 +160,8 @@ var sourceDesk = window.SourceDesk ? SourceDesk.create({
   onChange: function () { syncUI(); scheduleLiveParams(); },
   onDragEnd: function () { scheduleLiveRender(); scheduleLiveParams(); },
   RoomMath: window.RoomMath,
-  vis: sourceVis
+  vis: sourceVis,
+  onPattern: function () { editor.redraw(); }
 }) : null;
 
 var imageView = null;

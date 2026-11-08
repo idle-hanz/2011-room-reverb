@@ -177,7 +177,7 @@ def test_a1_place_orders_match_fresh(audit_server):
             assert not diffs, f"{x}->{y} leaked {diffs[:12]}"
 
 
-_VIEWS = ["edit", "source", "mic", "mix", "space", "surfaces", "polar"]
+_VIEWS = ["edit", "mic", "mix", "space", "surfaces", "polar"]
 _COLOURS = ["MEASURED_SHELF", "ASSUMED_TOYS", "BYPASS"]
 
 
@@ -452,7 +452,7 @@ def test_a11_source_labels_omni_and_stale_reply(audit_server):
         pg = b.new_page(viewport={"width": 1600, "height": 1000})
         pg.goto(audit_server["url"])
         pg.wait_for_timeout(700)
-        pg.click('.view-tab[data-view="source"]')
+        pg.click("#roomBoxToggle")
         pg.wait_for_timeout(500)
         assert pg.locator("#sourceOnset").is_hidden()
         pg.screenshot(path=str(_shots() / "a11b_omni_polar.png"))
@@ -521,6 +521,7 @@ _UI_ONLY_IDS = {
     "materialPaintAll",
     # T10 room-size chip. Click only calls setView("edit"). It does not post.
     "roomSizeChip",
+    "roomBoxToggle",
     # SL1 Room result. These redraw the model. They do not post /api/params/live.
     "slMode_flat",
     # SL3. #slMode_surfaces posts /api/params/live (decay_mode) as well as /api/room/result.
@@ -578,7 +579,7 @@ def test_a12_visible_controls_post_or_are_ui_only(audit_server):
                 }
                 return orig.apply(this, arguments);
               };
-              const views = ['edit', 'source', 'mic', 'mix', 'space', 'surfaces', 'polar'];
+              const views = ['edit', 'mic', 'mix', 'space', 'surfaces', 'polar'];
               function visible(el) {
                 if (!el || el.disabled) return false;
                 if (el.type === 'hidden' || el.type === 'file') return false;

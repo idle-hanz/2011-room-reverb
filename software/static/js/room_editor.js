@@ -802,12 +802,20 @@
       const items = [{ which: "a", src: geo.source }];
       if (geo.source_b) items.push({ which: "b", src: geo.source_b });
       items.forEach(function (it) {
-        if (enter(env, isOmniSrc, st, it.which)) return;
         if (plane === "floor" && it.which === "b" && enter(env, stackedFloor, geo)) return;
         if (plane === "elev" && it.which === "b" && enter(env, stackedElev, geo)) return;
         const dot = plane === "floor"
           ? enter(env, toPx, it.src.x, it.src.z, env.fl)
           : enter(env, ePx, it.src.z, it.src.y, env.el);
+        if (enter(env, isOmniSrc, st, it.which)) {
+          if (plane !== "floor") return;
+          ctx.beginPath();
+          ctx.arc(dot.px, dot.py, 36, 0, Math.PI * 2);
+          ctx.strokeStyle = "rgba(255,179,71,0.4)";
+          ctx.lineWidth = 1.25;
+          ctx.stroke();
+          return;
+        }
         const meta = enter(env, metaFor, it.which);
         const scale = plane === "floor" ? env.fl.scale : env.el.scale;
         enter(env, drawSizeCircle, ctx, dot, enter(env, sizeMetres, st, it.which), scale);
@@ -901,6 +909,155 @@
       consider("a", geo.source);
       return found;
     }
+  function angBetween(ax, az, bx, bz) { var env = envStack[envStack.length - 1];
+      var na = Math.hypot(ax, az);
+      var nb = Math.hypot(bx, bz);
+      if (na < 1e-9 || nb < 1e-9) return 0;
+      var c = (ax * bx + az * bz) / (na * nb);
+      if (c > 1) c = 1;
+      if (c < -1) c = -1;
+      return Math.acos(c);
+    }
+  function srcDbToward(st, which, from, to) { var env = envStack[envStack.length - 1];
+      if (enter(env, isOmniSrc, st, which)) return 0;
+      if (!global.RoomDraw || !RoomDraw.curveDb) return 0;
+      var meta = enter(env, metaFor, which);
+      if (!meta || !meta.horizontal) return 0;
+      var curve = meta.horizontal["1000"] || meta.horizontal[1000];
+      if (!curve) return 0;
+      var az = Math.atan2(to.x - from.x, to.z - from.z) * 180 / Math.PI;
+      var rel = ((az - enter(env, yawOf, st, which) + 540) % 360) - 180;
+      return RoomDraw.curveDb(curve, meta.angles, rel);
+    }
+  function micPolarGain(st, cap, theta) { var env = envStack[envStack.length - 1];
+      if (!global.RRPattern) return 1;
+      return RRPattern.polarGain(theta, st["family_" + cap], st["polar_" + cap], st["pattern_" + cap]);
+    }
+  function faceImages(src, room) { var env = envStack[envStack.length - 1];
+      if (!global.RRImage) return [];
+      var axes = [[1, 0, 0], [-1, 0, 0], [0, 1, 0], [0, -1, 0], [0, 0, 1], [0, 0, -1]];
+      return axes.map(function (n) { return RRImage.imagePoint(src, room, n); });
+    }
+  function boundaryHit(mic, image, room) { var env = envStack[envStack.length - 1];
+      var dx = image.x - mic.x;
+      var dy = image.y - mic.y;
+      var dz = image.z - mic.z;
+      var best = 1;
+      function consider(t) {
+        if (t > 1e-4 && t < best) best = t;
+      }
+      if (Math.abs(dx) > 1e-9) {
+        consider((0 - mic.x) / dx);
+        consider((room.W - mic.x) / dx);
+      }
+      if (Math.abs(dy) > 1e-9) {
+        consider((0 - mic.y) / dy);
+        consider((room.H - mic.y) / dy);
+      }
+      if (Math.abs(dz) > 1e-9) {
+        consider((0 - mic.z) / dz);
+        consider((room.L - mic.z) / dz);
+      }
+      return { x: mic.x + dx * best, y: mic.y + dy * best, z: mic.z + dz * best };
+    }
+  function drawHeat(ctx, geo) { var env = envStack[envStack.length - 1];
+      var frame = env.floorCanvas.closest ? env.floorCanvas.closest(".diagram-frame") : null;
+      if (!frame || !frame.classList.contains("is-enlarged")) return;
+      if (!global.RoomDraw || !RoomDraw.reverbDistance || !RoomDraw.drrDb) return;
+      var st = geo.state;
+      var src = geo.source;
+      var room = { W: st.W, H: st.H, L: st.L };
+      var images = enter(env, faceImages, src, room);
+      if (!images.length) return;
+      var cols = 12;
+      var rows = 8;
+      var ix, iz;
+      for (ix = 0; ix < cols; ix++) {
+        for (iz = 0; iz < rows; iz++) {
+          var x = (ix + 0.5) * st.W / cols;
+          var z = (iz + 0.5) * st.L / rows;
+          var y = geo.mic_centre.y;
+          var direct = Math.hypot(x - src.x, y - src.y, z - src.z);
+          var dists = images.map(function (im) {
+            return Math.hypot(x - im.x, y - im.y, z - im.z);
+          });
+          var rev = RoomDraw.reverbDistance(dists);
+          var drr = RoomDraw.drrDb(direct, rev);
+          if (drr == null) continue;
+          var t = (drr + 12) / 24;
+          if (t < 0) t = 0;
+          if (t > 1) t = 1;
+          var p0 = enter(env, toPx, ix * st.W / cols, iz * st.L / rows, env.fl);
+          var p1 = enter(env, toPx, (ix + 1) * st.W / cols, (iz + 1) * st.L / rows, env.fl);
+          ctx.fillStyle = "rgba(251,146,60," + (0.04 + 0.28 * t).toFixed(3) + ")";
+          ctx.fillRect(Math.min(p0.px, p1.px), Math.min(p0.py, p1.py), Math.abs(p1.px - p0.px) + 1, Math.abs(p1.py - p0.py) + 1);
+        }
+      }
+    }
+  function drawMicRings(ctx, geo, spots) { var env = envStack[envStack.length - 1];
+      if (!global.RoomDraw || !RoomDraw.linFromDb) return;
+      var st = geo.state;
+      var fallOf = global.RRDistance ? RRDistance.geometricLevel : function (d) { return d > 1e-9 ? 1 / d : 0; };
+      spots.forEach(function (spot) {
+        var srcDb = enter(env, srcDbToward, st, "a", geo.source, spot.mic);
+        var dist = Math.hypot(spot.mic.x - geo.source.x, spot.mic.y - geo.source.y, spot.mic.z - geo.source.z);
+        var scale = RoomDraw.linFromDb(srcDb) * fallOf(dist);
+        var n = 28;
+        var i;
+        for (i = 0; i < n; i++) {
+          var phi = -Math.PI + (i + 0.5) * 2 * Math.PI / n;
+          var theta = enter(env, angBetween, spot.look.x, spot.look.z, Math.sin(phi), Math.cos(phi));
+          var micG = Math.abs(enter(env, micPolarGain, st, spot.cap, theta));
+          var g = scale * micG * 1.4;
+          if (g < 0) g = 0;
+          if (g > 1) g = 1;
+          var a0 = -Math.PI / 2 + i * 2 * Math.PI / n;
+          var a1 = a0 + 2 * Math.PI / n;
+          ctx.beginPath();
+          ctx.moveTo(spot.p.px, spot.p.py);
+          ctx.arc(spot.p.px, spot.p.py, 20, a0, a1);
+          ctx.closePath();
+          ctx.fillStyle = "rgba(96,165,250," + (0.06 + 0.5 * g).toFixed(3) + ")";
+          ctx.fill();
+        }
+      });
+    }
+  function drawReflectDots(ctx, geo, spots) { var env = envStack[envStack.length - 1];
+      if (!global.RoomDraw || !RoomDraw.arrivalGain) return;
+      var st = geo.state;
+      var room = { W: st.W, H: st.H, L: st.L };
+      var images = enter(env, faceImages, geo.source, room);
+      images.forEach(function (im) {
+        var hit = enter(env, boundaryHit, geo.mic_centre, im, room);
+        var p = enter(env, toPx, hit.x, hit.z, env.fl);
+        var srcDb = enter(env, srcDbToward, st, "a", geo.source, im);
+        var look = geo.look_c || { x: 0, z: 1 };
+        var theta = enter(env, angBetween, look.x, look.z, im.x - geo.mic_centre.x, im.z - geo.mic_centre.z);
+        var gain = RoomDraw.arrivalGain(srcDb, enter(env, micPolarGain, st, "c", theta));
+        var mag = Math.abs(gain);
+        if (mag > 1) mag = 1;
+        ctx.beginPath();
+        ctx.arc(p.px, p.py, 4.5, 0, Math.PI * 2);
+        ctx.fillStyle = gain < 0
+          ? ("rgba(96,165,250," + (0.35 + 0.6 * mag).toFixed(3) + ")")
+          : ("rgba(251,191,36," + (0.35 + 0.6 * mag).toFixed(3) + ")");
+        ctx.fill();
+      });
+    }
+  function drawSourceBadge(ctx, geo, px, py) { var env = envStack[envStack.length - 1];
+      if (!global.RoomDraw || !RoomDraw.sourceBadge) return;
+      var st = geo.state;
+      var omni = enter(env, isOmniSrc, st, "a");
+      var off = enter(env, offMicDeg, st, "a");
+      var db = enter(env, srcDbToward, st, "a", geo.source, geo.mic_centre);
+      var kind = RoomDraw.sourceBadge(off, db, omni);
+      if (!kind) return;
+      ctx.font = "700 11px Segoe UI, system-ui, sans-serif";
+      ctx.textAlign = "left";
+      ctx.textBaseline = "alphabetic";
+      ctx.fillStyle = kind === "null" ? "#fb7185" : "#fbbf24";
+      ctx.fillText(kind === "null" ? "Null" : "Off-axis", px + 12, py - 14);
+    }
   function drawFloor(geo) { var env = envStack[envStack.length - 1];
       const ctx = env.fctx;
       const cw = env.floorCanvas.width, ch = env.floorCanvas.height;
@@ -942,6 +1099,7 @@
         ctx.lineTo(b.px, b.py);
         ctx.stroke();
       }
+      enter(env, drawHeat, ctx, geo);
       if (clipSplay) ctx.restore();
 
       if (global.RoomShape && RoomShape.planGuidesPx) {
@@ -974,6 +1132,13 @@
       }
 
       drawSourceUnder(ctx, geo, "floor");
+      var ringSpots = [
+        { p: Lp, mic: geo.mic_left, look: geo.look_l, cap: "l" },
+        { p: Cp, mic: geo.mic_centre, look: geo.look_c, cap: "c" },
+        { p: Rp, mic: geo.mic_right, look: geo.look_r, cap: "r" }
+      ];
+      enter(env, drawReflectDots, ctx, geo, ringSpots);
+      enter(env, drawMicRings, ctx, geo, ringSpots);
       if (!lRoom) drawHandle(ctx, Lp.px, Lp.py, COLORS.L, "", false, false);
       if (!rRoom) drawHandle(ctx, Rp.px, Rp.py, COLORS.R, "", false, false);
       function offsetCapsuleLabel(px, py, look, text) {
@@ -1009,6 +1174,7 @@
       drawHandle(ctx, Cp.px, Cp.py, COLORS.mic, "Mic", !!(env.drag && env.drag.kind === "mic"), env.hover === "mic");
       const two = !!geo.source_b;
       drawHandle(ctx, Sp.px, Sp.py, COLORS.src, two ? "A" : "Src", !!(env.drag && env.drag.kind === "source"), env.hover === "source");
+      enter(env, drawSourceBadge, ctx, geo, Sp.px, Sp.py);
       if (two && !stackedFloor(geo)) {
         const Bp = toPx(geo.source_b.x, geo.source_b.z, env.fl);
         drawHandle(ctx, Bp.px, Bp.py, COLORS.srcB, "B", !!(env.drag && env.drag.kind === "sourceB"), env.hover === "sourceB");

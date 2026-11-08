@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>2011 Room Reverb</title>
   <link rel="icon" href="/static/favicon.svg" type="image/svg+xml" />
-  <link rel="stylesheet" href="/static/css/app.css?v=44" />
+  <link rel="stylesheet" href="/static/css/app.css?v=45" />
   <link rel="stylesheet" href="/static/css/sl_room_result.css?v=2" />
   <link rel="stylesheet" href="/static/css/rr_controls.css?v=1" />
 </head>
@@ -47,7 +47,6 @@
       <section class="stage">
         <div class="view-switch" role="tablist" aria-label="Room views">
           <button type="button" class="view-tab active" data-view="edit" role="tab" aria-selected="true" tabindex="0">Room</button>
-          <button type="button" class="view-tab" data-view="source" role="tab" tabindex="-1">Source</button>
           <button type="button" class="view-tab" data-view="mic" role="tab" tabindex="-1">Mic</button>
           <button type="button" class="view-tab" data-view="mix" role="tab" tabindex="-1">Mix</button>
           <button type="button" class="view-tab" data-view="space" role="tab" tabindex="-1">Space</button>
@@ -69,7 +68,8 @@
                 </label>
                 <span class="live-metres" id="liveMetres">—</span>
               </div>
-              <div class="canvas-wrap">
+              <div class="canvas-wrap diagram-frame" id="floorFrame">
+                <button type="button" class="diagram-expand" aria-label="Enlarge floor plan">Enlarge</button>
                 <canvas id="floorCanvas" width="900" height="640" aria-label="Room floor plan XZ"></canvas>
               </div>
             </div>
@@ -78,10 +78,11 @@
                 <h2>3D room</h2>
                 <span class="hint">Drag orbit · Shift pan · scroll zoom · stays above the floor</span>
               </div>
-              <div class="tool-row view3d-readout-row" hidden>
+              <div class="tool-row view3d-readout-row">
                 <span class="live-metres" id="liveMetres3d">—</span>
               </div>
-              <div class="canvas-wrap view3d-wrap">
+              <div class="canvas-wrap view3d-wrap diagram-frame" id="view3dFrame">
+                <button type="button" class="diagram-expand" aria-label="Enlarge 3D room">Enlarge</button>
                 <canvas id="view3dCanvas" width="900" height="640" aria-label="3D room perspective"></canvas>
               </div>
             </div>
@@ -91,7 +92,8 @@
               <h2>Side elevation</h2>
               <span class="hint">Looking from the right · mic left · source right · drag Src H / Mic H · drag the ceiling to resize</span>
             </div>
-            <div class="canvas-wrap">
+            <div class="canvas-wrap diagram-frame" id="elevFrame">
+              <button type="button" class="diagram-expand" aria-label="Enlarge side elevation">Enlarge</button>
               <canvas id="elevCanvas" width="900" height="220" aria-label="Side elevation ZY"></canvas>
             </div>
           </div>
@@ -100,45 +102,17 @@
 
         <div id="sourceViews" class="source-desk" hidden>
           <div class="source-grid">
-            <div class="panel source-col">
-              <div class="panel-head">
-                <h2>Sources</h2>
-                <span class="honesty-badge honesty-assumed" id="sourceBadge" hidden>assumed</span>
-              </div>
-              <div class="place-row" role="group" aria-label="Which source">
-                <button type="button" class="chip active" id="sourceChipA">This track</button>
-                <button type="button" class="chip" id="sourceChipB" hidden>Source B</button>
-                <button type="button" class="chip" id="sourceLink" disabled title="Coming later: add another Studio One track to this room. Linked tracks share the walls, mic stand and air; each track keeps its own source. Not in this build yet.">+ Link track</button>
-              </div>
-              <label class="ctrl ctrl-select">
-                <span>Radiation</span>
-                <select id="sourcePreset" aria-label="Source radiation preset"></select>
-              </label>
-              <label class="ctrl"><span>Yaw</span><input type="range" id="sourceYaw" min="-180" max="180" step="1" value="0" /><input type="number" id="sourceYawNum" min="-180" max="180" step="1" value="0" aria-label="Yaw degrees" /></label>
-              <label class="ctrl"><span>Pitch</span><input type="range" id="sourcePitch" min="-89" max="89" step="1" value="0" /><input type="number" id="sourcePitchNum" min="-89" max="89" step="1" value="0" aria-label="Pitch degrees" /></label>
-              <label class="ctrl"><span>Size <em>m</em></span><input type="range" id="sourceSize" min="0.005" max="0.4" step="0.001" value="0.02" /><input type="number" id="sourceSizeNum" min="0.005" max="0.4" step="0.001" value="0.02" aria-label="Source size metres" /></label>
-              <p class="hint" id="sourceOnset">Size uses the preset radius until you move this.</p>
-              <div class="place-row">
-                <button type="button" class="chip" id="sourceFaceMic">Face mic</button>
-                <button type="button" class="chip" id="sourceFaceAway">Face away</button>
-                <button type="button" class="chip" id="sourceOmni">Omni</button>
-              </div>
-              <p class="hint" id="sourceOffMic">Omni. No facing.</p>
-              <details class="source-advanced">
-                <summary>Advanced</summary>
-                <p class="hint" id="sourceAim">Aim offset 0° az, 0° el (from the preset).</p>
-                <p class="hint">Facing changes the direct sound and the early reflections. The reverb tail keeps the instrument's average tone and does not change with facing.</p>
-              </details>
-            </div>
             <div class="panel source-place">
               <div class="panel-head">
                 <h2>Place and face</h2>
                 <span class="hint">Drag the dot to move. Drag the ring to aim. Shift snaps 15°. Double-click the ring faces the mic.</span>
               </div>
-              <div class="canvas-wrap source-floor-wrap">
+              <div class="canvas-wrap source-floor-wrap diagram-frame" id="srcFloorFrame">
+                <button type="button" class="diagram-expand" aria-label="Enlarge source top view">Enlarge</button>
                 <canvas id="srcFloorCanvas" width="720" height="420" tabindex="0" aria-label="Source top view. Arrows aim, F faces the mic, O is omni."></canvas>
               </div>
-              <div class="canvas-wrap source-elev-wrap">
+              <div class="canvas-wrap source-elev-wrap diagram-frame" id="srcElevFrame">
+                <button type="button" class="diagram-expand" aria-label="Enlarge source side view">Enlarge</button>
                 <canvas id="srcElevCanvas" width="720" height="300" tabindex="0" aria-label="Source side view. The ring sets pitch."></canvas>
               </div>
             </div>
@@ -158,7 +132,8 @@
                 <button type="button" class="chip active" data-src-plane="h">Horizontal</button>
                 <button type="button" class="chip" data-src-plane="v">Vertical</button>
               </div>
-              <div class="canvas-wrap source-polar-wrap">
+              <div class="canvas-wrap source-polar-wrap diagram-frame" id="sourcePolarFrame">
+                <button type="button" class="diagram-expand" aria-label="Enlarge radiation">Enlarge</button>
                 <canvas id="sourcePolar" width="520" height="420" aria-label="Source radiation polar"></canvas>
               </div>
               <div class="source-hear" aria-live="polite">
@@ -667,7 +642,11 @@
       <aside class="sidebar">
         <button type="button" class="chip room-size-chip" id="roomSizeChip" hidden>6.0 x 8.0 x 3.0 m</button>
         <div class="panel" id="panelRoom" data-sidebar="room">
-          <div class="panel-head"><h2>Room size</h2></div>
+          <div class="panel-head">
+            <h2>Room size</h2>
+            <button type="button" class="chip" id="roomBoxToggle" aria-pressed="false">Source</button>
+          </div>
+          <div id="roomSizeBox">
           <div class="place-row" id="placeRow" role="group" aria-label="Room places">
             <button type="button" class="chip" data-place="studio">Studio</button>
             <button type="button" class="chip" data-place="club">Club</button>
@@ -695,6 +674,34 @@
             <input type="range" id="movement" min="0" max="100" step="1" value="0" />
             <output id="movement_out">Off</output>
           </label>
+          </div>
+          <div id="roomSourceBox" class="source-col" hidden>
+            <span class="honesty-badge honesty-assumed" id="sourceBadge" hidden>assumed</span>
+            <div class="place-row" role="group" aria-label="Which source">
+              <button type="button" class="chip active" id="sourceChipA">This track</button>
+              <button type="button" class="chip" id="sourceChipB" hidden>Source B</button>
+              <button type="button" class="chip" id="sourceLink" disabled title="Coming later: add another Studio One track to this room. Linked tracks share the walls, mic stand and air; each track keeps its own source. Not in this build yet.">+ Link track</button>
+            </div>
+            <label class="ctrl ctrl-select">
+              <span>Radiation</span>
+              <select id="sourcePreset" aria-label="Source radiation preset"></select>
+            </label>
+            <label class="ctrl"><span>Yaw</span><input type="range" id="sourceYaw" min="-180" max="180" step="1" value="0" /><input type="number" id="sourceYawNum" min="-180" max="180" step="1" value="0" aria-label="Yaw degrees" /></label>
+            <label class="ctrl"><span>Pitch</span><input type="range" id="sourcePitch" min="-89" max="89" step="1" value="0" /><input type="number" id="sourcePitchNum" min="-89" max="89" step="1" value="0" aria-label="Pitch degrees" /></label>
+            <label class="ctrl"><span>Size <em>m</em></span><input type="range" id="sourceSize" min="0.005" max="0.4" step="0.001" value="0.02" /><input type="number" id="sourceSizeNum" min="0.005" max="0.4" step="0.001" value="0.02" aria-label="Source size metres" /></label>
+            <p class="hint" id="sourceOnset">Size uses the preset radius until you move this.</p>
+            <div class="place-row">
+              <button type="button" class="chip" id="sourceFaceMic">Face mic</button>
+              <button type="button" class="chip" id="sourceFaceAway">Face away</button>
+              <button type="button" class="chip" id="sourceOmni">Omni</button>
+            </div>
+            <p class="hint" id="sourceOffMic">Omni. No facing.</p>
+            <details class="source-advanced">
+              <summary>Advanced</summary>
+              <p class="hint" id="sourceAim">Aim offset 0° az, 0° el (from the preset).</p>
+              <p class="hint">Facing changes the direct sound and the early reflections. The reverb tail keeps the instrument's average tone and does not change with facing.</p>
+            </details>
+          </div>
         </div>
         <div class="panel" id="panelListen" data-sidebar="listen">
           <div class="panel-head"><h2>Listen</h2></div>
@@ -1072,15 +1079,15 @@
   <script src="/static/js/spectrum_colors.js?v=1"></script>
   <script src="/static/js/freq_palette.js?v=2"></script>
   <script src="/static/js/room_view_pose.js?v=1"></script>
-  <script src="/static/js/room_draw.js?v=6"></script>
+  <script src="/static/js/room_draw.js?v=7"></script>
   <script src="/static/js/room_3d.js?v=27"></script>
-  <script src="/static/js/room_editor.js?v=28"></script>
+  <script src="/static/js/room_editor.js?v=29"></script>
   <script src="/static/js/image_views.js?v=23"></script>
   <script src="/static/js/colour_surfaces.js?v=10"></script>
   <script src="/static/js/polar_field.js?v=18"></script>
   <script src="/static/js/polar_views.js?v=10"></script>
   <script src="/static/js/mic_desk.js?v=29"></script>
-  <script src="/static/js/source_desk.js?v=6"></script>
+  <script src="/static/js/source_desk.js?v=7"></script>
   <script src="/static/js/pack_room.js?v=55"></script>
   <script src="/static/js/live_fdn.js?v=66"></script>
   <script src="/static/js/lr_buttons.js?v=1"></script>
@@ -1090,16 +1097,16 @@
   <script src="/static/js/room_window_math.js?v=1"></script>
   <script src="/static/js/routing_scene.js?v=3"></script>
   <script src="/static/js/settings_boot.js?v=1"></script>
-  <script src="/static/js/rr_state.js?v=7"></script>
+  <script src="/static/js/rr_state.js?v=8"></script>
   <script src="/static/js/rr_mic.js?v=1"></script>
   <script src="/static/js/rr_mix.js?v=9"></script>
   <script src="/static/js/rr_room.js?v=3"></script>
   <script src="/static/js/rr_source.js?v=1"></script>
   <script src="/static/js/rr_space.js?v=3"></script>
   <script src="/static/js/rr_polar.js?v=2"></script>
-  <script src="/static/js/rr_transport.js?v=4"></script>
+  <script src="/static/js/rr_transport.js?v=5"></script>
   <script src="/static/js/rr_settings.js?v=3"></script>
-  <script src="/static/js/app.js?v=108"></script>
+  <script src="/static/js/app.js?v=109"></script>
   <script src="/static/js/sl_room_result.js?v=10"></script>
   <script src="/static/js/rr_controls.js?v=1"></script>
   <script src="/static/js/rr_controls_boot.js?v=1"></script>

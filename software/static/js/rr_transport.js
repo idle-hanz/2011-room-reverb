@@ -74,9 +74,33 @@ function showEl(id, on) {
   if (el) el.hidden = !on;
 }
 
+function applyRoomBox() {
+  var on = roomBoxMode === "source";
+  var size = document.getElementById("roomSizeBox");
+  var src = document.getElementById("roomSourceBox");
+  if (size) size.hidden = on;
+  if (src) src.hidden = !on;
+  var btn = document.getElementById("roomBoxToggle");
+  if (btn) {
+    btn.classList.toggle("active", on);
+    btn.setAttribute("aria-pressed", on ? "true" : "false");
+    btn.textContent = on ? "Room size" : "Source";
+  }
+  var title = document.querySelector("#panelRoom .panel-head h2");
+  if (title) title.textContent = on ? "Source" : "Room size";
+  if (sourceViews) sourceViews.hidden = !(on && currentView === "edit");
+  var layout = document.querySelector("main.layout");
+  if (layout && currentView === "edit") layout.classList.toggle("source-wide", on);
+  if (on && currentView === "edit" && sourceDesk) sourceDesk.redraw();
+}
+
 function setView(view) {
   if (view === "lattice" || view === "paths") view = "space";
   if (view === "colour") view = "surfaces";
+  if (view === "source") {
+    roomBoxMode = "source";
+    view = "edit";
+  }
   currentView = view;
 
   document.querySelectorAll(".view-tab").forEach(function (tab) {
@@ -88,7 +112,7 @@ function setView(view) {
 
   var isEdit = view === "edit";
   var isMic = view === "mic";
-  var isSource = view === "source";
+  var isSource = false;
   var isSpace = view === "space";
   var isSurfaces = view === "surfaces";
   var isPolar = view === "polar";
@@ -116,13 +140,9 @@ function setView(view) {
   if (isPolar) syncPolarPageUI();
   else placePolarTrio();
 
+  applyRoomBox();
   if (isEdit) {
     editor.redraw();
-  } else if (isSource && sourceDesk) {
-    requestAnimationFrame(function () {
-      if (currentView !== "source") return;
-      sourceDesk.redraw();
-    });
   } else if (isMic || isPolar) {
     requestAnimationFrame(function () {
       requestAnimationFrame(function () {
@@ -277,7 +297,16 @@ function syncUINow() {
       " @ " + fmt(geo.source_b.y) + " m";
   }
   if (liveMetres) liveMetres.textContent = readout;
-  if (liveMetres3d) liveMetres3d.textContent = readout;
+  if (liveMetres3d && global.RoomDraw && RoomDraw.micReadout && RoomDraw.formatMicReadout) {
+    var speed = 340;
+    liveMetres3d.textContent = [
+      ["L", geo.mic_left],
+      ["C", geo.mic_centre],
+      ["R", geo.mic_right]
+    ].map(function (row) {
+      return RoomDraw.formatMicReadout(row[0], RoomDraw.micReadout(geo.source, row[1], speed));
+    }).join("  ·  ");
+  }
   var roomChip = document.getElementById("roomSizeChip");
   if (roomChip) {
     roomChip.textContent = fmt(state.W, 1) + " x " + fmt(state.L, 1) + " x " + fmt(state.H, 1) + " m";
@@ -330,7 +359,7 @@ function syncUINow() {
 
   paintSourceSplit();
   editor.redraw();
-  if (sourceDesk && currentView === "source") sourceDesk.redraw();
+  if (sourceDesk && roomBoxMode === "source" && currentView === "edit") sourceDesk.redraw();
   if (currentView === "space") scheduleImagesFetch();
   paintMicModel();
   paintSolos();

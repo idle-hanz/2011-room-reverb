@@ -491,6 +491,13 @@ if (viewSwitch) {
     tabs[ix].focus();
   });
 }
+var roomBoxToggle = document.getElementById("roomBoxToggle");
+if (roomBoxToggle) {
+  roomBoxToggle.addEventListener("click", function () {
+    roomBoxMode = roomBoxMode === "source" ? "size" : "source";
+    applyRoomBox();
+  });
+}
 if (roomSizeChip) {
   roomSizeChip.addEventListener("click", function () {
     setView("edit");

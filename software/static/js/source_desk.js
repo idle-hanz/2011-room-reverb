@@ -49,6 +49,7 @@
     env.getState = env.opts.getState;
     env.setState = env.opts.setState;
     env.onChange = env.opts.onChange || function () {};
+    env.onPattern = env.opts.onPattern || function () {};
     env.onDragEnd = env.opts.onDragEnd || function () {};
     env.RoomMath = env.opts.RoomMath || global.RoomMath;
     env.vis = env.opts.vis || { a: null, b: null };
@@ -406,6 +407,7 @@
       syncWidgets();
       drawPolar();
       if (env.editor) env.editor.redraw();
+      if (env.onPattern) env.onPattern();
     }
   function fetchCurves() { var env = envStack[envStack.length - 1];
       var st = stNow();

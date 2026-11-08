@@ -842,6 +842,100 @@
     return head + mic + " · " + msText + "\n" + level + "\n" + walls;
   }
 
+  /* Display geometry. 1 m is 0 dB. c defaults to 340. Nothing here is posted. */
+  function levelDb(dist) {
+    var d = Number(dist);
+    if (!(d > 1e-9)) return null;
+    return 20 * Math.log(1 / d) / Math.LN10;
+  }
+
+  function micReadout(src, mic, c) {
+    src = src || {};
+    mic = mic || {};
+    var dx = Number(mic.x) - Number(src.x);
+    var dy = Number(mic.y) - Number(src.y);
+    var dz = Number(mic.z) - Number(src.z);
+    var dist = Math.hypot(dx, dy, dz);
+    var horiz = Math.hypot(dx, dz);
+    var speed = Number(c) > 0 ? Number(c) : 340;
+    return {
+      dist_m: dist,
+      angle_deg: Math.atan2(dx, dz) * 180 / Math.PI,
+      elev_deg: Math.atan2(dy, horiz) * 180 / Math.PI,
+      height_m: Number(src.y) || 0,
+      level_db: levelDb(dist),
+      delay_ms: (dist / speed) * 1000
+    };
+  }
+
+  function formatMicReadout(name, row) {
+    row = row || {};
+    var db = row.level_db;
+    var dbText = (db == null || !isFinite(db)) ? "—" : ((db >= 0 ? "+" : "−") + Math.abs(db).toFixed(1) + " dB");
+    var ang = isFinite(row.angle_deg) ? (Math.round(row.angle_deg) + "°") : "—";
+    var dist = isFinite(row.dist_m) ? row.dist_m.toFixed(2) : "—";
+    var height = isFinite(row.height_m) ? row.height_m.toFixed(2) : "—";
+    var ms = isFinite(row.delay_ms) ? row.delay_ms.toFixed(1) : "—";
+    return name + " " + dist + " m · " + ang + " · h " + height + " m · " + dbText + " · " + ms + " ms";
+  }
+
+  function curveDb(curve, angles, deg) {
+    if (!curve || !curve.length) return 0;
+    var target = Number(deg) || 0;
+    var best = 0;
+    var bestD = 1e9;
+    var i;
+    for (i = 0; i < curve.length; i++) {
+      var a = (angles && angles.length === curve.length) ? Number(angles[i]) : (-180 + (i * 360) / curve.length);
+      var d = Math.abs(((a - target + 540) % 360) - 180);
+      if (d < bestD) {
+        bestD = d;
+        var n = Number(curve[i]);
+        best = isFinite(n) ? n : 0;
+      }
+    }
+    return best;
+  }
+
+  function linFromDb(db) {
+    var n = Number(db);
+    if (!isFinite(n)) return 1;
+    return Math.pow(10, n / 20);
+  }
+
+  function arrivalGain(srcDb, micGain) {
+    var mic = Number(micGain);
+    if (!isFinite(mic)) mic = 1;
+    return linFromDb(srcDb) * mic;
+  }
+
+  /* Omni has no badge. A deep source null wins over an off-axis aim. */
+  function sourceBadge(offDeg, srcDb, omni) {
+    if (omni) return "";
+    var db = Number(srcDb);
+    if (isFinite(db) && db <= -18) return "null";
+    if (Math.abs(Number(offDeg) || 0) >= 25) return "off-axis";
+    return "";
+  }
+
+  function reverbDistance(imageDists) {
+    var sum = 0;
+    var i;
+    for (i = 0; i < (imageDists || []).length; i++) {
+      var d = Number(imageDists[i]);
+      if (d > 1e-9) sum += 1 / d;
+    }
+    if (!(sum > 0)) return null;
+    return 1 / sum;
+  }
+
+  function drrDb(directDist, reverbDist) {
+    var d = levelDb(directDist);
+    var r = levelDb(reverbDist);
+    if (d == null || r == null) return null;
+    return d - r;
+  }
+
   function placePart(THREE, part, material) {
     var mesh = part.lines
       ? new THREE.LineSegments(part.geo, material)
@@ -865,6 +959,15 @@
     surfaceShown: surfaceShown,
     pathOpacity: pathOpacity,
     pathHover: pathHover,
+    levelDb: levelDb,
+    micReadout: micReadout,
+    formatMicReadout: formatMicReadout,
+    curveDb: curveDb,
+    linFromDb: linFromDb,
+    arrivalGain: arrivalGain,
+    sourceBadge: sourceBadge,
+    reverbDistance: reverbDistance,
+    drrDb: drrDb,
     wallColor: wallColor,
     colorKey: colorKey,
     fadeGain: fadeGain,
