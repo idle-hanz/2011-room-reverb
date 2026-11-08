@@ -422,15 +422,34 @@ if (spaceFit) spaceFit.addEventListener("click", function () {
   withImageView(function (v) { v.resetCamera(); });
 });
 
-document.querySelectorAll(".space-mode-chip").forEach(function (btn) {
+var spaceLatticeBtn = document.getElementById("spaceLatticeBtn");
+var spacePathsBtn = document.getElementById("spacePathsBtn");
+var spaceOrderBtn = document.getElementById("spaceOrderBtn");
+if (spaceLatticeBtn) {
+  spaceLatticeBtn.addEventListener("click", function () {
+    spaceLattice = !spaceLattice;
+    applySpaceView();
+  });
+}
+if (spacePathsBtn) {
+  spacePathsBtn.addEventListener("click", function () {
+    spacePaths = (spacePaths + 1) % 3;
+    applySpaceView();
+  });
+}
+if (spaceOrderBtn) {
+  spaceOrderBtn.addEventListener("click", function () {
+    var max = maxImageOrder(imagesCache);
+    if (!(spaceOrder > 0)) spaceOrder = 1;
+    else if (spaceOrder >= max) spaceOrder = 0;
+    else spaceOrder += 1;
+    applySpaceView();
+  });
+}
+document.querySelectorAll(".space-path-mic").forEach(function (btn) {
   btn.addEventListener("click", function () {
-    var m = btn.getAttribute("data-space-mode");
-    spaceMode = (m === "legs" || m === "paths") ? m : "lattice";
-    syncSpaceModeUI();
-    if (currentView === "space") {
-      if (imagesCache) applyImageView();
-      else scheduleImagesFetch(80);
-    }
+    spacePathMic = btn.getAttribute("data-path-mic") || "all";
+    applySpaceView();
   });
 });
 document.querySelectorAll("[data-polar-page]").forEach(function (btn) {

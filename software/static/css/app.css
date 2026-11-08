@@ -213,7 +213,7 @@ html, body {
   color: var(--text); border-color: var(--border); background: #10131a;
 }
 
-/* Paths tab: In-room | Last legs mode chips */
+/* Space view: lattice toggle and path cycle. */
 .paths-mode-row {
   gap: 6px;
 }

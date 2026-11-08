@@ -162,9 +162,14 @@ function applyImageView() {
   }
   if (!imageView) ensureImageView();
   if (!imageView) return;
-  var mode = spaceMode === "legs" ? "legs" : (spaceMode === "paths" ? "paths" : "lattice");
+  syncOrderSlider(imagesCache);
   try {
-    imageView.setMode(mode);
+    imageView.setSpace({
+      lattice: spaceLattice,
+      paths: spacePaths,
+      order: spaceOrder,
+      mic: spacePathMic
+    });
     imageView.setData(imagesCache);
     var heard = imageView.drawnCount && imageView.drawnCount();
     var taps = imageView.tapCount && imageView.tapCount();
@@ -181,21 +186,84 @@ function applyImageView() {
   }
 }
 
+function ordinal(n) {
+  var v = n % 100;
+  if (v >= 11 && v <= 13) return n + "th";
+  var s = n % 10;
+  if (s === 1) return n + "st";
+  if (s === 2) return n + "nd";
+  if (s === 3) return n + "rd";
+  return n + "th";
+}
+
+function maxImageOrder(data) {
+  var m = 1;
+  function scan(list) {
+    (list || []).forEach(function (t) {
+      var n = Number(t && t.order);
+      if (n > m) m = n;
+    });
+  }
+  if (!data) return 8;
+  scan(data.lattice);
+  scan(data.lattice_b);
+  var pm = data.per_mic || {};
+  Object.keys(pm).forEach(function (k) { scan(pm[k]); });
+  if (data.per_mic_b) Object.keys(data.per_mic_b).forEach(function (k) { scan(data.per_mic_b[k]); });
+  if (m > 12) m = 12;
+  return m;
+}
+
+function syncOrderSlider(data) {
+  var btn = document.getElementById("spaceOrderBtn");
+  if (!btn) return;
+  var max = maxImageOrder(data);
+  if (spaceOrder > max) spaceOrder = 0;
+  var on = spaceOrder > 0;
+  btn.textContent = on ? ("1st–" + ordinal(spaceOrder)) : "1st–all";
+  btn.classList.toggle("active", on);
+  btn.setAttribute("aria-pressed", on ? "true" : "false");
+}
+
 function syncSpaceModeUI() {
-  document.querySelectorAll(".space-mode-chip").forEach(function (btn) {
-    var on = btn.getAttribute("data-space-mode") === spaceMode;
-    btn.classList.toggle("active", on);
-    btn.setAttribute("aria-pressed", on ? "true" : "false");
+  var latticeBtn = document.getElementById("spaceLatticeBtn");
+  var pathsBtn = document.getElementById("spacePathsBtn");
+  if (latticeBtn) {
+    latticeBtn.classList.toggle("active", !!spaceLattice);
+    latticeBtn.setAttribute("aria-pressed", spaceLattice ? "true" : "false");
+  }
+  if (pathsBtn) {
+    var on = spacePaths > 0;
+    pathsBtn.classList.toggle("active", on);
+    pathsBtn.setAttribute("aria-pressed", on ? "true" : "false");
+    pathsBtn.textContent = spacePaths === 1 ? "Paths: lattice" : (spacePaths === 2 ? "Paths: in room" : "Paths");
+  }
+  document.querySelectorAll(".space-path-mic").forEach(function (btn) {
+    var pick = btn.getAttribute("data-path-mic");
+    var hit = pick === spacePathMic;
+    btn.classList.toggle("active", hit);
+    btn.setAttribute("aria-pressed", hit ? "true" : "false");
   });
+  syncOrderSlider(imagesCache);
   var camHint = "Drag to orbit · right-drag or Shift to pan · scroll to zoom · double-click to reset";
-  if (spaceMode === "legs") {
-    if (imageViewTitle) imageViewTitle.textContent = "Last legs into the mic";
-  } else if (spaceMode === "paths") {
-    if (imageViewTitle) imageViewTitle.textContent = "In-room specular paths";
-  } else {
-    if (imageViewTitle) imageViewTitle.textContent = "Mirrored-room lattice";
+  if (spacePaths === 2) {
+    if (imageViewTitle) imageViewTitle.textContent = "In-room reflections";
+  } else if (spacePaths === 1) {
+    if (imageViewTitle) imageViewTitle.textContent = "Paths from the image sources";
+  } else if (imageViewTitle) {
+    imageViewTitle.textContent = spaceLattice ? "Mirrored-room lattice" : "Home room";
   }
   if (imageViewHint) imageViewHint.textContent = camHint;
+}
+
+function applySpaceView() {
+  syncSpaceModeUI();
+  if (currentView !== "space") return;
+  if (!imagesCache) {
+    scheduleImagesFetch(80);
+    return;
+  }
+  applyImageView();
 }
 
 function withImageView(fn) {

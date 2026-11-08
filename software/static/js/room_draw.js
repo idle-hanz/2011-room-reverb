@@ -566,7 +566,7 @@
     return best;
   }
 
-  /* Paths and Last legs keep the home shell. The image lattice is Lattice only. */
+  /* Image rooms are the lattice toggle. Any other mode keeps the home shell. */
   function latticeKeys(mode, keys) {
     if (mode === "lattice") return keys.slice();
     var out = [];
@@ -771,6 +771,77 @@
     };
   }
 
+  /* Path pick. "all" is the mics already chosen for the picture. */
+  function pathMics(selected, pick) {
+    var ids = (selected && selected.length) ? selected.slice() : ["C"];
+    var want = String(pick == null ? "all" : pick).toUpperCase();
+    if (want === "ALL" || want === "") return ids;
+    if (want === "CENTRE" || want === "CENTER") want = "C";
+    var out = [];
+    var i;
+    for (i = 0; i < ids.length; i++) {
+      if (String(ids[i]).toUpperCase() === want) out.push(ids[i]);
+    }
+    return out;
+  }
+
+  /* limit <= 0 means every order. Direct stays. Reflections run from 1st to Nth. */
+  function orderShown(order, limit, isDirect) {
+    if (isDirect) return true;
+    var n = Number(order);
+    if (!isFinite(n) || n <= 0) return true;
+    var lim = Number(limit);
+    if (!isFinite(lim) || lim <= 0) return true;
+    return n <= lim;
+  }
+
+  /* Solo keeps a path that hits that wall. Mute hides a path that hits a muted wall. */
+  function surfaceShown(hits, solo, mute) {
+    var list = hits || [];
+    if (!list.length) return true;
+    var i;
+    if (solo) {
+      var s = String(solo).toUpperCase();
+      for (i = 0; i < list.length; i++) {
+        if (String(list[i]).toUpperCase() === s) return true;
+      }
+      return false;
+    }
+    var off = mute || {};
+    for (i = 0; i < list.length; i++) {
+      if (off[String(list[i]).toUpperCase()]) return false;
+    }
+    return true;
+  }
+
+  /* Stronger arrivals stay darker. Level is 1/r. Direct stays nearly solid. */
+  function pathOpacity(dist, isDirect) {
+    if (isDirect) return 0.95;
+    var d = Number(dist);
+    if (!(d > 1e-9)) return 0.35;
+    var op = (1 / d) * 1.4;
+    if (op < 0.12) op = 0.12;
+    if (op > 0.9) op = 0.9;
+    return op;
+  }
+
+  /* Hover: arrival, level at 1 m = 0 dB, walls hit. Display only. */
+  function pathHover(tap) {
+    tap = tap || {};
+    var head = tap.is_direct ? "Direct" : ("Order " + (tap.order != null ? tap.order : "—"));
+    var ms = Number(tap.delay_ms);
+    var msText = isFinite(ms) ? ms.toFixed(1) + " ms" : "—";
+    var d = Number(tap.dist_m);
+    var level = "—";
+    if (d > 1e-9) {
+      var db = 20 * Math.log(1 / d) / Math.LN10;
+      level = (db >= 0 ? "+" : "−") + Math.abs(db).toFixed(1) + " dB";
+    }
+    var walls = (tap.hit_surfaces && tap.hit_surfaces.length) ? tap.hit_surfaces.join(" ") : "—";
+    var mic = tap.mic ? (" · mic " + tap.mic) : "";
+    return head + mic + " · " + msText + "\n" + level + "\n" + walls;
+  }
+
   function placePart(THREE, part, material) {
     var mesh = part.lines
       ? new THREE.LineSegments(part.geo, material)
@@ -789,6 +860,11 @@
     splayFaces: splayFaces,
     imageRooms: imageRooms,
     latticeKeys: latticeKeys,
+    pathMics: pathMics,
+    orderShown: orderShown,
+    surfaceShown: surfaceShown,
+    pathOpacity: pathOpacity,
+    pathHover: pathHover,
     wallColor: wallColor,
     colorKey: colorKey,
     fadeGain: fadeGain,

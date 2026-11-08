@@ -1,4 +1,4 @@
-/* 2011 Room Reverb — Lattice / In-room paths / Last-legs */
+/* 2011 Room Reverb — Lattice toggle and path cycle. Display only. */
 (function (global) {
   "use strict";
 
@@ -70,6 +70,11 @@
 
     env.root = new env.THREE.Group(); env.scene.add(env.root);
     env.mode = "lattice";
+    env.lattice = true;
+    env.paths = 0;
+    env.order = 0;
+    env.mic = "all";
+    env.polyFaces = null;
     env.data = null;
     env.fadeRows = {};
     env.fadeMats = [];
@@ -119,7 +124,18 @@
 
     env.api = {
       setMode: function (m) {
-        env.mode = (m === "legs") ? "legs" : (m === "paths" ? "paths" : "lattice");
+        env.lattice = m !== "paths" && m !== "legs";
+        env.paths = (m === "paths" || m === "legs") ? 2 : 0;
+        env.mode = env.lattice ? "lattice" : "paths";
+        enter(env, rebuild);
+      },
+      setSpace: function (view) {
+        view = view || {};
+        if (view.lattice != null) env.lattice = !!view.lattice;
+        if (view.paths != null) env.paths = view.paths | 0;
+        if (view.order != null) env.order = Number(view.order) || 0;
+        if (view.mic != null) env.mic = String(view.mic || "all");
+        env.mode = env.lattice ? "lattice" : "paths";
         enter(env, rebuild);
       },
       setData: function (d) { env.data = d; enter(env, rebuild); },
@@ -385,6 +401,7 @@
       }
       one("a", [env.data.source.x, env.data.source.y, env.data.source.z]);
       if (env.data.source_b) one("b", [env.data.source_b.x, env.data.source_b.y, env.data.source_b.z]);
+      env.polyFaces = (packs[0] && packs[0].pack && packs[0].pack.faces) || [];
       var keys = env.shownRooms.map(function (row) { return row.key; });
       var now = nowMs();
       env.fadeRows = RoomDraw.stepFade(env.fadeRows, RoomDraw.latticeKeys(env.mode, keys), now);
@@ -404,7 +421,7 @@
       var got = takeSplay();
       var room = env.data.room;
       Object.keys(env.fadeRows).forEach(function (key) {
-        /* Box hides the lattice on Paths and Last legs. One home shell. */
+        /* Lattice off keeps the home shell. */
         if (env.mode !== "lattice" && key !== "a:home") return;
         var rec = env.roomCache[key];
         if (!rec) return;
@@ -448,34 +465,6 @@
         var spr = enter(env, makeLabel, named[0], named[1]);
         spr.position.set(tp.x, tp.y, tp.z);
         env.root.add(spr);
-      });
-    }
-  function addSplayPathLines(lastOnly) { var env = envStack[envStack.length - 1];
-      var room = env.data.room;
-      var selected = env.data.selected_mics || ["C"];
-      selected.forEach(function (micId) {
-        env.shownRooms.forEach(function (row) {
-          var rec = row.rec;
-          if (!rec || !rec.heard[micId]) return;
-          var path = rec.heard[micId];
-          var ends = lastOnly ? [path[path.length - 2], path[path.length - 1]] : path;
-          if (!ends[0] || !ends[1]) return;
-          var pts = ends.map(function (p) { return { x: p[0], y: p[1], z: p[2] }; });
-          var force = row.prefix === "b" ? SRC_B : null;
-          var col = force != null ? force : (rec.key === "home" ? SRC : (rec.order % 2 === 0 ? POL_POS : POL_NEG));
-          var base = rec.key === "home"
-            ? (lastOnly ? 1 : 0.95)
-            : (lastOnly ? (0.4 + 0.35 / (1 + rec.order)) : (0.35 + 0.4 / (1 + rec.order)));
-          if (force != null && rec.key !== "home") base *= 0.75;
-          env.root.add(enter(env, linePts, pts, col, base));
-          if (lastOnly) {
-            var mark = enter(env, marker, col, 0.045);
-            var tp = enter(env, mapPt, pts[0], room.L);
-            mark.position.set(tp.x, tp.y, tp.z);
-            env.root.add(mark);
-          }
-          enter(env, rememberHit, { order: rec.order, is_direct: rec.key === "home", polarity: rec.order % 2 === 0 ? 1 : -1 }, pts, micId);
-        });
       });
     }
   function perMicTaps(d, micId) { var env = envStack[envStack.length - 1];
@@ -630,108 +619,163 @@
         env.pathHits.push({ x: q.x, y: q.y, z: q.z, tap: tap, mic: micId });
       });
     }
-  function fmtDb(v) { var env = envStack[envStack.length - 1];
-      if (v == null || !isFinite(Number(v))) return "—";
-      var n = Number(v);
-      return (n >= 0 ? "+" : "−") + Math.abs(n).toFixed(1) + " dB";
+  function pathMicIds() { var env = envStack[envStack.length - 1];
+      var selected = (env.data && env.data.selected_mics) || ["C"];
+      if (!global.RoomDraw || !RoomDraw.pathMics) return selected;
+      return RoomDraw.pathMics(selected, env.mic);
     }
-  function fmtDeg(v) { var env = envStack[envStack.length - 1];
-      if (v == null || !isFinite(Number(v))) return "—";
-      return Math.round(Number(v)) + "°";
+  function tapOn(t) { var env = envStack[envStack.length - 1];
+      if (!global.RoomDraw || !RoomDraw.orderShown) return true;
+      var st = sceneState() || {};
+      if (!RoomDraw.orderShown(t && t.order, env.order, !!(t && t.is_direct))) return false;
+      return RoomDraw.surfaceShown(t && t.hit_surfaces, st.surfaces_solo, st.surfaces_mute);
     }
-  function buildPaths() { var env = envStack[envStack.length - 1];
-      if (!env.data) return;
-      env.pathHits = [];
-      clearRoot();
-      if (isPoly()) {
-        addSplayShell(env.data.room);
-        addSplayPathLines(false);
-        addActors(env.data.source, env.data.mics, env.data.selected_mics || ["C"]);
-        fitIfNeeded(false);
-        return;
+  function levelOpacity(dist, isDirect, dim) { var env = envStack[envStack.length - 1];
+      var op = (global.RoomDraw && RoomDraw.pathOpacity) ? RoomDraw.pathOpacity(dist, isDirect) : (isDirect ? 0.95 : 0.45);
+      if (dim && !isDirect) op *= 0.75;
+      return op;
+    }
+  function coord(p, name, index) { var env = envStack[envStack.length - 1];
+      if (p == null) return 0;
+      if (typeof p[name] === "number") return p[name];
+      if (Array.isArray(p) || typeof p[index] === "number") return Number(p[index]) || 0;
+      return 0;
+    }
+  function dist3(a, b) { var env = envStack[envStack.length - 1];
+      var dx = coord(a, "x", 0) - coord(b, "x", 0);
+      var dy = coord(a, "y", 1) - coord(b, "y", 1);
+      var dz = coord(a, "z", 2) - coord(b, "z", 2);
+      return Math.sqrt(dx * dx + dy * dy + dz * dz);
+    }
+  function lettersOf(rec) { var env = envStack[envStack.length - 1];
+      var faces = env.polyFaces || [];
+      var out = [];
+      var seq = (rec && rec.seq) || [];
+      var i;
+      for (i = 0; i < seq.length; i++) {
+        var face = faces[seq[i]];
+        var letter = face && face.letter;
+        if (!letter || out.indexOf(letter) >= 0) continue;
+        out.push(letter);
       }
-      env.drawnCount = null;
+      return out;
+    }
+  function polyTap(rec, mic, letters) { var env = envStack[envStack.length - 1];
+      var d = dist3(rec.pos, mic);
+      var c = (env.data && env.data.c) || 340;
+      return {
+        order: rec.order,
+        is_direct: !rec.order,
+        delay_ms: (d / c) * 1000,
+        dist_m: d,
+        hit_surfaces: letters
+      };
+    }
+  function micPoint(mic) { var env = envStack[envStack.length - 1];
+      return { x: mic.x, y: mic.y, z: mic.z };
+    }
+  function addHemis(selected) { var env = envStack[envStack.length - 1];
       var room = env.data.room;
-      addRoomShell(room);
-      var selected = env.data.selected_mics || ["C"];
-      function addPathSet(taps, force, micId) {
-        (taps || []).forEach(function (t) {
-          if (!t.path || t.path.length < 2) return;
-          var col = force != null ? force : (t.is_direct ? SRC : (t.polarity > 0 ? POL_POS : POL_NEG));
-          var op = t.is_direct ? 0.95 : 0.35 + 0.4 / (1 + t.order);
-          if (force != null && !t.is_direct) op *= 0.75;
-          env.root.add(enter(env, linePts, t.path, col, op));
-          enter(env, rememberHit, t, t.path, micId);
-        });
-      }
       selected.forEach(function (micId) {
-        addPathSet(enter(env, perMicTaps, env.data, micId), null, micId);
-        if (env.data.per_mic_b) addPathSet(env.data.per_mic_b[micId] || [], SRC_B, micId);
+        var mic = env.data.mics && env.data.mics[micId];
+        if (!mic) return;
+        var hemi = new env.THREE.Mesh(
+          new env.THREE.SphereGeometry(0.55, 24, 16, 0, Math.PI * 2, 0, Math.PI * 0.5),
+          new env.THREE.MeshBasicMaterial({ color: MIC_COLORS[micId], transparent: true, opacity: 0.08, side: env.THREE.DoubleSide, depthWrite: false })
+        );
+        hemi.position.set(mic.x, mic.y, worldZ(mic.z, room.L));
+        env.root.add(hemi);
       });
-      addActors(env.data.source, env.data.mics, selected);
-      fitIfNeeded(false);
     }
-  function buildLegs() { var env = envStack[envStack.length - 1];
-      if (!env.data) return;
-      env.pathHits = [];
-      clearRoot();
-      if (isPoly()) {
-        addSplayShell(env.data.room);
-        addSplayPathLines(true);
-        var selected = env.data.selected_mics || ["C"];
-        selected.forEach(function (micId) {
-          var mic = env.data.mics[micId];
-          if (!mic) return;
-          var hemi = new env.THREE.Mesh(
-            new env.THREE.SphereGeometry(0.55, 24, 16, 0, Math.PI * 2, 0, Math.PI * 0.5),
-            new env.THREE.MeshBasicMaterial({ color: MIC_COLORS[micId], transparent: true, opacity: 0.08, side: env.THREE.DoubleSide, depthWrite: false })
-          );
-          hemi.position.set(mic.x, mic.y, enter(env, worldZ, mic.z, env.data.room.L));
-          env.root.add(hemi);
-        });
-        addActors(env.data.source, env.data.mics, selected);
-        fitIfNeeded(false);
-        return;
-      }
-      env.drawnCount = null;
+  function addTapPaths(taps, force, micId, mic, folded) { var env = envStack[envStack.length - 1];
+      (taps || []).forEach(function (t) {
+        if (!tapOn(t)) return;
+        var col = force != null ? force : (t.is_direct ? SRC : (t.polarity > 0 ? POL_POS : POL_NEG));
+        var op = levelOpacity(t.dist_m, t.is_direct, force != null);
+        if (!folded) {
+          var xyz = imageXyz(t);
+          if (!xyz || !mic) return;
+          var ray = [xyz, micPoint(mic)];
+          env.root.add(enter(env, linePts, ray, col, op));
+          enter(env, rememberHit, t, ray, micId);
+          return;
+        }
+        if (!t.path || t.path.length < 2) return;
+        env.root.add(enter(env, linePts, t.path, col, op));
+        enter(env, rememberHit, t, t.path, micId);
+        var leg = t.last_leg || t.lastLeg || t.leg;
+        var ends = enter(env, legEnds, leg);
+        if (!ends) return;
+        var mark = enter(env, marker, col, 0.045);
+        var tp = enter(env, mapPt, ends[0], env.data.room.L);
+        mark.position.set(tp.x, tp.y, tp.z);
+        env.root.add(mark);
+      });
+    }
+  function addPolyPaths(selected, folded) { var env = envStack[envStack.length - 1];
       var room = env.data.room;
-      addRoomShell(room);
-      var selected = env.data.selected_mics || ["C"];
-      function addLegSet(taps, force, micId) {
-        (taps || []).forEach(function (t) {
-          var leg = t.last_leg || t.lastLeg || t.leg; if (!leg) return;
-          var ends = enter(env, legEnds, leg); if (!ends) return;
-          var col = force != null ? force : (t.is_direct ? SRC : (t.polarity > 0 ? POL_POS : POL_NEG));
-          var op = t.is_direct ? 1.0 : 0.4 + 0.35 / (1 + t.order);
-          if (force != null && !t.is_direct) op *= 0.75;
-          env.root.add(enter(env, linePts, ends, col, op));
+      selected.forEach(function (micId) {
+        var mic = env.data.mics && env.data.mics[micId];
+        if (!mic) return;
+        (env.shownRooms || []).forEach(function (row) {
+          var rec = row.rec;
+          if (!rec) return;
+          var letters = enter(env, lettersOf, rec);
+          var tap = enter(env, polyTap, rec, mic, letters);
+          if (!tapOn(tap)) return;
+          var force = row.prefix === "b";
+          var col = force ? SRC_B : (rec.key === "home" ? SRC : (rec.order % 2 === 0 ? POL_POS : POL_NEG));
+          var op = levelOpacity(tap.dist_m, tap.is_direct, force);
+          if (!folded) {
+            var ray = [rec.pos, micPoint(mic)];
+            env.root.add(enter(env, linePts, ray, col, op));
+            enter(env, rememberHit, tap, ray, micId);
+            return;
+          }
+          var path = rec.heard && rec.heard[micId];
+          if (!path || path.length < 2) return;
+          var pts = path.map(function (p) { return { x: p[0], y: p[1], z: p[2] }; });
+          env.root.add(enter(env, linePts, pts, col, op));
+          enter(env, rememberHit, tap, pts, micId);
           var mark = enter(env, marker, col, 0.045);
-          var tp = enter(env, mapPt, ends[0], room.L);
+          var tp = enter(env, mapPt, pts[pts.length - 2], room.L);
           mark.position.set(tp.x, tp.y, tp.z);
           env.root.add(mark);
-          enter(env, rememberHit, t, ends, micId);
         });
+      });
+    }
+  function addPathLayer() { var env = envStack[envStack.length - 1];
+      if (!env.data || !env.paths) return;
+      var selected = pathMicIds();
+      var folded = env.paths === 2;
+      if (isPoly()) {
+        addPolyPaths(selected, folded);
+        if (folded) addHemis(selected);
+        return;
       }
       selected.forEach(function (micId) {
-        var mic = env.data.mics[micId];
-        addLegSet(enter(env, perMicTaps, env.data, micId), null, micId);
-        if (env.data.per_mic_b) addLegSet(env.data.per_mic_b[micId] || [], SRC_B, micId);
-        if (mic) {
-          var hemi = new env.THREE.Mesh(
-            new env.THREE.SphereGeometry(0.55, 24, 16, 0, Math.PI * 2, 0, Math.PI * 0.5),
-            new env.THREE.MeshBasicMaterial({ color: MIC_COLORS[micId], transparent: true, opacity: 0.08, side: env.THREE.DoubleSide, depthWrite: false })
-          );
-          hemi.position.set(mic.x, mic.y, enter(env, worldZ, mic.z, room.L));
-          env.root.add(hemi);
-        }
+        var mic = env.data.mics && env.data.mics[micId];
+        addTapPaths(enter(env, perMicTaps, env.data, micId), null, micId, mic, folded);
+        if (env.data.per_mic_b) addTapPaths(env.data.per_mic_b[micId] || [], SRC_B, micId, mic, folded);
       });
-      addActors(env.data.source, env.data.mics, selected);
+      if (folded) addHemis(selected);
+    }
+  function buildHome() { var env = envStack[envStack.length - 1];
+      env.pathHits = [];
+      hideTip();
+      if (!env.data) return;
+      clearRoot();
+      env.drawnCount = null;
+      addRoomShell(env.data.room);
+      addActors(env.data.source, env.data.mics, env.data.selected_mics || ["C"]);
       fitIfNeeded(false);
     }
   function rebuild() { var env = envStack[envStack.length - 1];
+      env.mode = env.lattice === false ? "paths" : "lattice";
+      if (!env.data) { env.needsRender = true; return; }
       if (env.mode === "lattice") buildLattice();
-      else if (env.mode === "paths") buildPaths();
-      else buildLegs();
+      else buildHome();
+      if (env.paths) addPathLayer();
       env.needsRender = true;
     }
   function resize() { var env = envStack[envStack.length - 1];
@@ -759,7 +803,7 @@
     }
   function hideTip() { var env = envStack[envStack.length - 1]; env.tip.hidden = true; }
   function hoverPath(evt) { var env = envStack[envStack.length - 1];
-      if (env.mode === "lattice" || env.orbiting || env.panning || !env.pathHits.length) { hideTip(); return; }
+      if (!env.paths || env.orbiting || env.panning || !env.pathHits.length) { hideTip(); return; }
       updateCamera();
       var rect = env.canvas.getBoundingClientRect();
       var mx = evt.clientX - rect.left;
@@ -778,12 +822,9 @@
       }
       if (!best) { hideTip(); return; }
       var t = best.h.tap || {};
-      var order = t.order != null ? t.order : "—";
+      t.mic = best.h.mic || t.mic;
       env.tip.hidden = false;
-      env.tip.textContent = (t.is_direct ? "Direct" : ("Image order " + order)) +
-        " · mic " + (best.h.mic || "") +
-        "\naz " + fmtDeg(t.src_az_deg) + "   el " + fmtDeg(t.src_el_deg) +
-        "\n1 kHz " + fmtDb(t.src_db_1k) + "   4 kHz " + fmtDb(t.src_db_4k);
+      env.tip.textContent = (global.RoomDraw && RoomDraw.pathHover) ? RoomDraw.pathHover(t) : "";
       env.tip.style.left = Math.round(best.sx + 12) + "px";
       env.tip.style.top = Math.round(best.sy + 12) + "px";
     }

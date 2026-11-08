@@ -612,7 +612,8 @@ def test_a12_visible_controls_post_or_are_ui_only(audit_server):
                 if (el.closest('#polarToggles') || el.closest('#micToggles')) return true;
                 if (el.classList.contains('polar-band')) return true;
                 if (el.closest('#polarExtras') || el.closest('#polarBandKey')) return true;
-                if (el.getAttribute('data-space-mode')) return true;
+                if (el.getAttribute('data-space-mode') || el.getAttribute('data-path-mic')) return true;
+                if (el.id === 'spaceLatticeBtn' || el.id === 'spacePathsBtn' || el.id === 'spaceOrderBtn') return true;
                 if (el.getAttribute('data-polar-page')) return true;
                 if (el.getAttribute('data-src-freq') || el.getAttribute('data-src-plane')) return true;
                 if (el.getAttribute('data-plane')) return true;
