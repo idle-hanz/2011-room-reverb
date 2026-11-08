@@ -42,6 +42,8 @@ test("3D readout is distance, angle, height, 1/r level and delay", () => {
   assert.match(text, /dB/);
   assert.match(text, /h 1\.20 m/);
   assert.match(transport, /RoomDraw\.micReadout/);
+  assert.match(transport, /window\.RoomDraw/);
+  assert.doesNotMatch(transport, /global\.RoomDraw/);
   assert.match(transport, /liveMetres3d\.textContent/);
   assert.doesNotMatch(transport, /state\.readout/);
 });

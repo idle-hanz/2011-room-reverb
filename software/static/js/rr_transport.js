@@ -297,7 +297,7 @@ function syncUINow() {
       " @ " + fmt(geo.source_b.y) + " m";
   }
   if (liveMetres) liveMetres.textContent = readout;
-  if (liveMetres3d && global.RoomDraw && RoomDraw.micReadout && RoomDraw.formatMicReadout) {
+  if (liveMetres3d && window.RoomDraw && RoomDraw.micReadout && RoomDraw.formatMicReadout) {
     var speed = 340;
     liveMetres3d.textContent = [
       ["L", geo.mic_left],
