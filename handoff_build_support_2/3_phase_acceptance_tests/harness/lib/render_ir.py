@@ -31,7 +31,7 @@ kw = dict(
     mic_response_hz=p.get("mic_response_hz") or 10000.0,
     ms_decode=bool(p.get("ms_decode")), capsule_mm=p.get("capsule_mm") or 17.0, surfaces=p.get("surfaces"),
     diffusion_seed=p["diffusion_seed"], lambda_ref=p["lambda_ref"], humidity=p.get("humidity") or 0.0,
-    air_lp=p.get("air_lp") if p.get("air_lp") is not None else 0.25,
+    air_lp=p.get("air_lp") if p.get("air_lp") is not None else 0.0,
     air_shelf=p.get("air_shelf") if p.get("air_shelf") is not None else 1.0,
     reaktor_parity=bool(p.get("reaktor_parity")),
     air_climate=str(p.get("air_climate") or "studio_20C_50RH"),
