@@ -18,7 +18,7 @@ import numpy as np
 ROOT = Path(__file__).resolve().parents[2]
 SW = ROOT / "software"
 LIB = ROOT / "handoff_build_support_2" / "3_phase_acceptance_tests" / "harness" / "lib"
-PRE = Path(r"C:\Users\IdleHanz\AppData\Local\Temp\s_audit_b3_pre")
+PRE = Path(__file__).resolve().parent / "data"
 REPORT = ROOT / "handoff_build_support_2" / "research_ui_wishlist" / "s_audit" / "b3_gates.json"
 PY = sys.executable
 SR = 48000
