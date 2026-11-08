@@ -113,6 +113,10 @@
         env.drag = {
           kind: "wall",
           canvas: "floor",
+          face: faceLetter(wallHit),
+          downX: p.x,
+          downY: p.y,
+          moved: false,
           ctx: global.RRDrag.beginWallDrag(env.getState(), wallHit, env.fl, p.x, p.y)
         };
         env.floorCanvas.classList.add("dragging");
@@ -129,28 +133,18 @@
       env.lastDragged = (kind === "mic") ? "mic"
         : (kind === "sourceB" || kind === "srcBYaw" || kind === "srcBSize") ? "sourceB"
         : "source";
-      env.drag = { kind: kind, canvas: "floor" };
+      const facingKind = kind === "srcYaw" || kind === "srcBYaw" || kind === "srcSize" || kind === "srcBSize";
+      env.drag = {
+        kind: kind,
+        canvas: "floor",
+        downX: p.x,
+        downY: p.y,
+        moved: false,
+        face: (!onHandle && !facingKind) ? "E" : ""
+      };
       env.floorCanvas.classList.add("dragging");
       try { env.floorCanvas.setPointerCapture(evt.pointerId); } catch (e) {}
-      const facingKind = kind === "srcYaw" || kind === "srcBYaw" || kind === "srcSize" || kind === "srcBSize";
-      if (!onHandle && !facingKind) {
-        /* Empty floor: move selected object to click, then drag */
-        const m = enter(env, toM, p.x, p.y, env.fl);
-        const st = Object.assign({}, env.getState());
-        if (kind === "sourceB") {
-          st.mirror_b = false;
-          st.sx_b = RoomMath.clamp(m.x, 0, st.W);
-          st.sz_b = RoomMath.clamp(m.z, 0, st.L);
-        } else if (kind === "source") {
-          st.sx = RoomMath.clamp(m.x, 0, st.W);
-          st.sz = RoomMath.clamp(m.z, 0, st.L);
-        } else {
-          st.mcx = RoomMath.clamp(m.x, 0, st.W);
-          st.mcz = RoomMath.clamp(m.z, 0, st.L);
-        }
-        env.setState(RoomMath.clampRoom(st));
-        env.onChange();
-      }
+      /* A still click selects the floor. A drag moves the object. */
       enter(env, redraw);
       evt.preventDefault();
     });
@@ -169,6 +163,7 @@
           return;
         }
         if (env.drag.kind === "wall" && global.RRDrag && env.drag.ctx) {
+          noteFaceMove(env.drag, p.x, p.y);
           const res = global.RRDrag.wallDragTo(env.drag.ctx, p.x, p.y, { shift: !!evt.shiftKey, mode: "stop" });
           env.drag.view = enter(env, viewForPatch, env.drag.ctx.lay, env.drag.ctx.s0, res.patch);
           enter(env, mergePatch, res.patch);
@@ -208,6 +203,10 @@
           env.onChange();
           enter(env, redraw);
           return;
+        }
+        if (env.drag.face === "E") {
+          noteFaceMove(env.drag, p.x, p.y);
+          if (!env.drag.moved) return;
         }
         const m = enter(env, toM, p.x, p.y, env.fl);
         const st = Object.assign({}, st0);
@@ -263,8 +262,20 @@
         env.drag = {
           kind: "ceiling",
           canvas: "elev",
+          face: faceLetter(ceilHit),
+          downX: p.x,
+          downY: p.y,
+          moved: false,
           ctx: global.RRDrag.beginWallDrag(env.getState(), ceilHit, env.el, p.x, p.y)
         };
+        env.elevCanvas.classList.add("dragging");
+        try { env.elevCanvas.setPointerCapture(evt.pointerId); } catch (e) {}
+        enter(env, redraw);
+        evt.preventDefault();
+        return;
+      }
+      if (!onHandle && hitFloorEdge(p.x, p.y, env.el)) {
+        env.drag = { kind: "face", canvas: "elev", face: "E", downX: p.x, downY: p.y, moved: false };
         env.elevCanvas.classList.add("dragging");
         try { env.elevCanvas.setPointerCapture(evt.pointerId); } catch (e) {}
         enter(env, redraw);
@@ -305,7 +316,12 @@
       env.el = enter(env, elevLayout, geo);
       const p = enter(env, canvasPos, env.elevCanvas, evt);
       if (env.drag && env.drag.canvas === "elev") {
+        if (env.drag.kind === "face") {
+          noteFaceMove(env.drag, p.x, p.y);
+          return;
+        }
         if (env.drag.kind === "ceiling" && global.RRDrag && env.drag.ctx) {
+          noteFaceMove(env.drag, p.x, p.y);
           const res = global.RRDrag.ceilingDragTo(env.drag.ctx, p.x, p.y, env.el, { shift: !!evt.shiftKey });
           env.drag.view = enter(env, viewForPatch, env.drag.ctx.lay, env.drag.ctx.s0, res.patch);
           enter(env, mergePatch, res.patch);
@@ -1436,13 +1452,44 @@
         if (st.link_heights) st.sy = yy;
       }
     }
+  function faceLetter(hit) {
+      if (!hit || !hit.walls || hit.walls.length !== 1) return "";
+      var w = hit.walls[0];
+      if (w === "x0") return "A";
+      if (w === "x1") return "C";
+      if (w === "z1") return "B";
+      if (w === "z0") return "D";
+      if (w === "y1") return "F";
+      return "";
+    }
+  function hitFloorEdge(px, py, elay) {
+      if (!elay || !isFinite(elay.scale)) return false;
+      var band = 8;
+      var x0 = elay.ox, x1 = elay.ox + elay.L * elay.scale, y = elay.oy + elay.H * elay.scale;
+      if (px < x0 - band || px > x1 + band) return false;
+      return Math.abs(py - y) <= band;
+    }
+  function noteFaceMove(drag, x, y) {
+      if (!drag || drag.downX == null) return;
+      var dx = x - drag.downX, dy = y - drag.downY;
+      if (dx * dx + dy * dy > 16) drag.moved = true;
+    }
+  function selectDiagramFace(letter) {
+      if (!letter) return;
+      var cs = global.RRColourSurfaces;
+      if (!cs || typeof cs.select !== "function") return;
+      cs.select(letter);
+      var tab = document.querySelector('.view-tab[data-view="surfaces"]');
+      if (tab && tab.getAttribute("aria-selected") !== "true") tab.click();
+    }
   function endDrag() { var env = envStack[envStack.length - 1];
       var was = env.drag;
       env.drag = null;
       env.floorCanvas.classList.remove("dragging");
       env.elevCanvas.classList.remove("dragging");
       redraw();
-      if (was) env.onDragEnd();
+      if (was && !was.moved && was.face) selectDiagramFace(was.face);
+      if (was && !(was.kind === "face" && !was.moved)) env.onDragEnd();
     }
   function mergePatch(patch) { var env = envStack[envStack.length - 1];
       const st = Object.assign({}, env.getState(), patch);

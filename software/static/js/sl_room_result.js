@@ -8,8 +8,9 @@
    state.surf_treatment (rows, suggested:false),
    state.surf_suggestions (rows, suggested:true, never posted as treatment),
    state.surf_amount (0–100, missing is 100; scales the post copy, not the stored rows).
-   state.treat_sets_decay (missing is off). On, Surfaces turns Decay lock off so Amount
-   sets the length. Off puts the lock and the dial back. */
+   state.treat_sets_decay (missing is off). Dial sets length keeps it off and the lock on.
+   Room sets length turns it on with Surfaces, and the existing post clears the lock.
+   The graph paint does not render, calibrate, or write surf_cal. */
 (function () {
   "use strict";
   var LETTERS = ["A", "B", "C", "D", "E", "F"];
@@ -22,6 +23,8 @@
   /* Build stage: 1 = SL1 (Surfaces chip greyed "coming", no Treatment / Auto-treat), 2-4 = Surfaces chip live,
      5 = + Treatment list, 6 = + Auto-treat (all, as proved on the box). The panel is always that full stage. */
   var view = { band: true, ebu: false, last: null, busy: false, timer: 0, plan: null };
+  /* Previous treatment rows while Accept is showing Undo. Not a scene key. */
+  var undoRows = null;
 
   function st() { return window.RRState || null; }
   function cs() { return window.RRColourSurfaces || null; }
@@ -54,14 +57,17 @@
     panel.appendChild(head);
     var mode = el("div", "sl-mode"); mode.id = "slDecayMode";
     mode.appendChild(el("span", "sl-label", "Decay"));
-    [["flat", "Flat (2011)"], ["surfaces", "Surfaces"], ["natural", "Natural (air)"]].forEach(function (m) {
+    [["flat", "Dial sets length"], ["surfaces", "Room sets length"], ["natural", "Natural (air)"]].forEach(function (m) {
       var b = el("button", "chip", m[1]); b.type = "button"; b.dataset.mode = m[0]; b.id = "slMode_" + m[0];
       if (m[0] === "natural") { b.disabled = true; b.title = "Built in SL7a (ST-1/ST-2)"; }
-      if (m[0] === "surfaces") b.title = "Surfaces in Play";
+      if (m[0] === "flat") b.title = "The decay dial sets the length. The lock stays on.";
+      if (m[0] === "surfaces") b.title = "Materials and treatment set the length.";
       b.addEventListener("click", function () {
         var s = st(); if (!s || b.disabled) return;
         var enter = m[0] === "surfaces" && s.decay_mode !== "surfaces";
         s.decay_mode = m[0];
+        /* One switch. Dial is flat with the lock. Room is Surfaces and the lock comes off on the post. */
+        s.treat_sets_decay = m[0] === "surfaces";
         /* Surfaces is the room average. Calibrate is what turns directional on. */
         if (m[0] !== "surfaces") s.surf_directional = false;
         paintMode(enter); schedule();
@@ -74,7 +80,7 @@
     cal.hidden = true;
     cal.addEventListener("click", function () { calibrate(); });
     mode.appendChild(cal);
-    mode.appendChild(el("span", "hint", "Surfaces = the materials and treatment set the decay per band. Surfaces in Play."));
+    mode.appendChild(el("span", "hint", "Dial keeps the decay lock. Room turns the lock off and the materials set the length."));
     panel.appendChild(mode);
     var cv = el("canvas"); cv.id = "slRtCanvas"; cv.width = 760; cv.height = 230; cv.setAttribute("aria-label", "Decay time per third octave");
     panel.appendChild(cv);
@@ -86,14 +92,12 @@
     });
     var ro = el("span", "sl-readout"); ro.id = "slReadout"; tog.appendChild(ro);
     panel.appendChild(tog);
-    // Auto-treat
+    // Auto-treat. One button. The fetch only fills the suggestion list. Accept writes it.
     var at = el("div", "sl-autotreat"); at.id = "slAutoTreat";
-    var btn = el("button", "chip sl-primary", "Auto-treat to"); btn.type = "button"; btn.id = "slAutoBtn";
-    var tm = el("input"); tm.type = "number"; tm.id = "slAutoTmid"; tm.min = "0.15"; tm.max = "6"; tm.step = "0.05"; tm.value = dialS().toFixed(2);
-    tm.title = "Defaults to the decay dial (SURFACES_IN_LOOP: Auto-treat to target T_mid = [dial])";
-    tm.addEventListener("input", function () { tm.dataset.user = "1"; });
-    var ebu = el("button", "chip", "EBU control room"); ebu.type = "button"; ebu.id = "slAutoEbu";
-    at.appendChild(btn); at.appendChild(tm); at.appendChild(el("span", "sl-unit", "s T_mid")); at.appendChild(ebu);
+    var btn = el("button", "chip sl-primary", "Accept auto-treat"); btn.type = "button"; btn.id = "slAutoBtn";
+    btn.title = "Writes the suggested rows. Press again to restore the previous rows.";
+    at.appendChild(btn);
+    at.appendChild(el("span", "hint", "Nothing is written until Accept. Press again to restore the previous rows."));
     var amtLab = el("span", "sl-label", "Amount");
     var amt = el("input");
     amt.type = "range"; amt.id = "slAutoAmount"; amt.min = "0"; amt.max = "100"; amt.step = "1";
@@ -101,16 +105,7 @@
     amt.title = "Scales accepted treatment. The room shell stays. 100% posts the stored calibration.";
     var amtOut = el("span", "sl-unit"); amtOut.id = "slAutoAmountOut"; amtOut.textContent = Math.round(amountOf()) + "%";
     at.appendChild(amtLab); at.appendChild(amt); at.appendChild(amtOut);
-    var sw = el("label", "sl-label"); sw.id = "slTreatDecay";
-    sw.title = "On, Decay lock turns off and Amount sets the length. Off puts the lock back.";
-    var box = el("input"); box.type = "checkbox"; box.id = "slTreatDecayBox";
-    box.checked = setsDecay();
-    sw.appendChild(box);
-    sw.appendChild(document.createTextNode(" Treatment sets decay"));
-    at.appendChild(sw);
-    at.appendChild(el("span", "hint", "Suggests rows only. Nothing changes until you Accept."));
-    btn.addEventListener("click", function () { autoTreat(Number(tm.value)); });
-    ebu.addEventListener("click", function () { autoTreat("ebu"); });
+    btn.addEventListener("click", function () { autoTreat(); });
     /* A drag updates the model graph only. Play posts once, on pointer release.
        change covers a keyboard step and is skipped while the pointer is down. */
     var amountDrag = false;
@@ -139,13 +134,6 @@
       if (amountPosted) { amountPosted = false; return; }
       postAmount();
     });
-    box.addEventListener("change", function () {
-      var s = st(); if (!s) return;
-      s.treat_sets_decay = !!box.checked;
-      syncTreatDecay();
-      schedule();
-      if (window.RRPushLive) window.RRPushLive();
-    });
     panel.appendChild(at);
     var ln = el("p", "hint sl-locknote"); ln.id = "slLockNote"; ln.hidden = true; panel.appendChild(ln);
     var sg = el("div", "sl-suggest"); sg.id = "slSuggest"; panel.appendChild(sg);
@@ -157,7 +145,7 @@
     var tr = el("div", "sl-treat"); tr.id = "slTreatment";
     (det || host).insertBefore(tr, det ? det.querySelector(".surfaces-advanced") : null);
     hookSelect();
-    paintMode(); paintToggles(); paintRows(); paintSuggest();
+    paintMode(); paintToggles(); paintRows(); paintSuggest(); paintAutoBtn();
     return true;
   }
 
@@ -207,7 +195,7 @@
   }
   function syncTreatDecay() {
     var s = st(); if (!s) return;
-    var force = !!(s.treat_sets_decay && s.decay_mode === "surfaces");
+    var force = !!(setsDecay() && s.decay_mode === "surfaces");
     if (force) {
       if (!held) held = { decay_lock: !!s.decay_lock, decay_s: Number(s.decay_s) };
       s.decay_lock = false;
@@ -219,8 +207,6 @@
       if (window.RRNoteDecayUser) window.RRNoteDecayUser(false);
     }
     if (window.RRPaintDecay) window.RRPaintDecay();
-    var box = document.getElementById("slTreatDecayBox");
-    if (box && document.activeElement !== box) box.checked = setsDecay();
   }
   function amountOf() {
     var s = st();
@@ -342,15 +328,34 @@
   }
 
   /* ---------------------------------------------------------------- Auto-treat */
-  function autoTreat(tmid) {
+  function paintAutoBtn() {
+    var b = document.getElementById("slAutoBtn");
+    if (!b) return;
+    b.textContent = undoRows ? "Undo auto-treat" : "Accept auto-treat";
+  }
+  function autoTreat() {
     var s = st(); if (!s) return;
+    if (undoRows) {
+      s.surf_treatment = undoRows;
+      undoRows = null;
+      sugg().length = 0;
+      paintSuggest();
+      paintAutoBtn();
+      pushRows();
+      return;
+    }
     flash("Auto-treat\u2026");
-    post("/api/room/treat", { t_mid: tmid }).then(function (d) {
-      view.plan = d;
-      var L = sugg(); L.length = 0;
-      (d.suggested || []).forEach(function (r) { L.push(r); });
-      if (tmid === "ebu") { var t = document.getElementById("slAutoTmid"); if (t) { t.value = String(d.t_mid); t.dataset.user = "1"; } }
-      paintSuggest(); flash("");
+    post("/api/room/treat", { t_mid: dialS() }).then(function (d) {
+      view.plan = d || {};
+      var L = sugg();
+      L.length = 0;
+      ((d && d.suggested) || []).forEach(function (r) { L.push(r); });
+      /* The suggestion list is not the scene. Accept is what writes rows. */
+      if (!L.length) { paintSuggest(); paintAutoBtn(); flash("No rows suggested."); return; }
+      undoRows = JSON.parse(JSON.stringify(rows()));
+      accept(L.slice());
+      paintAutoBtn();
+      flash("");
     }).catch(function (e) { flash(String(e)); });
   }
   function accept(list) {
@@ -467,6 +472,7 @@
     return "hsl(" + Math.round(0 + t * 280) + ",80%,55%)";
   }
   function draw() {
+    /* Paint only. Does not render, calibrate, or store a calibration list. */
     var cv = document.getElementById("slRtCanvas"), d = view.last; if (!cv || !d) return;
     var g = cv.getContext("2d"), W = cv.width, H = cv.height, l = 56, r = 12, t = 12, b = 30;
     var css = getComputedStyle(document.body);

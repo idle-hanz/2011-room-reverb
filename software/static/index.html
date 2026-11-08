@@ -6,7 +6,7 @@
   <title>2011 Room Reverb</title>
   <link rel="icon" href="/static/favicon.svg" type="image/svg+xml" />
   <link rel="stylesheet" href="/static/css/app.css?v=45" />
-  <link rel="stylesheet" href="/static/css/sl_room_result.css?v=2" />
+  <link rel="stylesheet" href="/static/css/sl_room_result.css?v=3" />
   <link rel="stylesheet" href="/static/css/rr_controls.css?v=1" />
 </head>
 <body>
@@ -59,7 +59,7 @@
             <div class="panel map-panel">
               <div class="panel-head">
                 <h2>Floor plan</h2>
-                <span class="hint">Looking down from ceiling · bottom = Back / mic · top = Front / source · Left = −X · drag a wall or corner to resize</span>
+                <span class="hint">Looking down from ceiling · bottom = Back / mic · top = Front / source · Left = −X · click a wall or the floor to edit that face · drag a wall or corner to resize</span>
               </div>
               <div class="tool-row">
                 <label class="link-heights" title="When on, source height and mic height stay equal">
@@ -90,7 +90,7 @@
           <div class="panel elev-panel">
             <div class="panel-head">
               <h2>Side elevation</h2>
-              <span class="hint">Looking from the right · mic left · source right · drag Src H / Mic H · drag the ceiling to resize</span>
+              <span class="hint">Looking from the right · mic left · source right · drag Src H / Mic H · click the floor line or the ceiling to edit that face · drag the ceiling to resize</span>
             </div>
             <div class="canvas-wrap diagram-frame" id="elevFrame">
               <button type="button" class="diagram-expand" aria-label="Enlarge side elevation">Enlarge</button>
@@ -502,14 +502,14 @@
                     <canvas id="absorbCanvas" width="520" height="160" aria-label="Absorb curve"></canvas>
                     <div class="absorb-sliders" id="absorbSliders"></div>
                   </div>
+                </div>
+                <details class="surfaces-advanced" id="surfacesAdvanced">
+                  <summary>Advanced</summary>
                   <div class="surf-graph-block">
                     <div class="surf-graph-label">Surface EQ <em>ASSUMED shelves / peak</em></div>
                     <canvas id="eqCanvas" width="520" height="160" aria-label="EQ curve"></canvas>
                     <div class="eq-controls" id="eqControls"></div>
                   </div>
-                </div>
-                <details class="surfaces-advanced" id="surfacesAdvanced">
-                  <summary>Advanced</summary>
                   <div class="diff-split">
                     <div class="diff-group">
                       <p class="diff-group-label">Surfaces</p>
@@ -1101,7 +1101,7 @@
   <script src="/static/js/room_view_pose.js?v=1"></script>
   <script src="/static/js/room_draw.js?v=8"></script>
   <script src="/static/js/room_3d.js?v=27"></script>
-  <script src="/static/js/room_editor.js?v=30"></script>
+  <script src="/static/js/room_editor.js?v=31"></script>
   <script src="/static/js/image_views.js?v=23"></script>
   <script src="/static/js/colour_surfaces.js?v=10"></script>
   <script src="/static/js/polar_field.js?v=18"></script>
@@ -1127,7 +1127,7 @@
   <script src="/static/js/rr_transport.js?v=5"></script>
   <script src="/static/js/rr_settings.js?v=3"></script>
   <script src="/static/js/app.js?v=110"></script>
-  <script src="/static/js/sl_room_result.js?v=10"></script>
+  <script src="/static/js/sl_room_result.js?v=11"></script>
   <script src="/static/js/rr_controls.js?v=1"></script>
   <script src="/static/js/rr_controls_boot.js?v=1"></script>
 </body>

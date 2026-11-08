@@ -137,20 +137,21 @@ test("Surfaces with the switch on posts the lock off and does not invent a dial"
   assert.equal(out.treat_sets_decay, true);
 });
 
-test("Treatment sets decay sits beside Amount and posts Play once", () => {
+test("Dial sets length is the default switch and Room posts the lock", () => {
   const amt = panel.indexOf('amt.id = "slAutoAmount"');
-  const sw = panel.indexOf('sw.id = "slTreatDecay"');
-  assert.ok(amt > 0 && sw > amt);
+  assert.ok(amt > 0);
   assert.equal(panel.includes("SL_STAGE"), false);
-  assert.equal(panel.includes("Treatment sets decay"), true);
+  assert.ok(panel.indexOf('["flat", "Dial sets length"]') < panel.indexOf('["surfaces", "Room sets length"]'));
+  assert.equal(panel.includes('s.treat_sets_decay = m[0] === "surfaces"'), true);
   assert.equal(panel.includes("return !!(s && s.treat_sets_decay);"), true);
-  const changeAt = panel.indexOf('box.addEventListener("change"');
-  const changeEnd = panel.indexOf("panel.appendChild(at)", changeAt);
-  const change = panel.slice(changeAt, changeEnd);
-  assert.equal(change.includes("schedule()"), true);
-  assert.equal(change.includes("if (window.RRPushLive) window.RRPushLive();"), true);
   assert.equal(panel.includes("s.decay_lock = !!held.decay_lock"), true);
   assert.equal(panel.includes("if (!s.treat_sets_decay) held = null"), true);
+  assert.equal(panel.includes("slTreatDecayBox"), false);
+  assert.equal(panel.includes('decay_mode = "surfaces"'), false);
+  assert.equal(panel.includes("treat_sets_decay = true"), false);
+  const draw = panel.slice(panel.indexOf("function draw()"), panel.indexOf("function flash"));
+  assert.equal(draw.includes("surf_cal"), false);
+  assert.equal(draw.includes("calibrate("), false);
   const call = app.indexOf("applyTreatDecay(o);");
   assert.ok(call > app.indexOf("applyTreatAmount(o);"));
   assert.ok(call < app.indexOf("function applyTreatDecay"));

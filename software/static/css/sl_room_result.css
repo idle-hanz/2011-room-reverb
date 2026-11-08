@@ -24,3 +24,5 @@
 .sl-row .sl-area { color: var(--muted); text-align: right; }
 .sl-add { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; margin-top: 6px; }
 .sl-add input[type=number] { width: 4.5em; }
+#surfaceDetail { border: 1px solid rgba(120,200,255,.35); border-radius: 8px; padding: 8px 10px; }
+#surfacesAdvanced .surf-graph-block { margin: 8px 0 12px; }

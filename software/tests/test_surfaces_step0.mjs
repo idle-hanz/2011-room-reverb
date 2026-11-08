@@ -127,12 +127,15 @@ test("Surfaces chip is the room average until Calibrate", () => {
   const { els } = bootPanel(state);
   els.slMode_surfaces._on.click();
   assert.equal(state.decay_mode, "surfaces");
+  assert.equal(state.treat_sets_decay, true);
   assert.equal(state.surf_directional, false);
+  assert.equal(state.surf_cal, undefined);
   state.surf_directional = true;
   els.slMode_surfaces._on.click();
   assert.equal(state.surf_directional, true);
   els.slMode_flat._on.click();
   assert.equal(state.decay_mode, "flat");
+  assert.equal(state.treat_sets_decay, false);
   assert.equal(state.surf_directional, false);
 });
 
