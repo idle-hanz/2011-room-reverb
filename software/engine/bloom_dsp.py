@@ -139,13 +139,13 @@ def wet_gain_db(amount_db_v: float, gr_positive: float, max_duck_db: float, pres
     """Tail gain in dB. gr_positive is the detector's GR (0 or above).
 
     The Bloom law uses GR_dB <= 0, so the sign flips here.
-    Natural and swell: makeup is min(amount, GR), so the tail cannot go above 0 dB.
+    Natural, nuke, and swell: makeup is min(amount, GR), so the tail cannot go above 0 dB.
     """
     gr = -max(0.0, float(gr_positive))
     hi = float(amount_db_v)
     lo = -max(0.0, float(max_duck_db))
     g = hi + gr
-    if preset == "natural" or preset == "swell":
+    if preset == "natural" or preset == "nuke" or preset == "swell":
         if g > 0.0:
             g = 0.0
     elif g > hi:

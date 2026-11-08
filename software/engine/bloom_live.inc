@@ -496,20 +496,23 @@ static double bloom_pre(LiveStereo *st, int bus, double x) {
 
 static void bloom_sample(LiveStereo *st, double x, int t) {
     double gr, wet, hi, lo, g;
+    int pid;
     if (!st->bloomOn) return;
+    pid = (int)(st->bC[0] + 0.5);
+    /* Nuke high-pass is on the signed sample. The caller passed abs.
+       Split stays max(|xA|, |xB|). pendL is the partition this t indexes. */
+    if (pid == 3 && !st->two)
+        x = 0.5 * ((double)st->pendL[t] + (double)st->pendR[t]);
     gr = bloom_gr(st, x);
     hi = st->bC[1];
     lo = -st->bC[2];
     if (lo > 0.0) lo = 0.0;
     wet = hi - gr;
-    /* Natural (pid 0) and swell (pid 4): makeup is min(amount, GR).
+    /* Natural (pid 0), nuke (pid 3), and swell (pid 4): makeup is min(amount, GR).
        The same test as wet_gain_db. Other models keep the amount ceiling. */
-    {
-        int pid = (int)(st->bC[0] + 0.5);
-        if (pid == 0 || pid == 4) {
-            if (wet > 0.0) wet = 0.0;
-        } else if (wet > hi) wet = hi;
-    }
+    if (pid == 0 || pid == 3 || pid == 4) {
+        if (wet > 0.0) wet = 0.0;
+    } else if (wet > hi) wet = hi;
     if (wet < lo) wet = lo;
     g = ls_from_db(wet);
     st->bG[t] = g;
