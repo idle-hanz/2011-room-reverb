@@ -193,20 +193,127 @@ function paintMicSetupLink() {
   link.textContent = "Mic setup: " + name + " ›";
 }
 
+/* Metres from the room centre. A place chip used to write absolute x from wall 0
+   (Hall left mcx at the studio stand), so the stand sat on the left wall. */
+var PLACE_POS_MARGIN = 0.10;
+var PLACE_POS_KEYS = [
+  "sx", "sy", "sz", "mcx", "my", "mcz", "sx_b", "sy_b", "sz_b",
+  "room_x", "room_y", "room_z",
+  "room_l_x", "room_l_y", "room_l_z",
+  "room_c_x", "room_c_y", "room_c_z",
+  "room_r_x", "room_r_y", "room_r_z",
+  "my_l", "my_c", "my_r"
+];
+var PLACE_POS_AXIS = {
+  sx: "W", mcx: "W", sx_b: "W", room_x: "W",
+  room_l_x: "W", room_c_x: "W", room_r_x: "W",
+  sz: "L", mcz: "L", sz_b: "L", room_z: "L",
+  room_l_z: "L", room_c_z: "L", room_r_z: "L",
+  sy: "H", my: "H", sy_b: "H", room_y: "H",
+  room_l_y: "H", room_c_y: "H", room_r_y: "H",
+  my_l: "H", my_c: "H", my_r: "H"
+};
+var placePosStore = {};
+var placeAnchor = null;
+
+function capturePlacePositions(st) {
+  var out = {};
+  var i, k, v;
+  for (i = 0; i < PLACE_POS_KEYS.length; i++) {
+    k = PLACE_POS_KEYS[i];
+    v = st[k];
+    if (v == null || v === "" || !isFinite(Number(v))) continue;
+    out[k] = Number(v);
+  }
+  return out;
+}
+
+function placeBox(st) {
+  return { W: Number(st.W), H: Number(st.H), L: Number(st.L) };
+}
+
+function shiftPlacePos(v, oldSize, newSize) {
+  var next = v - oldSize * 0.5 + newSize * 0.5;
+  if (!(newSize < oldSize)) return next;
+  var lo = PLACE_POS_MARGIN;
+  var hi = newSize - lo;
+  if (!(hi >= lo)) {
+    if (!(newSize > 0)) return next;
+    if (next < 0) return 0;
+    if (next > newSize) return newSize;
+    return next;
+  }
+  if (next < lo) return lo;
+  if (next > hi) return hi;
+  return next;
+}
+
+function mapPlacePositions(captured, oldBox, newBox) {
+  var out = {};
+  var k, axis, oldSize, newSize;
+  for (k in captured) {
+    if (!Object.prototype.hasOwnProperty.call(captured, k)) continue;
+    axis = PLACE_POS_AXIS[k];
+    oldSize = oldBox[axis];
+    newSize = newBox[axis];
+    if (!isFinite(oldSize) || !(oldSize > 0) || !isFinite(newSize) || !(newSize > 0)) continue;
+    out[k] = shiftPlacePos(captured[k], oldSize, newSize);
+  }
+  return out;
+}
+
+function applyPlacePositions(pos) {
+  var k;
+  for (k in pos) {
+    if (Object.prototype.hasOwnProperty.call(pos, k)) state[k] = pos[k];
+  }
+}
+
+function samePlacePositions(a, b) {
+  var i, k, ak, bk;
+  if (!a || !b) return false;
+  for (i = 0; i < PLACE_POS_KEYS.length; i++) {
+    k = PLACE_POS_KEYS[i];
+    ak = Object.prototype.hasOwnProperty.call(a, k);
+    bk = Object.prototype.hasOwnProperty.call(b, k);
+    if (ak !== bk) return false;
+    if (ak && !Object.is(a[k], b[k])) return false;
+  }
+  return true;
+}
+
 function applyPlace(name) {
   placeChosen = true;
+  var fromName = lastPlace || state._place || "";
+  var captured = capturePlacePositions(state);
+  var oldBox = placeBox(state);
+  if (!placeAnchor) placeAnchor = { box: oldBox, pos: captured };
+  if (fromName) {
+    /* A drag updates the anchor. An unmoved chip keeps the anchor, so
+       Club then Studio matches a fresh Studio click exactly. */
+    if (!samePlacePositions(placePosStore[fromName], captured)) {
+      placeAnchor = { box: oldBox, pos: captured };
+    }
+    placePosStore[fromName] = captured;
+  }
   resetToFresh();
   state._place = name;
   lastPlace = name;
   if (name === "hall") {
     applyReaktorSnapshot();
-    return;
+  } else {
+    var p = PLACES[name];
+    if (!p) return;
+    Object.keys(p).forEach(function (k) { state[k] = p[k]; });
+    if (statusEl) statusEl.textContent = name.charAt(0).toUpperCase() + name.slice(1) + " loaded. Play live or Render.";
   }
-  var p = PLACES[name];
-  if (!p) return;
-  Object.keys(p).forEach(function (k) { state[k] = p[k]; });
-  Object.assign(state, RoomMath.clampRoom(state));
+  var pos = placePosStore[name];
+  if (!pos) {
+    pos = mapPlacePositions(placeAnchor.pos, placeAnchor.box, placeBox(state));
+  }
+  applyPlacePositions(pos);
+  if (window.RoomMath && RoomMath.clampRoom) Object.assign(state, RoomMath.clampRoom(state));
+  placePosStore[name] = capturePlacePositions(state);
   syncHadamardUI();
   syncUI();
-  if (statusEl) statusEl.textContent = name.charAt(0).toUpperCase() + name.slice(1) + " loaded. Play live or Render.";
 }

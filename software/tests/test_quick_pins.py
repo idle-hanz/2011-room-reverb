@@ -105,7 +105,7 @@ PIN_TABLE = {
     "rr_state.js": 6,
     "rr_mic.js": 1,
     "rr_mix.js": 8,
-    "rr_room.js": 1,
+    "rr_room.js": 2,
     "rr_source.js": 1,
     "rr_space.js": 2,
     "rr_polar.js": 2,
