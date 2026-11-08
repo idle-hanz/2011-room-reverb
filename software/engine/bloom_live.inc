@@ -441,7 +441,11 @@ static void bloom_sample(LiveStereo *st, double x, int t) {
     lo = -st->bC[2];
     if (lo > 0.0) lo = 0.0;
     wet = hi - gr;
-    if (wet > hi) wet = hi;
+    /* Natural (pid 0): makeup is min(amount, GR), so the tail stays at or under 0 dB.
+       The same test as wet_gain_db. Other models keep the amount ceiling. */
+    if ((int)(st->bC[0] + 0.5) == 0) {
+        if (wet > 0.0) wet = 0.0;
+    } else if (wet > hi) wet = hi;
     if (wet < lo) wet = lo;
     g = ls_from_db(wet);
     st->bG[t] = g;

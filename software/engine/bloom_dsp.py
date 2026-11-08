@@ -116,16 +116,20 @@ def amount_db(amount_percent, cap_db: float) -> float:
     return min(cap, pct / 100.0 * 12.0)
 
 
-def wet_gain_db(amount_db_v: float, gr_positive: float, max_duck_db: float) -> float:
+def wet_gain_db(amount_db_v: float, gr_positive: float, max_duck_db: float, preset: str | None = None) -> float:
     """Tail gain in dB. gr_positive is the detector's GR (0 or above).
 
     The Bloom law uses GR_dB <= 0, so the sign flips here.
+    Natural's makeup is min(amount, GR), so the tail cannot go above 0 dB.
     """
     gr = -max(0.0, float(gr_positive))
     hi = float(amount_db_v)
     lo = -max(0.0, float(max_duck_db))
     g = hi + gr
-    if g > hi:
+    if preset == "natural":
+        if g > 0.0:
+            g = 0.0
+    elif g > hi:
         return hi
     if g < lo:
         return lo
@@ -842,7 +846,7 @@ def _gain_env(det: np.ndarray, spec: dict) -> tuple:
     duck = float(spec["max_duck_db"])
     for i in range(n):
         gri = step_gr(st, float(det[i]), spec)
-        target = 10.0 ** (wet_gain_db(amt, gri, duck) / 20.0)
+        target = 10.0 ** (wet_gain_db(amt, gri, duck, spec.get("preset")) / 20.0)
         u += step
         if u > 1.0:
             u = 1.0
