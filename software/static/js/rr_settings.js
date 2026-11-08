@@ -33,7 +33,9 @@ function applyReaktorSnapshot() {
   state.dry_gain = 0;
   state.fdn_g = 1;
   state.decay_lock = false;
-  decayFromUser = false;
+  /* Fresh hall posts the boot dial, 1.8 s. Own it so the open-loop preview cannot replace it. */
+  state.decay_s = 1.8;
+  decayFromUser = true;
   state.ir_length_ms = 1500;
   state.hadamard_n = 32;
   state.humidity = 0.5;
