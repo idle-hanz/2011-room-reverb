@@ -95,13 +95,12 @@ function applyRoomBox() {
 
 function setView(view) {
   var diagram = null;
-  if (view === "space" || view === "lattice") diagram = "lattice";
-  else if (view === "paths") diagram = "paths";
+  if (view === "space" || view === "lattice" || view === "paths") diagram = "field";
   if (diagram) {
     roomDiagram = diagram;
     roomBoxMode = "size";
-    if (diagram === "lattice") spaceLattice = true;
-    if (diagram === "paths" && !(spacePaths > 0)) spacePaths = 2;
+    if (view === "space" || view === "lattice") spaceLattice = true;
+    if (view === "paths" && !(spacePaths > 0)) spacePaths = 2;
     view = "edit";
   }
   if (view === "colour") view = "surfaces";

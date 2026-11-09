@@ -169,8 +169,7 @@ function applyImageView() {
   syncOrderSlider(imagesCache);
   try {
     imageView.setSpace({
-      /* Paths mode is the home room. Lattice mode keeps whatever path lines are already on. */
-      lattice: roomDiagram === "paths" ? false : spaceLattice,
+      lattice: spaceLattice,
       paths: spacePaths,
       order: spaceOrder,
       mic: spacePathMic
@@ -254,15 +253,14 @@ function syncSpaceModeUI() {
   var latticeBtn = document.getElementById("spaceLatticeBtn");
   var pathsBtn = document.getElementById("spacePathsBtn");
   if (latticeBtn) {
-    var latOn = roomDiagram === "lattice";
-    latticeBtn.classList.toggle("active", latOn);
-    latticeBtn.setAttribute("aria-pressed", latOn ? "true" : "false");
+    latticeBtn.classList.toggle("active", !!spaceLattice);
+    latticeBtn.setAttribute("aria-pressed", spaceLattice ? "true" : "false");
   }
   if (pathsBtn) {
-    var on = roomDiagram === "paths" || (roomDiagram === "lattice" && spacePaths > 0);
+    var on = spacePaths > 0;
     pathsBtn.classList.toggle("active", on);
     pathsBtn.setAttribute("aria-pressed", on ? "true" : "false");
-    pathsBtn.textContent = spacePaths === 1 ? "Paths: lattice" : (spacePaths === 2 ? "Paths: in room" : "Paths");
+    pathsBtn.textContent = spacePaths === 1 ? "Extended rays" : (spacePaths === 2 ? "Folded" : "Off");
   }
   document.querySelectorAll(".space-path-mic").forEach(function (btn) {
     var pick = btn.getAttribute("data-path-mic");
@@ -277,14 +275,12 @@ function syncSpaceModeUI() {
     if (imageViewTitle) imageViewTitle.textContent = "3D room";
     if (imageViewHint) imageViewHint.textContent = roomHint;
   } else if (imageViewTitle) {
-    var lat = roomDiagram === "lattice" && spaceLattice;
     var title = "Home room";
-    if (lat && spacePaths === 2) title = "Lattice and in-room paths";
-    else if (lat && spacePaths === 1) title = "Lattice and path rays";
-    else if (lat) title = "Mirrored-room lattice";
-    else if (spacePaths === 2) title = "In-room reflections";
-    else if (spacePaths === 1) title = "Paths from the image sources";
-    else if (roomDiagram === "paths") title = "Paths";
+    if (spaceLattice && spacePaths === 2) title = "Lattice and folded paths";
+    else if (spaceLattice && spacePaths === 1) title = "Lattice and extended rays";
+    else if (spaceLattice) title = "Mirrored-room lattice";
+    else if (spacePaths === 2) title = "Folded paths";
+    else if (spacePaths === 1) title = "Extended rays";
     imageViewTitle.textContent = title;
     if (imageViewHint) imageViewHint.textContent = camHint;
   }

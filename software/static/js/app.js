@@ -434,8 +434,8 @@ if (roomDiagramBtn) {
 }
 if (spaceLatticeBtn) {
   spaceLatticeBtn.addEventListener("click", function () {
-    if (roomDiagram !== "lattice") {
-      roomDiagram = "lattice";
+    if (roomDiagram === "room") {
+      roomDiagram = "field";
       spaceLattice = true;
     } else {
       spaceLattice = !spaceLattice;
@@ -445,15 +445,8 @@ if (spaceLatticeBtn) {
 }
 if (spacePathsBtn) {
   spacePathsBtn.addEventListener("click", function () {
-    if (roomDiagram === "room") {
-      roomDiagram = "paths";
-      if (!(spacePaths > 0)) spacePaths = 2;
-    } else if (roomDiagram === "lattice") {
-      if (!(spacePaths > 0)) spacePaths = 2;
-      else spacePaths = (spacePaths + 1) % 3;
-    } else {
-      spacePaths = (spacePaths + 1) % 3;
-    }
+    spacePaths = (spacePaths + 1) % 3;
+    if (roomDiagram === "room") roomDiagram = "field";
     applySpaceView();
   });
 }

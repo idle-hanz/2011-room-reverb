@@ -14,6 +14,7 @@ const page = readFileSync(join(software, "static/index.html"), "utf8");
 const views = readFileSync(join(software, "static/js/image_views.js"), "utf8");
 const space = readFileSync(join(software, "static/js/rr_space.js"), "utf8");
 const state = readFileSync(join(software, "static/js/rr_state.js"), "utf8");
+const app = readFileSync(join(software, "static/js/app.js"), "utf8");
 
 test("lattice stays a toggle and last legs is not a separate chip", () => {
   assert.match(page, /id="spaceLatticeBtn"/);
@@ -27,6 +28,10 @@ test("lattice stays a toggle and last legs is not a separate chip", () => {
   assert.doesNotMatch(page, /Last legs/);
   assert.match(state, /var spaceLattice = true/);
   assert.match(state, /var spacePaths = 0/);
+  assert.match(app, /spaceLattice = !spaceLattice/);
+  assert.match(app, /spacePaths = \(spacePaths \+ 1\) % 3/);
+  assert.match(space, /Extended rays/);
+  assert.match(space, /Folded/);
   assert.match(state, /var spaceOrder = 0/);
   assert.match(state, /var spacePathMic = "all"/);
   assert.doesNotMatch(state, /spaceMode/);
@@ -34,8 +39,11 @@ test("lattice stays a toggle and last legs is not a separate chip", () => {
 
 test("the view posts no new audio keys", () => {
   assert.match(space, /imageView\.setSpace\(/);
+  assert.match(space, /lattice: spaceLattice/);
   assert.match(space, /paths: spacePaths/);
   assert.doesNotMatch(space, /paths: roomDiagram === "paths" \? spacePaths : 0/);
+  assert.match(views, /function discMark/);
+  assert.match(views, /CircleGeometry/);
   assert.match(space, /heardMix\(state\)/);
   assert.doesNotMatch(space, /WORKLET_VER/);
   assert.match(views, /setSpace: function/);

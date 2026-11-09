@@ -667,20 +667,53 @@
   function micPoint(mic) { var env = envStack[envStack.length - 1];
       return { x: mic.x, y: mic.y, z: mic.z };
     }
-  /* Interior vertices of a folded path are the surface meetings. Ends are source and mic. */
+  function hitFaces() { var env = envStack[envStack.length - 1];
+      if (env.hitFaces) return env.hitFaces;
+      var room = env.data && env.data.room;
+      env.hitFaces = [];
+      if (!room || !global.RoomDraw || !RoomDraw.polyFaces) return env.hitFaces;
+      env.hitFaces = RoomDraw.polyFaces(polyShape(), room.W, room.H, room.L) || [];
+      return env.hitFaces;
+    }
+  function faceForHit(p) { var env = envStack[envStack.length - 1];
+      var faces = hitFaces();
+      var x = [coord(p, "x", 0), coord(p, "y", 1), coord(p, "z", 2)];
+      var best = null;
+      var bestD = Infinity;
+      var i;
+      for (i = 0; i < faces.length; i++) {
+        var sd = Math.abs(faces[i].sd(x));
+        if (sd < bestD) { bestD = sd; best = faces[i]; }
+      }
+      return best;
+    }
+  /* Flat disc in the plane of the hit. CircleGeometry faces +Z. */
+  function discMark(p, col, op) { var env = envStack[envStack.length - 1];
+      var room = env.data.room;
+      var face = faceForHit(p);
+      var n = face ? face.n : [0, 1, 0];
+      var vn = new env.THREE.Vector3(n[0], n[1], -n[2]);
+      if (vn.lengthSq() < 1e-8) vn.set(0, 1, 0);
+      vn.normalize();
+      var tp = mapPt(p, room.L);
+      var mark = new env.THREE.Mesh(
+        new env.THREE.CircleGeometry(0.06, 20),
+        new env.THREE.MeshBasicMaterial({
+          color: col, transparent: true, opacity: op,
+          side: env.THREE.DoubleSide, depthWrite: false
+        })
+      );
+      mark.position.set(tp.x, tp.y, tp.z);
+      mark.quaternion.setFromUnitVectors(new env.THREE.Vector3(0, 0, 1), vn);
+      mark.position.addScaledVector(vn, 0.012);
+      return mark;
+    }
+  /* Interior vertices are the surface meetings. Ends are source and mic. */
   function surfaceMarks(pts, col, op) { var env = envStack[envStack.length - 1];
       if (!pts || pts.length < 3) return;
-      var L = (env.data && env.data.room) ? env.data.room.L : 0;
       var i;
       for (i = 1; i < pts.length - 1; i++) {
-        var mark = enter(env, marker, col, 0.045);
-        mark.material.transparent = true;
-        mark.material.opacity = op;
-        mark.material.depthWrite = false;
-        var tp = enter(env, mapPt, pts[i], L);
-        if (!tp || typeof tp.x !== "number") continue;
-        mark.position.set(tp.x, tp.y, tp.z);
-        env.root.add(mark);
+        env.root.add(enter(env, discMark, pts[i], col, op));
       }
     }
   function addHemis(selected) { var env = envStack[envStack.length - 1];
@@ -774,6 +807,7 @@
     }
   function rebuild() { var env = envStack[envStack.length - 1];
       env.mode = env.lattice === false ? "paths" : "lattice";
+      env.hitFaces = null;
       if (!env.data) { env.needsRender = true; return; }
       if (env.mode === "lattice") buildLattice();
       else buildHome();
