@@ -26,27 +26,12 @@
 
   var RING_HZ = [20, 63, 125, 250, 1000, 4000, 8000, 16000];
 
-  var POLAR_DB_RINGS = [0, -6, -12, -18, -24];
-  var POLAR_DB_FLOOR = -30;
-
-  function polarDbRadius(db, outer) {
-    if (!(db > POLAR_DB_FLOOR)) db = POLAR_DB_FLOOR;
-    if (db > 0) db = 0;
-    return outer * (db - POLAR_DB_FLOOR) / (0 - POLAR_DB_FLOOR);
-  }
-
-  function polarAmpRadius(db, outer) {
-    if (db > 0) db = 0;
-    return outer * window.RRDb.dbToLin(db);
-  }
-
   /* Concentric dB rings, 0/90/180 marks, and a front arrow.
-     useDb maps radius in dB down to -30. Otherwise 0 dB is the outer ring. */
+     Radius is RRDb.polarRadius: 0 dB outside, −30 dB at the centre. */
   function drawPolarChartFrame(ctx, cx, cy, outer, yawRad, opts) {
     opts = opts || {};
-    var useDb = !!opts.useDb;
     function rr(db) {
-      return useDb ? polarDbRadius(db, outer) : polarAmpRadius(db, outer);
+      return window.RRDb.polarRadius(db, outer);
     }
     var fontPx = opts.fontPx || Math.max(9, Math.min(13, outer * 0.11));
     ctx.save();
@@ -54,15 +39,21 @@
     ctx.strokeStyle = "rgba(255,255,255,0.2)";
     ctx.fillStyle = opts.labelColor || "#8b92a5";
     ctx.font = Math.round(fontPx) + "px Segoe UI, system-ui, sans-serif";
-    POLAR_DB_RINGS.forEach(function (db) {
+    window.RRDb.POLAR_DB_RINGS.forEach(function (db) {
       var rad = rr(db);
-      if (!(rad > 0.5)) return;
+      var label = (db === 0 ? "0" : String(db)) + " dB";
+      if (!(rad > 0.5)) {
+        ctx.textAlign = "left";
+        ctx.textBaseline = "middle";
+        ctx.fillText(label, cx + fontPx * 0.35, cy);
+        return;
+      }
       ctx.beginPath();
       ctx.arc(cx, cy, rad, 0, Math.PI * 2);
       ctx.stroke();
       ctx.textAlign = "left";
       ctx.textBaseline = "bottom";
-      ctx.fillText((db === 0 ? "0" : String(db)) + " dB", cx + fontPx * 0.3, cy - rad);
+      ctx.fillText(label, cx + fontPx * 0.3, cy - rad);
     });
     var edge = rr(0);
     [[0, "0\u00b0"], [Math.PI / 2, "90\u00b0"], [Math.PI, "180\u00b0"]].forEach(function (row) {
@@ -916,12 +907,41 @@
         }
       }
       var reach = 0.62;
+      window.RRDb.POLAR_DB_RINGS.forEach(function (db) {
+        var ringR = window.RRDb.polarRadius(db, reach);
+        var label = (db === 0 ? "0" : String(db));
+        if (!(ringR > 0.01)) {
+          var hub = project(0, 0);
+          ctx.fillStyle = COLORS.text;
+          ctx.font = "9px Segoe UI, system-ui, sans-serif";
+          ctx.textAlign = "left";
+          ctx.textBaseline = "middle";
+          ctx.fillText(label, hub.px + 4, hub.py);
+          return;
+        }
+        ctx.beginPath();
+        var ri;
+        for (ri = 0; ri <= 48; ri++) {
+          var rp = project((ri / 48) * Math.PI * 2, ringR);
+          if (ri === 0) ctx.moveTo(rp.px, rp.py);
+          else ctx.lineTo(rp.px, rp.py);
+        }
+        ctx.strokeStyle = "rgba(255,255,255,0.22)";
+        ctx.lineWidth = 1;
+        ctx.stroke();
+        var lp = project(0.35, ringR);
+        ctx.fillStyle = COLORS.text;
+        ctx.font = "9px Segoe UI, system-ui, sans-serif";
+        ctx.textAlign = "left";
+        ctx.textBaseline = "bottom";
+        ctx.fillText(label, lp.px, lp.py);
+      });
       for (bi = 0; bi < nB; bi++) {
         ctx.beginPath();
         for (ai = 0; ai <= nAz; ai++) {
           var k = ai % nAz;
           var phi = (k / nAz) * Math.PI * 2;
-          var rad = Math.max(0, Number(grid[bi][k]) || 0) / peak * reach;
+          var rad = window.RRDb.polarLinRadius(Math.max(0, Number(grid[bi][k]) || 0) / peak, reach);
           var p = project(phi, rad);
           if (ai === 0) ctx.moveTo(p.px, p.py);
           else ctx.lineTo(p.px, p.py);
@@ -977,13 +997,8 @@
       ctx.fillRect(0, 0, lay.w, lay.h);
 
       var peak = grid ? gridPeak(grid) : 1;
-      var scale = R / peak;
       var yaw = ((Number(yawDeg) || 0) * Math.PI) / 180;
-      var optEarly = arguments[8] || {};
-      var dbGridEarly = optEarly.db;
-      var useDbEarly = !!optEarly.useDb && dbGridEarly && dbGridEarly.length;
       drawPolarChartFrame(ctx, cx, cy, R, yaw, {
-        useDb: useDbEarly,
         arrow: false,
         fontPx: Math.max(uiPx(9), Math.min(uiPx(12), R * 0.1)),
         lineWidth: 1
@@ -1003,11 +1018,8 @@
       }
       if (useDb) {
         var nAzD = dbGrid[0].length;
-        var floorDb = -30;
         function radDb(db) {
-          if (!(db > floorDb)) db = floorDb;
-          if (db > 0) db = 0;
-          return (db - floorDb) / (0 - floorDb);
+          return window.RRDb.polarRadius(db, 1);
         }
         var pts = [];
         for (bi = 0; bi < dbGrid.length; bi++) {
@@ -1060,9 +1072,9 @@
             var k = ai % nAz;
             theta = (k / nAz) * Math.PI * 2;
             screen = theta + yaw;
-            g = ringRadius(grid, bi, k);
-            sx = cx + scale * g * Math.sin(screen);
-            sy = cy - scale * g * Math.cos(screen);
+            g = window.RRDb.polarLinRadius(ringRadius(grid, bi, k) / peak, R);
+            sx = cx + g * Math.sin(screen);
+            sy = cy - g * Math.cos(screen);
             if (ai === 0) ctx.moveTo(sx, sy); else ctx.lineTo(sx, sy);
           }
           ctx.strokeStyle = ringColor(bi, grid.length);
@@ -1075,8 +1087,9 @@
         for (i = 0; i <= n; i++) {
           th = (i / n) * Math.PI * 2;
           g = Math.abs(global.RRPattern.polarGain(th - yaw, family, polar, opt.pattern));
-          sx = cx + R * g * Math.sin(th);
-          sy = cy - R * g * Math.cos(th);
+          var idealR = window.RRDb.polarLinRadius(g, R);
+          sx = cx + idealR * Math.sin(th);
+          sy = cy - idealR * Math.cos(th);
           if (i === 0) ctx.moveTo(sx, sy); else ctx.lineTo(sx, sy);
         }
         ctx.closePath();
@@ -1533,7 +1546,10 @@
       var hit = screenTheta(canvas, px, py, cap);
       if (Math.abs(hit.theta) < 0.45) return "yaw";
       var st = env.getState();
-      var outline = Math.abs(global.RRPattern.polarGain(hit.theta, familyOf(st, cap), polarOf(st, cap))) * hit.lay.R;
+      var outline = window.RRDb.polarLinRadius(
+        Math.abs(global.RRPattern.polarGain(hit.theta, familyOf(st, cap), polarOf(st, cap))),
+        hit.lay.R
+      );
       if (Math.abs(hit.rad - outline) <= uiPx(18)) return "rim";
       return "yaw";
     }
@@ -1541,9 +1557,9 @@
       var hit = screenTheta(canvas, px, py, cap);
       if (Math.abs(hit.theta) < 0.45) return null;
       if (!(hit.lay.R > 0)) return null;
-      var target = hit.rad / hit.lay.R;
-      if (target > 1.35) return null;
-      target = Math.max(0, Math.min(1, target));
+      var frac = hit.rad / hit.lay.R;
+      if (frac > 1.05) return null;
+      var target = window.RRDb.dbToLin(-30 + Math.max(0, Math.min(1, frac)) * 30);
       var fam = familyOf(env.getState(), cap);
       var best = 0.5;
       var bestErr = 1e9;

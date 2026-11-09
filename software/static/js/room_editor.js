@@ -627,8 +627,9 @@
       for (i = 0; i <= n; i++) {
         th = (i / n) * Math.PI * 2;
         g = Math.abs(global.RRPattern.polarGain(th - yaw, family, polar, pattern));
-        sx = px + R * g * Math.sin(th);
-        sy = py - R * g * Math.cos(th);
+        var rad = global.RRDb.polarLinRadius(g, R);
+        sx = px + rad * Math.sin(th);
+        sy = py - rad * Math.cos(th);
         if (i === 0) ctx.moveTo(sx, sy);
         else ctx.lineTo(sx, sy);
       }
@@ -638,6 +639,15 @@
       ctx.lineWidth = 1.5;
       ctx.fill();
       ctx.stroke();
+      global.RRDb.POLAR_DB_RINGS.forEach(function (mark) {
+        var ringR = global.RRDb.polarRadius(mark, R);
+        if (!(ringR > 1)) return;
+        ctx.beginPath();
+        ctx.arc(px, py, ringR, 0, Math.PI * 2);
+        ctx.strokeStyle = "rgba(255,255,255,0.28)";
+        ctx.lineWidth = 1;
+        ctx.stroke();
+      });
     }
   function drawAimDot(ctx, px, py, color, active, hovered) { var env = envStack[envStack.length - 1];
       ctx.beginPath();
@@ -798,8 +808,7 @@
         const az = azDeg * Math.PI / 180;
         const yaw = yawDeg * Math.PI / 180;
         const db = Number(curve[i]);
-        const t = Math.max(0, Math.min(1, (db + 30) / 30));
-        const rad = 8 + t * 62;
+        const rad = global.RRDb.polarRadius(db, 70);
         const x = dot.px + Math.sin(az + yaw) * rad;
         const y = dot.py - Math.cos(az + yaw) * rad;
         if (i === 0) ctx.moveTo(x, y);
@@ -811,6 +820,22 @@
       ctx.strokeStyle = "rgba(255,179,71,0.45)";
       ctx.lineWidth = 1;
       ctx.stroke();
+      global.RRDb.POLAR_DB_RINGS.forEach(function (mark) {
+        var ringR = global.RRDb.polarRadius(mark, 70);
+        var label = (mark === 0 ? "0" : String(mark));
+        if (ringR > 1) {
+          ctx.beginPath();
+          ctx.arc(dot.px, dot.py, ringR, 0, Math.PI * 2);
+          ctx.strokeStyle = "rgba(255,255,255,0.18)";
+          ctx.lineWidth = 1;
+          ctx.stroke();
+        }
+        ctx.fillStyle = "rgba(180,184,196,0.9)";
+        ctx.font = "9px Segoe UI, system-ui, sans-serif";
+        ctx.textAlign = "left";
+        ctx.textBaseline = ringR > 1 ? "bottom" : "middle";
+        ctx.fillText(label, dot.px + 3, dot.py - ringR);
+      });
     }
   function drawSizeCircle(ctx, dot, metres, scale) { var env = envStack[envStack.length - 1];
       if (!(metres > 0) || !(scale > 0)) return;

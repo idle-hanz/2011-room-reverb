@@ -305,7 +305,7 @@
   };
 
   PolarFieldView.prototype._addDbRings = function (group, o, e1, e2) {
-    var rings = [0, -6, -12, -18, -24];
+    var rings = window.RRDb.POLAR_DB_RINGS;
     var basis = this._lookBasis(
       { normal: (this.data && (this.useBase && this.data.base_plane ? this.data.base_plane : this.data.plane) || {}).normal },
       this._arrayYawRad()
@@ -326,16 +326,18 @@
     }
     var self = this;
     rings.forEach(function (db) {
-      var radius = 0.9 * window.RRDb.dbToLin(db);
-      var pts = [];
-      var i;
-      for (i = 0; i <= 72; i++) pts.push(at(radius, (i / 72) * Math.PI * 2));
-      group.add(new THREE.Line(
-        new THREE.BufferGeometry().setFromPoints(pts),
-        new THREE.LineBasicMaterial({ color: 0xd6d3cd, transparent: true, opacity: 0.45 })
-      ));
+      var radius = window.RRDb.polarRadius(db, 0.9);
+      if (radius > 0.02) {
+        var pts = [];
+        var i;
+        for (i = 0; i <= 72; i++) pts.push(at(radius, (i / 72) * Math.PI * 2));
+        group.add(new THREE.Line(
+          new THREE.BufferGeometry().setFromPoints(pts),
+          new THREE.LineBasicMaterial({ color: 0xd6d3cd, transparent: true, opacity: 0.45 })
+        ));
+      }
       var lab = self._labelSprite((db === 0 ? "0" : String(db)) + " dB");
-      var p = front(radius, 0.35);
+      var p = front(radius > 0.02 ? radius : 0.05, 0.35);
       lab.position.copy(p);
       group.add(lab);
     });
@@ -399,7 +401,7 @@
           re += amp * Math.cos(ph);
           im += amp * Math.sin(ph);
         }
-        r = Math.hypot(re, im) / nMem;
+        r = window.RRDb.polarLinRadius(Math.hypot(re, im) / nMem, 0.9);
         h = (bi / nBm) * stack;
         ix = (bi * nAz + ai) * 3;
         flat[ix] = centre[0] + n[0] * h + fwd[0] * r * ct + right[0] * r * st;
@@ -422,6 +424,48 @@
     });
   };
 
+  /* Server vertices store linear amplitude as metres from the mic. Redraw
+     uses the shared dB radius. The payload is left as it arrived. */
+  PolarFieldView.prototype._scaleLinearVerts = function (flat, nB, nAz, origin, normal) {
+    if (!origin || !flat) return flat;
+    var src = flat instanceof Float32Array ? flat : new Float32Array(flat);
+    var out = new Float32Array(src.length);
+    var nrm = normal || [0, 1, 0];
+    var nBm = Math.max(1, nB - 1);
+    var span = Number(this.data && this.data.stack_m) || 2.4;
+    var bi, ai, ix, h, bx, by, bz, dx, dy, dz, r, nr, s;
+    for (bi = 0; bi < nB; bi++) {
+      h = (bi / nBm) * span;
+      bx = origin[0] + nrm[0] * h;
+      by = origin[1] + nrm[1] * h;
+      bz = origin[2] + nrm[2] * h;
+      for (ai = 0; ai < nAz; ai++) {
+        ix = (bi * nAz + ai) * 3;
+        dx = src[ix] - bx;
+        dy = src[ix + 1] - by;
+        dz = src[ix + 2] - bz;
+        r = Math.hypot(dx, dy, dz);
+        nr = r > 1e-8 ? window.RRDb.polarLinRadius(r, 0.9) : 0;
+        s = r > 1e-8 ? nr / r : 0;
+        out[ix] = bx + dx * s;
+        out[ix + 1] = by + dy * s;
+        out[ix + 2] = bz + dz * s;
+      }
+    }
+    return out;
+  };
+
+  PolarFieldView.prototype._vertFrame = function (key) {
+    var data = this.data || {};
+    var origins = data.mic_origins || {};
+    var plane = key === "base" ? (data.base_plane || data.plane) : data.plane;
+    var origin = origins[key];
+    if (key === "sum" || key === "base" || key === "one" || !origin) {
+      origin = (plane && plane.origin) || origins.C;
+    }
+    return { origin: origin, normal: plane && plane.normal };
+  };
+
   PolarFieldView.prototype._rebuildMeshes = function () {
     if (!this.root || !this.data) return;
     this._readToggles();
@@ -436,8 +480,10 @@
       if (!self.enabled[key]) return;
       var mesh = null;
       if (self.data.vertices && self.data.vertices[key]) {
+        var frame0 = self._vertFrame(key);
         mesh = self._makeSurfaceFromVertices(
-          self.data.vertices[key], nB, nAz, COLORS[key] || COLORS.sum, 0.32
+          self._scaleLinearVerts(self.data.vertices[key], nB, nAz, frame0.origin, frame0.normal),
+          nB, nAz, COLORS[key] || COLORS.sum, 0.32
         );
       }
       if (!mesh) return;
@@ -452,8 +498,10 @@
     if (members.length === 1 && ticked.length === 1) {
       var only = members[0];
       if (self.data.vertices && self.data.vertices[only]) {
+        var frame1 = self._vertFrame(only);
         mesh = self._makeSurfaceFromVertices(
-          self.data.vertices[only], nB, nAz, COLORS[only], 0.32
+          self._scaleLinearVerts(self.data.vertices[only], nB, nAz, frame1.origin, frame1.normal),
+          nB, nAz, COLORS[only], 0.32
         );
       } else if (self.data[only]) {
         mesh = self._makeSurfaceFromGrid(self.data[only], nB, nAz, COLORS[only], 0.32);
@@ -467,8 +515,10 @@
       if (flat) {
         mesh = self._makeSurfaceFromVertices(flat, nB, nAz, COLORS.sum, 0.45);
       } else if (self.data.vertices && self.data.vertices.sum) {
+        var frameS = self._vertFrame("sum");
         mesh = self._makeSurfaceFromVertices(
-          self.data.vertices.sum, nB, nAz, COLORS.sum, 0.45
+          self._scaleLinearVerts(self.data.vertices.sum, nB, nAz, frameS.origin, frameS.normal),
+          nB, nAz, COLORS.sum, 0.45
         );
       } else if (self.data.sum) {
         mesh = self._makeSurfaceFromGrid(self.data.sum, nB, nAz, COLORS.sum, 0.45);
@@ -520,7 +570,7 @@
     for (k = 0; k <= 96; k++) {
       var th = (k / 96) * Math.PI * 2;
       var g = Math.abs(window.RRPattern.polarGain(th, fam, pol, st["pattern_" + row[1]]));
-      var rad = 0.9 * g;
+      var rad = window.RRDb.polarLinRadius(g, 0.9);
       pts.push(new THREE.Vector3(
         o[0] + nn[0] * h + basis.right[0] * rad * Math.sin(th) + basis.fwd[0] * rad * Math.cos(th),
         o[1] + nn[1] * h + basis.right[1] * rad * Math.sin(th) + basis.fwd[1] * rad * Math.cos(th),
@@ -625,7 +675,7 @@
       var y = (bi / Math.max(1, nB - 1)) * 2.4;
       for (var ai = 0; ai < nAz; ai++) {
         var th = (ai / nAz) * Math.PI * 2;
-        var r = Math.max(0, Number(grid[bi][ai]) || 0);
+        var r = window.RRDb.polarLinRadius(Math.max(0, Number(grid[bi][ai]) || 0), 0.9);
         positions.push(r * Math.sin(th), y, r * Math.cos(th));
       }
     }
@@ -684,10 +734,7 @@
     var nTh = Math.floor(nAz / 2) + 1;
     var nPh = 48;
     function lin(dbv) {
-      var v = window.RRDb.dbToLin(dbv);
-      if (!isFinite(v) || v < 0) v = 0;
-      if (v > 1) v = 1;
-      return v;
+      return window.RRDb.polarRadius(dbv, 1);
     }
     var positions = [];
     var colors = [];
@@ -727,8 +774,13 @@
       depthWrite: false
     }));
     var rings = new THREE.Group();
-    [0, -6, -12, -18, -24].forEach(function (mark) {
+    var balloonSelf = this;
+    window.RRDb.POLAR_DB_RINGS.forEach(function (mark) {
       var rad = lin(mark);
+      var lab = balloonSelf._labelSprite((mark === 0 ? "0" : String(mark)) + " dB");
+      lab.position.set(0.08, 0, rad > 0.02 ? rad : 0.05);
+      rings.add(lab);
+      if (!(rad > 0.02)) return;
       var pts = [];
       var k;
       for (k = 0; k <= 64; k++) {
@@ -746,7 +798,7 @@
       for (ii = 0; ii <= 96; ii++) {
         var t = (ii / 96) * Math.PI * 2;
         var g = Math.abs(spec.ideal(t));
-        var ir = g > 1 ? 1 : g;
+        var ir = window.RRDb.polarLinRadius(g, 1);
         idealPts.push(new THREE.Vector3(ir * Math.sin(t), 0, ir * Math.cos(t)));
       }
       var iGeo = new THREE.BufferGeometry().setFromPoints(idealPts);

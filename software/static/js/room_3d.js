@@ -1002,7 +1002,7 @@
         for (ai = 0; ai <= nAz; ai++) {
           var k = ai % nAz;
           phi = (k / nAz) * Math.PI * 2;
-          var rad = rings[bi][k] / peak * reach;
+          var rad = global.RRDb.polarLinRadius(rings[bi][k] / peak, reach);
           pts.push(new env.THREE.Vector3(
             c.x + (Math.cos(phi) * right.x + Math.sin(phi) * up.x) * rad,
             c.y + (Math.cos(phi) * right.y + Math.sin(phi) * up.y) * rad,
@@ -1018,6 +1018,24 @@
           })
         ));
       }
+      global.RRDb.POLAR_DB_RINGS.forEach(function (db) {
+        var ringR = global.RRDb.polarRadius(db, reach);
+        if (!(ringR > 0.01)) return;
+        var ringPts = [];
+        var rk;
+        for (rk = 0; rk <= 48; rk++) {
+          var rphi = (rk / 48) * Math.PI * 2;
+          ringPts.push(new env.THREE.Vector3(
+            c.x + (Math.cos(rphi) * right.x + Math.sin(rphi) * up.x) * ringR,
+            c.y + (Math.cos(rphi) * right.y + Math.sin(rphi) * up.y) * ringR,
+            c.z + (Math.cos(rphi) * right.z + Math.sin(rphi) * up.z) * ringR
+          ));
+        }
+        env.haloGroup.add(new env.THREE.Line(
+          new env.THREE.BufferGeometry().setFromPoints(ringPts),
+          new env.THREE.LineBasicMaterial({ color: 0xd6d3cd, transparent: true, opacity: 0.4 })
+        ));
+      });
     }
   function frameHalo() { var env = envStack[envStack.length - 1];
       if (!env.focusMic || !env.haloGroup || !env.haloGroup.children.length) return;

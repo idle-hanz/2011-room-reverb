@@ -98,7 +98,6 @@ function drawSpeakerPolar(data) {
     var R = Math.min(w * 0.18, h * 0.32);
     if (window.MicDesk && MicDesk.drawPolarChartFrame) {
       MicDesk.drawPolarChartFrame(ctx, cx, cy, R, 0, {
-        useDb: false,
         fontPx: Math.max(11 * ratio, Math.min(14 * ratio, R * 0.1)),
         lineWidth: Math.max(1, ratio)
       });
@@ -110,9 +109,9 @@ function drawSpeakerPolar(data) {
       for (ai = 0; ai <= nAz; ai++) {
         k = ai % nAz;
         theta = (k / nAz) * Math.PI * 2;
-        g = Math.max(0, Number(grid[bi][k]) / peak);
-        sx = cx + R * g * Math.sin(theta);
-        sy = cy - R * g * Math.cos(theta);
+        g = window.RRDb.polarLinRadius(Math.max(0, Number(grid[bi][k])) / peak, R);
+        sx = cx + g * Math.sin(theta);
+        sy = cy - g * Math.cos(theta);
         if (ai === 0) ctx.moveTo(sx, sy);
         else ctx.lineTo(sx, sy);
       }

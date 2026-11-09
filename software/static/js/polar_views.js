@@ -41,6 +41,8 @@
   var fetchGen = 0;
 
   function dbRadius(db, outer) {
+    var dbApi = (typeof window !== "undefined" && window.RRDb) || globalThis.RRDb;
+    if (dbApi && dbApi.polarRadius) return dbApi.polarRadius(db, outer);
     if (!(db > DB_FLOOR)) db = DB_FLOOR;
     if (db > 0) db = 0;
     return outer * (db - DB_FLOOR) / (0 - DB_FLOOR);
