@@ -96,7 +96,7 @@ Vec3 = Tuple[float, float, float]
 # Shoebox images live in maths_image.py. Corner origin is the live path.
 # The VERIFIED macro notes (shots 207, 317–330, 352, 353, 402, 435) moved with
 # the functions. This file calls them. Callers import maths_image directly.
-from maths_image import image_position  # noqa: E402
+from maths_image import corner_axis_from_macro, image_position  # noqa: E402
 
 
 def polarity(n: Tuple[int, int, int]) -> int:
@@ -1661,6 +1661,95 @@ class ImageTap:
     fdn_distance_c: Optional[float] = None
 
 
+def _box_rank_axis(s: float, R: float, k: int) -> float:
+    """Axis the RK1 listen used when it chose B.wav's 32.
+
+    Playback stays on ``corner_axis_from_macro``. For a negative odd index
+    past the named macros, that listen still used ``k*R - s``. bd022a1 moved
+    those cells to ``k*R + (R - s)`` three minutes later. Named |k| <= 2 and
+    positive odds are the same in both, so a set that avoids the moved cell
+    renders at the same points B.wav used.
+    """
+    if k < -1 and (k % 2) != 0:
+        return k * R - s
+    return corner_axis_from_macro(s, R, k)
+
+
+def _box_rank_position(source: Vec3, room: Vec3, n: Tuple[int, int, int]) -> Vec3:
+    sx, sy, sz = source
+    W, H, L = room
+    nx, ny, nz = n
+    return (
+        _box_rank_axis(float(sx), float(W), int(nx)),
+        _box_rank_axis(float(sy), float(H), int(ny)),
+        _box_rank_axis(float(sz), float(L), int(nz)),
+    )
+
+
+def _loudest_box_listen(room: Vec3, source: Vec3, left: Vec3, right: Vec3):
+    """RK1 slot fill for one source. A right-hand source is mirrored by the caller."""
+    pool = []
+    for nx in range(-4, 5):
+        for ny in range(-4, 5):
+            for nz in range(-4, 5):
+                n = (nx, ny, nz)
+                if image_order(n) <= 4:
+                    pool.append(n)
+
+    def score(n: Tuple[int, int, int]) -> float:
+        pos = _box_rank_position(source, room, n)
+        return geometric_level(dist(left, pos)) ** 2 + geometric_level(dist(right, pos)) ** 2
+
+    ranked = sorted(pool, key=lambda n: (-score(n), n))
+    loud = ranked[:32]
+    if (0, 0, 0) not in loud or len(set(loud)) != 32:
+        return list(LIVE_32)
+    first = {}
+    for i, n in enumerate(LIVE_32):
+        if n not in first:
+            first[n] = i
+    keep = set(loud)
+    slots = [None] * 32
+    free = []
+    for i, n in enumerate(LIVE_32):
+        if n in keep and first[n] == i:
+            slots[i] = n
+        else:
+            free.append(i)
+    added = [n for n in loud if n not in first]
+    if len(added) != len(free):
+        return list(LIVE_32)
+    for i, n in zip(free, added):
+        slots[i] = n
+    if any(n is None for n in slots) or len(set(slots)) != 32:
+        return list(LIVE_32)
+    return slots
+
+
+def loudest_box_slots(room: Vec3, source: Vec3, left: Vec3, right: Vec3):
+    """Shoebox 32. Same slot rule as the RK1 listen, not the polygon ranker.
+
+    Score is (1/r_L)^2 + (1/r_R)^2. No cardioid and no per-face gain.
+    An image that is already in ``LIVE_32`` stays in its first slot. The two
+    duplicate slots and the quieter images open, and new images fill those
+    openings loudest-first. Direct stays index 10 on the default box.
+    A source to the right of centre takes the mirrored slots of the mirrored
+    source, so a left/right pair stays a mirror. The default source is left
+    of centre, so it keeps the listen fill that made B.wav.
+    Polygon rooms do not call this. They stay on ``poly_room.loudest_pick``.
+    """
+    width = float(room[0])
+    if float(source[0]) > width * 0.5:
+        mirrored = _loudest_box_listen(
+            room,
+            (width - float(source[0]), float(source[1]), float(source[2])),
+            (width - float(right[0]), float(right[1]), float(right[2])),
+            (width - float(left[0]), float(left[1]), float(left[2])),
+        )
+        return [(-int(n[0]), int(n[1]), int(n[2])) for n in mirrored]
+    return _loudest_box_listen(room, source, left, right)
+
+
 def compute_taps(
     room: Vec3,
     source: Vec3,
@@ -1727,8 +1816,17 @@ def compute_taps(
         imgs = enumerate_scaled_grid(bias=bias)
         if reaktor_parity and bias == "32" and not is_binaural:
             imgs = list(LIVE_32_REAKTOR)
-        if is_binaural and bias == "32":
+        elif is_binaural and bias == "32":
             imgs = list(BINAURAL_REAR32)
+        elif bias == "32":
+            # Stand pair, not a room-spot capsule. Moving a muted mic must
+            # not reshuffle the shared 32. Delays below still use `left`/`right`.
+            half = float(stand.space) * 0.5
+            imgs = loudest_box_slots(
+                room, source,
+                (float(stand.cx) - half, float(stand.cy), float(stand.cz)),
+                (float(stand.cx) + half, float(stand.cy), float(stand.cz)),
+            )
     taps: List[ImageTap] = []
     bin_preset = load_binaural_preset(getattr(stand, "binaural_preset", "SADIE2_KU100")) if is_binaural else None
     head_xyz = (stand.cx, stand.cy, stand.cz)

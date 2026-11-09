@@ -615,6 +615,21 @@ def _colour_apply(colour, buf, theta: float, bus: str):
     return colour.apply(buf, theta, bus)
 
 
+def _box32_slots_flipped(source, room, n_had, reaktor_parity, room_shape, stand) -> bool:
+    """True when ``loudest_box_slots`` stored the nx-flipped listen fill.
+
+    Polygons, binaural, reaktor parity and any N other than 32 do not flip.
+    The default source is left of centre, so this stays false there.
+    """
+    if source is None or stand is None:
+        return False
+    if poly_on(room_shape) or bool(reaktor_parity) or int(n_had) != 32:
+        return False
+    if bool(getattr(stand, "is_binaural", False)):
+        return False
+    return float(source[0]) > float(room[0]) * 0.5
+
+
 def render_early_ir(
     taps, room, sr, c, length_ms, depth_per_axis, humidity, wall_cache, ap_cache,
     surfaces=None,
@@ -635,6 +650,7 @@ def render_early_ir(
     surfaces_mute=None,
     g_l: float = 0.0,
     g_r: float = 0.0,
+    flipped_slots: bool = False,
 ):
     """Render early IR. Optional ASSUMED surfaces absorb×EQ + path-length jitter.
 
@@ -664,6 +680,8 @@ def render_early_ir(
     # side wall and the capsule swapped. nx == 0 is its own partner, so both
     # capsules share the left capsule's draw. Do not also remap on mirror_x:
     # source B at the mirrored point already carries these orders.
+    # flipped_slots: the ranker already stored the nx flip, so the
+    # representative is the negative order. Left of centre stays today's key.
     orders = [tuple(int(v) for v in t.n) for t in taps]
     partner = mirror_x_partner_index(orders)
     solo_l = parse_solo(surfaces_solo)
@@ -680,8 +698,8 @@ def render_early_ir(
             img = t.position
             # Partner's own tap index, not the slot, so the key matches t.index.
             pref = int(taps[partner[ti]].index)
-            h_l = mirror_jitter_overrides(orders[ti], "L", pref)
-            h_r = mirror_jitter_overrides(orders[ti], "R", pref)
+            h_l = mirror_jitter_overrides(orders[ti], "L", pref, flipped_slots=flipped_slots)
+            h_r = mirror_jitter_overrides(orders[ti], "R", pref, flipped_slots=flipped_slots)
             if mic_left is not None:
                 d_l = jittered_distance(
                     d_l, t.n, t.index, "L", img, mic_left, surfaces,
@@ -1607,6 +1625,9 @@ def combined_ir(
             surfaces_mute=surfaces_mute,
             g_l=_g_l,
             g_r=_g_r,
+            flipped_slots=_box32_slots_flipped(
+                makeup_source, room, hadamard_n, reaktor_parity, room_shape, makeup_stand,
+            ),
         )
     else:
         Le = np.zeros(1, dtype=np.float64)
@@ -2005,7 +2026,7 @@ def _render_core(
             taps_b, prep_b, sr, source_size_m,
         )
 
-        def direct_early(taps_src, src_plan, mirror_x=False, prox_g=None):
+        def direct_early(taps_src, src_plan, mirror_x=False, prox_g=None, flipped_slots=False):
             di_src = direct_line_index(taps_src, n_had)
             spikes = None
             if taps_src and 0 <= di_src < len(taps_src):
@@ -2041,6 +2062,7 @@ def _render_core(
                 surfaces_mute=surfaces_mute,
                 g_l=gL,
                 g_r=gR,
+                flipped_slots=bool(flipped_slots),
             )
             n_ir = max(len(Ld), len(Le))
 
@@ -2056,8 +2078,18 @@ def _render_core(
             eR = weights["lr"] * Le + weights["rr"] * Re
             return Ld + float(early_wet) * mk * eL, Rd + float(early_wet) * mk * eR
 
-        deA_L, deA_R = direct_early(taps, plan_a, False, _prox_of(prep))
-        deB_L, deB_R = direct_early(taps_b, plan_b, bool(mirror_b), _prox_of(prep_b))
+        deA_L, deA_R = direct_early(
+            taps, plan_a, False, _prox_of(prep),
+            _box32_slots_flipped(
+                prep.source, room, n_had, reaktor_parity, room_shape, _unplaced_stand(prep),
+            ),
+        )
+        deB_L, deB_R = direct_early(
+            taps_b, plan_b, bool(mirror_b), _prox_of(prep_b),
+            _box32_slots_flipped(
+                prep_b.source, room, n_had, reaktor_parity, room_shape, _unplaced_stand(prep_b),
+            ),
+        )
 
         if movement_ms <= 0.0:
             def _fdn_stereo(taps_src, src_plan):

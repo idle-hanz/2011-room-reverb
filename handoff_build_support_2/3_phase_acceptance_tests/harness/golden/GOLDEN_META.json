@@ -1,14 +1,14 @@
 {
  "sw": "C:\\Users\\IdleHanz\\Desktop\\2011 Room Reverb\\software",
- "when": "2026-11-08 09:50:15",
+ "when": "2026-11-09 18:23:18",
  "node": "C:\\Users\\IdleHanz\\AppData\\Local\\Microsoft\\WinGet\\Packages\\OpenJS.NodeJS_Microsoft.Winget.Source_8wekyb3d8bbwe\\node-v26.7.0-win-x64\\node.EXE",
  "python": "C:\\Users\\IdleHanz\\Desktop\\2011 Room Reverb\\software\\.venv\\Scripts\\python.exe",
  "sha1": {
-  "engine/live_stereo.c": "b33f70515170",
-  "static/wasm/live_stereo.wasm": "90aefb1a8fff",
-  "static/js/fdn_worklet.js": "f4bc8788a507",
-  "render_pipeline.py": "a2b32ab70f41",
-  "engine/fdn.py": "3b39dc3e3667"
+  "engine/live_stereo.c": "61366e1f0ea6",
+  "static/wasm/live_stereo.wasm": "ae0fa252ca6f",
+  "static/js/fdn_worklet.js": "02b0023694b2",
+  "render_pipeline.py": "3aa9892e7941",
+  "engine/fdn.py": "8e26e5530825"
  },
- "reason": "0353e23 polar-once Play goldens re-pinned, render_std_unlocked_byp unchanged, Idle 2026-11-08"
+ "reason": "BOXB shoebox loudest-32 matches rk1 B.wav, Idle 2026-11-09"
 }

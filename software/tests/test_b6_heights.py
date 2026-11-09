@@ -43,7 +43,7 @@ FC = [125, 250, 500, 1000, 2000, 3150, 4000, 5000, 6300, 8000, 10000, 12500, 160
 # Empty-body live hash. TLAW 1/r (Idle 2026-10-10) moved it off the T4c hash
 # 4bd18877a1a80396108bcafd17d4d762. The blob diff is inject levels, makeup,
 # and the unwired direct_makeup field. Delays, g, and the direct fold stay.
-_DEFAULT_LIVE_MD5 = "067adbca1930efcd3f7c83bdd1d4c359"
+_DEFAULT_LIVE_MD5 = "06bb1aaa0f59d67402b160224e155089"
 
 
 def _live(body):

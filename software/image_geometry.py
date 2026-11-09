@@ -25,14 +25,17 @@ if str(_ENGINE) not in sys.path:
 from maths_image import image_position  # noqa: E402
 from settings_table import D  # noqa: E402
 from early_field import (  # noqa: E402
+    BINAURAL_REAR32,
     DEFAULT_HADAMARD_N,
     SPEED_OF_SOUND_M_S,
+    MicStand,
     build_image_indices,
     delay_ms_from_distance,
     dist,
     grid_bias_for_hadamard_n,
     hadamard_n_for_grid,
     image_order,
+    loudest_box_slots,
     normalize_hadamard_n,
     polarity,
     prepare_direct_field,
@@ -194,6 +197,7 @@ def build_images_payload(
     sy_b: Optional[float] = None,
     sz_b: Optional[float] = None,
     mic_override: Optional[Dict[str, Sequence[float]]] = None,
+    binaural: bool = False,
 ) -> dict:
     """JSON payload for Lattice / In-room / Last-leg views.
 
@@ -242,7 +246,18 @@ def build_images_payload(
         n_had = hadamard_n_for_grid(grid)
     else:
         n_had = DEFAULT_HADAMARD_N
-    indices = build_image_indices(n_had)
+    if int(n_had) == 32 and binaural:
+        indices = list(BINAURAL_REAR32)
+    elif int(n_had) == 32:
+        stand = MicStand.from_prepare(prep)
+        half = float(stand.space) * 0.5
+        indices = loudest_box_slots(
+            room, source,
+            (float(stand.cx) - half, float(stand.cy), float(stand.cz)),
+            (float(stand.cx) + half, float(stand.cy), float(stand.cz)),
+        )
+    else:
+        indices = build_image_indices(n_had)
     images_out: List[dict] = []
     by_mic: Dict[str, List[dict]] = {m: [] for m in wanted}
 
@@ -326,6 +341,7 @@ def build_images_payload(
             sx=float(sx_b), sz=float(sz_b), mcz=mcz,
             two_sources=False,
             mic_override=mic_override,
+            binaural=binaural,
         )
         out["source_b"] = b_payload["source"]
         out["lattice_b"] = b_payload["lattice"]

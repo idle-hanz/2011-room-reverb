@@ -67,6 +67,54 @@ from maths_image import (
 )
 
 
+def test_box_rank_matches_b_listen() -> None:
+    """Default shoebox 32 is the RK1 listen set, not the fixed LIVE_32 skeleton.
+
+    Score is the pre-bd022a1 cell. Playback positions stay on the current cell.
+    The chosen 32 do not use the cell that moved, so the delays match B.wav.
+    Polygon ranking is a different function and is not called here.
+    """
+    from early_field import LIVE_32, MicStand, compute_taps, loudest_box_slots
+
+    room = (6.0, 3.0, 8.0)
+    source = (2.6, 1.2, 4.75)
+    left = (2.875, 1.5, 1.5)
+    right = (3.125, 1.5, 1.5)
+    ranked = loudest_box_slots(room, source, left, right)
+    stand = MicStand(cx=3.0, cy=1.5, cz=1.5, space=0.25, car_omni=1.0)
+    taps = compute_taps(room, source, stand, hadamard_n=32)
+    got = [t.n for t in taps]
+    assert got == ranked
+    expect = list(LIVE_32)
+    expect[6] = (0, 0, -1)
+    expect[7] = (0, -1, -1)
+    expect[8] = (0, 1, -1)
+    expect[11] = (-1, 0, -1)
+    expect[12] = (0, 2, -1)
+    expect[19] = (-1, -1, -1)
+    expect[21] = (0, -2, -1)
+    expect[23] = (1, 0, -1)
+    expect[25] = (-1, 1, -1)
+    expect[26] = (1, -1, -1)
+    expect[27] = (1, 1, -1)
+    expect[28] = (0, 3, 0)
+    expect[29] = (0, -1, 1)
+    expect[30] = (-1, 2, -1)
+    expect[31] = (-1, -2, -1)
+    assert got == expect
+    assert got[10] == (0, 0, 0)
+    assert len(set(got)) == 32
+    assert (0, -3, 0) not in got
+    assert all(not (k < -1 and k % 2) for n in got for k in n)
+    right_src = (room[0] - source[0], source[1], source[2])
+    right_slots = loudest_box_slots(
+        room, right_src,
+        (room[0] - right[0], right[1], right[2]),
+        (room[0] - left[0], left[1], left[2]),
+    )
+    assert right_slots == [(-n[0], n[1], n[2]) for n in ranked]
+
+
 def test_32_indices_exact_set() -> None:
     """Default table is the symmetric 32. Reaktor order stays behind reaktor_parity."""
     from collections import Counter
@@ -234,9 +282,14 @@ def test_corner_macros_and_c340() -> None:
     # centre paper still available
     assert image_position_centre((0.0, 0.0, 2.0), room, (0, 0, 2)) == (0.0, 0.0, 2.0 + 2 * 7.0)
     stand = MicStand(cx=2.5, cy=1.5, cz=1.5, space=0.25, mlalr=0.0, mralr=0.0, car_omni=1.0)
-    taps = compute_taps(room, source, stand, origin="corner", z_face_4l=False)
-    assert len(taps) == 32
-    face = [t for t in taps if t.n == (0, 0, 2)][0]
+    # The product 32 is the loudest set, so this room may omit (0, 0, 2).
+    # The delay law is about that image, asked for by index.
+    taps = compute_taps(
+        room, source, stand, origin="corner", z_face_4l=False,
+        indices=[(0, 0, 2)],
+    )
+    assert len(taps) == 1
+    face = taps[0]
     assert abs(face.position[2] - (2 * 7.0 + 5.5)) < 1e-9
     # delay ms law
     assert abs(face.delay_ms_l - 1000.0 * face.distance_l / 340.0) < 1e-9
@@ -1144,6 +1197,7 @@ def _mic_colour_tests():
 
 def main() -> int:
     tests = [
+        test_box_rank_matches_b_listen,
         test_32_indices_exact_set,
         test_scaled_grid_presets,
         test_omit_0_0_minus2,

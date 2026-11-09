@@ -988,6 +988,7 @@ def _images_payload(p: dict, mics, mic_override=None):
         two_sources=bool(p.get("two_sources")),
         sx_b=p.get("sx_b"), sy_b=p.get("sy_b"), sz_b=p.get("sz_b"),
         mic_override=mic_override,
+        binaural=str(p.get("mic_setup") or "") == "binaural",
     )
 
 

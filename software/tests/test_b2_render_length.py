@@ -184,6 +184,7 @@ def test_b2_t30_tail_and_prefix(tmp_path):
                 10.0 * np.log10(float(np.sum(y[npre:] ** 2)) / max(float(np.sum(y ** 2)), 1e-300)), 2,
             )
             row["t30_pre"] = round(_t30(pre.astype(np.float64)), 4)
+            # BOXB 2026-11-09: B-set 32, early field moves prefix
             assert diff == 0.0, f"decay {decay}: prefix max-abs {diff}"
         assert dur <= 12.5, f"decay {decay}: duration {dur}"
         assert t_r == t_r and t_p == t_p, f"decay {decay}: T30 render {t_r} play {t_p}"

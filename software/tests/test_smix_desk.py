@@ -42,11 +42,11 @@ SR = 48000
 G2 = 10.0 ** (2.0 / 20.0)
 G6 = 10.0 ** (-6.0 / 20.0)
 GOLDEN_SHA1 = {
-    "play_std_lock18_byp.f32": "7906405d783f784379388803b7eb42c5d25c6c7f",
-    "play_std_lock18_col.f32": "c20e6894b6f05a69960b360869232548fb42c148",
-    "play_std_unlocked_byp.f32": "2639f90fffefc08316143511390097bdada89fea",
-    "play_std_unlocked_col.f32": "9146eaddc1f6a3333c54ad2f489b86f6ffadadc8",
-    "render_std_unlocked_byp.f32": "2a806e334e06cc475868d4c3da3fc78431c9a0aa",
+    "play_std_lock18_byp.f32": "f5e9ebce2759262bc63a6fa67f30caecee2375ff",
+    "play_std_lock18_col.f32": "a3a796a516436c682e9af71deaf77081a5509939",
+    "play_std_unlocked_byp.f32": "778a241ce39842a3252e37617cb3a8f196f547eb",
+    "play_std_unlocked_col.f32": "c2a74eec10c0a12c1747ceabd7993f0db93a5e12",
+    "render_std_unlocked_byp.f32": "135c41ce546c390ef048a28713338259db07bd0a",
 }
 
 
@@ -363,16 +363,17 @@ def test_any_strip_route():
     # D-SRC-DIST-LEVEL. Makeup uses the boot offset from the stand, not this
     # scene's source (sx 2.2). Below the limiter knee one gain still nulls
     # at about -304 dB. One sample hits the limiter, so the full-file null
-    # is -58.16 dB. M is C in a and L in b.
+    # is the pin below. M is C in a and L in b.
+    # BOXB 2026-11-09: B-set 32, limiter-sample null moved with the new taps.
     for eng, db in rows.items():
-        print("any strip", eng, round(db, 2))
-        assert abs(db - (-58.16)) < 0.05, (eng, db)
+        print("any strip", eng, db)
+        assert abs(db - (-58.4132914552)) < 0.05, (eng, db)
     c = _role_scene("r", "c", "l", pin_m=pin)
-    # R = S, C = M, L = room. Same source freeze. Full-file null -64.62 dB.
+    # R = S, C = M, L = room. Same source freeze.
     rows_r = _both(a, c, play=play)
     for eng, db in rows_r.items():
-        print("any strip R=S", eng, round(db, 2))
-        assert abs(db - (-64.62)) < 0.05, (eng, db)
+        print("any strip R", eng, db)
+        assert abs(db - (-64.8720144042)) < 0.05, (eng, db)
 
 
 def _polar(body):

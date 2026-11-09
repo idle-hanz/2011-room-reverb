@@ -11,7 +11,7 @@ sys.path[:0] = [str(SW), str(SW / "engine")]
 
 import app_server as A  # noqa: E402
 
-EMPTY = "067adbca1930efcd3f7c83bdd1d4c359"
+EMPTY = "06bb1aaa0f59d67402b160224e155089"
 ARMED = {
     "bloom_preset": "nuke",
     "bloom_amount": 100,

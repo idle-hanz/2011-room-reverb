@@ -1314,11 +1314,7 @@
     var hint = document.getElementById("surfaceSoloHint");
     if (hint) {
       if (!solo) hint.textContent = "";
-      else if (solo === "D") {
-        hint.textContent = "Solo: listening to early reflections only. Back wall (−Z): Play's 32 images have no first-order back-wall image.";
-      } else {
-        hint.textContent = "Solo: listening to early reflections only.";
-      }
+      else hint.textContent = "Solo: listening to early reflections only.";
     }
   };
 

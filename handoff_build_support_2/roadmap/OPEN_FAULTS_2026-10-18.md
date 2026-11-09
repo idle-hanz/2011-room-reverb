@@ -28,3 +28,11 @@ F14 (2026-10-19). **Physics decay k is solved on the boot room only, so big room
 F15 (2026-10-24). **Movement 100, Play against Render, is an accepted parity gap.** FDN only, colour bypass, first 12000 samples: left null −60.51 dB, right null −50.69 dB. Play reads a ring allpass. Render reads a history allpass. Accepted. The wasm sample test in `software\tests\test_movement_knob.py` posts section 8 through `pushParams`. Knob 0 stays the empty live MD5 `b20cf5dc675f613992aa6a31c2cd74f4` and the centre MD5 `ba1bbc6d386ed75bf484156f08043f37`, max-abs 0. Knob 100 pins empty max-abs 0.11968714 and centre max-abs 0.079320193. The Python null must stay at or under −58 dB left and −48 dB right. The curve and the allpass stay as they are.
 
 F16 (2026-11-08). Two-source colour sits at ~0.92–1.1 s per 1 s of audio (long-standing). Headroom option: enable the existing LS_SIMD SSE loop for mac_bins (0.24 s scalar). Must prove the goldens stay bit-exact or re-pin deliberately. Not started.
+
+Note (2026-11-09). auto-treat refit for B set. `test_auto_treat_plan_rendered` bar is 10/23. The frozen cal is unchanged.
+
+Note (2026-11-09). s_audit UI red before BOXB. The same four tests fail on a clean worktree of e38a36b (4 failed in 78.15s). Not a BOXB break.
+- `test_a2_phone_tabs`: Page.evaluate TypeError: Cannot read properties of null (reading 'getBoundingClientRect')
+- `test_a10_header_status_on_every_tab`: Page.click Timeout 30000ms exceeded, waiting for locator(".view-tab[data-view=\"space\"]")
+- `test_a11_source_labels_omni_and_stale_reply`: Page.click Timeout 30000ms exceeded, waiting for locator(".view-tab[data-view=\"space\"]")
+- `test_a12_visible_controls_post_or_are_ui_only`: Page.evaluate TypeError: Cannot read properties of null (reading 'click')

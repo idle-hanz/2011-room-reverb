@@ -29,7 +29,7 @@ from poly_room import (  # noqa: E402
 )
 from render_pipeline import live_fdn_params, play_listen_scene  # noqa: E402
 
-EMPTY = "067adbca1930efcd3f7c83bdd1d4c359"
+EMPTY = "06bb1aaa0f59d67402b160224e155089"
 PLAN = "plan:1.00,1.00,5.00,1.00,5.00,6.00,3.00,7.00,1.00,5.00"
 
 

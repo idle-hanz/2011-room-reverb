@@ -20,7 +20,7 @@ import app_server as A  # noqa: E402
 from fdn import LOOP_COLUMN_D, loop_hadamard  # noqa: E402
 from render_pipeline import live_fdn_params, play_listen_scene  # noqa: E402
 
-EMPTY_MD5 = "067adbca1930efcd3f7c83bdd1d4c359"
+EMPTY_MD5 = "06bb1aaa0f59d67402b160224e155089"
 _SIGNED = (
     "level_l", "level_r", "level_c",
     "press_l", "press_r", "press_c",

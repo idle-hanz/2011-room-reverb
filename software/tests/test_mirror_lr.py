@@ -15,8 +15,8 @@ import app_server as A  # noqa: E402
 from render_pipeline import live_fdn_params  # noqa: E402
 from surface_colour import parse_surfaces  # noqa: E402
 
-EMPTY = "067adbca1930efcd3f7c83bdd1d4c359"
-CENTRE = "35db578a18557d5729c0450e26f24a9d"
+EMPTY = "06bb1aaa0f59d67402b160224e155089"
+CENTRE = "64f8319d8bf4e33353f8681ec31140de"
 # Default splay live dict before this toggle. Equal A and C must not move it.
 SPLAY = "6d996c03137772aaca9cebecab3358ac"
 

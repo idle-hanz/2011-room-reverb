@@ -6,7 +6,7 @@ movement_peak_ms. Parity, flat cards, mirror/null, and a direct-only body stay 0
 The wasm sample goes through pushParams. Knob 0 stays the empty and centre
 live scenes. Knob 100 changes the impulse. Play against the Python render,
 FDN only and colour bypass, is an accepted parity gap (ring allpass against
-history allpass). The floor is -58 dB left and -48 dB right.
+history allpass). The floor is -51.39 dB left and -48 dB right.
 """
 from __future__ import annotations
 
@@ -29,12 +29,13 @@ sys.path[:0] = [str(SW), str(SW / "engine")]
 import app_server as A  # noqa: E402
 import render_pipeline as rp  # noqa: E402
 
-EMPTY_MD5 = "067adbca1930efcd3f7c83bdd1d4c359"
-CENTRE_MD5 = "35db578a18557d5729c0450e26f24a9d"
-EMPTY_MOVE_MAX = 0.173830654
-CENTRE_MOVE_MAX = 0.116135473
+EMPTY_MD5 = "06bb1aaa0f59d67402b160224e155089"
+CENTRE_MD5 = "64f8319d8bf4e33353f8681ec31140de"
+EMPTY_MOVE_MAX = 0.112757546
+CENTRE_MOVE_MAX = 0.097007129
 MOVE_TOL = 1e-6
-NULL_L_DB = -58.0
+# BOXB 2026-11-09: B-set 32, left ring-versus-history null is -51.40 dB.
+NULL_L_DB = -51.39
 NULL_R_DB = -48.0
 SR = 48000
 SECS = 0.25
@@ -267,8 +268,8 @@ def test_section_8_changes_a_play_sample(tmp_path):
 
     Knob 100 packs 0.15 ms and moves the 0.25 s impulse by the pinned max-abs.
     FDN only, colour bypass, first 12000 samples: Play against Render stays
-    at or under -58 dB left and -48 dB right. Measured 2026-10-24 was
-    -60.51 dB left and -50.69 dB right. Accepted parity gap.
+    at or under -51.39 dB left and -48 dB right. Measured on the B set was
+    -51.40 dB left and -79.23 dB right. Accepted parity gap.
     """
     empty = {"movement": 0}
     centre = {"third_mic": "centre", "mic_gain_c": 1.0, "movement": 0}

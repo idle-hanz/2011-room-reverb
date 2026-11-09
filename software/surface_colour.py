@@ -582,7 +582,12 @@ def diffusion_u(seed: int, image_index: int, surface_letter: str, mic: str) -> f
 _MIRROR_X_LETTER = {"A": "C", "C": "A"}
 
 
-def mirror_jitter_overrides(n: Tuple[int, int, int], mic: str, partner_index: int) -> Dict[str, Any]:
+def mirror_jitter_overrides(
+    n: Tuple[int, int, int],
+    mic: str,
+    partner_index: int,
+    flipped_slots: bool = False,
+) -> Dict[str, Any]:
     """Hash kwargs so this image shares its jitter draw with its x-mirror.
 
     The mirror of (nx, ny, nz, mic) is (-nx, ny, nz) on the other capsule,
@@ -590,9 +595,26 @@ def mirror_jitter_overrides(n: Tuple[int, int, int], mic: str, partner_index: in
     today's key, so the return is empty. nx < 0 uses the partner image's
     list index and the swapped capsule. nx == 0 is its own mirror, so both
     capsules use the left capsule's draw. lambda_ref and the u map are unchanged.
+
+    ``flipped_slots`` is the shoebox ranker after it stores (-nx, ny, nz) in
+    the same slot. The representative is then the negative order, and it
+    keeps this slot's own index. The positive order borrows the partner.
+    A left-of-centre source leaves this false, so its key stays today's.
     """
     nx = int(n[0])
     mic_u = str(mic).upper()
+    if flipped_slots:
+        if nx > 0:
+            return {"hash_index": int(partner_index)}
+        if nx < 0:
+            swapped = "R" if mic_u == "L" else "L" if mic_u == "R" else mic_u
+            return {
+                "hash_mic": swapped,
+                "hash_letters": _MIRROR_X_LETTER,
+            }
+        if mic_u != "L":
+            return {"hash_mic": "L"}
+        return {}
     if nx < 0:
         swapped = "R" if mic_u == "L" else "L" if mic_u == "R" else mic_u
         return {

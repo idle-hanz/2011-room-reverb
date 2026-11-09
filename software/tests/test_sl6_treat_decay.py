@@ -20,7 +20,7 @@ import surf_panels as P
 import surf_target as ST
 from render_pipeline import live_fdn_params
 
-EMPTY = "067adbca1930efcd3f7c83bdd1d4c359"
+EMPTY = "06bb1aaa0f59d67402b160224e155089"
 
 
 def _md5(blob):

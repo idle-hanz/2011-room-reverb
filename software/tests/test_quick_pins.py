@@ -30,15 +30,15 @@ from maths_distance import geometric_level  # noqa: E402
 pytestmark = pytest.mark.quick
 
 TLAW_SHA1 = {
-    "play_std_lock18_byp.f32": "7906405d783f784379388803b7eb42c5d25c6c7f",
-    "play_std_lock18_col.f32": "c20e6894b6f05a69960b360869232548fb42c148",
-    "play_std_unlocked_byp.f32": "2639f90fffefc08316143511390097bdada89fea",
-    "play_std_unlocked_col.f32": "9146eaddc1f6a3333c54ad2f489b86f6ffadadc8",
-    "render_std_unlocked_byp.f32": "2a806e334e06cc475868d4c3da3fc78431c9a0aa",
+    "play_std_lock18_byp.f32": "f5e9ebce2759262bc63a6fa67f30caecee2375ff",
+    "play_std_lock18_col.f32": "a3a796a516436c682e9af71deaf77081a5509939",
+    "play_std_unlocked_byp.f32": "778a241ce39842a3252e37617cb3a8f196f547eb",
+    "play_std_unlocked_col.f32": "c2a74eec10c0a12c1747ceabd7993f0db93a5e12",
+    "render_std_unlocked_byp.f32": "135c41ce546c390ef048a28713338259db07bd0a",
 }
-GOLDEN_META_SHA1 = "0bf64ef21a262723573e9d6c6d10d0dbf2397e7c"
-EMPTY_MD5 = "067adbca1930efcd3f7c83bdd1d4c359"
-CENTRE_MD5 = "35db578a18557d5729c0450e26f24a9d"
+GOLDEN_META_SHA1 = "fd356749d18eacb7e4768ea798061f5b1b8ec030"
+EMPTY_MD5 = "06bb1aaa0f59d67402b160224e155089"
+CENTRE_MD5 = "64f8319d8bf4e33353f8681ec31140de"
 DISTANCES = (0.3, 1.0, 2.5, 7.0, 40.0)
 
 
@@ -88,7 +88,7 @@ PIN_TABLE = {
     "room_3d.js": 28,
     "room_editor.js": 34,
     "image_views.js": 26,
-    "colour_surfaces.js": 10,
+    "colour_surfaces.js": 11,
     "polar_field.js": 19,
     "polar_views.js": 12,
     "mic_desk.js": 30,
