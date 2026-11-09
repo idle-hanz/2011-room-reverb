@@ -250,7 +250,15 @@ html, body {
 }
 .canvas-wrap canvas.dragging { cursor: grabbing; }
 .space-room { margin-top: 14px; }
-.space-room-plan { margin-bottom: 8px; }
+.space-room-plan { margin-bottom: 8px; min-height: 420px; height: 420px; }
+.space-room-elev { min-height: 240px; height: 240px; }
+.space-room .canvas-wrap canvas { width: 100%; height: 100%; }
+details.colour-panel > summary {
+  cursor: pointer;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+details.colour-panel:not([open]) > summary { margin-bottom: 0; }
 .map-panel .canvas-wrap,
 .view3d-panel .canvas-wrap { min-height: 250px; }
 

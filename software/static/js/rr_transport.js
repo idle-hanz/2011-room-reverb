@@ -267,7 +267,7 @@ function syncUINow() {
   if (state.movement == null || !isFinite(Number(state.movement))) state.movement = 0;
   state.movement = Math.max(0, Math.min(100, Math.round(Number(state.movement))));
   if (movementEl && document.activeElement !== movementEl) movementEl.value = String(state.movement);
-  if (movementOut) movementOut.textContent = state.movement <= 0 ? "Off" : (state.movement + "%");
+  if (movementOut) movementOut.textContent = state.movement <= 0 ? "still tail" : (state.movement + "%");
   var climateEl = document.getElementById("air_climate");
   if (climateEl && document.activeElement !== climateEl) {
     climateEl.value = state.air_climate || "studio_20C_50RH";

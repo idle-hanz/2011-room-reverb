@@ -8,12 +8,12 @@
   "use strict";
 
   var SWITCHES = {
-    slice: true,
-    angle: true,
-    readouts: true,
-    compare: true,
-    arrivals: true,
-    balloon: true
+    slice: false,
+    angle: false,
+    readouts: false,
+    compare: false,
+    arrivals: false,
+    balloon: false
   };
 
   var SWITCH_LABEL = {

@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>2011 Room Reverb</title>
   <link rel="icon" href="/static/favicon.svg" type="image/svg+xml" />
-  <link rel="stylesheet" href="/static/css/app.css?v=49" />
+  <link rel="stylesheet" href="/static/css/app.css?v=50" />
   <link rel="stylesheet" href="/static/css/sl_room_result.css?v=3" />
   <link rel="stylesheet" href="/static/css/rr_controls.css?v=1" />
 </head>
@@ -366,15 +366,6 @@
             <button type="button" class="chip space-path-mic" data-path-mic="C" aria-pressed="false">Centre</button>
             <button type="button" class="chip space-path-mic active" data-path-mic="all" aria-pressed="true">All</button>
           </div>
-          <div class="tool-row room-shape-row" id="spaceShapeRow" role="group" aria-label="Room shape">
-            <span class="mic-label">Shape</span>
-            <button type="button" class="chip active" data-room-shape="box" aria-pressed="true">Box</button>
-            <button type="button" class="chip" data-room-shape="splay" aria-pressed="false">Splay</button>
-            <button type="button" class="chip" data-room-shape="lede" aria-pressed="false">LEDE</button>
-            <button type="button" class="chip" data-room-shape="live" aria-pressed="false">Live room</button>
-            <button type="button" class="chip" data-room-shape="gable" aria-pressed="false">Gable</button>
-            <button type="button" class="chip" data-room-shape="hex" aria-pressed="false">Hex</button>
-          </div>
           <div class="tool-row">
             <span class="live-metres" id="liveMetresImg">—</span>
           </div>
@@ -390,6 +381,13 @@
                 <h2>Surfaces <span class="assumed-tag">ASSUMED</span></h2>
                 <span class="hint">Box starts with left and right linked. Splay stays one pair. Front, back, floor and ceiling stay independent</span>
               </div>
+              <div class="material-row" id="materialChips">
+                <span class="material-label">Material</span>
+              </div>
+              <div class="material-help">
+                <button type="button" class="chip" id="materialPaintAll" aria-pressed="false">All legal faces</button>
+                <p class="hint" id="materialHint">Click a material to paint the selected face. Grey materials are not allowed on this face. Shift-click, or All legal faces, paints every face that material may use.</p>
+              </div>
               <p class="assumed-banner" id="surfacesBanner">
                 Pick a material for the selected face. Curtain stays on walls. Carpet stays on the floor.
                 Solo and Mute are on this tab only. The direct sound does not change.
@@ -403,13 +401,6 @@
                 <div class="room-net" id="roomNet" role="listbox" aria-label="Room surface net A–F">
                   <!-- filled by colour_surfaces.js -->
                 </div>
-              </div>
-              <div class="material-row" id="materialChips">
-                <span class="material-label">Material</span>
-              </div>
-              <div class="material-help">
-                <button type="button" class="chip" id="materialPaintAll" aria-pressed="false">All legal faces</button>
-                <p class="hint" id="materialHint">Click a material to paint the selected face. Grey materials are not allowed on this face. Shift-click, or All legal faces, paints every face that material may use.</p>
               </div>
               <div class="material-row" id="materialSets">
                 <span class="material-label">Set</span>
@@ -440,7 +431,10 @@
                   <div class="surf-graph-block">
                     <div class="surf-graph-label">Absorption vs frequency <em>ASSUMED</em></div>
                     <canvas id="absorbCanvas" width="520" height="160" aria-label="Absorb curve"></canvas>
-                    <div class="absorb-sliders" id="absorbSliders"></div>
+                    <details class="room-fold">
+                      <summary>Absorb sliders</summary>
+                      <div class="absorb-sliders" id="absorbSliders"></div>
+                    </details>
                   </div>
                 </div>
                 <details class="surfaces-advanced" id="surfacesAdvanced">
@@ -485,11 +479,8 @@
                 </details>
               </div>
             </div>
-            <div class="panel colour-panel">
-              <div class="panel-head">
-                <h2>Room colour</h2>
-                <span class="hint">What the faces above do to the wet sound · 1/3 octave · updates after Render</span>
-              </div>
+            <details class="panel colour-panel">
+              <summary>Room colour <span class="hint">What the faces above do to the wet sound · 1/3 octave · updates after Render</span></summary>
               <p class="hint">Analyser of the wet sound. Hold A, change a face above, Render, then compare.</p>
               <div class="colour-toolbar" id="colourToolbar" role="toolbar" aria-label="Colour compare and reference">
                 <div class="colour-legend" id="colourLegend" aria-live="polite">
@@ -528,7 +519,7 @@
                 <div class="surf-graph-label">This face · absorb×EQ <em id="colourSparkLabel">A · Left · faces −X · ASSUMED</em></div>
                 <canvas id="colourSparkCanvas" width="1100" height="72" aria-label="Selected surface EQ sparkline"></canvas>
               </div>
-            </div>
+            </details>
             <div class="panel" id="airCard">
               <div class="panel-head"><h2>Air</h2></div>
               <label class="ctrl" id="humidity_label" title="Relative humidity 50%"><span>Air amount (humidity)</span><input type="range" id="humidity" min="0" max="1" step="0.01" value="0.35" title="Relative humidity 50%" /><output id="humidity_out">50% RH</output></label>
@@ -639,7 +630,7 @@
           <label class="ctrl" id="movementRow">
             <span>Movement</span>
             <input type="range" id="movement" min="0" max="100" step="1" value="0" />
-            <output id="movement_out">Off</output>
+            <output id="movement_out">still tail</output>
           </label>
           </div>
           <div id="roomSourceBox" class="source-col" hidden>
@@ -647,7 +638,7 @@
             <div class="place-row" role="group" aria-label="Which source">
               <button type="button" class="chip active" id="sourceChipA">This track</button>
               <button type="button" class="chip" id="sourceChipB" hidden>Source B</button>
-              <button type="button" class="chip" id="sourceLink" disabled title="Coming later: add another Studio One track to this room. Linked tracks share the walls, mic stand and air; each track keeps its own source. Not in this build yet.">+ Link track</button>
+              <button type="button" class="chip" id="sourceLink" disabled title="Not in this build yet.">+ Link track</button>
             </div>
             <label class="ctrl ctrl-select">
               <span>Radiation</span>
@@ -1018,7 +1009,7 @@
   <script src="/static/js/image_views.js?v=24"></script>
   <script src="/static/js/colour_surfaces.js?v=10"></script>
   <script src="/static/js/polar_field.js?v=18"></script>
-  <script src="/static/js/polar_views.js?v=10"></script>
+  <script src="/static/js/polar_views.js?v=11"></script>
   <script src="/static/js/mic_desk.js?v=29"></script>
   <script src="/static/js/source_desk.js?v=7"></script>
   <script src="/static/js/pack_room.js?v=55"></script>
@@ -1036,10 +1027,10 @@
   <script src="/static/js/rr_source.js?v=2"></script>
   <script src="/static/js/rr_space.js?v=3"></script>
   <script src="/static/js/rr_polar.js?v=2"></script>
-  <script src="/static/js/rr_transport.js?v=10"></script>
+  <script src="/static/js/rr_transport.js?v=11"></script>
   <script src="/static/js/rr_settings.js?v=4"></script>
-  <script src="/static/js/app.js?v=110"></script>
-  <script src="/static/js/sl_room_result.js?v=12"></script>
+  <script src="/static/js/app.js?v=111"></script>
+  <script src="/static/js/sl_room_result.js?v=13"></script>
   <script src="/static/js/rr_controls.js?v=1"></script>
   <script src="/static/js/rr_controls_boot.js?v=1"></script>
 </body>

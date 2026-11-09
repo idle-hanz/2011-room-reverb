@@ -235,20 +235,14 @@ function pressedName(row) {
 
 test("the space picker shares room_shape with the room picker", () => {
   const views = page.indexOf('id="imageViews"');
-  const spaceStart = page.indexOf('id="spaceShapeRow"');
-  assert.ok(views > 0 && spaceStart > views);
-  const row = page.slice(spaceStart, spaceStart + 1100);
-  assert.match(row, /aria-label="Room shape"/);
-  assert.match(row, /class="chip active" data-room-shape="box" aria-pressed="true"/);
-  ["splay", "lede", "live", "gable", "hex"].forEach(function (name) {
-    assert.match(row, new RegExp('data-room-shape="' + name + '"'));
-  });
-  assert.match(row, />Box</);
-  assert.match(row, />Splay</);
-  assert.match(row, />LEDE</);
-  assert.match(row, />Live room</);
-  assert.match(row, />Gable</);
-  assert.match(row, />Hex</);
+  const viewsEnd = page.indexOf('id="surfacesViews"', views);
+  assert.ok(views > 0 && viewsEnd > views);
+  assert.equal(page.slice(views, viewsEnd).indexOf('id="spaceShapeRow"'), -1);
+  const had = page.indexOf('id="panelHadamard"');
+  const floor = page.indexOf('id="spaceFloorCanvas"');
+  const elev = page.indexOf('id="spaceElevCanvas"');
+  assert.ok(had > 0 && had < floor && floor < elev);
+  assert.match(page, /id="roomShapeRow"/);
   const applyStart = app.indexOf("function applyRoomShape");
   const applyEnd = app.indexOf("function paintRoomShape", applyStart);
   assert.ok(applyStart > 0 && applyEnd > applyStart);

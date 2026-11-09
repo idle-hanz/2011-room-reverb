@@ -137,9 +137,9 @@
     panel.appendChild(at);
     var ln = el("p", "hint sl-locknote"); ln.id = "slLockNote"; ln.hidden = true; panel.appendChild(ln);
     var sg = el("div", "sl-suggest"); sg.id = "slSuggest"; panel.appendChild(sg);
-    // insert after the room net
-    var net = host.querySelector(".room-net-wrap");
-    if (net && net.nextSibling) host.insertBefore(panel, net.nextSibling); else host.appendChild(panel);
+    var chips = document.getElementById("materialChips");
+    if (chips && chips.parentElement === host) host.insertBefore(panel, chips);
+    else host.insertBefore(panel, host.firstChild ? host.firstChild.nextSibling : null);
     // Treatment list inside the selected-face detail
     var det = document.getElementById("surfaceDetail");
     var tr = el("div", "sl-treat"); tr.id = "slTreatment";

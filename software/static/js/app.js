@@ -600,7 +600,7 @@ if (movementSlider) {
     if (v > 100) v = 100;
     state.movement = v;
     var out = document.getElementById("movement_out");
-    if (out) out.textContent = v <= 0 ? "Off" : (v + "%");
+    if (out) out.textContent = v <= 0 ? "still tail" : (v + "%");
     scheduleLiveParams();
   });
 }

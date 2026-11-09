@@ -70,7 +70,7 @@ def test_live_md5s_match_a7():
 
 # Cache query on each file index.html loads. One table, one check.
 PIN_TABLE = {
-    "app.css": 49,
+    "app.css": 50,
     "sl_room_result.css": 3,
     "rr_controls.css": 1,
     "room_shape.js": 9,
@@ -90,7 +90,7 @@ PIN_TABLE = {
     "image_views.js": 24,
     "colour_surfaces.js": 10,
     "polar_field.js": 18,
-    "polar_views.js": 10,
+    "polar_views.js": 11,
     "mic_desk.js": 29,
     "source_desk.js": 7,
     "pack_room.js": 55,
@@ -108,10 +108,10 @@ PIN_TABLE = {
     "rr_source.js": 2,
     "rr_space.js": 3,
     "rr_polar.js": 2,
-    "rr_transport.js": 10,
+    "rr_transport.js": 11,
     "rr_settings.js": 4,
-    "app.js": 110,
-    "sl_room_result.js": 12,
+    "app.js": 111,
+    "sl_room_result.js": 13,
     "rr_controls.js": 1,
     "rr_controls_boot.js": 1,
 }

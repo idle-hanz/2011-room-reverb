@@ -16,132 +16,85 @@ The app is **not** Gradio. Launch: `software/Launch Tweak App.bat` → http://12
 | Control | Meaning |
 |---------|---------|
 | **Upload WAV** | Dry input for Play live and Render |
-| **Play live** | Running 32-line FDN in the browser (`/api/live_params` + AudioWorklet). Dragging source/mic updates delays while it plays |
-| **Render** | Build IR, FFT-convolve long files, write `software/renders/out.wav`, refresh Colour / Polar when open |
+| **Play live** | Running preview in the browser. Dragging source or mic updates delays while it plays |
+| **Save / Load** | Scene JSON |
+| **Render** | Build the IR and write `software/renders/out.wav` |
+
+Minimum IR length and “Also bake an IR when I drop Src / Mic” sit on **Preview**, not in this bar.
 
 ---
 
-## Stage view switcher
+## Stage tabs
 
-| Tab | What you see / do | Engine |
-|-----|-------------------|--------|
-| **Floor · Side · 3D** | Floor plan (XZ) drag Src/Mic; Side elevation (ZY) heights; 3D orbit/pan/zoom | `sx,sz,mcx,mcz,my,sy` |
-| **Mic** | Zoomed stand: top / side / 3D + L/C/R polar plots | Same geometry + per-capsule pattern/yaw |
-| **Lattice** | Mirrored-room image tiling | `POST /api/images` lattice cells |
-| **Paths** | In-room paths ↔ Last legs toggle | Folded polylines / last-leg segments |
-| **Colour** | 1/3-octave wet-IR bars + compare tools | After Render / `/api/colour` (**ASSUMED**) |
-| **Surfaces** | A–F absorb / EQ / diffusion cards | **ASSUMED** surface model |
-| **Polar 3D** | Pattern × frequency solid | `/api/polar` (**ASSUMED** freq morph) |
+| Tab | What you see |
+|-----|----------------|
+| **Room** | Floor, 3D room, and Side. The button reads **Source**. Source hides those three views and keeps the source sliders beside Place and face. The button then reads **Room**. |
+| **Mic** | Each mic is first: Left, Centre, and Right. Top and the combined pattern follow. There is no Open Polar panel. |
+| **Mix** | Mic strips and Direct, FDN, Early. A capsule the setup does not use is dimmed and labelled off. The fader number stays. |
+| **Space** | Lattice, Paths, and 1st–all. Shape stays on Room. The linked floor plan and side elevation sit under Hadamard size. |
+| **Surfaces** | Room result, then the material row. ASSUMED tags stay. Absorb sliders and the room-colour analyser start folded. |
+| **Polar** | One mic, All mics summed, At the speakers. The six extra plots start unticked. |
 
-**Mic toggles** (Lattice / Paths): L · C · R · All — which listeners to draw paths for (default C).
-
-**Paths mode chips:** In-room paths | Last legs.
-
-**Link heights** (Floor and Mic desks): when on, `sy` and `my` stay equal. Off by default so **sy ≠ my** is allowed (modern; Prepare historically SY=MY **VERIFIED**).
+**Link heights** (Floor and Mic): when on, source height and mic height stay equal.
 
 ---
 
-## Sidebar — Room size
+## Room sidebar
 
-| Control | Engine | Notes |
-|---------|--------|-------|
-| Width / Ceiling / Length | `W` / `H` / `L` (metres) | Size changes **clamp** positions; do not scale them |
+Width, Ceiling, and Length come first, with Studio, Club, and Hall beside them. The place line is one sentence. Shape, ratios, tilt, plan, and the treatment objects start inside one disclosure. Smooth and Movement stay out. Movement 0 reads **still tail**. The posted value stays 0.
 
----
+Floor is titled **Floor**. Side is titled **Side**. The drag hints are on the title, not in the heading.
 
-## Sidebar — Listen
-
-| Control | Engine | Notes |
-|---------|--------|-------|
-| **Mic setup** | Preset snap | AB omni/card, XY 90/120, ORTF, NOS, DIN, MS (label: omni mid + inward cardioids; preset mid still cardioid until code catch-up), MS classic, Mono C, Custom |
-| Capsule space | `space` (m) | L/R separation about stand |
-| Stand X / Stand Z | `mcx` / `mcz` | Free by default; Advanced parity locks X to W/2 |
-| Mic height / Src height | `my` / `sy` | Independent unless Link heights |
-| L / C / R **pattern** | `pattern_l/c/r` | omni · cardioid · fig‑8 (**ASSUMED**) |
-| L / C / R **yaw** | `yaw_*_deg` | 0° = forward (+Z); MS inward L −90° / R +90° |
-
-Hidden legacy fields (`diverg`, `toe_half_deg`, `car_omni`) remain for API compat. Omitting absolute toe in API still uses VERIFIED Diverg formula.
+**+ Link track** stays disabled. Its title is one line: “Not in this build yet.”
 
 ---
 
-## Sidebar — Mix
+## Listen
 
-| Control | Engine | Notes |
-|---------|--------|-------|
-| **Hadamard size** 8/16/32/64/128 | `hadamard_n` | **N images · N FDN lines**; default 32. Play live locks N=32 |
-| Early overlay | `early_wet` | ASSUMED FIR on top of 2011 loop (default 0) |
-| FDN wet | `fdn_wet` | Delay+Hadamard wet (default 1) |
-| Dry | `dry_gain` | Dry bypass |
-| **Feedback (Gain)** | `fdn_g` | Structure Gain 0–1; engine `g = Gain/N` (1 at 32 lines = 1/32) |
-| **Decay s** | `decay_s` | ASSUMED RT60 lock from mean image delay; moving Feedback turns it off |
-| Humidity | `humidity` | 0 = off; 0.5 = Structure Wet 400; 1 = 700 |
-| Air 1-pole / shelf | `air_lp` / `air_shelf` | Independent mixes (defaults 0.25 / 1). Both paths: Render IR and Play live |
-| IR length ms | `ir_length_ms` | Render length |
-| **2011 Reaktor snapshot** | Mix button | Hall 57×34×97, dump source/mic, Gain=1, Humidity 400, Mic 10 kHz |
-| Also bake IR on drop | `live_drag_render` | Optional extra; Play live already updates delays |
-| Diffusion seed | `diffusion_seed` | **ASSUMED**; same seed ⇒ bit-identical IR |
-
-Matrix is unscaled ±1 Sylvester — **no `1/√N` on H**. Desktop clamps loop `g` to `0.99/√N`.
+Mic setup, capsule space, stand, and the two heights. The Mic tab holds the pattern, yaw, and preset controls. A setup with no centre capsule shows the Centre strip off. The same paint covers any capsule the setup does not include.
 
 ---
 
-## Sidebar — Preview
+## Mix desk
+
+Stereo pair, M/S pair, and Independent. 2011 linear and Constant power. Physical ceiling, Rumble filter, and Off-axis tail keep those names. Two sources stays disabled until the WAV is stereo, and the title then reads **Load a stereo WAV**.
+
+The 3D readout is one line: source and stand. Per-capsule distance, angle, height, level, and delay are on the hover.
+
+---
+
+## Preview
 
 | Control | Meaning |
 |---------|---------|
-| File name / audio player | Last render preview |
-| Status / out path | Progress and `renders/out.wav` |
+| **Minimum IR length** | `ir_length_ms`, 50–2000 ms, default 1500 |
+| **Also bake an IR when I drop Src / Mic** | `live_drag_render`, off until ticked |
+| One source / Two sources | File split. Two sources needs a stereo WAV |
+| File name / player / status | Last render |
+
+---
+
+## Space sidebar
+
+Hadamard size 8, 16, 32, 64, 128. The note stays: the matrix is unscaled ±1 Sylvester, and 64 and 128 are Render-only. Under that, the same floor plan and side elevation as Room, large enough to drag.
+
+---
+
+## Surfaces
+
+The tab opens on Room result and the material row. The ASSUMED banner, the ASSUMED orientation tag, and the ASSUMED absorb and EQ labels stay. Absorb sliders start closed. The room-colour analyser starts closed. Air amount, climate, and ISO depth stay on the tab.
+
+---
+
+## Polar
+
+One mic is the first page. Six extra plots (one mic at a band, response at an angle, readouts, compare, arrivals, balloon) start unticked. Nothing on that row is posted.
 
 ---
 
 ## Advanced / Structure locks
 
-| Control | Meaning |
-|---------|---------|
-| **Reaktor parity** | Lock mic X to room centre (`MCX = W/2`) |
-| Notes | Reminds: `MCZ = L − MZ`, `c = 340`, Prepare `MLALR/MRALR = Diverg×0.5 ∓ 0.25` (Add, 403), free mic X / absolute yaw as modern extensions, diffusion `λ_ref` default 0.02 m (**ASSUMED**) |
-
----
-
-## Colour desk (stage)
-
-| Control | Meaning | Tag |
-|---------|---------|-----|
-| Now / Last / Hold A / Hold B | Compare curves after re-Render | ASSUMED view |
-| 0 dB ref | Peak band or 1 kHz | — |
-| Face badge / net | Selected Surfaces face orientation | B/D/E/F names VERIFIED; A/C Sides split ASSUMED |
-
----
-
-## Surfaces desk (stage)
-
-| Control | Meaning | Tag |
-|---------|---------|-----|
-| Cards A–F | absorb vs freq, EQ, diffusion 0…1 | ASSUMED |
-| Diffusion λ_ref / seed | Path-length jitter params | ASSUMED |
-
-Orientation used in UI: **B** Front/Ahead · **D** Back/Behind · **E** Floor · **F** Ceiling (panel names VERIFIED). **A** Left (−X) · **C** Right (+X) — Reaktor groups both as **Sides**; the split is ASSUMED.
-
----
-
-## Polar 3D desk (stage)
-
-| Control | Meaning | Tag |
-|---------|---------|-----|
-| L / C / R / Sum | Which pattern solids to show (default Sum) | — |
-| Refresh | Re-fetch `/api/polar` | — |
-| Orbit / scroll | Inspect mesh; plane tilts if `sy ≠ my` | Freq morph ASSUMED |
-
----
-
-## Mic desk detail
-
-| Pane | Action |
-|------|--------|
-| Top · plan | Drag body to place; drag amber arc to yaw |
-| Side · height | Drag Src H / Mic H only |
-| 3D · array | Orbit only; look cones |
-| Polar L/C/R | Pattern × yaw readout; capsule slots under plots |
+Shown on every tab. The 2011 snapshot and the colour-filter choice stay hidden until `?dev=1`. Lighter CPU (shared tail) is Play only.
 
 ---
 
