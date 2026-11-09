@@ -155,6 +155,7 @@ function paintPlaceChips() {
 function roomShapeRows() {
   return [
     document.getElementById("roomShapeRow"),
+    document.getElementById("roomDiagramShapeRow"),
     document.getElementById("spaceShapeRow"),
     document.getElementById("roomPlanRow")
   ];

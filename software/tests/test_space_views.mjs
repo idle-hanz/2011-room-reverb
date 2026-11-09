@@ -34,6 +34,8 @@ test("lattice stays a toggle and last legs is not a separate chip", () => {
 
 test("the view posts no new audio keys", () => {
   assert.match(space, /imageView\.setSpace\(/);
+  assert.match(space, /paths: spacePaths/);
+  assert.doesNotMatch(space, /paths: roomDiagram === "paths" \? spacePaths : 0/);
   assert.match(space, /heardMix\(state\)/);
   assert.doesNotMatch(space, /WORKLET_VER/);
   assert.match(views, /setSpace: function/);

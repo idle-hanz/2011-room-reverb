@@ -1107,6 +1107,33 @@ select.cap-pattern:focus {
 #roomDiagramFrame .tool-row,
 #roomDiagramFrame .hadamard-block,
 #roomDiagramFrame .hint { margin-right: 76px; }
+.room-diagram-shapes { display: none; }
+#roomDiagramFrame.is-enlarged {
+  padding: 8px 10px 10px;
+  gap: 6px;
+}
+#roomDiagramFrame.is-enlarged .room-diagram-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 12px;
+  margin: 0 78px 0 0;
+}
+#roomDiagramFrame.is-enlarged .room-diagram-shapes { display: flex; flex-wrap: wrap; gap: 5px; margin: 0; }
+#roomDiagramFrame.is-enlarged .room-diagram-bar > .tool-row,
+#roomDiagramFrame.is-enlarged .room-diagram-bar > .hadamard-block {
+  width: auto;
+  flex: 0 1 auto;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+#roomDiagramFrame.is-enlarged .hadamard-label,
+#roomDiagramFrame.is-enlarged .hadamard-note,
+#roomDiagramFrame.is-enlarged .hadamard-readout,
+#roomDiagramFrame.is-enlarged .hint { display: none; }
+#roomDiagramFrame.is-enlarged .hadamard-row,
+#roomDiagramFrame.is-enlarged .view3d-readout-row { margin: 0; min-height: 0; }
 #roomDiagramFrame.is-enlarged .view3d-wrap,
 #roomDiagramFrame.is-enlarged .image-wrap {
   flex: 1 1 auto;

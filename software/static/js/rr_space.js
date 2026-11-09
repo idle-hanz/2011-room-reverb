@@ -169,8 +169,9 @@ function applyImageView() {
   syncOrderSlider(imagesCache);
   try {
     imageView.setSpace({
+      /* Paths mode is the home room. Lattice mode keeps whatever path lines are already on. */
       lattice: roomDiagram === "paths" ? false : spaceLattice,
-      paths: roomDiagram === "paths" ? spacePaths : 0,
+      paths: spacePaths,
       order: spaceOrder,
       mic: spacePathMic
     });
@@ -258,7 +259,7 @@ function syncSpaceModeUI() {
     latticeBtn.setAttribute("aria-pressed", latOn ? "true" : "false");
   }
   if (pathsBtn) {
-    var on = roomDiagram === "paths";
+    var on = roomDiagram === "paths" || (roomDiagram === "lattice" && spacePaths > 0);
     pathsBtn.classList.toggle("active", on);
     pathsBtn.setAttribute("aria-pressed", on ? "true" : "false");
     pathsBtn.textContent = spacePaths === 1 ? "Paths: lattice" : (spacePaths === 2 ? "Paths: in room" : "Paths");
@@ -275,17 +276,16 @@ function syncSpaceModeUI() {
   if (roomDiagram === "room") {
     if (imageViewTitle) imageViewTitle.textContent = "3D room";
     if (imageViewHint) imageViewHint.textContent = roomHint;
-  } else if (roomDiagram === "paths" && spacePaths === 2) {
-    if (imageViewTitle) imageViewTitle.textContent = "In-room reflections";
-    if (imageViewHint) imageViewHint.textContent = camHint;
-  } else if (roomDiagram === "paths" && spacePaths === 1) {
-    if (imageViewTitle) imageViewTitle.textContent = "Paths from the image sources";
-    if (imageViewHint) imageViewHint.textContent = camHint;
-  } else if (roomDiagram === "paths") {
-    if (imageViewTitle) imageViewTitle.textContent = "Paths";
-    if (imageViewHint) imageViewHint.textContent = camHint;
   } else if (imageViewTitle) {
-    imageViewTitle.textContent = spaceLattice ? "Mirrored-room lattice" : "Home room";
+    var lat = roomDiagram === "lattice" && spaceLattice;
+    var title = "Home room";
+    if (lat && spacePaths === 2) title = "Lattice and in-room paths";
+    else if (lat && spacePaths === 1) title = "Lattice and path rays";
+    else if (lat) title = "Mirrored-room lattice";
+    else if (spacePaths === 2) title = "In-room reflections";
+    else if (spacePaths === 1) title = "Paths from the image sources";
+    else if (roomDiagram === "paths") title = "Paths";
+    imageViewTitle.textContent = title;
     if (imageViewHint) imageViewHint.textContent = camHint;
   }
 }

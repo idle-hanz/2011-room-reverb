@@ -445,9 +445,12 @@ if (spaceLatticeBtn) {
 }
 if (spacePathsBtn) {
   spacePathsBtn.addEventListener("click", function () {
-    if (roomDiagram !== "paths") {
+    if (roomDiagram === "room") {
       roomDiagram = "paths";
       if (!(spacePaths > 0)) spacePaths = 2;
+    } else if (roomDiagram === "lattice") {
+      if (!(spacePaths > 0)) spacePaths = 2;
+      else spacePaths = (spacePaths + 1) % 3;
     } else {
       spacePaths = (spacePaths + 1) % 3;
     }
