@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>2011 Room Reverb</title>
   <link rel="icon" href="/static/favicon.svg" type="image/svg+xml" />
-  <link rel="stylesheet" href="/static/css/app.css?v=47" />
+  <link rel="stylesheet" href="/static/css/app.css?v=48" />
   <link rel="stylesheet" href="/static/css/sl_room_result.css?v=3" />
   <link rel="stylesheet" href="/static/css/rr_controls.css?v=1" />
 </head>
@@ -58,8 +58,7 @@
           <div class="view-row">
             <div class="panel map-panel">
               <div class="panel-head">
-                <h2>Floor plan</h2>
-                <span class="hint">Looking down from ceiling · bottom = Back / mic · top = Front / source · Left = −X · click a wall or the floor to edit that face · drag a wall or corner to resize</span>
+                <h2 title="Looking down from ceiling · bottom = Back / mic · top = Front / source · Left = −X · click a wall or the floor to edit that face · drag a wall or corner to resize">Floor</h2>
               </div>
               <div class="tool-row">
                 <label class="link-heights" title="When on, source height and mic height stay equal">
@@ -90,8 +89,7 @@
           </div>
           <div class="panel elev-panel">
             <div class="panel-head">
-              <h2>Side elevation</h2>
-              <span class="hint">Looking from the right · mic left · source right · drag Src H / Mic H · click the floor line or the ceiling to edit that face · drag the ceiling to resize</span>
+              <h2 title="Looking from the right · mic left · source right · drag Src H / Mic H · click the floor line or the ceiling to edit that face · drag the ceiling to resize">Side</h2>
             </div>
             <div class="canvas-wrap diagram-frame" id="elevFrame">
               <button type="button" class="diagram-expand" aria-label="Enlarge side elevation">Enlarge</button>
@@ -555,44 +553,51 @@
             <button type="button" class="chip" id="roomBoxToggle" aria-pressed="false">Source</button>
           </div>
           <div id="roomSizeBox">
-          <div class="place-row" id="placeRow" role="group" aria-label="Room places">
-            <button type="button" class="chip" data-place="studio">Studio</button>
-            <button type="button" class="chip" data-place="club">Club</button>
-            <button type="button" class="chip" data-place="hall">Hall</button>
+          <div class="room-size-top">
+            <div class="room-size-dims">
+              <label class="ctrl"><span>Width <em>m</em></span><input type="range" id="W" min="1" max="80" step="0.1" value="6" /><output id="W_out">6.0</output></label>
+              <label class="ctrl"><span>Ceiling <em>m</em></span><input type="range" id="H" min="1" max="40" step="0.1" value="3" /><output id="H_out">3.0</output></label>
+              <label class="ctrl"><span>Length <em>m</em></span><input type="range" id="L" min="2" max="120" step="0.5" value="8" /><output id="L_out">8.0</output></label>
+            </div>
+            <div class="place-row" id="placeRow" role="group" aria-label="Room places">
+              <button type="button" class="chip" data-place="studio">Studio</button>
+              <button type="button" class="chip" data-place="club">Club</button>
+              <button type="button" class="chip" data-place="hall">Hall</button>
+            </div>
           </div>
-          <p class="hint" id="placeHint">A place chip sets the room size. Source, stand and mics stay relative to the centre. Mix and colour reset. Surfaces stay, unless that place defines its own. Hall is the 2011 dump for size, mix and surfaces.</p>
-          <div class="place-row room-shape-row" id="roomShapeRow" role="group" aria-label="Room shape">
-            <button type="button" class="chip active" data-room-shape="box" aria-pressed="true">Box</button>
-            <button type="button" class="chip" data-room-shape="splay" aria-pressed="false">Splay</button>
-            <button type="button" class="chip" data-room-shape="lede" aria-pressed="false">LEDE</button>
-            <button type="button" class="chip" data-room-shape="live" aria-pressed="false">Live room</button>
-            <button type="button" class="chip" data-room-shape="gable" aria-pressed="false">Gable</button>
-            <button type="button" class="chip" data-room-shape="hex" aria-pressed="false">Hex</button>
-          </div>
-          <div class="place-row" id="roomRatioRow" role="group" aria-label="Shoebox ratios">
-            <button type="button" class="chip" data-ratio="bolt">Bolt</button>
-            <button type="button" class="chip" data-ratio="sepmeyer">Sepmeyer</button>
-            <button type="button" class="chip" data-ratio="louden">Louden</button>
-          </div>
-          <p class="hint" id="roomModes">Axial modes</p>
-          <div class="place-row" id="roomTiltRow" role="group" aria-label="Wall tilt and ceiling slope">
-            <button type="button" class="chip" id="roomTiltBtn">Walls flat</button>
-            <button type="button" class="chip" id="roomSlopeBtn">Ceiling flat</button>
-          </div>
-          <div class="place-row" id="roomPlanRow" role="group" aria-label="Floor plan">
-            <button type="button" class="chip" data-room-shape="plan" aria-pressed="false">Plan</button>
-            <button type="button" class="chip" id="roomPlanAdd" hidden>+ corner</button>
-            <button type="button" class="chip" id="roomPlanDel" hidden>− corner</button>
-          </div>
-          <div class="place-row" id="roomObjectRow" role="group" aria-label="Panels">
-            <button type="button" class="chip" id="roomAddDiffuser">Diffuser</button>
-            <button type="button" class="chip" id="roomAddTrap">Bass trap</button>
-            <button type="button" class="chip" id="roomAddCloud">Cloud</button>
-          </div>
+          <p class="hint" id="placeHint">Place sets size. Positions stay centred. Hall also sets the 2011 mix and surfaces.</p>
+          <details class="room-fold">
+            <summary>Shape, ratios, tilt, plan and treatment</summary>
+            <div class="place-row room-shape-row" id="roomShapeRow" role="group" aria-label="Room shape">
+              <button type="button" class="chip active" data-room-shape="box" aria-pressed="true">Box</button>
+              <button type="button" class="chip" data-room-shape="splay" aria-pressed="false">Splay</button>
+              <button type="button" class="chip" data-room-shape="lede" aria-pressed="false">LEDE</button>
+              <button type="button" class="chip" data-room-shape="live" aria-pressed="false">Live room</button>
+              <button type="button" class="chip" data-room-shape="gable" aria-pressed="false">Gable</button>
+              <button type="button" class="chip" data-room-shape="hex" aria-pressed="false">Hex</button>
+            </div>
+            <div class="place-row" id="roomRatioRow" role="group" aria-label="Shoebox ratios">
+              <button type="button" class="chip" data-ratio="bolt">Bolt</button>
+              <button type="button" class="chip" data-ratio="sepmeyer">Sepmeyer</button>
+              <button type="button" class="chip" data-ratio="louden">Louden</button>
+            </div>
+            <p class="hint" id="roomModes">Axial modes</p>
+            <div class="place-row" id="roomTiltRow" role="group" aria-label="Wall tilt and ceiling slope">
+              <button type="button" class="chip" id="roomTiltBtn">Walls flat</button>
+              <button type="button" class="chip" id="roomSlopeBtn">Ceiling flat</button>
+            </div>
+            <div class="place-row" id="roomPlanRow" role="group" aria-label="Floor plan">
+              <button type="button" class="chip" data-room-shape="plan" aria-pressed="false">Plan</button>
+              <button type="button" class="chip" id="roomPlanAdd" hidden>+ corner</button>
+              <button type="button" class="chip" id="roomPlanDel" hidden>− corner</button>
+            </div>
+            <div class="place-row" id="roomObjectRow" role="group" aria-label="Panels">
+              <button type="button" class="chip" id="roomAddDiffuser">Diffuser</button>
+              <button type="button" class="chip" id="roomAddTrap">Bass trap</button>
+              <button type="button" class="chip" id="roomAddCloud">Cloud</button>
+            </div>
+          </details>
           <button type="button" class="chip" id="roomMicSetupLink">Mic setup ›</button>
-          <label class="ctrl"><span>Width <em>m</em></span><input type="range" id="W" min="1" max="80" step="0.1" value="6" /><output id="W_out">6.0</output></label>
-          <label class="ctrl"><span>Ceiling <em>m</em></span><input type="range" id="H" min="1" max="40" step="0.1" value="3" /><output id="H_out">3.0</output></label>
-          <label class="ctrl"><span>Length <em>m</em></span><input type="range" id="L" min="2" max="120" step="0.5" value="8" /><output id="L_out">8.0</output></label>
           <label class="check" id="smoothRow">
             <input type="checkbox" id="smooth" checked />
             <span>Smooth</span>
@@ -1043,7 +1048,7 @@
   <script src="/static/js/rr_source.js?v=1"></script>
   <script src="/static/js/rr_space.js?v=3"></script>
   <script src="/static/js/rr_polar.js?v=2"></script>
-  <script src="/static/js/rr_transport.js?v=8"></script>
+  <script src="/static/js/rr_transport.js?v=9"></script>
   <script src="/static/js/rr_settings.js?v=4"></script>
   <script src="/static/js/app.js?v=110"></script>
   <script src="/static/js/sl_room_result.js?v=12"></script>

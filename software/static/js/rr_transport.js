@@ -84,13 +84,14 @@ function applyRoomBox() {
   if (btn) {
     btn.classList.toggle("active", on);
     btn.setAttribute("aria-pressed", on ? "true" : "false");
-    btn.textContent = on ? "Room size" : "Source";
+    btn.textContent = on ? "Room" : "Source";
   }
   var title = document.querySelector("#panelRoom .panel-head h2");
   if (title) title.textContent = on ? "Source" : "Room size";
   if (sourceViews) sourceViews.hidden = !(on && currentView === "edit");
+  if (editViews) editViews.hidden = currentView !== "edit" || on;
   var layout = document.querySelector("main.layout");
-  if (layout && currentView === "edit") layout.classList.toggle("source-wide", on);
+  if (layout) layout.classList.remove("source-wide");
   if (on && currentView === "edit" && sourceDesk) sourceDesk.redraw();
 }
 

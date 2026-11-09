@@ -744,6 +744,26 @@ select.cap-pattern:focus {
   margin: 0 0 11px;
   font-variant-numeric: tabular-nums;
 }
+.room-size-top {
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+}
+.room-size-dims { flex: 1 1 auto; min-width: 0; }
+.room-size-top #placeRow {
+  flex: 0 0 auto;
+  flex-direction: column;
+  align-items: stretch;
+  margin: 0;
+}
+.room-fold { margin: 0 0 8px; }
+.room-fold summary {
+  cursor: pointer;
+  font-size: 0.74rem;
+  font-weight: 650;
+  color: var(--muted);
+}
+.room-fold[open] summary { margin-bottom: 8px; }
 .layout.source-wide { grid-template-columns: minmax(0, 1fr); }
 .layout.source-wide .source-place { min-height: 0; }
 .image-wrap { position: relative; aspect-ratio: 1200 / 720; min-height: 320px; background: radial-gradient(ellipse at 50% 28%, rgba(45,212,191,0.07), transparent 55%), #08090c; }
