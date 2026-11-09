@@ -995,7 +995,7 @@
     }
   function drawHeat(ctx, geo) { var env = envStack[envStack.length - 1];
       var frame = env.floorCanvas.closest ? env.floorCanvas.closest(".diagram-frame") : null;
-      var noteEl = document.getElementById("floorHeatNote");
+      var noteEl = (frame && frame.querySelector) ? frame.querySelector("#floorHeatNote") : null;
       var enlarged = !!(frame && frame.classList.contains("is-enlarged"));
       var st = geo.state || {};
       if (!enlarged) {

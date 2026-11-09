@@ -249,6 +249,8 @@ html, body {
   cursor: grab; touch-action: none;
 }
 .canvas-wrap canvas.dragging { cursor: grabbing; }
+.space-room { margin-top: 14px; }
+.space-room-plan { margin-bottom: 8px; }
 .map-panel .canvas-wrap,
 .view3d-panel .canvas-wrap { min-height: 250px; }
 

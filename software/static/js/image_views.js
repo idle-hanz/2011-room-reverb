@@ -481,13 +481,6 @@
       var mx = cell.max || cell.hi || cell.upper;
       return (mn && mx) ? { min: mn, max: mx } : null;
     }
-  function legEnds(leg) { var env = envStack[envStack.length - 1];
-      if (!leg) return null;
-      var fr = leg.from || leg.start || leg.a;
-      var to = leg.to || leg.end || leg.b;
-      if (!fr || !to) return null;
-      return [fr, to];
-    }
   function roomSpan(room) { var env = envStack[envStack.length - 1];
       return Math.max(room.W, room.H, room.L);
     }
@@ -674,6 +667,22 @@
   function micPoint(mic) { var env = envStack[envStack.length - 1];
       return { x: mic.x, y: mic.y, z: mic.z };
     }
+  /* Interior vertices of a folded path are the surface meetings. Ends are source and mic. */
+  function surfaceMarks(pts, col, op) { var env = envStack[envStack.length - 1];
+      if (!pts || pts.length < 3) return;
+      var L = (env.data && env.data.room) ? env.data.room.L : 0;
+      var i;
+      for (i = 1; i < pts.length - 1; i++) {
+        var mark = enter(env, marker, col, 0.045);
+        mark.material.transparent = true;
+        mark.material.opacity = op;
+        mark.material.depthWrite = false;
+        var tp = enter(env, mapPt, pts[i], L);
+        if (!tp || typeof tp.x !== "number") continue;
+        mark.position.set(tp.x, tp.y, tp.z);
+        env.root.add(mark);
+      }
+    }
   function addHemis(selected) { var env = envStack[envStack.length - 1];
       var room = env.data.room;
       selected.forEach(function (micId) {
@@ -698,22 +707,16 @@
           var ray = [xyz, micPoint(mic)];
           env.root.add(enter(env, linePts, ray, col, op));
           enter(env, rememberHit, t, ray, micId);
+          enter(env, surfaceMarks, t.path, col, op);
           return;
         }
         if (!t.path || t.path.length < 2) return;
         env.root.add(enter(env, linePts, t.path, col, op));
         enter(env, rememberHit, t, t.path, micId);
-        var leg = t.last_leg || t.lastLeg || t.leg;
-        var ends = enter(env, legEnds, leg);
-        if (!ends) return;
-        var mark = enter(env, marker, col, 0.045);
-        var tp = enter(env, mapPt, ends[0], env.data.room.L);
-        mark.position.set(tp.x, tp.y, tp.z);
-        env.root.add(mark);
+        enter(env, surfaceMarks, t.path, col, op);
       });
     }
   function addPolyPaths(selected, folded) { var env = envStack[envStack.length - 1];
-      var room = env.data.room;
       selected.forEach(function (micId) {
         var mic = env.data.mics && env.data.mics[micId];
         if (!mic) return;
@@ -730,6 +733,8 @@
             var ray = [rec.pos, micPoint(mic)];
             env.root.add(enter(env, linePts, ray, col, op));
             enter(env, rememberHit, tap, ray, micId);
+            var heardRay = rec.heard && rec.heard[micId];
+            if (heardRay) enter(env, surfaceMarks, heardRay, col, op);
             return;
           }
           var path = rec.heard && rec.heard[micId];
@@ -737,10 +742,7 @@
           var pts = path.map(function (p) { return { x: p[0], y: p[1], z: p[2] }; });
           env.root.add(enter(env, linePts, pts, col, op));
           enter(env, rememberHit, tap, pts, micId);
-          var mark = enter(env, marker, col, 0.045);
-          var tp = enter(env, mapPt, pts[pts.length - 2], room.L);
-          mark.position.set(tp.x, tp.y, tp.z);
-          env.root.add(mark);
+          enter(env, surfaceMarks, pts, col, op);
         });
       });
     }

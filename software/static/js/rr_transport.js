@@ -143,6 +143,7 @@ function setView(view) {
   applyRoomBox();
   if (isEdit) {
     editor.redraw();
+    if (spaceEditor) spaceEditor.redraw();
   } else if (isMic || isPolar) {
     requestAnimationFrame(function () {
       requestAnimationFrame(function () {
@@ -160,6 +161,7 @@ function setView(view) {
       });
     });
   } else if (isSpace) {
+    if (spaceEditor) spaceEditor.redraw();
     scheduleImagesFetch(80);
     paintImageViewsSoon();
   } else if (isSurfaces && colourSurfaces) {
@@ -359,6 +361,7 @@ function syncUINow() {
 
   paintSourceSplit();
   editor.redraw();
+  if (spaceEditor) spaceEditor.redraw();
   if (sourceDesk && roomBoxMode === "source" && currentView === "edit") sourceDesk.redraw();
   if (currentView === "space") scheduleImagesFetch();
   paintMicModel();
