@@ -457,8 +457,7 @@
     return out;
   }
 
-  /* Same per-order quota as poly_room.quota_pick. Sums to 32. */
-  var QUOTA = [1, 6, 11, 10, 4];
+  /* Same loudest-32 sort as poly_room.loudest_pick. Direct stays line 0. */
 
   function dist3(a, b) {
     var dx = a[0] - b[0];
@@ -501,41 +500,32 @@
     return out;
   }
 
-  function quotaPick(images, receiver, n) {
-    function before(a, b) {
-      var da = dist3(receiver, a.pos);
-      var db = dist3(receiver, b.pos);
-      if (da < db) return -1;
-      if (da > db) return 1;
+  function micPower(pos, left, right) {
+    var rl = dist3(left, pos);
+    var rr = dist3(right, pos);
+    var gl = rl <= 1e-9 ? 0 : 1 / rl;
+    var gr = rr <= 1e-9 ? 0 : 1 / rr;
+    return gl * gl + gr * gr;
+  }
+
+  function loudestPick(images, left, right, n) {
+    var direct = [];
+    var rest = [];
+    var i;
+    for (i = 0; i < images.length; i++) {
+      if (images[i].order === 0) direct.push(images[i]);
+      else rest.push(images[i]);
+    }
+    rest.sort(function (a, b) {
+      var pa = micPower(a.pos, left, right);
+      var pb = micPower(b.pos, left, right);
+      if (pa > pb) return -1;
+      if (pa < pb) return 1;
       if (seqBefore(a.seq, b.seq)) return -1;
       if (seqBefore(b.seq, a.seq)) return 1;
       return 0;
-    }
-    var buckets = [[], [], [], [], []];
-    var i;
-    for (i = 0; i < images.length; i++) {
-      var order = images[i].order;
-      if (order >= 0 && order <= 4) buckets[order].push(images[i]);
-    }
-    for (i = 0; i < buckets.length; i++) buckets[i].sort(before);
-    var picked = [];
-    var cursors = [0, 0, 0, 0, 0];
-    var carry = 0;
-    var k;
-    for (k = 0; k < QUOTA.length; k++) {
-      var need = QUOTA[k] + carry;
-      var got = buckets[k].slice(cursors[k], cursors[k] + need);
-      cursors[k] += got.length;
-      picked = picked.concat(got);
-      carry = need - got.length;
-    }
-    if (picked.length < n) {
-      var left = [];
-      for (k = 0; k < 5; k++) left = left.concat(buckets[k].slice(cursors[k]));
-      left.sort(before);
-      picked = picked.concat(left.slice(0, n - picked.length));
-    }
-    return picked.slice(0, n);
+    });
+    return direct.slice(0, 1).concat(rest).slice(0, n);
   }
 
   function insideMargin(point, faces, margin) {
@@ -655,7 +645,9 @@
         seq: nodes[i].seq.slice()
       });
     }
-    var picked = quotaPick(uniqueImages(audible), stand, limit);
+    var left = opts.left && opts.left.length >= 3 ? opts.left : stand;
+    var right = opts.right && opts.right.length >= 3 ? opts.right : stand;
+    var picked = loudestPick(uniqueImages(audible), left, right, limit);
     for (i = 0; i < picked.length; i++) {
       rooms.push(roomRecord(nodes, picked[i].i, src, receivers, faces, home));
     }

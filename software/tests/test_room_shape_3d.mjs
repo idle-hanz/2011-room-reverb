@@ -21,6 +21,8 @@ const page = readFileSync(join(software, "static/index.html"), "utf8");
 const EPS = 1e-5;
 const SRC = [2.6, 1.2, 4.0];
 const REC = [3.0, 1.5, 5.0];
+const LEFT = [2.875, 1.5, 1.5];
+const RIGHT = [3.125, 1.5, 1.5];
 
 function closeVerts(got, exp, label) {
   assert.equal(got.length, exp.length, label + " count");
@@ -167,18 +169,19 @@ test("heard images fade in 15 ms and walls take the surface colour", () => {
   assert.equal(RD.wallColor({ E: { material: "wood_parquet" } }, "E"), 0x8b5a2b);
 });
 
-test("splay shows the hadamard quota Play uses, and paths hide the lattice", () => {
+test("splay shows the loudest taps Play uses, and paths hide the lattice", () => {
   const code = [
     "import json, sys",
     "sys.path.insert(0, 'engine')",
-    "from poly_room import faces_for, collect_audible, quota_pick, clamp_inside",
+    "from poly_room import faces_for, collect_audible, loudest_pick, clamp_inside",
     "faces = faces_for('splay', 6, 3, 8)",
     "src = clamp_inside((2.6, 1.2, 4.0), faces)",
     "stand = clamp_inside((3.0, 1.5, 1.5), faces)",
     "images = collect_audible(src, faces, stand, order=4, max_dist=340.0, prune=True)",
+    "left, right = (2.875, 1.5, 1.5), (3.125, 1.5, 1.5)",
     "out = {}",
     "for n in (8, 16, 32, 64, 128):",
-    "    chosen = quota_pick(images, stand, n=n)",
+    "    chosen = loudest_pick(images, left, right, n=n)",
     "    out[str(n)] = [{'seq': list(seq), 'pos': [float(x) for x in pos]} for pos, _order, seq in chosen]",
     "print(json.dumps(out))"
   ].join("\n");
@@ -191,7 +194,7 @@ test("splay shows the hadamard quota Play uses, and paths hide the lattice", () 
   const stand = [3, 1.5, 1.5];
   [8, 16, 32, 64, 128].forEach(function (n) {
     const pack = RD.imageRooms("splay", 6, 3, 8, SRC, [{ id: "C", p: REC }], {
-      order: 4, maxDist: 340, n: n, stand: stand
+      order: 4, maxDist: 340, n: n, stand: stand, left: LEFT, right: RIGHT
     });
     const exp = py[String(n)];
     assert.equal(pack.rooms.length, exp.length, "count " + n);
@@ -216,20 +219,21 @@ test("splay shows the hadamard quota Play uses, and paths hide the lattice", () 
   assert.doesNotMatch(imageViews, /if \(live && n !== 8/);
 });
 
-test("lede and live faces match poly_room and Play's quota", () => {
+test("lede and live faces match poly_room and Play's loudest taps", () => {
   const code = [
     "import json, sys",
     "sys.path.insert(0, 'engine')",
-    "from poly_room import faces_for, collect_audible, quota_pick, clamp_inside, lr_symmetric",
+    "from poly_room import faces_for, collect_audible, loudest_pick, clamp_inside, lr_symmetric",
     "src = (2.6, 1.2, 4.0)",
     "stand = (3.0, 1.5, 1.5)",
+    "left, right = (2.875, 1.5, 1.5), (3.125, 1.5, 1.5)",
     "out = {}",
     "for name in ('lede', 'live'):",
     "    faces = faces_for(name, 6, 3, 8)",
     "    csrc = clamp_inside(src, faces)",
     "    cstand = clamp_inside(stand, faces)",
     "    images = collect_audible(csrc, faces, cstand, order=4, max_dist=340.0, prune=True)",
-    "    chosen = quota_pick(images, cstand, n=32)",
+    "    chosen = loudest_pick(images, left, right, n=32)",
     "    out[name] = {",
     "      'sym': lr_symmetric(name),",
     "      'faces': [{'name': f.name, 'v': [[float(x) for x in p] for p in f.v], 'n': [float(x) for x in f.n]} for f in faces],",
@@ -253,7 +257,7 @@ test("lede and live faces match poly_room and Play's quota", () => {
       closeVerts([face.n], [py[name].faces[i].n], name + " n " + face.name);
     });
     const pack = RD.imageRooms(name, 6, 3, 8, SRC, [{ id: "C", p: REC }], {
-      order: 4, maxDist: 340, n: 32, stand: [3, 1.5, 1.5]
+      order: 4, maxDist: 340, n: 32, stand: [3, 1.5, 1.5], left: LEFT, right: RIGHT
     });
     const exp = py[name].pick;
     assert.equal(pack.rooms.length, exp.length, name);
@@ -269,18 +273,19 @@ test("lede and live faces match poly_room and Play's quota", () => {
   assert.equal(letters.filter(function (L) { return L === "C"; }).length, 2);
 });
 
-test("gable roof faces match poly_room and Play's quota", () => {
+test("gable roof faces match poly_room and Play's loudest taps", () => {
   const code = [
     "import json, sys",
     "sys.path.insert(0, 'engine')",
-    "from poly_room import faces_for, collect_audible, quota_pick, clamp_inside, lr_symmetric",
+    "from poly_room import faces_for, collect_audible, loudest_pick, clamp_inside, lr_symmetric",
     "src = (2.6, 1.2, 4.0)",
     "stand = (3.0, 1.5, 1.5)",
+    "left, right = (2.875, 1.5, 1.5), (3.125, 1.5, 1.5)",
     "faces = faces_for('gable', 6, 3, 8)",
     "csrc = clamp_inside(src, faces)",
     "cstand = clamp_inside(stand, faces)",
     "images = collect_audible(csrc, faces, cstand, order=4, max_dist=340.0, prune=True)",
-    "chosen = quota_pick(images, cstand, n=32)",
+    "chosen = loudest_pick(images, left, right, n=32)",
     "print(json.dumps({",
     "  'sym': lr_symmetric('gable'),",
     "  'faces': [{'name': f.name, 'v': [[float(x) for x in p] for p in f.v], 'n': [float(x) for x in f.n]} for f in faces],",
@@ -329,7 +334,7 @@ test("gable roof faces match poly_room and Play's quota", () => {
   assert.equal(RD.wallColor(surfaces, "A"), 0xe7e1d6);
   assert.notEqual(RD.wallColor(surfaces, roofs[0].letter), RD.wallColor(surfaces, ends[0].letter));
   const pack = RD.imageRooms("gable", 6, 3, 8, SRC, [{ id: "C", p: REC }], {
-    order: 4, maxDist: 340, n: 32, stand: [3, 1.5, 1.5]
+    order: 4, maxDist: 340, n: 32, stand: [3, 1.5, 1.5], left: LEFT, right: RIGHT
   });
   assert.equal(pack.rooms.length, py.pick.length);
   assert.equal(pack.rooms.length, 32);
@@ -345,18 +350,19 @@ test("gable roof faces match poly_room and Play's quota", () => {
   assert.match(imageViews, /RoomDraw\.latticeKeys\(env\.mode/);
 });
 
-test("hex faces match poly_room and Play's quota", () => {
+test("hex faces match poly_room and Play's loudest taps", () => {
   const code = [
     "import json, sys",
     "sys.path.insert(0, 'engine')",
-    "from poly_room import faces_for, collect_audible, quota_pick, clamp_inside, lr_symmetric",
+    "from poly_room import faces_for, collect_audible, loudest_pick, clamp_inside, lr_symmetric",
     "src = (2.6, 1.2, 4.0)",
     "stand = (3.0, 1.5, 1.5)",
+    "left, right = (2.875, 1.5, 1.5), (3.125, 1.5, 1.5)",
     "faces = faces_for('hex', 6, 3, 8)",
     "csrc = clamp_inside(src, faces)",
     "cstand = clamp_inside(stand, faces)",
     "images = collect_audible(csrc, faces, cstand, order=4, max_dist=340.0, prune=True)",
-    "chosen = quota_pick(images, cstand, n=32)",
+    "chosen = loudest_pick(images, left, right, n=32)",
     "print(json.dumps({",
     "  'sym': lr_symmetric('hex'),",
     "  'faces': [{'name': f.name, 'v': [[float(x) for x in p] for p in f.v], 'n': [float(x) for x in f.n]} for f in faces],",
@@ -402,7 +408,7 @@ test("hex faces match poly_room and Play's quota", () => {
   assert.equal(RD.wallColor(surfaces, "F"), 0xd5d8dc);
   assert.notEqual(RD.wallColor(surfaces, "A"), RD.wallColor(surfaces, "B"));
   const pack = RD.imageRooms("hex", 6, 3, 8, SRC, [{ id: "C", p: REC }], {
-    order: 4, maxDist: 340, n: 32, stand: [3, 1.5, 1.5]
+    order: 4, maxDist: 340, n: 32, stand: [3, 1.5, 1.5], left: LEFT, right: RIGHT
   });
   assert.equal(pack.rooms.length, py.pick.length);
   assert.equal(pack.rooms.length, 32);

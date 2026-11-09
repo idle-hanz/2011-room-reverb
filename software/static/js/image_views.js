@@ -386,11 +386,19 @@
       var cap = (env.data.c || 340) * 1;
       var nTap = hadamardShown();
       var stand = standPoint();
+      var mics = (env.data && env.data.mics) || {};
+      function micPt(id) {
+        var m = mics[id];
+        if (!m || !isFinite(Number(m.x)) || !isFinite(Number(m.y)) || !isFinite(Number(m.z))) return stand;
+        return [Number(m.x), Number(m.y), Number(m.z)];
+      }
+      var left = micPt("L");
+      var right = micPt("R");
       var packs = [];
       env.shownRooms = [];
       function one(prefix, source) {
         var pack = RoomDraw.imageRooms(polyShape(), room.W, room.H, room.L, source, ear.receivers, {
-          order: 4, maxDist: cap, n: nTap, stand: stand
+          order: 4, maxDist: cap, n: nTap, stand: stand, left: left, right: right
         });
         (pack.rooms || []).forEach(function (r) {
           var key = prefix + ":" + r.key;

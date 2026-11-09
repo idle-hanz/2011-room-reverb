@@ -2,7 +2,7 @@
 
 ``room_shape`` absent or ``box`` stays in ``compute_taps``. Convex presets
 scale with W / L / H. Order 4, parent-side prune, distance cut. Thirty-two taps
-by the live per-order quota, nearest first, geometry only. FDN lengths are the
+are the loudest at the two live mics. Direct stays line 0. FDN lengths are the
 path from the stand centre, the same on L, C, and R.
 
 Faces are not mapped onto A–F. Every tap keeps ``n = (0, 0, 0)`` so the shoebox
@@ -32,7 +32,6 @@ from early_field import (
 
 EPS = 1e-9
 MAX_DELAY_MS = 1000.0
-QUOTA = (1, 6, 11, 10, 4)
 Vec3 = Tuple[float, float, float]
 
 
@@ -614,34 +613,26 @@ def clamp_inside(point, faces, margin: float = 0.02):
     return (float(best[0]), float(best[1]), float(best[2]))
 
 
-def quota_pick(images, receiver: Vec3, n: int = 32):
-    """Nearest per order: 1 / 6 / 11 / 10 / 4. A short order fills from the next."""
-    def dkey(im):
-        return (dist(receiver, im[0]), im[2])
+def _mic_power(pos, left: Vec3, right: Vec3) -> float:
+    """(1/r_L)^2 + (1/r_R)^2. No cardioid and no per-face gain."""
+    return geometric_level(dist(left, pos)) ** 2 + geometric_level(dist(right, pos)) ** 2
 
-    buckets = [[] for _ in range(5)]
+
+def loudest_pick(images, left: Vec3, right: Vec3, n: int = 32):
+    """Loudest ``n`` images at the two mics. Direct stays line 0.
+
+    A tie keeps the earlier bounce sequence. The shoebox table does not
+    come through here.
+    """
+    direct = []
+    rest = []
     for im in images:
-        order = im[1]
-        if 0 <= order <= 4:
-            buckets[order].append(im)
-    for bucket in buckets:
-        bucket.sort(key=dkey)
-    picked = []
-    cursors = [0, 0, 0, 0, 0]
-    carry = 0
-    for k, quota in enumerate(QUOTA):
-        need = quota + carry
-        got = buckets[k][cursors[k] : cursors[k] + need]
-        cursors[k] += len(got)
-        picked.extend(got)
-        carry = need - len(got)
-    if len(picked) < n:
-        left = []
-        for k in range(5):
-            left.extend(buckets[k][cursors[k] :])
-        left.sort(key=dkey)
-        picked.extend(left[: n - len(picked)])
-    return picked[:n]
+        if im[1] == 0:
+            direct.append(im)
+        else:
+            rest.append(im)
+    rest.sort(key=lambda im: (-_mic_power(im[0], left, right), im[2]))
+    return (direct[:1] + rest)[: int(n)]
 
 
 def _ap(order: int) -> int:
@@ -674,8 +665,8 @@ def compute_poly_taps(
     stand_pt = clamp_inside((float(stand.cx), float(stand.cy), float(stand.cz)), faces)
     cap = float(c) * MAX_DELAY_MS * 0.001
     images = collect_audible(src, faces, stand_pt, order=4, max_dist=cap, prune=True)
-    chosen = quota_pick(images, stand_pt, n=int(n))
     left, right = mic_positions(stand)
+    chosen = loudest_pick(images, left, right, n=int(n))
     centre = (
         float(stand.cx),
         float(stand.cy) if getattr(stand, "hy_c", None) is None else float(stand.hy_c),

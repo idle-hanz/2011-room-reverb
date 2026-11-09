@@ -20,16 +20,17 @@ SW = ROOT / "software"
 sys.path[:0] = [str(SW), str(SW / "engine")]
 
 import app_server as A  # noqa: E402
-from early_field import MicStand, dist  # noqa: E402
+from early_field import MicStand, dist, mic_positions  # noqa: E402
 from maths_image import image_position_corner  # noqa: E402
 from fdn import fdn_delays_from_taps  # noqa: E402
 from poly_room import (  # noqa: E402
-    QUOTA,
     box_faces,
     build_tree,
+    clamp_inside,
     collect_audible,
     compute_poly_taps,
     faces_for,
+    loudest_pick,
     lr_symmetric,
     normalize_shape,
     poly_on,
@@ -47,8 +48,8 @@ EARLY_50_TOL_DB = 2.5
 _EARLY_N = 2400
 # First 0.25 s of the default scene, splay walls, posted ir_length_ms 250.
 # Decay lock stays on, so the file is 2790 ms. Scored 27.9 s on 2026-10-24.
-SPLAY_IR_MD5 = "1e0b53c621dac2413c527a42aef39620"
-SPLAY_IR_MAX = 0.5661171703434548
+SPLAY_IR_MD5 = "88a9e5f42604885a978eceef5ef3b451"
+SPLAY_IR_MAX = 0.5658454267687018
 _IR_SR = 48000
 _IR_N = 12000
 ROOM = (6.0, 3.0, 8.0)
@@ -166,16 +167,24 @@ def test_distance_cut_drops_far_images():
     assert near_pos < wide_pos
 
 
-def test_presets_fill_the_quota_and_freeze_the_stand():
+def test_presets_keep_the_loudest_and_freeze_the_stand():
     stand = _stand()
     src = (2.6, 1.2, 4.75)
     stand_pt = (stand.cx, stand.cy, stand.cz)
+    left, right = mic_positions(stand)
     for name in ("splay", "lede", "live", "gable", "hex"):
         taps = compute_poly_taps(ROOM, src, stand, name, n=32)
+        faces = faces_for(name, *ROOM)
+        images = collect_audible(
+            clamp_inside(src, faces), faces, clamp_inside(stand_pt, faces),
+            order=4, max_dist=340.0, prune=True,
+        )
+        chosen = loudest_pick(images, left, right, n=32)
         assert len(taps) == 32
-        counts = [sum(1 for t in taps if t.order == k) for k in range(5)]
-        assert tuple(counts) == QUOTA, (name, counts)
         assert taps[0].order == 0
+        assert [(t.order, tuple(round(v, 6) for v in t.position)) for t in taps] == [
+            (order, tuple(round(v, 6) for v in pos)) for pos, order, _seq in chosen
+        ]
         assert dist(taps[0].position, src) < 1e-6
         for t in taps:
             assert t.n == (0, 0, 0)
