@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>2011 Room Reverb</title>
   <link rel="icon" href="/static/favicon.svg" type="image/svg+xml" />
-  <link rel="stylesheet" href="/static/css/app.css?v=48" />
+  <link rel="stylesheet" href="/static/css/app.css?v=49" />
   <link rel="stylesheet" href="/static/css/sl_room_result.css?v=3" />
   <link rel="stylesheet" href="/static/css/rr_controls.css?v=1" />
 </head>
@@ -33,13 +33,6 @@
           <span>Load</span>
         </label>
         <button type="button" class="btn primary" id="renderBtn">Render</button>
-        <div class="render-extra">
-          <label class="ctrl"><span>Minimum IR length <em>ms</em></span><input type="range" id="ir_length_ms" min="50" max="2000" step="10" value="1500" /><output id="ir_length_ms_out">1500</output></label>
-          <label class="check">
-            <input type="checkbox" id="live_drag_render" />
-            <span>Also bake an IR when I drop Src / Mic</span>
-          </label>
-        </div>
       </div>
     </header>
     <p id="backendBanner" class="backend-banner" hidden role="alert"></p>
@@ -145,6 +138,47 @@
         </div>
 
         <div id="micViews" class="mic-desk" hidden>
+          <div class="panel mic-each-panel" id="micEach">
+              <div class="panel-head">
+                <h2>Each mic <span class="panel-sub">· one mic each, not the combined pattern</span></h2>
+                <span class="honesty-badge honesty-measured" id="micHonestyBadge" title="This badge is the data source for the drawing, not the Colour sound mode.">preset data: measured</span>
+                <span class="honesty-badge honesty-assumed" id="micEachLock" hidden>read-only · preset pattern</span>
+                <div class="pair-row" id="radiusModeRow" role="group" aria-label="Polar radius">
+                  <button type="button" data-radius="db" aria-pressed="true">dB</button>
+                  <button type="button" data-radius="linear" aria-pressed="false">Linear</button>
+                </div>
+              </div>
+              <div class="mic-polar-trio" id="micPolarTrio">
+                <div class="mic-polar-col" data-cap="L">
+                  <div class="mic-polar-title cap-l">Left</div>
+                  <p class="hint mic-unused" hidden>not used</p>
+                  <div class="diagram-frame">
+                    <button type="button" class="diagram-expand" aria-label="Enlarge left polar">Enlarge</button>
+                    <canvas id="micPolarL" width="220" height="220" aria-label="Left polar pattern"></canvas>
+                  </div>
+                  <div class="mic-cap-slot" id="micCapSlotL"></div>
+                </div>
+                <div class="mic-polar-col" data-cap="C">
+                  <div class="mic-polar-title cap-c">Centre</div>
+                  <p class="hint mic-unused" hidden>not used</p>
+                  <div class="diagram-frame">
+                    <button type="button" class="diagram-expand" aria-label="Enlarge centre polar">Enlarge</button>
+                    <canvas id="micPolarC" width="220" height="220" aria-label="Centre polar pattern"></canvas>
+                  </div>
+                  <div class="mic-cap-slot" id="micCapSlotC"></div>
+                </div>
+                <div class="mic-polar-col" data-cap="R">
+                  <div class="mic-polar-title cap-r">Right</div>
+                  <p class="hint mic-unused" hidden>not used</p>
+                  <div class="diagram-frame">
+                    <button type="button" class="diagram-expand" aria-label="Enlarge right polar">Enlarge</button>
+                    <canvas id="micPolarR" width="220" height="220" aria-label="Right polar pattern"></canvas>
+                  </div>
+                  <div class="mic-cap-slot" id="micCapSlotR"></div>
+                </div>
+              </div>
+              <p class="hint mic-desk-foot" id="micEachFoot"></p>
+            </div>
           <div class="mic-desk-grid">
             <div class="panel mic-map-panel">
               <div class="panel-head">
@@ -908,6 +942,11 @@
         </div>
         <div class="panel preview-panel" id="panelPreview" data-sidebar="preview">
           <div class="panel-head"><h2>Preview</h2></div>
+          <label class="ctrl"><span>Minimum IR length <em>ms</em></span><input type="range" id="ir_length_ms" min="50" max="2000" step="10" value="1500" /><output id="ir_length_ms_out">1500</output></label>
+          <label class="check">
+            <input type="checkbox" id="live_drag_render" />
+            <span>Also bake an IR when I drop Src / Mic</span>
+          </label>
           <div class="source-split" id="sourceSplit">
             <div class="source-split-top">
               <p class="file-name" id="fileName">No file loaded</p>
@@ -958,57 +997,6 @@
           <p class="hint">Play only. One reverb network feeds all mics; ignored in binaural.</p>
         </details>
       </aside>
-<section class="stage-wide" id="stageWide" hidden>
-<div class="panel mic-each-panel" id="micEach">
-              <div class="panel-head">
-                <h2>Each mic <span class="panel-sub">· one mic each, not the combined pattern</span></h2>
-                <span class="honesty-badge honesty-assumed" id="micEachLock" hidden>read-only · preset pattern</span>
-                <div class="pair-row" id="radiusModeRow" role="group" aria-label="Polar radius">
-                  <button type="button" data-radius="db" aria-pressed="true">dB</button>
-                  <button type="button" data-radius="linear" aria-pressed="false">Linear</button>
-                </div>
-              </div>
-              <div class="mic-polar-trio" id="micPolarTrio">
-                <div class="mic-polar-col" data-cap="L">
-                  <div class="mic-polar-title cap-l">Left</div>
-                  <p class="hint mic-unused" hidden>not used</p>
-                  <div class="diagram-frame">
-                    <button type="button" class="diagram-expand" aria-label="Enlarge left polar">Enlarge</button>
-                    <canvas id="micPolarL" width="220" height="220" aria-label="Left polar pattern"></canvas>
-                  </div>
-                  <div class="mic-cap-slot" id="micCapSlotL"></div>
-                </div>
-                <div class="mic-polar-col" data-cap="C">
-                  <div class="mic-polar-title cap-c">Centre</div>
-                  <p class="hint mic-unused" hidden>not used</p>
-                  <div class="diagram-frame">
-                    <button type="button" class="diagram-expand" aria-label="Enlarge centre polar">Enlarge</button>
-                    <canvas id="micPolarC" width="220" height="220" aria-label="Centre polar pattern"></canvas>
-                  </div>
-                  <div class="mic-cap-slot" id="micCapSlotC"></div>
-                </div>
-                <div class="mic-polar-col" data-cap="R">
-                  <div class="mic-polar-title cap-r">Right</div>
-                  <p class="hint mic-unused" hidden>not used</p>
-                  <div class="diagram-frame">
-                    <button type="button" class="diagram-expand" aria-label="Enlarge right polar">Enlarge</button>
-                    <canvas id="micPolarR" width="220" height="220" aria-label="Right polar pattern"></canvas>
-                  </div>
-                  <div class="mic-cap-slot" id="micCapSlotR"></div>
-                </div>
-              </div>
-              <p class="hint mic-desk-foot" id="micEachFoot"></p>
-            </div>
-<div class="panel" id="micPolarLinkPanel">
-              <div class="panel-head">
-                <h2>Polar plot</h2>
-                <span class="honesty-badge honesty-measured" id="micHonestyBadge" title="This badge is the data source for the drawing, not the Colour sound mode.">preset data: measured</span>
-              </div>
-              <p class="hint">The source-plane plot is on the Polar tab.</p>
-              <button type="button" class="chip" id="micPolarLink">Open Polar</button>
-            </div>
-</section>
-
     </main>
     <div id="toast" class="toast" hidden role="status"></div>
   </div>
@@ -1043,12 +1031,12 @@
   <script src="/static/js/settings_boot.js?v=1"></script>
   <script src="/static/js/rr_state.js?v=10"></script>
   <script src="/static/js/rr_mic.js?v=1"></script>
-  <script src="/static/js/rr_mix.js?v=10"></script>
+  <script src="/static/js/rr_mix.js?v=11"></script>
   <script src="/static/js/rr_room.js?v=5"></script>
-  <script src="/static/js/rr_source.js?v=1"></script>
+  <script src="/static/js/rr_source.js?v=2"></script>
   <script src="/static/js/rr_space.js?v=3"></script>
   <script src="/static/js/rr_polar.js?v=2"></script>
-  <script src="/static/js/rr_transport.js?v=9"></script>
+  <script src="/static/js/rr_transport.js?v=10"></script>
   <script src="/static/js/rr_settings.js?v=4"></script>
   <script src="/static/js/app.js?v=110"></script>
   <script src="/static/js/sl_room_result.js?v=12"></script>

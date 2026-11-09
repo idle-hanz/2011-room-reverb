@@ -300,15 +300,25 @@ function syncUINow() {
       " @ " + fmt(geo.source_b.y) + " m";
   }
   if (liveMetres) liveMetres.textContent = readout;
-  if (liveMetres3d && window.RoomDraw && RoomDraw.micReadout && RoomDraw.formatMicReadout) {
-    var speed = 340;
-    liveMetres3d.textContent = [
-      ["L", geo.mic_left],
-      ["C", geo.mic_centre],
-      ["R", geo.mic_right]
-    ].map(function (row) {
-      return RoomDraw.formatMicReadout(row[0], RoomDraw.micReadout(geo.source, row[1], speed));
-    }).join("  ·  ");
+  if (liveMetres3d) {
+    var srcH = state.sy != null ? state.sy : state.my;
+    var line = "Src " + fmt(state.sx) + ", " + fmt(state.sz) + " @ " + fmt(srcH) +
+      " m  ·  Stand " + fmt(state.mcx) + ", " + fmt(state.mcz) + " @ " + fmt(state.my) + " m";
+    if (geo.source_b) {
+      line += "  ·  B " + fmt(geo.source_b.x) + "," + fmt(geo.source_b.z) +
+        " @ " + fmt(geo.source_b.y) + " m";
+    }
+    liveMetres3d.textContent = line;
+    if (window.RoomDraw && RoomDraw.micReadout && RoomDraw.formatMicReadout) {
+      var speed = 340;
+      liveMetres3d.title = [
+        ["L", geo.mic_left],
+        ["C", geo.mic_centre],
+        ["R", geo.mic_right]
+      ].map(function (row) {
+        return RoomDraw.formatMicReadout(row[0], RoomDraw.micReadout(geo.source, row[1], speed));
+      }).join("\n");
+    }
   }
   var roomChip = document.getElementById("roomSizeChip");
   if (roomChip) {

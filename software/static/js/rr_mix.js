@@ -641,6 +641,19 @@ function setTrim(key, db, fromLink) {
   }
 }
 
+/* Display only. A capsule missing from the setup is dimmed. The fader and the post stay put. */
+function capsuleInSetup(cap) {
+  var id = state.mic_setup || "ortf";
+  if (id === "binaural" && cap === "c") return false;
+  if (cap === "c" && state.third_mic === "off") return false;
+  var preset = (typeof MIC_PRESETS !== "undefined") ? MIC_PRESETS[id] : null;
+  var polar = preset && preset.polar;
+  if (!polar) return true;
+  if (polar.indexOf(String(cap).toUpperCase()) >= 0) return true;
+  if (cap === "c" && (state.third_mic === "centre" || state.third_mic === "room")) return true;
+  return false;
+}
+
 /* Buttons for one strip. Does not write the route back: centre stays centre until a click. */
 function lrView(cap) {
   var route = String(state["mic_route_" + cap] || S("mic_route_" + cap));
@@ -728,6 +741,18 @@ function paintDesk() {
     var rRead = document.getElementById("read_r");
     if (rRead) rRead.textContent = "off";
   }
+  ["l", "c", "r"].forEach(function (cap) {
+    var row = document.querySelector('.desk-strip[data-cap="' + cap + '"]');
+    if (!row) return;
+    var already = row.classList.contains("is-mono-off") || row.classList.contains("is-binaural-off");
+    var showOff = !capsuleInSetup(cap) && !already;
+    row.classList.toggle("is-setup-off", showOff);
+    var name = row.querySelector(".desk-name");
+    if (!name || cap === "c" && !showOff) return;
+    var base = cap === "l" ? "Left" : (cap === "r" ? "Right" : (stripIsRoom("c") ? "Room mic" : "Centre"));
+    if (showOff) name.textContent = base + " off";
+    else if (cap !== "c") name.textContent = base;
+  });
   paintDeskRoutes();
 }
 

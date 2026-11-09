@@ -646,6 +646,9 @@ select.cap-pattern:focus {
 .desk-strip.is-binaural-off { opacity: 0.45; }
 .desk-strip.is-binaural-off .desk-fader { pointer-events: none; }
 .desk-strip.is-mono-off { opacity: 0.45; }
+.desk-strip.is-setup-off { opacity: 0.45; }
+.desk-strip.is-setup-off input,
+.desk-strip.is-setup-off button { pointer-events: none; }
 .desk-strip.is-mono-off input,
 .desk-strip.is-mono-off button { pointer-events: none; }
 .colour-meta { margin: 0 0 7px; font-size: 0.74rem; color: var(--muted); font-variant-numeric: tabular-nums; }

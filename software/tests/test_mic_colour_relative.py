@@ -630,8 +630,10 @@ def test_polar_uses_fitter_radius_not_lf_morph():
     assert len(measured["vertices"]["base"]) == 8 * 72 * 3
     assert len(measured["vertices"]["one"]) == 8 * 72 * 3
     page = (SOFTWARE / "static" / "index.html").read_text(encoding="utf-8")
-    assert 'id="micPolarLink"' in page
-    assert "Open Polar" in page
+    assert 'id="micEach"' in page
+    assert page.index("id=\"micViews\"") < page.index("id=\"micEach\"")
+    assert 'id="micPolarLink"' not in page
+    assert "Open Polar" not in page
     assert measured["base_plane"]["e2"][2] > 0.5
     tilted = pf.compute_polar_field(**room, colour_mode="MEASURED_SHELF", sy=2.6)
     assert tilted["base_plane"]["tilt_deg"] > measured["base_plane"]["tilt_deg"] + 5.0

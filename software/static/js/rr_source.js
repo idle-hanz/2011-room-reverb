@@ -13,6 +13,7 @@ function paintSourceSplit() {
   }
   if (twoBtn) {
     twoBtn.disabled = !can;
+    twoBtn.title = can ? "" : "Load a stereo WAV";
     twoBtn.classList.toggle("active", !!state.two_sources && can);
     twoBtn.setAttribute("aria-pressed", state.two_sources && can ? "true" : "false");
   }
