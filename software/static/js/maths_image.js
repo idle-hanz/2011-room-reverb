@@ -15,7 +15,8 @@
     if (k === 2) return 2 * R + s;
     if (k === -2) return s - 2 * R;
     if (k % 2 === 0) return k * R + s;
-    return k > 0 ? k * R + (R - s) : k * R - s;
+    // Odd k, including negative, sits in its own cell: k*R + (R - s).
+    return k * R + (R - s);
   }
   function num(obj, key, index) {
     if (obj && obj[key] != null) return Number(obj[key]);

@@ -79,7 +79,7 @@ PIN_TABLE = {
     "maths_distance.js": 1,
     "maths_db.js": 2,
     "maths_bands.js": 1,
-    "maths_image.js": 1,
+    "maths_image.js": 2,
     "room_math.js": 23,
     "spectrum_colors.js": 1,
     "freq_palette.js": 2,

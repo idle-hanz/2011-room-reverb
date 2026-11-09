@@ -22,7 +22,10 @@ from maths_pattern import first_order_gain, polar_a_from_slider  # noqa: E402
 JS_DIR = ROOT / "static" / "js"
 SRC = (2.6, 1.2, 4.75)
 ROOM = (6.0, 3.0, 8.0)
-NS = ((0, 0, 0), (-1, 0, 0), (1, 0, 0), (2, 0, 0), (-2, 0, 0), (0, 0, 2))
+NS = (
+    (0, 0, 0), (-1, 0, 0), (1, 0, 0), (2, 0, 0), (-2, 0, 0), (0, 0, 2),
+    (-3, 0, 0), (0, -3, 0), (0, 0, -3),
+)
 YAWS = (0.0, 55.0 * math.pi / 180.0, -math.pi / 2.0, math.pi / 2.0)
 DISTS = (0.0, 1e-12, 0.3, 1.0, 2.5, 7.0, 40.0)
 DBS = (0.0, -6.0, -60.0, 12.0)
@@ -68,7 +71,7 @@ const lins = [1, 0.5].map((v) => B.linToDb(v));
 const bands = N.exactThirdCentres(-10, 11);
 const src = { x: 2.6, y: 1.2, z: 4.75 };
 const room = { W: 6, H: 3, L: 8 };
-const ns = [[0, 0, 0], [-1, 0, 0], [1, 0, 0], [2, 0, 0], [-2, 0, 0], [0, 0, 2]];
+const ns = [[0, 0, 0], [-1, 0, 0], [1, 0, 0], [2, 0, 0], [-2, 0, 0], [0, 0, 2], [-3, 0, 0], [0, -3, 0], [0, 0, -3]];
 const images = ns.map((n) => {
   const p = I.imagePoint(src, room, n, false);
   return [p.x, p.y, p.z];
@@ -156,3 +159,17 @@ def test_image_matches():
     face = image_position_corner(SRC, ROOM, (0, 0, 2), z_face_4l=True)
     for a, b in zip(js["face"], face):
         _close(a, b, 1e-9)
+
+
+def test_negative_odd_images_sit_in_their_cells():
+    """(-3,0,0), (0,-3,0) and (0,0,-3) sit in their own cells, matching +3."""
+    for n in ((-3, 0, 0), (0, -3, 0), (0, 0, -3)):
+        pos = image_position_corner(SRC, ROOM, n)
+        twin = image_position_corner(SRC, ROOM, tuple(-k for k in n))
+        for p, t, k, size, s in zip(pos, twin, n, ROOM, SRC):
+            lo = k * size
+            hi = (k + 1) * size
+            assert lo < p < hi, (n, p, lo, hi)
+            if k:
+                assert abs((p - lo) - (t - ((-k) * size))) < 1e-9
+                assert abs((p - lo) - (size - s)) < 1e-9

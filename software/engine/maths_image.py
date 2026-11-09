@@ -61,10 +61,11 @@ def corner_axis_from_macro(s: float, R: float, k: int) -> float:
         return macro_2R_plus_S(s, R)
     if k == -2:
         return macro_S_minus_2R(s, R)
-    # Extension for denser grids (PROPOSAL — not from macros):
+    # Extension past the named macros. Odd k, including negative, uses the
+    # same in-cell offset as its positive twin: k*R + (R - s).
     if k % 2 == 0:
         return k * R + s
-    return k * R + (R - s) if k > 0 else k * R - s
+    return k * R + (R - s)
 
 
 def image_position_centre(source: Vec3, room: Vec3, n: Tuple[int, int, int]) -> Vec3:
