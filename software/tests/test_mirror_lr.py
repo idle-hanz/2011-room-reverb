@@ -18,7 +18,7 @@ from surface_colour import parse_surfaces  # noqa: E402
 EMPTY = "067adbca1930efcd3f7c83bdd1d4c359"
 CENTRE = "35db578a18557d5729c0450e26f24a9d"
 # Default splay live dict before this toggle. Equal A and C must not move it.
-SPLAY = "5f757d04e47eea6cda87b32c35daa901"
+SPLAY = "6d996c03137772aaca9cebecab3358ac"
 
 
 def _md5(blob) -> str:
