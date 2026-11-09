@@ -39,11 +39,15 @@ function ensureImageView() {
   return imageView;
 }
 
-/** After #imageViews is unhidden: double-rAF → init → resize; optional size retry. */
+function fieldOpen() {
+  return currentView === "edit" && roomDiagram !== "room";
+}
+
+/* After the field canvas is shown: double-rAF → init → resize. */
 function paintImageViewsSoon() {
   requestAnimationFrame(function () {
     requestAnimationFrame(function () {
-      if (currentView !== "space") return;
+      if (!fieldOpen()) return;
       ensureImageView();
       if (imageView) {
         imageView.resize();
@@ -55,7 +59,7 @@ function paintImageViewsSoon() {
       if (rect.width >= 2 && rect.height >= 2) return;
       /* Optional: layout still settling — one short retry */
       setTimeout(function () {
-        if (currentView !== "space") return;
+        if (!fieldOpen()) return;
         ensureImageView();
         if (imageView) {
           imageView.resize();
@@ -106,7 +110,7 @@ function selectedMicsFromUI() {
 }
 
 function scheduleImagesFetch(delayMs) {
-  if (currentView !== "space") return;
+  if (!fieldOpen()) return;
   if (imagesFetchTimer) clearTimeout(imagesFetchTimer);
   var ms = delayMs == null ? imagesFetchDelayMs : delayMs;
   imagesFetchTimer = setTimeout(fetchImages, ms);
@@ -133,7 +137,7 @@ async function fetchImages() {
     /* Layout may still settle after fetch — resize+apply again next frames */
     requestAnimationFrame(function () {
       requestAnimationFrame(function () {
-        if (currentView !== "space") return;
+        if (!fieldOpen()) return;
         if (imageView) {
           imageView.resize();
           applyImageView();
@@ -150,7 +154,7 @@ async function fetchImages() {
 
 function applyImageView() {
   if (!imagesCache) return;
-  if (currentView !== "space") return;
+  if (!fieldOpen()) return;
   var n = imagesCache.count || (imagesCache.lattice && imagesCache.lattice.length) || 0;
   var mics = (imagesCache.selected_mics || []).join("+") || "C";
   if (liveMetresImg) {
@@ -165,8 +169,8 @@ function applyImageView() {
   syncOrderSlider(imagesCache);
   try {
     imageView.setSpace({
-      lattice: spaceLattice,
-      paths: spacePaths,
+      lattice: roomDiagram === "paths" ? false : spaceLattice,
+      paths: roomDiagram === "paths" ? spacePaths : 0,
       order: spaceOrder,
       mic: spacePathMic
     });
@@ -225,15 +229,38 @@ function syncOrderSlider(data) {
   btn.setAttribute("aria-pressed", on ? "true" : "false");
 }
 
+function syncRoomDiagram() {
+  var field = roomDiagram !== "room";
+  var frame3 = document.getElementById("view3dFrame");
+  var frameI = document.getElementById("imageFrame");
+  var tools = document.getElementById("roomFieldTools");
+  var metres3 = document.getElementById("liveMetres3d");
+  var metresI = document.getElementById("liveMetresImg");
+  if (frame3) frame3.hidden = field;
+  if (frameI) frameI.hidden = !field;
+  if (tools) tools.hidden = !field;
+  if (metres3) metres3.hidden = field;
+  if (metresI) metresI.hidden = !field;
+  var roomBtn = document.getElementById("roomDiagramBtn");
+  if (roomBtn) {
+    var roomOn = roomDiagram === "room";
+    roomBtn.classList.toggle("active", roomOn);
+    roomBtn.setAttribute("aria-pressed", roomOn ? "true" : "false");
+  }
+  if (!field && editor && editor.view3d && editor.view3d.resize) editor.view3d.resize();
+}
+
 function syncSpaceModeUI() {
+  syncRoomDiagram();
   var latticeBtn = document.getElementById("spaceLatticeBtn");
   var pathsBtn = document.getElementById("spacePathsBtn");
   if (latticeBtn) {
-    latticeBtn.classList.toggle("active", !!spaceLattice);
-    latticeBtn.setAttribute("aria-pressed", spaceLattice ? "true" : "false");
+    var latOn = roomDiagram === "lattice";
+    latticeBtn.classList.toggle("active", latOn);
+    latticeBtn.setAttribute("aria-pressed", latOn ? "true" : "false");
   }
   if (pathsBtn) {
-    var on = spacePaths > 0;
+    var on = roomDiagram === "paths";
     pathsBtn.classList.toggle("active", on);
     pathsBtn.setAttribute("aria-pressed", on ? "true" : "false");
     pathsBtn.textContent = spacePaths === 1 ? "Paths: lattice" : (spacePaths === 2 ? "Paths: in room" : "Paths");
@@ -246,24 +273,35 @@ function syncSpaceModeUI() {
   });
   syncOrderSlider(imagesCache);
   var camHint = "Drag to orbit · right-drag or Shift to pan · scroll to zoom · double-click to reset";
-  if (spacePaths === 2) {
+  var roomHint = "Drag orbit · Shift pan · scroll zoom · stays above the floor";
+  if (roomDiagram === "room") {
+    if (imageViewTitle) imageViewTitle.textContent = "3D room";
+    if (imageViewHint) imageViewHint.textContent = roomHint;
+  } else if (roomDiagram === "paths" && spacePaths === 2) {
     if (imageViewTitle) imageViewTitle.textContent = "In-room reflections";
-  } else if (spacePaths === 1) {
+    if (imageViewHint) imageViewHint.textContent = camHint;
+  } else if (roomDiagram === "paths" && spacePaths === 1) {
     if (imageViewTitle) imageViewTitle.textContent = "Paths from the image sources";
+    if (imageViewHint) imageViewHint.textContent = camHint;
+  } else if (roomDiagram === "paths") {
+    if (imageViewTitle) imageViewTitle.textContent = "Paths";
+    if (imageViewHint) imageViewHint.textContent = camHint;
   } else if (imageViewTitle) {
     imageViewTitle.textContent = spaceLattice ? "Mirrored-room lattice" : "Home room";
+    if (imageViewHint) imageViewHint.textContent = camHint;
   }
-  if (imageViewHint) imageViewHint.textContent = camHint;
 }
 
 function applySpaceView() {
   syncSpaceModeUI();
-  if (currentView !== "space") return;
+  if (!fieldOpen()) return;
   if (!imagesCache) {
     scheduleImagesFetch(80);
+    paintImageViewsSoon();
     return;
   }
   applyImageView();
+  paintImageViewsSoon();
 }
 
 function withImageView(fn) {

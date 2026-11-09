@@ -97,6 +97,7 @@ var _applyingPreset = false;
 var wavFile = null;
 var wavChannels = 0;
 var currentView = "edit";
+var roomDiagram = "room"; /* room | lattice | paths. Display only. */
 var spaceLattice = true; /* show image rooms. Display only. */
 var spacePaths = 0; /* 0 off, 1 lattice rays, 2 folded paths and last legs. */
 var spaceOrder = 0; /* 0 shows every reflection order. */
@@ -149,21 +150,6 @@ var editor = RoomEditor.create({
   onDragEnd: function () { scheduleLiveRender(); scheduleLiveParams(); },
   sourceMeta: function (which) { return sourceVis[which] || null; }
 });
-/* Space plan uses this same state. Positions are not copied. */
-var spaceEditor = null;
-var spaceFloorCanvas = document.getElementById("spaceFloorCanvas");
-var spaceElevCanvas = document.getElementById("spaceElevCanvas");
-if (spaceFloorCanvas && spaceElevCanvas) {
-  spaceEditor = RoomEditor.create({
-    floorCanvas: spaceFloorCanvas,
-    elevCanvas: spaceElevCanvas,
-    getState: function () { return state; },
-    setState: function (s) { Object.assign(state, s); },
-    onChange: function () { syncUI(); scheduleLiveParams(); },
-    onDragEnd: function () { scheduleLiveRender(); scheduleLiveParams(); },
-    sourceMeta: function (which) { return sourceVis[which] || null; }
-  });
-}
 var sourceViews = document.getElementById("sourceViews");
 var sourceDesk = window.SourceDesk ? SourceDesk.create({
   getState: function () { return state; },
@@ -174,7 +160,6 @@ var sourceDesk = window.SourceDesk ? SourceDesk.create({
   vis: sourceVis,
   onPattern: function () {
     editor.redraw();
-    if (spaceEditor) spaceEditor.redraw();
   }
 }) : null;
 

@@ -234,14 +234,10 @@ function pressedName(row) {
 }
 
 test("the space picker shares room_shape with the room picker", () => {
-  const views = page.indexOf('id="imageViews"');
-  const viewsEnd = page.indexOf('id="surfacesViews"', views);
-  assert.ok(views > 0 && viewsEnd > views);
-  assert.equal(page.slice(views, viewsEnd).indexOf('id="spaceShapeRow"'), -1);
-  const had = page.indexOf('id="panelHadamard"');
-  const floor = page.indexOf('id="spaceFloorCanvas"');
-  const elev = page.indexOf('id="spaceElevCanvas"');
-  assert.ok(had > 0 && had < floor && floor < elev);
+  assert.equal(page.indexOf('id="panelHadamard"'), -1);
+  assert.equal(page.indexOf('id="spaceFloorCanvas"'), -1);
+  assert.equal(page.indexOf('id="spaceElevCanvas"'), -1);
+  assert.equal(page.indexOf('id="spaceShapeRow"'), -1);
   assert.match(page, /id="roomShapeRow"/);
   const applyStart = app.indexOf("function applyRoomShape");
   const applyEnd = app.indexOf("function paintRoomShape", applyStart);

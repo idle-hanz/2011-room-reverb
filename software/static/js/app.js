@@ -425,15 +425,32 @@ if (spaceFit) spaceFit.addEventListener("click", function () {
 var spaceLatticeBtn = document.getElementById("spaceLatticeBtn");
 var spacePathsBtn = document.getElementById("spacePathsBtn");
 var spaceOrderBtn = document.getElementById("spaceOrderBtn");
+var roomDiagramBtn = document.getElementById("roomDiagramBtn");
+if (roomDiagramBtn) {
+  roomDiagramBtn.addEventListener("click", function () {
+    roomDiagram = "room";
+    applySpaceView();
+  });
+}
 if (spaceLatticeBtn) {
   spaceLatticeBtn.addEventListener("click", function () {
-    spaceLattice = !spaceLattice;
+    if (roomDiagram !== "lattice") {
+      roomDiagram = "lattice";
+      spaceLattice = true;
+    } else {
+      spaceLattice = !spaceLattice;
+    }
     applySpaceView();
   });
 }
 if (spacePathsBtn) {
   spacePathsBtn.addEventListener("click", function () {
-    spacePaths = (spacePaths + 1) % 3;
+    if (roomDiagram !== "paths") {
+      roomDiagram = "paths";
+      if (!(spacePaths > 0)) spacePaths = 2;
+    } else {
+      spacePaths = (spacePaths + 1) % 3;
+    }
     applySpaceView();
   });
 }
@@ -688,7 +705,7 @@ if (liveBtn) {
       liveBtn.classList.remove("live-on");
       liveBtn.textContent = "Play live";
       syncHadamardUI();
-      if (currentView === "space") applyImageView();
+      if (fieldOpen()) applyImageView();
       if (statusEl) statusEl.textContent = "Live FDN stopped.";
       return;
     }
@@ -721,7 +738,7 @@ if (liveBtn) {
         liveBtn.classList.add("live-on");
         liveBtn.textContent = "Stop live";
         syncHadamardUI();
-        if (currentView === "space") applyImageView();
+        if (fieldOpen()) applyImageView();
       }
     } catch (err) {
       if (statusEl) statusEl.textContent = String(err);

@@ -51,16 +51,14 @@ function syncSidebar(view) {
     listen: view === "mic" || view === "polar",
     mics: view === "mic",
     preview: view === "edit" || view === "mix" || view === "surfaces",
-    advanced: true,
-    hadamard: view === "space"
+    advanced: true
   };
   var map = {
     room: document.getElementById("panelRoom"),
     listen: document.getElementById("panelListen"),
     mics: document.getElementById("panelMics"),
     preview: document.getElementById("panelPreview"),
-    advanced: document.getElementById("panelAdvanced"),
-    hadamard: document.getElementById("panelHadamard")
+    advanced: document.getElementById("panelAdvanced")
   };
   Object.keys(map).forEach(function (key) {
     if (map[key]) map[key].hidden = !show[key];
@@ -96,7 +94,16 @@ function applyRoomBox() {
 }
 
 function setView(view) {
-  if (view === "lattice" || view === "paths") view = "space";
+  var diagram = null;
+  if (view === "space" || view === "lattice") diagram = "lattice";
+  else if (view === "paths") diagram = "paths";
+  if (diagram) {
+    roomDiagram = diagram;
+    roomBoxMode = "size";
+    if (diagram === "lattice") spaceLattice = true;
+    if (diagram === "paths" && !(spacePaths > 0)) spacePaths = 2;
+    view = "edit";
+  }
   if (view === "colour") view = "surfaces";
   if (view === "source") {
     roomBoxMode = "source";
@@ -114,14 +121,12 @@ function setView(view) {
   var isEdit = view === "edit";
   var isMic = view === "mic";
   var isSource = false;
-  var isSpace = view === "space";
   var isSurfaces = view === "surfaces";
   var isPolar = view === "polar";
   if (editViews) editViews.hidden = !isEdit;
   if (sourceViews) sourceViews.hidden = !isSource;
   if (micViews) micViews.hidden = !isMic;
   if (mixViews) mixViews.hidden = view !== "mix";
-  if (imageViewsEl) imageViewsEl.hidden = !isSpace;
   showEl("surfacesViews", isSurfaces);
   showEl("polarViews", isPolar);
   var layout = document.querySelector("main.layout");
@@ -131,20 +136,22 @@ function setView(view) {
   }
   var stageWide = document.getElementById("stageWide");
   if (stageWide) stageWide.hidden = !isMic;
-  if (micToggles) micToggles.hidden = !isSpace;
 
   syncSidebar(view);
   syncMicEach();
   syncPatternChrome();
   syncFeedbackRow();
-  if (isSpace) syncSpaceModeUI();
+  if (isEdit) syncSpaceModeUI();
   if (isPolar) syncPolarPageUI();
   else placePolarTrio();
 
   applyRoomBox();
   if (isEdit) {
     editor.redraw();
-    if (spaceEditor) spaceEditor.redraw();
+    if (fieldOpen()) {
+      scheduleImagesFetch(80);
+      paintImageViewsSoon();
+    }
   } else if (isMic || isPolar) {
     requestAnimationFrame(function () {
       requestAnimationFrame(function () {
@@ -161,10 +168,6 @@ function setView(view) {
         schedulePolar();
       });
     });
-  } else if (isSpace) {
-    if (spaceEditor) spaceEditor.redraw();
-    scheduleImagesFetch(80);
-    paintImageViewsSoon();
   } else if (isSurfaces && colourSurfaces) {
     colourSurfaces.setMode("surfaces");
     colourSurfaces.drawSurfaceGraphs();
@@ -372,9 +375,8 @@ function syncUINow() {
 
   paintSourceSplit();
   editor.redraw();
-  if (spaceEditor) spaceEditor.redraw();
   if (sourceDesk && roomBoxMode === "source" && currentView === "edit") sourceDesk.redraw();
-  if (currentView === "space") scheduleImagesFetch();
+  scheduleImagesFetch();
   paintMicModel();
   paintSolos();
   paintDesk();

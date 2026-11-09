@@ -28,7 +28,7 @@ function setHadamardN(n) {
   state.hadamard_n = n;
   syncHadamardUI();
   syncUI();
-  if (currentView === "space") scheduleImagesFetch(120);
+  scheduleImagesFetch(120);
 }
 
 function placeRoomControls() {
@@ -168,7 +168,7 @@ function applyRoomShape(picked) {
   if (window.RoomMath && RoomMath.clampRoom) Object.assign(state, RoomMath.clampRoom(state));
   syncUI();
   scheduleLiveParams();
-  if (currentView === "space") scheduleImagesFetch(0);
+  scheduleImagesFetch(0);
 }
 
 function paintRoomShape() {
