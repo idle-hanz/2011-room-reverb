@@ -91,8 +91,9 @@ def test_u87_cardioid_shape():
 
 def test_tail_sits_after_bloom_and_does_not_call_the_dead_function():
     src = inspect.getsource(render_fdn_ir)
-    assert src.index("colour.apply") < src.index("_apply_chain")
-    assert src.index("_apply_chain") < src.index("_apply_tail_buses")
+    assert "_apply_chain" not in src
+    assert "bloom_spec" not in src
+    assert src.index("colour.apply") < src.index("_apply_tail_buses")
     assert "tail_sos is None" in src
     text = (SW / "mic_colour" / "tail_diffuse.py").read_text(encoding="utf-8")
     assert "apply_capsule_colour" not in text

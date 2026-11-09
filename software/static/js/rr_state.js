@@ -61,10 +61,6 @@ var state = {
   room_shape: S("room_shape"),
   /* Box only. On links left and right. A symmetric polygon stays paired and has no switch. */
   mirror_lr: S("mirror_lr"),
-  /* Routing. UI names are not engine keys. Off posts nothing. */
-  route_array_pre: S("route_array_pre"), route_array_drive: S("route_array_drive"), route_array_comp: S("route_array_comp"), route_array_amount: S("route_array_amount"),
-  route_room_pre: S("route_room_pre"), route_room_drive: S("route_room_drive"), route_room_comp: S("route_room_comp"), route_room_amount: S("route_room_amount"),
-  route_master_pre: S("route_master_pre"), route_master_drive: S("route_master_drive"), route_master_comp: S("route_master_comp"), route_master_amount: S("route_master_amount"),
   solo_direct: S("solo_direct"), solo_fdn: S("solo_fdn"), solo_early: S("solo_early"), solo_dry: S("solo_dry"),
   solo_l: S("solo_l"), solo_c: S("solo_c"), solo_r: S("solo_r"),
   stereo_mic: S("stereo_mic"), natural_bus: S("natural_bus"),

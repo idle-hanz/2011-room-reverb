@@ -391,17 +391,6 @@ select.cap-pattern:focus {
 }
 .check input { margin-top: 2px; accent-color: var(--accent); }
 
-/* Mix-page routing. Desktop row. No phone layout. */
-.routing-panel { margin-top: 12px; }
-.routing-strips { display: flex; flex-wrap: wrap; gap: 12px 18px; align-items: flex-start; }
-.routing-strip { flex: 1 1 200px; max-width: 280px; }
-.routing-strip h3 {
-  margin: 0 0 6px; font-size: 0.72rem; font-weight: 650; letter-spacing: 0.06em;
-  text-transform: uppercase; color: var(--muted);
-}
-.routing-strip .ctrl { margin-bottom: 6px; }
-.routing-note { margin: 4px 0 0; font-size: 0.72rem; color: var(--muted); }
-
 .advanced { cursor: default; }
 .advanced summary {
   cursor: pointer; color: var(--muted); font-size: 0.74rem; font-weight: 650;

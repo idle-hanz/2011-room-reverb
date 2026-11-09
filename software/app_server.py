@@ -721,35 +721,10 @@ def params_from_body(body: dict) -> dict:
         body, mic_setup, head_yaw, preset_id, gain_c, third, two_sources, mirror_b,
         source_balance, sx_b, sy_b, sz_b, mic_colour_fields,
     ))
-    _bloom_keys = (
-        "bloom_amount", "bloom_preset", "bloom_colour", "glue_colour",
-        "pre_colour", "pre_drive_db", "predelay_ms",
-        "bloom_attack_scale", "bloom_release_scale",
-    )
-    if any(k in body for k in _bloom_keys):
-        out["bloom_preset"] = str(body.get("bloom_preset") or D("bloom_preset"))
-        out["bloom_amount"] = _f(body.get("bloom_amount"), D("bloom_amount"))
-        out["bloom_colour"] = _b(body.get("bloom_colour"), D("bloom_colour"))
-        out["glue_colour"] = _b(body.get("glue_colour"), D("glue_colour"))
-        out["pre_colour"] = str(body.get("pre_colour") or D("pre_colour"))
-        out["pre_drive_db"] = _f(body.get("pre_drive_db"), D("pre_drive_db"))
-        out["predelay_ms"] = _f(body.get("predelay_ms"), D("predelay_ms"))
-        out["bloom_attack_scale"] = _f(body.get("bloom_attack_scale"), D("bloom_attack_scale"))
-        out["bloom_release_scale"] = _f(body.get("bloom_release_scale"), D("bloom_release_scale"))
     for _ch in ("l", "c", "r"):
         _pk = "place_" + _ch
         if _pk in body and body.get(_pk) not in (None, ""):
             out[_pk] = "room" if str(body.get(_pk)).strip().lower() == "room" else "array"
-    _route_keys = (
-        "array_amount", "array_preset", "array_pre", "array_drive_db",
-        "room_amount", "room_preset", "room_pre", "room_drive_db",
-    )
-    if any(k in body for k in _route_keys):
-        for _prefix in ("array", "room"):
-            out[_prefix + "_preset"] = str(body.get(_prefix + "_preset") or D(_prefix + "_preset"))
-            out[_prefix + "_amount"] = _f(body.get(_prefix + "_amount"), D(_prefix + "_amount"))
-            out[_prefix + "_pre"] = str(body.get(_prefix + "_pre") or D(_prefix + "_pre"))
-            out[_prefix + "_drive_db"] = _f(body.get(_prefix + "_drive_db"), D(_prefix + "_drive_db"))
     return out
 
 
@@ -1116,55 +1091,6 @@ def api_source_preview(body: dict):
         return JSONResponse({"ok": False, "error": f"source_preview: {e}"}, status_code=500)
 
 
-_BLOOM_RENDER_KEYS = (
-    "bloom_amount", "bloom_preset", "bloom_colour", "glue_colour",
-    "pre_colour", "pre_drive_db", "predelay_ms",
-    "bloom_attack_scale", "bloom_release_scale",
-)
-
-
-_ROUTE_RENDER_KEYS = (
-    "array_amount", "array_preset", "array_pre", "array_drive_db",
-    "room_amount", "room_preset", "room_pre", "room_drive_db",
-)
-
-
-def _routing_render_kw(p: dict) -> dict:
-    """Array and room inserts. Absent stays off. Master stays the Bloom keys."""
-    if not any(k in p for k in _ROUTE_RENDER_KEYS):
-        return {}
-
-    def side(prefix: str) -> dict:
-        return {
-            prefix + "_preset": str(p.get(prefix + "_preset") or "natural"),
-            prefix + "_amount": float(p.get(prefix + "_amount") or 0.0),
-            prefix + "_pre": str(p.get(prefix + "_pre") or "off"),
-            prefix + "_drive_db": float(p.get(prefix + "_drive_db") or 0.0),
-        }
-
-    out = {}
-    out.update(side("array"))
-    out.update(side("room"))
-    return out
-
-
-def _bloom_render_kw(p: dict) -> dict:
-    """Forward Bloom only when the body carried a Bloom key. Absent stays the render default."""
-    if not any(k in p for k in _BLOOM_RENDER_KEYS):
-        return {}
-    return {
-        "bloom_preset": str(p.get("bloom_preset") or "natural"),
-        "bloom_amount": float(p.get("bloom_amount") or 0.0),
-        "bloom_attack_scale": float(p.get("bloom_attack_scale") if p.get("bloom_attack_scale") is not None else 1.0),
-        "bloom_release_scale": float(p.get("bloom_release_scale") if p.get("bloom_release_scale") is not None else 1.0),
-        "predelay_ms": float(p.get("predelay_ms") or 0.0),
-        "bloom_colour": bool(p.get("bloom_colour")),
-        "glue_colour": bool(p.get("glue_colour")),
-        "pre_colour": str(p.get("pre_colour") or "off"),
-        "pre_drive_db": float(p.get("pre_drive_db") or 0.0),
-    }
-
-
 def _render_status(out, info, meta, sr, p, body, Lch, Rch, preview):
     status = (
         f"Wrote {out}\n"
@@ -1337,8 +1263,6 @@ def _render_impl(
             prox_l=bool(p.get("prox_l", True)),
             prox_c=bool(p.get("prox_c", True)),
             prox_r=bool(p.get("prox_r", True)),
-            **_bloom_render_kw(p),
-            **_routing_render_kw(p),
         )
         out = default_out_path()
         meta = write_wav_stereo(str(out), Lch, Rch, sr)

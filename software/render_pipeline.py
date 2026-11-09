@@ -1151,71 +1151,6 @@ def _df1_columns(exc: np.ndarray, coeffs) -> np.ndarray:
     return y
 
 
-def _bus_place(desk) -> dict:
-    """Each strip is array or room. A missing key stays on the array."""
-    src = desk or {}
-    out = {}
-    for ch in ("l", "c", "r"):
-        raw = str(src.get("place_" + ch) or "array").strip().lower()
-        out[ch] = "room" if raw == "room" else "array"
-    return out
-
-
-def _apply_chain(buses, det, spec) -> None:
-    """Preamp, then the compressor, using bloom_dsp.
-
-    A spec with only one stage is one apply_fdn_buses call, so a master
-    Room Crush or a master Neve matches today's single call.
-    """
-    import bloom_dsp as _b
-
-    pre_on = (spec.get("pre") or "off") != "off"
-    comp_on = float(spec.get("amount_db") or 0.0) > 0.0
-    if not pre_on and not comp_on:
-        return
-    if pre_on and comp_on:
-        pre_spec = dict(spec)
-        pre_spec["amount_db"] = 0.0
-        _b.apply_fdn_buses(buses, det, pre_spec)
-        comp_spec = dict(spec)
-        comp_spec["pre"] = "off"
-        _b.apply_fdn_buses(buses, det, comp_spec)
-        return
-    _b.apply_fdn_buses(buses, det, spec)
-
-
-def _route_buses(buses, det, array_spec, room_spec, place) -> None:
-    """Array strips, then room strips. The other strips are left alone."""
-    where = place or {"l": "array", "c": "array", "r": "array"}
-    n = 0
-    for ch in ("l", "c", "r"):
-        n = max(n, int(np.asarray(buses[ch]).shape[0]))
-
-    def run(spec, kind):
-        if spec is None:
-            return
-        keys = tuple(ch for ch in ("l", "c", "r") if where.get(ch, "array") == kind)
-        if not keys:
-            return
-        work = {}
-        for ch in ("l", "c", "r"):
-            if ch in keys:
-                y = np.asarray(buses[ch], dtype=np.float64)
-                if int(y.shape[0]) < n:
-                    z = np.zeros(n, dtype=np.float64)
-                    z[: int(y.shape[0])] = y
-                    y = z
-                work[ch] = y
-            else:
-                work[ch] = np.zeros(n, dtype=np.float64)
-        _apply_chain(work, det, spec)
-        for ch in keys:
-            buses[ch] = work[ch]
-
-    run(array_spec, "array")
-    run(room_spec, "room")
-
-
 def render_fdn_ir(
     taps, room, sr, c, length_ms, g, depth_per_axis, delays, n_lines=32,
     surfaces=None,
@@ -1235,11 +1170,6 @@ def render_fdn_ir(
     smooth: bool = False,
     movement_ms: float = 0.0,
     drive=None,
-    bloom_spec=None,
-    bloom_det=None,
-    array_spec=None,
-    room_spec=None,
-    bus_place=None,
     tail_sos=None,
 ):
     """2011 wet: L / C / R Diffuser Delay loops + Hadamard feedback + Mixer fold.
@@ -1257,26 +1187,9 @@ def render_fdn_ir(
     if peak < 0.0:
         peak = 0.0
     drive_v = None
-    det_src = None
     n_out = n_samp
-    route_on = array_spec is not None or room_spec is not None or bloom_spec is not None
-    if drive is not None and n_lines == 32 and (peak > 0.0 or route_on):
+    if drive is not None and n_lines == 32 and peak > 0.0:
         drive_v = np.asarray(drive, dtype=np.float64).reshape(-1)
-        if bloom_det is None:
-            det_src = drive_v
-        else:
-            det_src = np.asarray(bloom_det, dtype=np.float64).reshape(-1)
-        npre = 0
-        if bloom_spec is not None:
-            npre = int(bloom_spec.get("predelay_n") or 0)
-            if npre < 0:
-                npre = 0
-            if npre > 4799:
-                npre = 4799
-        if npre:
-            shifted = np.zeros(drive_v.shape[0] + npre, dtype=np.float64)
-            shifted[npre:] = drive_v
-            drive_v = shifted
         n_out = int(drive_v.shape[0]) + int(float(sr) * float(length_ms) / 1000.0)
         if n_out < 1:
             n_out = 1
@@ -1361,16 +1274,6 @@ def render_fdn_ir(
                 if y is not col:
                     poly[:, i] = y
         out += np.sum(poly, axis=1)
-    if route_on and det_src is not None:
-        det = det_src
-        if det.shape[0] < n_out:
-            z = np.zeros(n_out, dtype=np.float64)
-            z[: det.shape[0]] = det
-            det = z
-        if array_spec is not None or room_spec is not None:
-            _route_buses(buses, det, array_spec, room_spec, bus_place)
-        if bloom_spec is not None:
-            _apply_chain(buses, det, bloom_spec)
     if tail_sos is not None:
         _apply_tail_buses(buses, tail_sos)
     if weights is None:
@@ -1379,7 +1282,7 @@ def render_fdn_ir(
 
 
 def _apply_tail_buses(buses, pack) -> None:
-    """One K=3 SOS per mic bus, after routing and Bloom, before the fold."""
+    """One K=3 SOS per mic bus, after the tank, before the fold."""
     from mic_colour.tail_diffuse import apply_sos_df1
 
     rows = np.asarray(pack, dtype=np.float64).reshape(3, 3, 5)
@@ -1904,23 +1807,6 @@ def _render_core(
     prox_l: bool = True,
     prox_c: bool = True,
     prox_r: bool = True,
-    bloom_preset: str = "natural",
-    bloom_amount: float = 0.0,
-    bloom_attack_scale: float = 1.0,
-    bloom_release_scale: float = 1.0,
-    predelay_ms: float = 0.0,
-    bloom_colour: bool = False,
-    glue_colour: bool = False,
-    pre_colour: str = "off",
-    pre_drive_db: float = 0.0,
-    array_preset: str = "natural",
-    array_amount: float = 0.0,
-    array_pre: str = "off",
-    array_drive_db: float = 0.0,
-    room_preset: str = "natural",
-    room_amount: float = 0.0,
-    room_pre: str = "off",
-    room_drive_db: float = 0.0,
     offaxis_tail: bool = False,
     room_shape: Optional[str] = None,
 ) -> Tuple[np.ndarray, np.ndarray, dict]:
@@ -1991,35 +1877,6 @@ def _render_core(
             },
             surfaces,
         )
-    import bloom_dsp as _bloom
-    _bloom_body = {
-        "bloom_preset": bloom_preset,
-        "bloom_amount": bloom_amount,
-        "bloom_attack_scale": bloom_attack_scale,
-        "bloom_release_scale": bloom_release_scale,
-        "predelay_ms": predelay_ms,
-        "bloom_colour": bloom_colour,
-        "glue_colour": glue_colour,
-        "pre_colour": pre_colour,
-        "pre_drive_db": pre_drive_db,
-    }
-    bloom_spec = _bloom.design(_bloom_body, sr) if _bloom.bloom_is_on(_bloom_body) else None
-
-    def _side_spec(preset, amount, pre, drive):
-        body = {
-            "bloom_preset": preset,
-            "bloom_amount": amount,
-            "pre_colour": pre,
-            "pre_drive_db": drive,
-        }
-        if not _bloom.bloom_is_on(body):
-            return None
-        return _bloom.design(body, sr)
-
-    array_spec = _side_spec(array_preset, array_amount, array_pre, array_drive_db)
-    room_spec = _side_spec(room_preset, room_amount, room_pre, room_drive_db)
-    insert_on = bloom_spec is not None or array_spec is not None or room_spec is not None
-    bus_place = _bus_place(desk)
     # UI fdn_g is Structure Gain 0–1; loop scale is Gain/N (215).
     g = float(np.clip(fdn_g, 0.0, 1.0)) / float(n_had)
     grid = grid_bias_for_hadamard_n(n_had)
@@ -2187,7 +2044,7 @@ def _render_core(
         deA_L, deA_R = direct_early(taps, plan_a, False, _prox_of(prep))
         deB_L, deB_R = direct_early(taps_b, plan_b, bool(mirror_b), _prox_of(prep_b))
 
-        if movement_ms <= 0.0 and not insert_on:
+        if movement_ms <= 0.0:
             def _fdn_stereo(taps_src, src_plan):
                 left, right = render_fdn_ir(
                     taps_src, room, sr, c, fdn_ms, g_loop, DEFAULT_DEPTH, delays,
@@ -2230,7 +2087,7 @@ def _render_core(
         else:
             exc_a, exc_b, down, ga, gb = two_source_excitation(dry_l, dry_r, source_balance)
 
-            def _driven(taps_src, src_plan, drive, det=None):
+            def _driven(taps_src, src_plan, drive):
                 left, right = render_fdn_ir(
                     taps_src, room, sr, c, fdn_ms, g_loop, DEFAULT_DEPTH, delays,
                     n_lines=n_had, surfaces=surfaces, humidity=humidity,
@@ -2248,27 +2105,12 @@ def _render_core(
                     smooth=bool(smooth_on),
                     movement_ms=movement_ms,
                     drive=drive,
-                    bloom_spec=bloom_spec,
-                    bloom_det=det,
-                    array_spec=array_spec,
-                    room_spec=room_spec,
-                    bus_place=bus_place,
                     tail_sos=tail_pack,
                 )
                 return float(fdn_wet) * mk * left, float(fdn_wet) * mk * right
 
-            bloom_det = None
-            if bloom_spec is not None:
-                na = int(np.asarray(exc_a).shape[0])
-                nb = int(np.asarray(exc_b).shape[0])
-                nlink = na if na > nb else nb
-                aa = np.zeros(nlink, dtype=np.float64)
-                bb = np.zeros(nlink, dtype=np.float64)
-                aa[:na] = np.abs(np.asarray(exc_a, dtype=np.float64))
-                bb[:nb] = np.abs(np.asarray(exc_b, dtype=np.float64))
-                bloom_det = np.maximum(aa, bb)
-            fA_L, fA_R = _driven(taps, plan_a, 0.5 * exc_a, bloom_det)
-            fB_L, fB_R = _driven(taps_b, plan_b, 0.5 * exc_b, bloom_det)
+            fA_L, fA_R = _driven(taps, plan_a, 0.5 * exc_a)
+            fB_L, fB_R = _driven(taps_b, plan_b, 0.5 * exc_b)
 
             def _sum4(ir_a, ir_b, fa, fb):
                 ya = fft_convolve(exc_a, ir_a)
@@ -2345,7 +2187,7 @@ def _render_core(
         src_plan = _source_plan(
             source_radiation, source_yaw, source_pitch, taps, prep, sr, source_size_m,
         )
-        if movement_ms <= 0.0 and not insert_on:
+        if movement_ms <= 0.0:
             ir_L, ir_R = combined_ir(
                 taps,
                 room,
@@ -2480,10 +2322,6 @@ def _render_core(
                 smooth=bool(smooth_on),
                 movement_ms=movement_ms,
                 drive=dry,
-                bloom_spec=bloom_spec,
-                array_spec=array_spec,
-                room_spec=room_spec,
-                bus_place=bus_place,
                 tail_sos=tail_pack,
             )
             scale = float(fdn_wet) * mk
@@ -3607,63 +3445,6 @@ def live_fdn_params(
     # Present only when the key is on. An absent field keeps the live MD5.
     if bool(p.get("sub_hp")):
         out["sub_hp"] = [float(v) for v in sub_hp_coeffs(rate)]
-    # Bloom is absent unless Amount, predelay, or a pre is on. The off
-    # path keeps the live MD5. Play reads the lower Play factors.
-    import bloom_dsp as _bloom
-    if _bloom.bloom_is_on(p):
-        spec = _bloom.design(p, rate)
-        if spec is not None:
-            if float(spec.get("amount_db") or 0.0) > 0.0:
-                out["bloom"] = _bloom.pack_coeffs(spec, play=True)
-            if int(spec.get("predelay_n") or 0) > 0:
-                out["predelay_n"] = int(spec["predelay_n"])
-            pre = _bloom.pack_pre(spec, play=True)
-            if pre:
-                out["pre_colour"] = pre
-    # Section 13. One field, only while an array or room strip is on.
-    # Place lives inside that field. An off strip adds nothing.
-
-    def _side_row(prefix):
-        body = {
-            "bloom_preset": str(p.get(prefix + "_preset") or "natural"),
-            "bloom_amount": float(p.get(prefix + "_amount") or 0.0),
-            "pre_colour": str(p.get(prefix + "_pre") or "off"),
-            "pre_drive_db": float(p.get(prefix + "_drive_db") or 0.0),
-        }
-        if not _bloom.bloom_is_on(body):
-            return None
-        spec = _bloom.design(body, rate)
-        if spec is None:
-            return None
-        comp = _bloom.pack_coeffs(spec, play=True) if float(spec.get("amount_db") or 0.0) > 0.0 else None
-        pre = _bloom.pack_pre(spec, play=True)
-        if not comp and not pre:
-            return None
-        return comp, pre
-
-    def _side_pad(src, n):
-        row = [0.0] * n
-        if src:
-            for i, v in enumerate(list(src)[:n]):
-                row[i] = float(v)
-        return row
-
-    def _side_emit(row):
-        if not row:
-            return [0.0] + [0.0] * 80 + [0.0] + [0.0] * 25
-        comp, pre = row
-        return [1.0 if comp else 0.0] + _side_pad(comp, 80) + [1.0 if pre else 0.0] + _side_pad(pre, 25)
-
-    array_row = _side_row("array")
-    room_row = _side_row("room")
-    if array_row or room_row:
-        def _place_flag(ch):
-            return 1.0 if str(p.get("place_" + ch) or "array").strip().lower() == "room" else 0.0
-        out["side"] = (
-            [_place_flag("l"), _place_flag("c"), _place_flag("r")]
-            + _side_emit(array_row)
-            + _side_emit(room_row)
-        )
     # Present only for a polygon preset. Absent or box keeps the live MD5.
     if poly_on(shape):
         out["room_shape"] = normalize_shape(shape)

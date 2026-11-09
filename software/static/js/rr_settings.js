@@ -61,7 +61,6 @@ function applyReaktorSnapshot() {
   if (colourSurfaces && colourSurfaces.setSurfaces) {
     colourSurfaces.setSurfaces(state.surfaces);
   }
-  clearPreamp();
   syncHadamardUI();
   syncUI();
   if (statusEl) {
@@ -80,7 +79,6 @@ function resetToFresh() {
     if (!Object.prototype.hasOwnProperty.call(fresh, k)) delete state[k];
   });
   Object.keys(fresh).forEach(function (k) { state[k] = fresh[k]; });
-  clearPreamp();
   migrateRoomState(state);
   hallSnapshot = false;
   decayFromUser = false;
@@ -106,6 +104,7 @@ function scheduleSetupSave() {
   if (setupSaveTimer) clearTimeout(setupSaveTimer);
   setupSaveTimer = setTimeout(function () {
     setupSaveTimer = null;
+    if (typeof stripLegacyRoute === "function") stripLegacyRoute(state);
     var raw;
     try { raw = JSON.stringify(state); } catch (e) { return; }
     if (raw === setupBaseline) return;
@@ -120,6 +119,7 @@ function scheduleSetupSave() {
 
 function applySetupObject(data) {
   if (!data || typeof data !== "object" || Array.isArray(data)) return false;
+  if (typeof stripLegacyRoute === "function") stripLegacyRoute(data);
   Object.keys(state).forEach(function (k) {
     if (!Object.prototype.hasOwnProperty.call(data, k)) delete state[k];
   });
@@ -156,6 +156,7 @@ function offerSetupRestore() {
 }
 
 function downloadSetup() {
+  if (typeof stripLegacyRoute === "function") stripLegacyRoute(state);
   var raw;
   try { raw = JSON.stringify(state, null, 2); } catch (e) {
     showToast("Save failed");

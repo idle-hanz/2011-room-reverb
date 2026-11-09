@@ -329,27 +329,6 @@ def _rows():
     add(R("ref_mode", "peak", tab="Surfaces", choices=["peak", "rms"], route="colour", path="neither"))
     add(R("rendered_t20", None, tab="Surfaces", route="room", path="render"))
 
-    # Routing strips. Posted only while that strip is on.
-    for prefix, tab in (("array", "Mix"), ("room", "Mix"), ("master", "Mix")):
-        add(R("route_%s_pre" % prefix, "none", tab=tab, path="both"))
-        add(R("route_%s_drive" % prefix, 0.0, tab=tab))
-        add(R("route_%s_comp" % prefix, "off", tab=tab))
-        add(R("route_%s_amount" % prefix, 0.0, tab=tab, lo=0, hi=100))
-    for prefix in ("array", "room", "bloom"):
-        add(R("%s_preset" % prefix, "natural", tab="Mix"))
-        add(R("%s_amount" % prefix, 0.0, tab="Mix", lo=0, hi=100))
-    add(R("array_pre", "off", tab="Mix"))
-    add(R("array_drive_db", 0.0, unit="dB", tab="Mix"))
-    add(R("room_pre", "off", tab="Mix"))
-    add(R("room_drive_db", 0.0, unit="dB", tab="Mix"))
-    add(R("bloom_colour", False, tab="Mix"))
-    add(R("glue_colour", False, tab="Mix"))
-    add(R("pre_colour", "off", tab="Mix"))
-    add(R("pre_drive_db", 0.0, unit="dB", tab="Mix"))
-    add(R("predelay_ms", 0.0, unit="ms", tab="Mix"))
-    add(R("bloom_attack_scale", 1.0, tab="Mix"))
-    add(R("bloom_release_scale", 1.0, tab="Mix"))
-
     # Display toggles. Nothing in the audio post uses these names.
     add(R("show_mic_L", True, tab="Space", route="none", path="neither", controls=["data-mic=L"]))
     add(R("show_mic_C", False, tab="Space", route="none", path="neither", controls=["data-mic=C"]))

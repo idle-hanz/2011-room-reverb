@@ -414,7 +414,6 @@ async function doRender() {
   var mix = heardMix(state);
   if (state.room_shape) mix.room_shape = String(state.room_shape);
   mix.mirror_lr = !!state.mirror_lr;
-  if (window.RRRouting && RRRouting.renderScene) Object.assign(mix, RRRouting.renderScene(state));
   fd.append("params_json", JSON.stringify(mix));
   try {
     var res = await fetch("/api/render", { method: "POST", body: fd });

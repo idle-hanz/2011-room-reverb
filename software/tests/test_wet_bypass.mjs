@@ -16,9 +16,9 @@ function loadApply() {
   return new Function(app.slice(start, end) + "\nreturn applyWetBypass;")();
 }
 
-test("the mix desk has one Bypass button, the routing strips, and no host fader", () => {
+test("the mix desk has one Bypass button, no routing panel, and no host fader", () => {
   assert.match(page, /id="wetBypass" aria-pressed="false"/);
-  assert.match(page, /id="routingPanel"/);
+  assert.doesNotMatch(page, /id="routingPanel"/);
   assert.doesNotMatch(page, /id="fader_dry"/);
   assert.match(page, /<option value="BYPASS">Bypass<\/option>/);
   assert.match(app, /applyWetBypass\(o, wetBypass\)/);

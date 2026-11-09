@@ -509,7 +509,6 @@
       msg.n_irs = colour.n_irs;
     }
     msg.snap = snapRoom;
-    if (typeof auditionOn !== "undefined" && auditionOn) msg.audition = 1;
     var nIrs = msg.n_irs | 0;
     var overCap = !!(msg.irs && msg.ir_len && nIrs > 0 && (msg.irs.length > 192 * 8192 || nIrs > 192));
     if (!overCap && (msg.colour_over | 0) > 192) overCap = true;

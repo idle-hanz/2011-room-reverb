@@ -28,7 +28,7 @@ from settings_table import (  # noqa: E402
 )
 from surface_colour import DEFAULT_DIFFUSION_SEED, DEFAULT_LAMBDA_REF_M  # noqa: E402
 
-_POST_O = {"rr_mix.js", "routing_scene.js"}
+_POST_O = {"rr_mix.js"}
 _POST_BODY = {"polar_field.js", "rr_polar.js"}
 _READ_RES = (
     r'body\.get\(\s*["\']([A-Za-z0-9_]+)["\']',
@@ -87,16 +87,6 @@ def _posted_keys() -> set:
             found.update(re.findall(r'\bbody\.([A-Za-z0-9_]+)\s*=', text))
         if path.name == "sl_room_result.js":
             found.update(re.findall(r'\bs\.([A-Za-z0-9_]+)\s*=', text))
-        if path.name == "routing_scene.js" and 'name + "_preset"' in text:
-            for name in ("array", "room"):
-                for suffix in ("_preset", "_amount", "_pre", "_drive_db"):
-                    found.add(name + suffix)
-            found.update(re.findall(
-                r"^\s+(bloom_preset|bloom_amount|bloom_colour|glue_colour|pre_colour|"
-                r"pre_drive_db|predelay_ms|bloom_attack_scale|bloom_release_scale)\s*:",
-                text,
-                re.M,
-            ))
         if path.name == "rr_space.js" and "mics: selectedMics" in text:
             found.add("mics")
         if path.name == "rr_mix.js" and 'o["mic_x_"' in text:
@@ -111,10 +101,6 @@ def _server_reads() -> set:
     found = set()
     for pattern in _READ_RES:
         found.update(re.findall(pattern, text))
-    if 'body.get(_prefix + "_preset")' in text:
-        for name in ("array", "room"):
-            for suffix in ("_preset", "_amount", "_pre", "_drive_db"):
-                found.add(name + suffix)
     if '"place_" +' in text:
         for ch in ("l", "c", "r"):
             found.add("place_" + ch)
@@ -152,9 +138,6 @@ gain_exact_c gain_exact_l gain_exact_r link_heights link_lr_yaw live_drag_render
 mute_c mute_direct mute_dry mute_early mute_fdn mute_l mute_r natural_bus
 pan_c pan_l pan_r phase_c phase_l phase_r polar_radius
 room_slot room_x room_y room_yaw room_z
-route_array_amount route_array_comp route_array_drive route_array_pre
-route_master_amount route_master_comp route_master_drive route_master_pre
-route_room_amount route_room_comp route_room_drive route_room_pre
 solo_c solo_direct solo_dry solo_early solo_fdn solo_l solo_r
 spare_off stereo_mic surf_amount surf_rendered_t20 surf_suggestions
 trim_c trim_direct trim_dry trim_early trim_fdn trim_l trim_r
