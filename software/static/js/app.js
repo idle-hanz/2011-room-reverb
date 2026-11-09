@@ -605,6 +605,15 @@ bindCheck("phys_ceiling", "phys_ceiling");
 bindCheck("sub_hp", "sub_hp");
 bindCheck("offaxis_tail", "offaxis_tail");
 bindCheck("match_solo_level", "match_solo_level");
+var realWallPolarity = document.getElementById("real_wall_polarity");
+if (realWallPolarity) {
+  realWallPolarity.addEventListener("change", function (e) {
+    if (e.target.checked) state.real_wall_polarity = true;
+    else delete state.real_wall_polarity;
+    Object.assign(state, RoomMath.clampRoom(state));
+    syncUI();
+  });
+}
 if (movementSlider) {
   movementSlider.addEventListener("input", function (e) {
     var v = Math.round(Number(e.target.value));

@@ -344,6 +344,14 @@ function stripLegacyRoute(obj) {
   return obj;
 }
 
+/* Unticked writes and posts nothing. Ticked stores true. */
+function omitRealWall(o) {
+  if (!o || typeof o !== "object") return o;
+  if (o.real_wall_polarity) o.real_wall_polarity = true;
+  else delete o.real_wall_polarity;
+  return o;
+}
+
 function heardMix(src) {
   var o = Object.assign({}, src);
   stripLegacyRoute(o);
@@ -423,6 +431,7 @@ function heardMix(src) {
   applyTreatAmount(o);
   applyTreatDecay(o);
   applyWetBypass(o, wetBypass);
+  omitRealWall(o);
   return o;
 }
 

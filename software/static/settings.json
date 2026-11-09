@@ -293,6 +293,22 @@
       "in_defaults": true
     },
     {
+      "name": "real_wall_polarity",
+      "default": false,
+      "range": null,
+      "unit": "",
+      "tab": "Room",
+      "route": [
+        "/api/params/live",
+        "/api/render",
+        "/api/params/images",
+        "/api/params/phys",
+        "/api/display/polar",
+        "/api/room/result"
+      ],
+      "path": "both"
+    },
+    {
       "name": "grid",
       "default": null,
       "range": [
@@ -4538,6 +4554,22 @@
       ],
       "path": "both",
       "in_defaults": true
+    },
+    "real_wall_polarity": {
+      "name": "real_wall_polarity",
+      "default": false,
+      "range": null,
+      "unit": "",
+      "tab": "Room",
+      "route": [
+        "/api/params/live",
+        "/api/render",
+        "/api/params/images",
+        "/api/params/phys",
+        "/api/display/polar",
+        "/api/room/result"
+      ],
+      "path": "both"
     },
     "grid": {
       "name": "grid",

@@ -1674,6 +1674,7 @@ def compute_taps(
     include_offaxis_shelf: bool = True,
     include_pattern: bool = True,
     reaktor_parity: bool = False,
+    real_wall_polarity: bool = False,
 ) -> List[ImageTap]:
     """Build taps for the chosen image table.
 
@@ -1689,6 +1690,8 @@ def compute_taps(
     include_pattern False leaves the ideal capsule out of the scalars.
     Measured does that: the fitter already holds the polar. The M/S side
     fig-8 stays, because that difference is the decode, not the fitter.
+    real_wall_polarity forces every image sign to +1. The capsule sign stays
+    in the pattern term. The default keeps (-1)^(nx+ny+nz).
     """
     left, right = mic_positions(stand)
     yaw_l = stand.mlalr  # VERIFIED Prepare MLALR
@@ -1737,7 +1740,7 @@ def compute_taps(
 
     for i, n in enumerate(imgs):
         pos = image_position(source, room, n, origin=origin, z_face_4l=z_face_4l)
-        pol = polarity(n)
+        pol = 1 if real_wall_polarity else polarity(n)
         order = image_order(n)
         fdn_l = fdn_r = fdn_c = None
         if ms_decode:

@@ -1445,6 +1445,13 @@ def _inject_levels(taps, n, surfaces):
     return inj_l, inj_c, inj_r
 
 
+def _real_wall_on(flag, desk) -> bool:
+    """True only when the tick is on. A missing key stays off."""
+    if flag:
+        return True
+    return isinstance(desk, dict) and bool(desk.get("real_wall_polarity"))
+
+
 def makeup_at_stand(
     stand,
     desk,
@@ -1463,6 +1470,7 @@ def makeup_at_stand(
     sr,
     weights,
     room_shape=None,
+    real_wall_polarity: bool = False,
 ):
     """Mixer makeup from a stand-distance second pass.
 
@@ -1477,6 +1485,7 @@ def makeup_at_stand(
     On the boot stand that rebuilds the boot source, so the default scene
     stays bit-exact. A moved source then follows 1/r through the injects.
     """
+    real_wall_polarity = _real_wall_on(real_wall_polarity, desk)
     placed = _place_stand(copy.copy(stand), _desk_at_stand(desk))
     # Table defaults, not a second copy of the boot numbers.
     boot_src = (float(D("sx")), float(D("sy")), float(D("sz")))
@@ -1495,6 +1504,7 @@ def makeup_at_stand(
             c=c, n=hadamard_n,
             include_offaxis_shelf=include_offaxis_shelf,
             include_pattern=include_pattern,
+            real_wall_polarity=real_wall_polarity,
         )
     else:
         taps = compute_taps(
@@ -1503,6 +1513,7 @@ def makeup_at_stand(
             include_offaxis_shelf=include_offaxis_shelf,
             include_pattern=include_pattern,
             reaktor_parity=bool(reaktor_parity),
+            real_wall_polarity=real_wall_polarity,
         )
     inj_l, inj_c, inj_r = _inject_levels(taps, hadamard_n, surfaces)
     return ir_rms_makeup_from_inject(
@@ -1809,6 +1820,7 @@ def _render_core(
     prox_r: bool = True,
     offaxis_tail: bool = False,
     room_shape: Optional[str] = None,
+    real_wall_polarity: bool = False,
 ) -> Tuple[np.ndarray, np.ndarray, dict]:
     """Render dry mono through early-field (+ optional FDN) with optional motion.
 
@@ -1896,12 +1908,14 @@ def _render_core(
 
     def _placed_taps(prep, place_desk):
         stand = _place_stand(_unplaced_stand(prep), place_desk)
+        wall = _real_wall_on(real_wall_polarity, desk)
         if poly_on(room_shape):
             return compute_poly_taps(
                 room, prep.source, stand, room_shape,
                 c=c, n=n_had,
                 include_offaxis_shelf=mic_colour.include_offaxis_shelf,
                 include_pattern=not mic_colour.measured,
+                real_wall_polarity=wall,
             )
         return compute_taps(
             room, prep.source, stand, c=c, grid=grid, origin="corner",
@@ -1909,6 +1923,7 @@ def _render_core(
             include_offaxis_shelf=mic_colour.include_offaxis_shelf,
             include_pattern=not mic_colour.measured,
             reaktor_parity=reaktor_parity,
+            real_wall_polarity=wall,
         )
 
     def taps_at(sox_v: float, soz_v: float):
@@ -2896,14 +2911,16 @@ def _live_surf_pack(p, room, surfaces, taps, rate, n_had, line_t60, peaking, tap
         return {"surf_on": 0, "surf_refused": "design:" + type(exc).__name__}
 
 
-def _play_shape_taps(room, source, stand_i, shape, c, n_had, colour, grid, parity):
+def _play_shape_taps(room, source, stand_i, shape, c, n_had, colour, grid, parity, real_wall_polarity=False):
     """Shoebox or polygon taps. Same arguments Render uses for a placed stand."""
+    wall = bool(real_wall_polarity)
     if poly_on(shape):
         return compute_poly_taps(
             room, source, stand_i, shape,
             c=c, n=n_had,
             include_offaxis_shelf=colour.include_offaxis_shelf,
             include_pattern=not colour.measured,
+            real_wall_polarity=wall,
         )
     return compute_taps(
         room, source, stand_i, c=c, grid=grid, origin="corner",
@@ -2911,6 +2928,7 @@ def _play_shape_taps(room, source, stand_i, shape, c, n_had, colour, grid, parit
         include_offaxis_shelf=colour.include_offaxis_shelf,
         include_pattern=not colour.measured,
         reaktor_parity=parity,
+        real_wall_polarity=wall,
     )
 
 
@@ -3005,6 +3023,7 @@ def play_listen_scene(p: dict, sr: int = SAMPLE_RATE_HZ) -> dict:
     shape = p.get("room_shape")
     taps = _play_shape_taps(
         room, prep.source, stand, shape, c, play_n, mic_colour, grid, parity,
+        bool(p.get("real_wall_polarity")),
     )
     g, g_loop, line_t60, delays = locked_loop_gain(
         g_open, taps, rate, c, play_n, decay_lock, decay_s,
@@ -3096,6 +3115,7 @@ def live_fdn_params(
         # would be cut on the way into the worklet.
         return _play_shape_taps(
             room, source, stand_i, shape, c, n_had, mic_colour, grid, parity,
+            bool(p.get("real_wall_polarity")),
         )
     dff_per_tap = [tap_dff(t.n, surfaces, master=diffusion_master) for t in taps]
     solo_l = parse_solo(p.get("surfaces_solo"))

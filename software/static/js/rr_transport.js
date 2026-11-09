@@ -264,6 +264,8 @@ function syncUINow() {
   }
   var smoothEl = document.getElementById("smooth");
   if (smoothEl) smoothEl.checked = state.smooth === true;
+  var wallBox = document.getElementById("real_wall_polarity");
+  if (wallBox) wallBox.checked = !!state.real_wall_polarity;
   var movementEl = document.getElementById("movement");
   var movementOut = document.getElementById("movement_out");
   if (state.movement == null || !isFinite(Number(state.movement))) state.movement = 0;

@@ -105,6 +105,7 @@ function scheduleSetupSave() {
   setupSaveTimer = setTimeout(function () {
     setupSaveTimer = null;
     if (typeof stripLegacyRoute === "function") stripLegacyRoute(state);
+    if (typeof omitRealWall === "function") omitRealWall(state);
     var raw;
     try { raw = JSON.stringify(state); } catch (e) { return; }
     if (raw === setupBaseline) return;
@@ -132,6 +133,7 @@ function applySetupObject(data) {
     colourSurfaces.setSurfaces(state.surfaces);
   }
   if (window.RoomMath && RoomMath.clampRoom) Object.assign(state, RoomMath.clampRoom(state));
+  if (typeof omitRealWall === "function") omitRealWall(state);
   syncUI();
   return true;
 }
@@ -157,6 +159,7 @@ function offerSetupRestore() {
 
 function downloadSetup() {
   if (typeof stripLegacyRoute === "function") stripLegacyRoute(state);
+  if (typeof omitRealWall === "function") omitRealWall(state);
   var raw;
   try { raw = JSON.stringify(state, null, 2); } catch (e) {
     showToast("Save failed");

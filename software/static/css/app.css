@@ -450,6 +450,7 @@ select.cap-pattern:focus {
   font-variant-numeric: tabular-nums; color: var(--accent); font-family: var(--mono);
 }
 .hadamard-note { margin: 0; font-size: 0.66rem; color: var(--muted); line-height: 1.4; }
+.hadamard-polarity { margin-top: 8px; font-size: 0.78rem; }
 
 /* Colour / Surfaces / Polar */
 .cs-views { margin-bottom: 0; }
@@ -1134,6 +1135,7 @@ select.cap-pattern:focus {
 #roomDiagramFrame.is-enlarged .hint { display: none; }
 #roomDiagramFrame.is-enlarged .hadamard-row,
 #roomDiagramFrame.is-enlarged .view3d-readout-row { margin: 0; min-height: 0; }
+#roomDiagramFrame.is-enlarged .hadamard-polarity { margin-top: 0; }
 #roomDiagramFrame.is-enlarged .view3d-wrap,
 #roomDiagramFrame.is-enlarged .image-wrap {
   flex: 1 1 auto;

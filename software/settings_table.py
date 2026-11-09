@@ -119,6 +119,8 @@ def _rows():
     add(R("smooth", True, tab="Room", in_defaults=True))
     add(R("movement", 0.0, tab="Room", lo=0, hi=100))
     add(R("hadamard_n", 32, tab="Room", choices=[8, 16, 32, 64, 128], in_defaults=True))
+    # Missing is off, so a default save does not grow a key. On forces early taps to +.
+    add(R("real_wall_polarity", False, tab="Room"))
     add(R("grid", None, tab="Room", choices=["8", "16", "32", "64", "64like", "128"], route="both", path="both"))
 
     # Source. Number boxes share the slider's row.

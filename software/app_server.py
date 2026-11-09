@@ -544,6 +544,11 @@ def _params_room_fields(
         "offaxis_tail": (
             _b(body["offaxis_tail"], D("offaxis_tail")) if "offaxis_tail" in body else D("offaxis_tail")
         ),
+        # Missing or false keeps (-1)^order. True forces every early tap positive.
+        "real_wall_polarity": (
+            _b(body["real_wall_polarity"], D("real_wall_polarity"))
+            if "real_wall_polarity" in body else D("real_wall_polarity")
+        ),
         # Absent or box is the shoebox. A polygon word reaches Play and Render.
         "room_shape": (
             str(body.get("room_shape") or page_value("room_shape")).strip().lower()
@@ -1256,6 +1261,7 @@ def _render_impl(
             sub_hp=bool(p.get("sub_hp")),
             offaxis_tail=bool(p.get("offaxis_tail")),
             room_shape=p.get("room_shape"),
+            real_wall_polarity=bool(p.get("real_wall_polarity")),
             surf_treatment=p.get("surf_treatment"),
             surf_cal=p.get("surf_cal"),
             # SL4. Missing or false stays room average. Surfaces-only.

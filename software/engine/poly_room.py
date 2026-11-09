@@ -653,6 +653,7 @@ def compute_poly_taps(
     include_offaxis_shelf: bool = True,
     include_pattern: bool = True,
     plan=None,
+    real_wall_polarity: bool = False,
 ) -> List[ImageTap]:
     """Thirty-two (or ``n``) taps for one preset. Levels use 1/r. Delays use the stand.
 
@@ -689,7 +690,7 @@ def compute_poly_taps(
 
     taps: List[ImageTap] = []
     for i, (pos, order, _seq) in enumerate(chosen):
-        pol = 1 if (order % 2 == 0) else -1
+        pol = 1 if (real_wall_polarity or order % 2 == 0) else -1
         d_stand = dist(stand_pt, pos)
         d_l = dist(left, pos)
         d_r = dist(right, pos)
