@@ -233,12 +233,10 @@ function syncRoomDiagram() {
   var field = roomDiagram !== "room";
   var frame3 = document.getElementById("view3dFrame");
   var frameI = document.getElementById("imageFrame");
-  var tools = document.getElementById("roomFieldTools");
   var metres3 = document.getElementById("liveMetres3d");
   var metresI = document.getElementById("liveMetresImg");
   if (frame3) frame3.hidden = field;
   if (frameI) frameI.hidden = !field;
-  if (tools) tools.hidden = !field;
   if (metres3) metres3.hidden = field;
   if (metresI) metresI.hidden = !field;
   var roomBtn = document.getElementById("roomDiagramBtn");

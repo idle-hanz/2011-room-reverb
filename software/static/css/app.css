@@ -1102,6 +1102,18 @@ select.cap-pattern:focus {
   height: 100% !important;
   min-height: 0;
 }
+#roomDiagramFrame { padding-top: 2px; }
+#roomDiagramFrame .diagram-expand { top: 8px; }
+#roomDiagramFrame .tool-row,
+#roomDiagramFrame .hadamard-block,
+#roomDiagramFrame .hint { margin-right: 76px; }
+#roomDiagramFrame.is-enlarged .view3d-wrap,
+#roomDiagramFrame.is-enlarged .image-wrap {
+  flex: 1 1 auto;
+  aspect-ratio: auto;
+  min-height: 0;
+  height: auto;
+}
 @media (max-width: 900px) {
   .mic-polar-body { grid-template-columns: 1fr; }
   .mic-hero, .mic-hero canvas { min-height: 380px; height: 380px; }

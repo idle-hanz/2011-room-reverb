@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>2011 Room Reverb</title>
   <link rel="icon" href="/static/favicon.svg" type="image/svg+xml" />
-  <link rel="stylesheet" href="/static/css/app.css?v=51" />
+  <link rel="stylesheet" href="/static/css/app.css?v=52" />
   <link rel="stylesheet" href="/static/css/sl_room_result.css?v=3" />
   <link rel="stylesheet" href="/static/css/rr_controls.css?v=1" />
 </head>
@@ -69,6 +69,8 @@
               <div class="panel-head">
                 <h2 id="imageViewTitle">3D room</h2>
               </div>
+              <div class="diagram-frame" id="roomDiagramFrame">
+              <button type="button" class="diagram-expand" aria-label="Enlarge room diagram">Enlarge</button>
               <div class="tool-row" id="roomDiagramRow" role="group" aria-label="Room diagram">
                 <button type="button" class="chip active" id="roomDiagramBtn" aria-pressed="true">Room</button>
                 <button type="button" class="chip" id="spaceLatticeBtn" aria-pressed="false">Lattice</button>
@@ -87,7 +89,7 @@
                 <p class="hadamard-readout" id="hadamardReadout">32 images · 32 FDN lines</p>
                 <p class="hadamard-note">Matrix is unscaled ±1 (Sylvester). Decay on the FDN strip sets the tail. 64 and 128 are Render-only. Peaking in the loop is cut-only.</p>
               </div>
-              <div class="tool-row" id="roomFieldTools" hidden>
+              <div class="tool-row" id="roomFieldTools">
                 <div class="mic-toggles" id="micToggles">
                   <span class="mic-label">Mics</span>
                   <label class="mic-chip"><input type="checkbox" data-mic="L" checked /> L</label>
@@ -111,12 +113,12 @@
                 <span class="live-metres" id="liveMetres3d">—</span>
                 <span class="live-metres" id="liveMetresImg" hidden>—</span>
               </div>
-              <div class="canvas-wrap view3d-wrap diagram-frame" id="view3dFrame">
-                <button type="button" class="diagram-expand" aria-label="Enlarge 3D room">Enlarge</button>
+              <div class="canvas-wrap view3d-wrap" id="view3dFrame">
                 <canvas id="view3dCanvas" width="900" height="640" aria-label="3D room perspective"></canvas>
               </div>
-              <div class="canvas-wrap image-wrap diagram-frame" id="imageFrame" hidden>
+              <div class="canvas-wrap image-wrap" id="imageFrame" hidden>
                 <canvas id="imageCanvas" width="1200" height="720" aria-label="Early-field image view"></canvas>
+              </div>
               </div>
             </div>
           </div>
@@ -1001,7 +1003,7 @@
   <script src="/static/js/rr_mix.js?v=11"></script>
   <script src="/static/js/rr_room.js?v=6"></script>
   <script src="/static/js/rr_source.js?v=2"></script>
-  <script src="/static/js/rr_space.js?v=4"></script>
+  <script src="/static/js/rr_space.js?v=5"></script>
   <script src="/static/js/rr_polar.js?v=3"></script>
   <script src="/static/js/rr_transport.js?v=12"></script>
   <script src="/static/js/rr_settings.js?v=4"></script>
