@@ -177,8 +177,21 @@ def test_a1_place_orders_match_fresh(audit_server):
             assert not diffs, f"{x}->{y} leaked {diffs[:12]}"
 
 
+# Space is no longer a tab. The Room tab's Lattice chip opens that field.
 _VIEWS = ["edit", "mic", "mix", "space", "surfaces", "polar"]
+_TAB_VIEWS = ["edit", "mic", "mix", "surfaces", "polar"]
 _COLOURS = ["MEASURED_SHELF", "ASSUMED_TOYS", "BYPASS"]
+
+
+def _open_view(page, view: str) -> None:
+    """Open one audit view. Space is the Room tab's Lattice chip."""
+    if view != "space":
+        page.click(f'.view-tab[data-view="{view}"]')
+        return
+    page.click('.view-tab[data-view="edit"]')
+    if page.evaluate("() => roomBoxMode === 'source'"):
+        page.click("#roomBoxToggle")
+    page.click("#spaceLatticeBtn")
 
 
 def _rects_overlap(a, b) -> bool:
@@ -219,22 +232,32 @@ def test_a2_phone_tabs(audit_server):
             )
             phone.wait_for_timeout(80)
             for view in _VIEWS:
-                phone.click(f'.view-tab[data-view="{view}"]')
+                _open_view(phone, view)
                 phone.wait_for_timeout(120)
                 report = phone.evaluate(
-                    """(views) => {
+                    """(tabs) => {
+                      window.scrollTo(0, 0);
                       const sw = document.documentElement.scrollWidth;
                       const stage = document.querySelector('.stage').getBoundingClientRect();
                       const side = document.querySelector('.sidebar').getBoundingClientRect();
-                      const hits = views.map((v) => {
-                        const el = document.querySelector('.view-tab[data-view="' + v + '"]');
+                      function hitOf(el, name) {
+                        if (!el) return { v: name, ok: false };
                         const r = el.getBoundingClientRect();
                         const hit = document.elementFromPoint(r.x + r.width / 2, r.y + r.height / 2);
-                        return { v: v, ok: !!(hit && (hit === el || el.contains(hit))) };
-                      });
+                        return { v: name, ok: !!(hit && (hit === el || el.contains(hit))) };
+                      }
+                      const hits = tabs.map((v) => hitOf(
+                        document.querySelector('.view-tab[data-view="' + v + '"]'), v));
+                      const room = document.getElementById('editViews');
+                      if (room && !room.hidden) {
+                        const lattice = document.getElementById('spaceLatticeBtn');
+                        if (lattice) lattice.scrollIntoView({ block: 'center', inline: 'nearest' });
+                        hits.push(hitOf(lattice, 'space'));
+                        window.scrollTo(0, 0);
+                      }
                       return { sw: sw, stage: stage.toJSON(), side: side.toJSON(), hits: hits };
                     }""",
-                    _VIEWS,
+                    _TAB_VIEWS,
                 )
                 if report["sw"] > 391:
                     leaks.append(f"{mode}/{view} scrollWidth {report['sw']}")
@@ -416,7 +439,7 @@ def test_a10_header_status_on_every_tab(audit_server):
         pg.wait_for_timeout(700)
         pg.evaluate("() => { window.LiveFDN.isRunning = () => true; }")
         for view in _VIEWS:
-            pg.click(f'.view-tab[data-view="{view}"]')
+            _open_view(pg, view)
             pg.wait_for_timeout(80)
             pg.evaluate(
                 """() => {
@@ -464,7 +487,7 @@ def test_a11_source_labels_omni_and_stale_reply(audit_server):
             held.append(route)
 
         pg.route("**/api/params/images", grab)
-        pg.click('.view-tab[data-view="space"]')
+        _open_view(pg, "space")
         pg.wait_for_timeout(500)
         deadline = time.time() + 5
         while time.time() < deadline and len(held) < 1:
@@ -614,7 +637,7 @@ def test_a12_visible_controls_post_or_are_ui_only(audit_server):
                 if (el.classList.contains('polar-band')) return true;
                 if (el.closest('#polarExtras') || el.closest('#polarBandKey')) return true;
                 if (el.getAttribute('data-space-mode') || el.getAttribute('data-path-mic')) return true;
-                if (el.id === 'spaceLatticeBtn' || el.id === 'spacePathsBtn' || el.id === 'spaceOrderBtn') return true;
+                if (el.id === 'roomDiagramBtn' || el.id === 'spaceLatticeBtn' || el.id === 'spacePathsBtn' || el.id === 'spaceOrderBtn') return true;
                 if (el.getAttribute('data-polar-page')) return true;
                 if (el.getAttribute('data-src-freq') || el.getAttribute('data-src-plane')) return true;
                 if (el.getAttribute('data-plane')) return true;
@@ -697,8 +720,13 @@ def test_a12_visible_controls_post_or_are_ui_only(audit_server):
               const seen = new Set();
               const controls = [];
               views.forEach((v) => {
-                const tab = document.querySelector('.view-tab[data-view="' + v + '"]');
-                tab.click();
+                if (v === 'space') {
+                  document.querySelector('.view-tab[data-view="edit"]').click();
+                  if (roomBoxMode === 'source') document.getElementById('roomBoxToggle').click();
+                  document.getElementById('spaceLatticeBtn').click();
+                } else {
+                  document.querySelector('.view-tab[data-view="' + v + '"]').click();
+                }
                 document.querySelectorAll('input, select, textarea, button').forEach((el) => {
                   if (!visible(el)) return;
                   if (el.id === 'renderBtn' || el.id === 'liveBtn' || el.id === 'wavInput') return;
