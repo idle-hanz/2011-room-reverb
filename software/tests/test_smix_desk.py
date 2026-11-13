@@ -524,3 +524,13 @@ if __name__ == "__main__":
     test_room_mic_independent()
     test_any_strip_route()
     print("smix desk ok", "play" if _want_play() else "render")
+
+
+from _scopes import isolate
+isolate(globals(), [
+    ["test_ms_classic_null_user_and_bypass"],
+    ["test_mono_cancel"],
+    ["test_width_scales_s_only"],
+    ["test_room_mic_independent"],
+    ["test_any_strip_route"],
+])

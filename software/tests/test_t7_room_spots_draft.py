@@ -146,3 +146,14 @@ def test_dui25_r_is_a_free_room_mic():
     moved = H.null_db(parked, H.render_body(far))
     print("D-UI25 moved", round(moved, 2))
     assert moved > -40.0
+
+
+from _scopes import isolate
+isolate(globals(), [
+    ["test_shared_spot_equals_per_strip_spot"],
+    ["test_two_strips_can_sit_in_different_places"],
+    ["test_room_spot_at_stand_nulls_ortf"],
+    ["test_room_spot_at_stand_nulls_with_height"],
+    ["test_old_shared_spot_matches_migrated_numbers"],
+    ["test_dui25_r_is_a_free_room_mic"],
+])

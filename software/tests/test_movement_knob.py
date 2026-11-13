@@ -187,11 +187,23 @@ def _dump(body, dest):
 
 
 def _push(script, params, dest):
-    node = shutil.which("node")
-    assert node, "node is required"
-    _run([node, str(script), str(SW), str(params), str(dest), str(SECS)])
-    raw = np.fromfile(dest, dtype=np.float32)
-    return raw.reshape(-1, 2).astype(np.float64)
+    from _render_cache import cached_call, enabled
+    scene = {
+        "secs": SECS,
+        "params": Path(params).read_text(encoding="utf-8"),
+        "js": _PUSH_JS,
+    }
+
+    def compute():
+        node = shutil.which("node")
+        assert node, "node is required"
+        _run([node, str(script), str(SW), str(params), str(dest), str(SECS)])
+        raw = np.fromfile(dest, dtype=np.float32)
+        return raw.reshape(-1, 2).astype(np.float64)
+
+    if not enabled():
+        return compute()
+    return cached_call("movement_push", scene, compute)
 
 
 def _null_db(a, b) -> float:
@@ -292,8 +304,9 @@ def test_section_8_changes_a_play_sample(tmp_path):
 
     script = tmp_path / "push_ir.js"
     script.write_text(_PUSH_JS, encoding="utf-8")
+    from concurrent.futures import ThreadPoolExecutor
     played = {}
-    for name, body in (
+    jobs = (
         ("empty", {}),
         ("empty0", empty),
         ("centre", {"third_mic": "centre", "mic_gain_c": 1.0}),
@@ -301,10 +314,15 @@ def test_section_8_changes_a_play_sample(tmp_path):
         ("empty100", empty_on),
         ("centre100", centre_on),
         ("fdn100", fdn_on),
-    ):
-        params = tmp_path / f"{name}.json"
-        _dump(body, params)
-        played[name] = _push(script, params, tmp_path / f"{name}.f32")
+    )
+    with ThreadPoolExecutor(max_workers=4) as pool:
+        fut = {}
+        for name, body in jobs:
+            params = tmp_path / f"{name}.json"
+            _dump(body, params)
+            fut[name] = pool.submit(_push, script, params, tmp_path / f"{name}.f32")
+        for name, _body in jobs:
+            played[name] = fut[name].result()
 
     assert float(np.max(np.abs(played["empty"] - played["empty0"]))) == 0.0
     assert float(np.max(np.abs(played["centre"] - played["centre0"]))) == 0.0

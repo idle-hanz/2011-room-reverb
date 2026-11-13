@@ -55,6 +55,11 @@ def _grab_params(raw: bytes) -> dict:
 
 @pytest.fixture(scope="module")
 def audit_server(tmp_path_factory):
+    if os.name == "nt":
+        import ctypes
+        # This worker owns Chrome. Stay ahead of the below-normal render workers.
+        ctypes.windll.kernel32.SetPriorityClass(
+            ctypes.windll.kernel32.GetCurrentProcess(), 0x8000)  # ABOVE_NORMAL
     if not CHROME.exists():
         pytest.fail("Chrome is not installed; the A1 Playwright gate cannot run")
     port = _free_port()
@@ -900,7 +905,15 @@ def test_mirror_porous_and_panel_post_when_they_can(audit_server):
         )
         n = pg.evaluate("() => window.__livePosts.length")
         pg.click("#slAddPorous")
-        pg.wait_for_function("(n) => window.__livePosts.length > n", arg=n, timeout=4000)
+        pg.wait_for_function(
+            """(n) => {
+              if (window.__livePosts.length <= n) return false;
+              const row = JSON.parse(window.__livePosts[window.__livePosts.length - 1]);
+              return (row.surf_treatment || []).some((r) => r.type === 'porous' && r.face === 'B');
+            }""",
+            arg=n,
+            timeout=8000,
+        )
         body = pg.evaluate("() => JSON.parse(window.__livePosts[window.__livePosts.length - 1])")
         porous = [
             r for r in (body.get("surf_treatment") or [])
@@ -1282,3 +1295,14 @@ def test_b6_side_view_readout_and_drag(audit_server):
     finally:
         b.close()
         p.stop()
+
+
+from _scopes import isolate
+isolate(globals(), [
+    ["test_a1_place_orders_match_fresh", "test_a2_phone_tabs", "test_a4_binaural_hides_dead_rows",
+     "test_a11_source_labels_omni_and_stale_reply"],
+    ["test_a12_visible_controls_post_or_are_ui_only"],
+    ["test_a5_stop_suspends_and_play_resumes", "test_a9_focus_mic_screenshot", "test_a10_header_status_on_every_tab",
+     "test_mirror_porous_and_panel_post_when_they_can", "test_b3_limiter_message_in_play_and_render",
+     "test_b5_mono_strips_disabled_and_restored", "test_b6_side_view_readout_and_drag"],
+])

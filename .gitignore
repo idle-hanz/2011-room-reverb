@@ -7,3 +7,4 @@ software_backup_*
 software/renders/*.wav
 .grok/
 *.docx
+software/.render_cache/

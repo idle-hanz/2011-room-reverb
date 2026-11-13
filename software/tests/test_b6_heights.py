@@ -319,6 +319,13 @@ def _client():
     return json.loads(CLIENT.read_text(encoding="utf-8"))
 
 
+def _gate3_render_job(body, ms):
+    """One gate-3 render in its own process so flat and tilt overlap."""
+    from _render_cache import install_from_env
+    install_from_env()
+    return _render(body, ms)
+
+
 @pytest.mark.slow
 def test_b6_gate3_tilt_tail_and_early():
     """Tilt 1.2 / 1.5 / 1.8 on the client standard body. Stop numbers are printed."""
@@ -329,9 +336,13 @@ def test_b6_gate3_tilt_tail_and_early():
     base["mic_gain_c"] = 1.0
     tilt = dict(base, my_l=1.2, my_r=1.8, my_c=1.5, align_horizontal=False)
     print("gate3 rendering flat", flush=True)
-    flat = _render(base, 3000)
-    print("gate3 rendering tilt", len(flat), flush=True)
-    tipped = _render(tilt, 3000)
+    print("gate3 rendering tilt", flush=True)
+    from concurrent.futures import ProcessPoolExecutor
+    with ProcessPoolExecutor(max_workers=2) as pool:
+        flat_job = pool.submit(_gate3_render_job, base, 3000)
+        tilt_job = pool.submit(_gate3_render_job, tilt, 3000)
+        flat = flat_job.result()
+        tipped = tilt_job.result()
     n = min(len(flat), len(tipped))
     flat, tipped = flat[:n], tipped[:n]
     d0 = int(np.argmax(np.abs(flat).sum(1)[: int(0.05 * SR)]))
@@ -415,3 +426,12 @@ def test_b6_gate4_play_matches_render_tail():
     print("gate4 play-render tail worst", round(worst, 4), bands)
     _save_gate("gate4", {"tail_worst_abs_db": round(worst, 4), "bands": bands, "n": int(n)})
     assert worst <= 0.1
+
+
+from _scopes import isolate
+isolate(globals(), [
+    ["test_b6_gate1_flat_is_bit_identical"],
+    ["test_b6_gate5_ms_and_binaural_ignore_heights"],
+    ["test_b6_gate3_tilt_tail_and_early"],
+    ["test_b6_gate4_play_matches_render_tail"],
+])

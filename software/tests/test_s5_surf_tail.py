@@ -495,8 +495,12 @@ def test_passivity_carpet_ls(ctx):
     for card in loud["surfaces"].values():
         card["eq"]["low_shelf_db"] = 12.0
     flat = _flat(body)
-    X = ctx.play_ir(loud, {"colour_on": False}, 20.0)
-    F = ctx.play_ir(flat, {"colour_on": False}, 20.0)
+    from concurrent.futures import ThreadPoolExecutor
+    with ThreadPoolExecutor(max_workers=2) as pool:
+        loud_f = pool.submit(_ctx().play_ir, loud, {"colour_on": False}, 20.0)
+        flat_f = pool.submit(_ctx().play_ir, flat, {"colour_on": False}, 20.0)
+        X = loud_f.result()
+        F = flat_f.result()
     _assert_no_runaway(X, "carpet dial")
     bands = (500, 1000, 2000, 4000)
     t_loud = t60_bands(X[:, 0], SR, bands=list(bands))
@@ -529,8 +533,12 @@ def test_passivity_carpet_ls_physics(ctx):
     loud["surfaces"]["E"]["absorb"] = list(CARPET)
     for card in loud["surfaces"].values():
         card["eq"]["low_shelf_db"] = 12.0
-    X = ctx.play_ir(loud, {"colour_on": False}, 20.0)
-    D = ctx.play_ir(body, {"colour_on": False}, 20.0)
+    from concurrent.futures import ThreadPoolExecutor
+    with ThreadPoolExecutor(max_workers=2) as pool:
+        loud_f = pool.submit(_ctx().play_ir, loud, {"colour_on": False}, 20.0)
+        def_f = pool.submit(_ctx().play_ir, body, {"colour_on": False}, 20.0)
+        X = loud_f.result()
+        D = def_f.result()
     _assert_no_runaway(X, "carpet physics")
     bands = (500, 1000, 2000, 4000)
 
@@ -604,3 +612,14 @@ def main(argv):
 
 if __name__ == "__main__":
     main(sys.argv)
+
+
+from _scopes import isolate
+isolate(globals(), [
+    ["test_packer_omits_flat_and_parity"],
+    ["test_render_flat_and_parity_match_gain_only"],
+    ["test_play_cascade_off_matches_pre_s5"],
+    ["test_mirror_exact"],
+    ["test_passivity_carpet_ls"],
+    ["test_passivity_carpet_ls_physics"],
+])

@@ -156,9 +156,13 @@ def test_hall_dial8_render_matches_play():
         "fdn_wet": 1.0, "direct_wet": 0.0, "early_wet": 0.0,
         "colour_mode": "BYPASS",
     }
+    from concurrent.futures import ThreadPoolExecutor
     ctx = _ctx()
-    play = ctx.play_ir(body, {"colour_on": False}, 12.0)
-    rend = ctx.render_ir(body, 12000)
+    with ThreadPoolExecutor(max_workers=2) as pool:
+        play_f = pool.submit(ctx.play_ir, body, {"colour_on": False}, 12.0)
+        rend_f = pool.submit(ctx.render_ir, body, 12000)
+        play = play_f.result()
+        rend = rend_f.result()
     pm, pvals = _mid_t30(play)
     rm, rvals = _mid_t30(rend)
     assert np.isfinite(pm) and np.isfinite(rm), (pm, rm, pvals, rvals)

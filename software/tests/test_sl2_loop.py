@@ -147,3 +147,12 @@ def test_surfaces_then_flat_leaves_no_state_behind():
     _render(ir_length_ms=400, decay_mode="surfaces")
     b, _ = _render(ir_length_ms=400)
     assert a.tobytes() == b.tobytes()
+
+
+from _scopes import isolate
+isolate(globals(), [
+    ["test_ui_body_flat_explicit_equals_absent_bit_exact"],
+    ["test_flat_explicit_equals_absent_bit_exact"],
+    ["test_surfaces_render_default_room_room_average_matches_prototype"],
+    ["test_surfaces_then_flat_leaves_no_state_behind"],
+])

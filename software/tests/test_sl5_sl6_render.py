@@ -65,3 +65,10 @@ def test_auto_treat_plan_rendered(tmp_path):
     # SURFACES opt-in must not rewrite software/proof/sl6_treated_results.json.
     (tmp_path / "sl6_treated_results.json").write_text(json.dumps(dict(f=f.tolist(), t20=t.tolist(), target=tgt.tolist(), n_ok=int(ok.sum()), cal=cal), indent=1))
     assert int(ok.sum()) >= 10, (int(ok.sum()), np.round(t / tgt, 2))
+
+
+from _scopes import isolate
+isolate(globals(), [
+    ["test_room_shell_bass_matches_box"],
+    ["test_auto_treat_plan_rendered"],
+])

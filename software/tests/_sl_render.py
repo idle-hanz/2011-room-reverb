@@ -5,7 +5,7 @@ try:
     import _sl_harness as H  # loose folder (software/tests)
 except ImportError:
     from tests import _sl_harness as H  # suite launched from software/
-from render_pipeline import render
+import render_pipeline as _RP
 import surf_loop as SL
 
 NOC = {"mic_gain_c": 0.0, "mic_gain_l": 1.0, "mic_gain_r": 1.0}   # as the box prototype (ORTF without C)
@@ -20,9 +20,9 @@ def render_body(base=None, **over):
     try:
         p = H.A.params_from_body(b)
         dry = np.zeros(1); dry[0] = 1.0
-        kw = {n: p[n] for n in inspect.signature(render).parameters if n not in ("dry", "sr") and n in p}
+        kw = {n: p[n] for n in inspect.signature(_RP.render).parameters if n not in ("dry", "sr") and n in p}
         kw["desk"] = p
-        yl, yr, info = render(dry, 48000, **kw)
+        yl, yr, info = _RP.render(dry, 48000, **kw)
     finally:
         os.chdir(H._cwd)
     return np.stack([np.asarray(yl, float), np.asarray(yr, float)], 1), info

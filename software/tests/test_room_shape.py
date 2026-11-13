@@ -528,3 +528,11 @@ def test_splay_render_impulse_stays_put():
     assert head.shape == (_IR_N, 2)
     assert hashlib.md5(head.tobytes()).hexdigest() == SPLAY_IR_MD5
     assert float(np.max(np.abs(head))) == SPLAY_IR_MAX
+
+
+from _scopes import isolate
+isolate(globals(), [
+    ["test_gable_faces_are_inward_and_play_stays_under_2_40"],
+    ["test_hex_faces_are_inward_and_play_stays_under_2_40"],
+    ["test_splay_render_impulse_stays_put"],
+])

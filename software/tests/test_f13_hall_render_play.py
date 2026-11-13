@@ -42,6 +42,14 @@ def _ctx():
     return ctx, A, render
 
 
+def _hall_render_job(body, ms_len=3000):
+    """One hall render in its own process so the two mirror bodies overlap."""
+    from _render_cache import install_from_env
+    install_from_env()
+    _ctx_local, A, render = _ctx()
+    return _one_render(A, render, body, ms_len)
+
+
 def _one_render(A, render, body, ms_len=3000):
     p = A.params_from_body(dict(body, ir_length_ms=ms_len))
     assert p.get("phys_ceiling") is True
@@ -95,13 +103,22 @@ def _within_tol(m, tol):
 
 @pytest.mark.slow
 def test_hall_render_and_play_mirror_and_t30():
-    ctx, A, render = _ctx()
+    from concurrent.futures import ProcessPoolExecutor, ThreadPoolExecutor
+    ctx_a, _a_unused, _r_unused = _ctx()
+    ctx_b, _b_unused, _s_unused = _ctx()
     from test_mirror_symmetry import TOL, _body, mirror_metrics
     ov = dict(colour_mode="BYPASS")
     ba = _body("twoA", **ov)
     bb = _body("twoB", **ov)
-    RA, info_a = _one_render(A, render, ba)
-    RB, info_b = _one_render(A, render, bb)
+    with ProcessPoolExecutor(max_workers=2) as renders, ThreadPoolExecutor(max_workers=2) as plays:
+        fa = renders.submit(_hall_render_job, ba)
+        fb = renders.submit(_hall_render_job, bb)
+        pa = plays.submit(ctx_a.play_ir, ba, {"colour_on": False}, 3.0)
+        pb = plays.submit(ctx_b.play_ir, bb, {"colour_on": False}, 3.0)
+        RA, info_a = fa.result()
+        RB, info_b = fb.result()
+        PA = pa.result()
+        PB = pb.result()
     assert isinstance(info_a.get("phys_ceiling"), dict)
     assert isinstance(info_b.get("phys_ceiling"), dict)
     rm = mirror_metrics(RA, RB)
@@ -109,8 +126,6 @@ def test_hall_render_and_play_mirror_and_t30():
     bad = _within_tol(rm, TOL)
     assert not bad, f"render mirror {bad} {rm}"
 
-    PA = ctx.play_ir(ba, {"colour_on": False}, 3.0)
-    PB = ctx.play_ir(bb, {"colour_on": False}, 3.0)
     pm = mirror_metrics(PA, PB)
     print("F3 play", {k: round(float(pm[k]), 4) for k in TOL}, "n", len(PA))
     bad = _within_tol(pm, TOL)

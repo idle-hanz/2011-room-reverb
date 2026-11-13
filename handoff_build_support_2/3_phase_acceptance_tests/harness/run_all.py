@@ -37,6 +37,23 @@ SCENES = {
     'hall_lock40': {"decay_lock": True, "decay_s": 4.0, "humidity": 0.5, "W": 20, "H": 10, "L": 30, "sx": 10, "sz": 18, "mcx": 10, "mcz": 6},
 }
 
+def _disk_cache(kind, scene, compute):
+    """Pytest sets RR_RENDER_CACHE. The harness CLI leaves it unset and always renders."""
+    if os.environ.get("RR_NO_RENDER_CACHE", "").lower() in ("1", "true", "yes"):
+        return compute()
+    if os.environ.get("RR_RENDER_CACHE") != "1":
+        return compute()
+    tests = os.environ.get("RR_TESTS_DIR")
+    if tests and tests not in sys.path:
+        sys.path.insert(0, tests)
+    try:
+        import _render_cache
+    except ImportError as exc:
+        sys.stderr.write("RR_RENDER_CACHE import failed: %s\n" % exc)
+        return compute()
+    return _render_cache.cached_call(kind, scene, compute)
+
+
 # ---------------------------------------------------------------- infrastructure
 class Ctx:
     def __init__(self, a):
@@ -78,20 +95,30 @@ class Ctx:
         return r.stdout
 
     def play_ir(self, scene, over, secs, extra=None, wasm=None):
-        p = self.params(scene, extra)
-        out = self.work / ('ir_' + hashlib.sha1((str(p) + json.dumps(over) + str(secs) + str(wasm)).encode()).hexdigest()[:12] + '.f32')
-        if not out.exists(): self.play(p, over, 'ir', secs, out, wasm=wasm)
-        return np.fromfile(out, np.float32).reshape(-1, 2).astype(np.float64)
+        def compute():
+            p = self.params(scene, extra)
+            out = self.work / ('ir_' + hashlib.sha1((str(p) + json.dumps(over) + str(secs) + str(wasm)).encode()).hexdigest()[:12] + '.f32')
+            if not out.exists(): self.play(p, over, 'ir', secs, out, wasm=wasm)
+            return np.fromfile(out, np.float32).reshape(-1, 2).astype(np.float64)
+        token = None
+        if wasm:
+            wp = Path(wasm)
+            token = wp.read_bytes() if wp.is_file() else str(wasm)
+        return _disk_cache("play_ir", {
+            "scene": scene, "over": over, "secs": secs, "extra": extra, "wasm": token,
+        }, compute)
 
     def render_ir(self, body, ms):
-        ok, err = self.app_ok()
-        if not ok: raise SkipTest('cannot import app_server with --python: ' + err)
-        key = hashlib.sha1((json.dumps(body, sort_keys=True) + str(ms)).encode()).hexdigest()[:12]
-        out = self.work / f'rir_{key}.f32'
-        if not out.exists():
-            r = subprocess.run([self.py, str(LIB / 'render_ir.py'), str(self.sw), json.dumps(body), str(out), str(ms), str(SR)], capture_output=True, text=True)
-            if r.returncode != 0: raise RuntimeError('render_ir failed: ' + r.stderr[-600:])
-        return np.fromfile(out, np.float32).reshape(-1, 2).astype(np.float64)
+        def compute():
+            ok, err = self.app_ok()
+            if not ok: raise SkipTest('cannot import app_server with --python: ' + err)
+            key = hashlib.sha1((json.dumps(body, sort_keys=True) + str(ms)).encode()).hexdigest()[:12]
+            out = self.work / f'rir_{key}.f32'
+            if not out.exists():
+                r = subprocess.run([self.py, str(LIB / 'render_ir.py'), str(self.sw), json.dumps(body), str(out), str(ms), str(SR)], capture_output=True, text=True)
+                if r.returncode != 0: raise RuntimeError('render_ir failed: ' + r.stderr[-600:])
+            return np.fromfile(out, np.float32).reshape(-1, 2).astype(np.float64)
+        return _disk_cache("render_ir", {"body": body, "ms": ms}, compute)
 
 class SkipTest(Exception): pass
 class Pending(Exception): pass

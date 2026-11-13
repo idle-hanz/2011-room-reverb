@@ -58,11 +58,19 @@ def _assert_falls(ws, name):
 
 @pytest.mark.slow
 def test_hall_two_source_tails_fall():
-    ctx = _ctx()
+    from concurrent.futures import ThreadPoolExecutor
+    ctx_b, ctx_a = _ctx(), _ctx()
     from test_mirror_symmetry import _body
+    bodies = {"twoB": _body("twoB"), "twoA": _body("twoA")}
+    with ThreadPoolExecutor(max_workers=2) as pool:
+        fut = {
+            "twoB": pool.submit(ctx_b.play_ir, bodies["twoB"], {}, 12.0),
+            "twoA": pool.submit(ctx_a.play_ir, bodies["twoA"], {}, 12.0),
+        }
+        played = {kind: job.result() for kind, job in fut.items()}
     rows = {}
     for kind in ("twoB", "twoA"):
-        y = ctx.play_ir(_body(kind), {}, 12.0)
+        y = played[kind]
         ws = _win_db(y)
         print(f"F2 {kind} {ws}")
         _assert_falls(ws, kind)
