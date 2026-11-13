@@ -7,6 +7,7 @@ from __future__ import annotations
 import json
 import os
 import sys
+import tempfile
 from pathlib import Path
 
 import numpy as np
@@ -43,8 +44,7 @@ def _boot():
 def _ctx():
     import run_all as RA
     import types
-    work = Path(os.environ["LOCALAPPDATA"]) / "Temp" / "s5_tests"
-    work.mkdir(parents=True, exist_ok=True)
+    work = Path(tempfile.mkdtemp(prefix="s5_tests_"))
     return RA.Ctx(types.SimpleNamespace(
         sw=str(SW), python=str(PY), node=str(NODE),
         golden=str(GOLDEN), regen_golden=False, quick=False, perf_scale=1.0,

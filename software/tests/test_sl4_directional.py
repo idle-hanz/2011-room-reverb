@@ -51,7 +51,7 @@ def _lr_tail_db(ir):
     return 10 * np.log10(np.sum(ir[a:b, 0] ** 2) / np.sum(ir[a:b, 1] ** 2))
 
 
-@pytest.fixture(scope="module")
+@pytest.fixture(scope="session")
 def results(tmp_path_factory):
     """SURFACES opt-in writes the dump under tmp. It must not rewrite software/proof."""
     res = {}

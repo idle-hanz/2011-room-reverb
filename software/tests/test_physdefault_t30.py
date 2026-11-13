@@ -9,6 +9,7 @@ import pytest
 
 import os
 import sys
+import tempfile
 import types
 from pathlib import Path
 
@@ -42,8 +43,7 @@ def test_physdefault_std_lock18_t30_pin():
     import run_all as RA
     from analyze import t60_bands
 
-    work = Path(os.environ["TEMP"]) / "physdefault_t30_pin"
-    work.mkdir(parents=True, exist_ok=True)
+    work = Path(tempfile.mkdtemp(prefix="physdefault_t30_pin_"))
     ctx = RA.Ctx(types.SimpleNamespace(
         sw=str(SW), python=str(PY), node=str(NODE),
         golden=str(HARNESS / "golden"), regen_golden=False, quick=False,

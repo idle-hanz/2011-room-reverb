@@ -13,6 +13,7 @@ import importlib.util
 import json
 import os
 import sys
+import tempfile
 import types
 from pathlib import Path
 
@@ -33,8 +34,7 @@ def _ctx():
     os.chdir(SW)
     import run_all as RA
     import app_server as A
-    work = Path(os.environ["TEMP"]) / "physdefault_two_source_guard"
-    work.mkdir(parents=True, exist_ok=True)
+    work = Path(tempfile.mkdtemp(prefix="physdefault_two_source_guard_"))
     ctx = RA.Ctx(types.SimpleNamespace(
         sw=str(SW), python=str(PY), node=str(NODE),
         golden=str(HARNESS / "golden"), regen_golden=False, quick=False,

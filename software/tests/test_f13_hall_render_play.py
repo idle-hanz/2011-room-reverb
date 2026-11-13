@@ -8,6 +8,7 @@ import pytest
 
 import os
 import sys
+import tempfile
 import types
 from pathlib import Path
 
@@ -32,8 +33,7 @@ def _ctx():
     import run_all as RA
     import app_server as A
     from render_pipeline import render
-    work = Path(os.environ["TEMP"]) / "f13_hall_render_play"
-    work.mkdir(parents=True, exist_ok=True)
+    work = Path(tempfile.mkdtemp(prefix="f13_hall_render_play_"))
     ctx = RA.Ctx(types.SimpleNamespace(
         sw=str(SW), python=str(PY), node=str(NODE),
         golden=str(HARNESS / "golden"), regen_golden=False, quick=False,

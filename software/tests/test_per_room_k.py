@@ -8,6 +8,7 @@ import pytest
 
 import os
 import sys
+import tempfile
 import types
 from pathlib import Path
 
@@ -121,8 +122,7 @@ def _ctx():
         "RR_NODE",
         r"C:\Users\IdleHanz\AppData\Local\Microsoft\WinGet\Packages\OpenJS.NodeJS_Microsoft.Winget.Source_8wekyb3d8bbwe\node-v26.7.0-win-x64\node.exe",
     ))
-    work = Path(os.environ["TEMP"]) / "perroomk_unit"
-    work.mkdir(parents=True, exist_ok=True)
+    work = Path(tempfile.mkdtemp(prefix="perroomk_unit_"))
     return RA.Ctx(types.SimpleNamespace(
         sw=str(SW),
         python=str(SW / ".venv" / "Scripts" / "python.exe"),

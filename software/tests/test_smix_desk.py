@@ -13,6 +13,7 @@ import math
 import os
 import subprocess
 import sys
+import tempfile
 from pathlib import Path
 
 import numpy as np
@@ -115,8 +116,7 @@ def _render(body, drive=1.0, want_info=False):
 def _play(body, secs=0.35) -> np.ndarray:
     import types
     import run_all as RA
-    work = Path(os.environ["LOCALAPPDATA"]) / "Temp" / "smix_play"
-    work.mkdir(parents=True, exist_ok=True)
+    work = Path(tempfile.mkdtemp(prefix="smix_play_"))
     node = os.environ.get(
         "RR_NODE",
         r"C:\Users\IdleHanz\AppData\Local\Microsoft\WinGet\Packages\OpenJS.NodeJS_Microsoft.Winget.Source_8wekyb3d8bbwe\node-v26.7.0-win-x64\node.exe",

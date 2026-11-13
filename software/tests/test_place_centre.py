@@ -156,7 +156,13 @@ def test_studio_hall_keeps_centre_and_restores(place_server):
         b = p.chromium.launch(
             executable_path=str(CHROME),
             headless=True,
-            args=["--use-gl=angle", "--use-angle=swiftshader", "--enable-unsafe-swiftshader"],
+            args=[
+                "--use-gl=angle",
+                "--use-angle=swiftshader",
+                "--enable-unsafe-swiftshader",
+                "--disable-background-timer-throttling",
+                "--disable-renderer-backgrounding",
+            ],
         )
         pg = b.new_page(viewport={"width": 1400, "height": 900})
         pg.on("dialog", lambda d: d.accept())

@@ -284,6 +284,8 @@ def _chrome():
             "--use-angle=swiftshader",
             "--enable-unsafe-swiftshader",
             "--autoplay-policy=no-user-gesture-required",
+            "--disable-background-timer-throttling",
+            "--disable-renderer-backgrounding",
         ],
     )
     return p, b
@@ -388,17 +390,17 @@ def test_a5_stop_suspends_and_play_resumes(audit_server):
         pg.click("#liveBtn")
         pg.wait_for_function(
             "() => window.LiveFDN && LiveFDN.isRunning() && LiveFDN.audioState() === 'running'",
-            timeout=20000,
+            timeout=60000,
         )
         pg.click("#liveBtn")
         pg.wait_for_function(
             "() => window.LiveFDN && !LiveFDN.isRunning() && LiveFDN.audioState() === 'suspended'",
-            timeout=8000,
+            timeout=60000,
         )
         pg.click("#liveBtn")
         pg.wait_for_function(
             "() => window.LiveFDN && LiveFDN.isRunning() && LiveFDN.audioState() === 'running'",
-            timeout=20000,
+            timeout=60000,
         )
     finally:
         b.close()

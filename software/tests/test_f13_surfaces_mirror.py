@@ -9,6 +9,7 @@ import pytest
 import json
 import os
 import sys
+import tempfile
 import types
 from pathlib import Path
 
@@ -29,8 +30,7 @@ def _ctx():
     sys.path[:0] = [str(HARNESS), str(HARNESS / "lib"), str(TESTS), str(SW), str(SW / "engine")]
     os.chdir(SW)
     import run_all as RA
-    work = Path(os.environ["TEMP"]) / "f13_surfaces_mirror"
-    work.mkdir(parents=True, exist_ok=True)
+    work = Path(tempfile.mkdtemp(prefix="f13_surfaces_mirror_"))
     ctx = RA.Ctx(types.SimpleNamespace(
         sw=str(SW), python=str(PY), node=str(NODE),
         golden=str(HARNESS / "golden"), regen_golden=False, quick=False,

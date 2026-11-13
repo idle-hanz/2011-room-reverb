@@ -9,8 +9,10 @@ import pytest
 
 import hashlib
 import json
+import msvcrt
 import os
 import sys
+import tempfile
 from pathlib import Path
 
 import numpy as np
@@ -37,6 +39,27 @@ from render_pipeline import render, _place_stand  # noqa: E402
 
 CLIENT = ROOT / "handoff_build_support_2" / "roadmap" / "s4_verify_1140" / "measure" / "client_body_1140.json"
 OUT = ROOT / "handoff_build_support_2" / "research_ui_wishlist" / "s_audit" / "b6_gates.json"
+
+
+def _save_gate(key, value):
+    """Several gates read-modify-write one JSON. The lock keeps a parallel run from tearing it."""
+    OUT.parent.mkdir(parents=True, exist_ok=True)
+    lock_path = Path(tempfile.gettempdir()) / "b6_gates.lock"
+    with open(lock_path, "a+b") as lock:
+        lock.seek(0)
+        if lock.read(1) != b"0":
+            lock.seek(0)
+            lock.write(b"0")
+            lock.flush()
+        lock.seek(0)
+        msvcrt.locking(lock.fileno(), msvcrt.LK_LOCK, 1)
+        try:
+            prev = json.loads(OUT.read_text(encoding="utf-8")) if OUT.exists() else {}
+            prev[key] = value
+            OUT.write_text(json.dumps(prev, indent=2), encoding="utf-8")
+        finally:
+            lock.seek(0)
+            msvcrt.locking(lock.fileno(), msvcrt.LK_UNLCK, 1)
 GOLDEN = ROOT / "handoff_build_support_2" / "3_phase_acceptance_tests" / "harness" / "golden" / "render_std_unlocked_byp.f32"
 SR = 48000
 FC = [125, 250, 500, 1000, 2000, 3150, 4000, 5000, 6300, 8000, 10000, 12500, 16000]
@@ -289,12 +312,7 @@ def test_b6_gate5_ms_and_binaural_ignore_heights():
         report[name] = {"live_identical": same, "render_maxabs": d}
         assert same
         assert d == 0.0
-    OUT.parent.mkdir(parents=True, exist_ok=True)
-    prev = {}
-    if OUT.exists():
-        prev = json.loads(OUT.read_text(encoding="utf-8"))
-    prev["gate5"] = report
-    OUT.write_text(json.dumps(prev, indent=2), encoding="utf-8")
+    _save_gate("gate5", report)
 
 
 def _client():
@@ -345,9 +363,7 @@ def test_b6_gate3_tilt_tail_and_early():
         "direct_index_flat": d0,
         "n": int(n),
     }
-    prev = json.loads(OUT.read_text(encoding="utf-8")) if OUT.exists() else {}
-    prev["gate3"] = row
-    OUT.write_text(json.dumps(prev, indent=2), encoding="utf-8")
+    _save_gate("gate3", row)
     assert abs(early_db[0] - (-0.69)) <= 0.3
     assert abs(early_db[1] - (-0.46)) <= 0.3
     assert tail_worst <= 0.5
@@ -397,7 +413,5 @@ def test_b6_gate4_play_matches_render_tail():
         bands[name] = [round(float(v), 4) for v in delta]
         worst = max(worst, float(np.max(np.abs(delta))))
     print("gate4 play-render tail worst", round(worst, 4), bands)
-    prev = json.loads(OUT.read_text(encoding="utf-8")) if OUT.exists() else {}
-    prev["gate4"] = {"tail_worst_abs_db": round(worst, 4), "bands": bands, "n": int(n)}
-    OUT.write_text(json.dumps(prev, indent=2), encoding="utf-8")
+    _save_gate("gate4", {"tail_worst_abs_db": round(worst, 4), "bands": bands, "n": int(n)})
     assert worst <= 0.1

@@ -1,0 +1,3 @@
+# Test-only. Launch Tweak App.bat does not install this file.
+pytest==9.1.1
+pytest-xdist>=3.8
