@@ -25,7 +25,6 @@ class RoomFDNProcessor extends AudioWorkletProcessor {
     this.pending = null;
     this.api = null;
     this.st = 0;
-    this.audition = false;
     this._failText = "";
     this._failAt = -1;
     this._buf = null;
@@ -183,11 +182,6 @@ class RoomFDNProcessor extends AudioWorkletProcessor {
     } else if (this.api.live_load_harm) {
       this.api.live_load_harm(this.st, 0);
     }
-    var nextAud = !!data.audition;
-    if (this.audition && !nextAud && this.api.live_audition) {
-      this.api.live_audition(this.st, 0, 0, 0, 0, 0);
-    }
-    this.audition = nextAud;
   }
 
   _silence(out, n) {
@@ -226,8 +220,7 @@ class RoomFDNProcessor extends AudioWorkletProcessor {
         else this._silence(this._vInL, k);
         if (inR) this._vInR.set(inR.subarray(off, off + k));
         else this._silence(this._vInR, k);
-        if (this.audition && api.live_audition) api.live_audition(st, ptrL, ptrR, ptrOL, ptrOR, k);
-        else api.live_stereo(st, ptrL, ptrR, ptrOL, ptrOR, k);
+        api.live_stereo(st, ptrL, ptrR, ptrOL, ptrOR, k);
         lch.set(this._vOutL.subarray(0, k), off);
         if (rch !== lch) rch.set(this._vOutR.subarray(0, k), off);
         off += k;

@@ -62,17 +62,8 @@
  *   9 SUB_HP five floats b0,b1,b2,a1,a2. Present only when the rumble
  *     filter is on. Missing section leaves subHpOn at 0, so the tank
  *     add is the old sample. Direct and early are never filtered.
- *   10 BLOOM follower and colour. Present only when amount_db > 0.
- *     40 floats plus 5 per EQ biquad, capped at 96. Missing section is off.
- *   11 PREDELAY one float, samples, usable 1..4799. Missing section is 0.
- *   12 PRE colour, 25 floats, capped at 32. Missing section is off.
- *   13 SIDE inserts. 217 floats, only when an array or room strip is on.
- *     3 place flags (1 = room, otherwise array), then array and room.
- *     Each strip is a comp flag, 80 comp coeffs, a pre flag, and 25 pre
- *     coeffs. Pre runs, then the comp. The master chain is sections 10
- *     and 12 and stays one coeff set. Missing section is off.
  *   14 OFFAXIS tail. 45 floats: L, C, R, each three biquads b0 b1 b2 a1 a2.
- *     One SOS on the FDN bus sum, after side and Bloom, before fdn_wet.
+ *     One SOS on the FDN bus sum, before fdn_wet.
  *     Early and direct keep today's filters. Missing section is off.
  * Route (int), in order: fdn[3][32], early L/R [2][32], early B L/R [2][32],
  * direct[3], direct B[3], fdn B[3][32]. -1 is a wire. < -1 is silent.
@@ -380,54 +371,6 @@ struct LiveStereo {
     int subHpOn;
     double subB0, subB1, subB2, subA1, subA2;
     double subZ[3][2][2][N];
-    /* Bloom. bloomOn 0, preOn 0, predelayN 0 and idle ramps are not read
-       on the sample path. pdMem is the 99.98 ms predelay ring (4799 samples). */
-    int bloomOn;
-    int preOn;
-    int predelayN;
-    int pdW;
-    int bN;
-    int bRampPrimed;
-    int bRampLeft;
-    int bRampTotal;
-    int pRampLeft;
-    int pRampTotal;
-    int dMode;
-    int dIdle;
-    int dCnt;
-    int dQuiet;
-    double bRampFrom, bRampTo, pRampFrom, pRampTo, bMixCur, pMixCur, bHold;
-    double dSc, dU, dFa, dSa, dRf, dRs, dWdet, dM;
-    double dV1, dV2, dF, dS, dGv, dG, dVc, dVu;
-    double bC[80];
-    double bG[PART];
-    double bGR[PART];
-    double bMixAt[PART];
-    double pMixAt[PART];
-    double cX0[3], cF0[3], cMem[3], cDcX[3], cDcY[3];
-    double cEq[3][6][2];
-    float hbZ[3][2][46];
-    double pC[25];
-    double prS[3][9];
-    float prHb[3][4][2][46];
-    float pdMem[3][2][N][4800];
-    /* Section 13. sideHot 0 is not read on the sample path. */
-    int sideHot;
-    int sidePlace[3];
-    int sideComp[2];
-    int sidePre[2];
-    double sideC[2][80];
-    double sideP[2][25];
-    double sideG[2][PART];
-    int sMode[2];
-    int sIdle[2];
-    int sCnt[2];
-    int sQuiet[2];
-    double sSc[2], sU[2], sFa[2], sSa[2], sRf[2], sRs[2], sWdet[2], sM[2];
-    double sV1[2], sV2[2], sF[2], sS[2], sGv[2], sGdet[2], sVc[2], sVu[2];
-    double sHold[2];
-    double sPr[3][9];
-    float sPrHb[3][4][2][46];
     /* Section 14. tailOn 0 is not read on the sample path.
        3 buses x 3 biquads x 5. L then C then R. */
     int tailOn;
@@ -566,8 +509,6 @@ static double ls_exp(double x) {
     }
     return s * p;
 }
-
-#include "bloom_live.inc"
 
 /* Positive square root. No libm: wasm is freestanding. Four Newton steps. */
 static double ls_sqrt(double x) {
@@ -1777,14 +1718,10 @@ void live_load_room(LiveStereo *st, int n) {
     int prevShared;
     unsigned prevSig;
     if (!st || st->magic != 0x2011 || n < 16) return;
-    /* Absent section 9 is off. Absent section 13 is off. Absent section 14 is off. */
+    /* Absent section 9 is off. Absent section 14 is off. */
     st->subHpOn = 0;
     st->tailOn = 0;
     ls_zero(st->tailZ, (int)sizeof(st->tailZ));
-    st->sideHot = 0;
-    st->sideComp[0] = st->sideComp[1] = 0;
-    st->sidePre[0] = st->sidePre[1] = 0;
-    st->sidePlace[0] = st->sidePlace[1] = st->sidePlace[2] = 0;
     prevShared = st->shared;
     prevSig = st->delaySig;
     if (n > MAX_BLOB) n = MAX_BLOB;
@@ -1803,7 +1740,6 @@ void live_load_room(LiveStereo *st, int n) {
         st->icOn = 0;
         mod_apply(st, 0.0);
         arm_ramps(st);
-        bloom_arm(st, 0, 0, 0, 0, 0.0f, 0, 0, 0);
         return;
     }
     if (magic != 2) return;
@@ -1885,34 +1821,6 @@ void live_load_room(LiveStereo *st, int n) {
         st->subA1 = (double)st->blob[off[s] + 3];
         st->subA2 = (double)st->blob[off[s] + 4];
         st->subHpOn = 1;
-    }
-    {
-        int has10 = 0, has11 = 0, has12 = 0, n10 = 0, n12 = 0, bs;
-        const float *c10 = 0;
-        const float *c12 = 0;
-        float pd = 0.0f;
-        for (bs = 0; bs < nsec; bs++) {
-            if (ln[bs] < 1 || off[bs] < 0 || off[bs] + ln[bs] > n) continue;
-            if (id[bs] == 10 && ln[bs] >= 40) {
-                has10 = 1;
-                c10 = st->blob + off[bs];
-                n10 = ln[bs];
-            } else if (id[bs] == 11) {
-                has11 = 1;
-                pd = st->blob[off[bs]];
-            } else if (id[bs] == 12 && ln[bs] >= 25) {
-                has12 = 1;
-                c12 = st->blob + off[bs];
-                n12 = ln[bs];
-            }
-        }
-        bloom_arm(st, has10, c10, n10, has11, pd, has12, c12, n12);
-    }
-    for (s = 0; s < nsec; s++) {
-        /* Section 13. One side-insert block. Absent stays off. */
-        if (id[s] != 13) continue;
-        if (ln[s] < 217 || off[s] < 0 || off[s] + ln[s] > n) continue;
-        load_side_section(st, off[s]);
     }
     for (s = 0; s < nsec; s++) {
         /* Section 14. 45 floats or the tail stays off. */
@@ -2627,7 +2535,6 @@ static double sub_apply(LiveStereo *st, int bus, int bank, int line, double xin)
 static double fdn_excite(LiveStereo *st, int b, int bank, int line, Line *ln, double pre, int kind) {
     double y = tint(ln, pre, kind);
     if (st->subHpOn) y = sub_apply(st, b, bank, line, y);
-    if (st->predelayN > 0) y = bloom_pd(st, b, bank, line, y);
     return y + LS_DC;
 }
 
@@ -2759,7 +2666,6 @@ static void bus_sample(LiveStereo *st, int b, double x, double xA, double xB, in
                    Off: tank is xin, so the add is the old sample. */
                 double tank = xin;
                 if (st->subHpOn) tank = sub_apply(st, b, 0, i, xin);
-                if (st->predelayN > 0) tank = bloom_pd(st, b, 0, i, tank);
                 if (mix1) st->xinArr[i] = tank + LS_DC;
                 else if (runFdn) {
                     double gi = line->dffs;
@@ -2825,14 +2731,14 @@ static void bus_sample(LiveStereo *st, int b, double x, double xA, double xB, in
                 if (st->radA) {
                     double diffIn = st->surfOn ? st->diffArr[i] : st->diffSmp;
                     if (st->subHpOn) st->xinArr[i] = fdn_excite(st, b, 0, i, line, 0.5 * diffIn * injUse, 0);
-                    else st->xinArr[i] = st->predelayN > 0 ? bloom_pd(st, b, 0, i, tint(line, 0.5 * diffIn * injUse, 0)) + LS_DC : tint(line, 0.5 * diffIn * injUse, 0) + LS_DC;
+                    else st->xinArr[i] = tint(line, 0.5 * diffIn * injUse, 0) + LS_DC;
                 } else if (st->surfOn) {
                     if (st->subHpOn) st->xinArr[i] = fdn_excite(st, b, 0, i, line, 0.5 * st->srcSmp[i] * injUse, 0);
-                    else st->xinArr[i] = st->predelayN > 0 ? bloom_pd(st, b, 0, i, tint(line, 0.5 * st->srcSmp[i] * injUse, 0)) + LS_DC : tint(line, 0.5 * st->srcSmp[i] * injUse, 0) + LS_DC;
+                    else st->xinArr[i] = tint(line, 0.5 * st->srcSmp[i] * injUse, 0) + LS_DC;
                 }
                 else {
                     if (st->subHpOn) st->xinArr[i] = fdn_excite(st, b, 0, i, line, 0.5 * xA * injUse, 0);
-                    else st->xinArr[i] = st->predelayN > 0 ? bloom_pd(st, b, 0, i, tint(line, 0.5 * xA * injUse, 0)) + LS_DC : tint(line, 0.5 * xA * injUse, 0) + LS_DC;
+                    else st->xinArr[i] = tint(line, 0.5 * xA * injUse, 0) + LS_DC;
                 }
             }
         } else {
@@ -2846,14 +2752,14 @@ static void bus_sample(LiveStereo *st, int b, double x, double xA, double xB, in
                 if (st->radA) {
                     double diffIn = st->surfOn ? st->diffArr[i] : st->diffSmp;
                     if (st->subHpOn) st->xinArr[i] = fdn_excite(st, b, 0, i, line, 0.5 * diffIn * injUse, 0);
-                    else st->xinArr[i] = st->predelayN > 0 ? bloom_pd(st, b, 0, i, tint(line, 0.5 * diffIn * injUse, 0)) + LS_DC : tint(line, 0.5 * diffIn * injUse, 0) + LS_DC;
+                    else st->xinArr[i] = tint(line, 0.5 * diffIn * injUse, 0) + LS_DC;
                 } else if (st->surfOn) {
                     if (st->subHpOn) st->xinArr[i] = fdn_excite(st, b, 0, i, line, 0.5 * st->srcSmp[i] * injUse, 0);
-                    else st->xinArr[i] = st->predelayN > 0 ? bloom_pd(st, b, 0, i, tint(line, 0.5 * st->srcSmp[i] * injUse, 0)) + LS_DC : tint(line, 0.5 * st->srcSmp[i] * injUse, 0) + LS_DC;
+                    else st->xinArr[i] = tint(line, 0.5 * st->srcSmp[i] * injUse, 0) + LS_DC;
                 }
                 else {
                     if (st->subHpOn) st->xinArr[i] = fdn_excite(st, b, 0, i, line, 0.5 * xA * injUse, 0);
-                    else st->xinArr[i] = st->predelayN > 0 ? bloom_pd(st, b, 0, i, tint(line, 0.5 * xA * injUse, 0)) + LS_DC : tint(line, 0.5 * xA * injUse, 0) + LS_DC;
+                    else st->xinArr[i] = tint(line, 0.5 * xA * injUse, 0) + LS_DC;
                 }
             }
         }
@@ -2887,14 +2793,14 @@ static void bus_sample(LiveStereo *st, int b, double x, double xA, double xB, in
                 if (st->radB) {
                     double diffIn = st->surfOn ? st->diffArrB[i] : st->diffSmpB;
                     if (st->subHpOn) st->xinArr[i] = fdn_excite(st, b, 1, i, line, 0.5 * diffIn * injUse, 3);
-                    else st->xinArr[i] = st->predelayN > 0 ? bloom_pd(st, b, 1, i, tint(line, 0.5 * diffIn * injUse, 3)) + LS_DC : tint(line, 0.5 * diffIn * injUse, 3) + LS_DC;
+                    else st->xinArr[i] = tint(line, 0.5 * diffIn * injUse, 3) + LS_DC;
                 } else if (st->surfOn) {
                     if (st->subHpOn) st->xinArr[i] = fdn_excite(st, b, 1, i, line, 0.5 * st->srcSmpB[i] * injUse, 3);
-                    else st->xinArr[i] = st->predelayN > 0 ? bloom_pd(st, b, 1, i, tint(line, 0.5 * st->srcSmpB[i] * injUse, 3)) + LS_DC : tint(line, 0.5 * st->srcSmpB[i] * injUse, 3) + LS_DC;
+                    else st->xinArr[i] = tint(line, 0.5 * st->srcSmpB[i] * injUse, 3) + LS_DC;
                 }
                 else {
                     if (st->subHpOn) st->xinArr[i] = fdn_excite(st, b, 1, i, line, 0.5 * xB * injUse, 3);
-                    else st->xinArr[i] = st->predelayN > 0 ? bloom_pd(st, b, 1, i, tint(line, 0.5 * xB * injUse, 3)) + LS_DC : tint(line, 0.5 * xB * injUse, 3) + LS_DC;
+                    else st->xinArr[i] = tint(line, 0.5 * xB * injUse, 3) + LS_DC;
                 }
             }
         } else {
@@ -2908,14 +2814,14 @@ static void bus_sample(LiveStereo *st, int b, double x, double xA, double xB, in
                 if (st->radB) {
                     double diffIn = st->surfOn ? st->diffArrB[i] : st->diffSmpB;
                     if (st->subHpOn) st->xinArr[i] = fdn_excite(st, b, 1, i, line, 0.5 * diffIn * injUse, 3);
-                    else st->xinArr[i] = st->predelayN > 0 ? bloom_pd(st, b, 1, i, tint(line, 0.5 * diffIn * injUse, 3)) + LS_DC : tint(line, 0.5 * diffIn * injUse, 3) + LS_DC;
+                    else st->xinArr[i] = tint(line, 0.5 * diffIn * injUse, 3) + LS_DC;
                 } else if (st->surfOn) {
                     if (st->subHpOn) st->xinArr[i] = fdn_excite(st, b, 1, i, line, 0.5 * st->srcSmpB[i] * injUse, 3);
-                    else st->xinArr[i] = st->predelayN > 0 ? bloom_pd(st, b, 1, i, tint(line, 0.5 * st->srcSmpB[i] * injUse, 3)) + LS_DC : tint(line, 0.5 * st->srcSmpB[i] * injUse, 3) + LS_DC;
+                    else st->xinArr[i] = tint(line, 0.5 * st->srcSmpB[i] * injUse, 3) + LS_DC;
                 }
                 else {
                     if (st->subHpOn) st->xinArr[i] = fdn_excite(st, b, 1, i, line, 0.5 * xB * injUse, 3);
-                    else st->xinArr[i] = st->predelayN > 0 ? bloom_pd(st, b, 1, i, tint(line, 0.5 * xB * injUse, 3)) + LS_DC : tint(line, 0.5 * xB * injUse, 3) + LS_DC;
+                    else st->xinArr[i] = tint(line, 0.5 * xB * injUse, 3) + LS_DC;
                 }
             }
         }
@@ -2979,7 +2885,6 @@ static void scrub(LiveStereo *st) {
     ls_zero(st->tailZ, (int)sizeof(st->tailZ));
     prox_scrub(st);
     zero_filts(st);
-    bloom_scrub(st);
     st->modAbs = 0;
 }
 
@@ -3388,179 +3293,6 @@ static void ic_apply(LiveStereo *st, const double *A, const double *B, double *o
     }
 }
 
-static float g_fdlSaveRe[MAX_PART * FFTN];
-static float g_fdlSaveIm[MAX_PART * FFTN];
-static float g_fdnRaw[MAX_FILT][PART];
-
-static void paint_raw(LiveStereo *st, int b, const int *idx, double (*y)[PART],
-    int *map, int *keep, double *ident, float (*dst)[PART]) {
-    int i, t;
-    for (i = 0; i < N; i++) {
-        int ir = usable_ir(st, idx[i]);
-        Filt *f;
-        if (ir >= 0) {
-            if (map[ir] < 0) {
-                f = take_filt(st, b, 0, ir);
-                if (!f) ir = -1;
-                else {
-                    map[ir] = (int)(f - st->filt);
-                    f->npart = st->irNpart[ir];
-                    keep[map[ir]] = 1;
-                }
-            }
-            if (ir >= 0) {
-                int s = map[ir];
-                for (t = 0; t < PART; t++) dst[s][t] += (float)y[i][t];
-                continue;
-            }
-        }
-        if (ir == -1) {
-            for (t = 0; t < PART; t++) ident[t] += y[i][t];
-        }
-    }
-}
-
-/* Colour on and Bloom hot. The cold colour block is left as it is.
-   Mic colour runs on the unweighted FDN sum. Bloom follows that sum.
-   fdn_wet multiplies after Bloom. Early is filtered on its own and added after. */
-static void bloom_colour_bus(LiveStereo *st, int b, double sl, double sr,
-    double *accL, double *accR, int *keep) {
-    double directA[PART], directB[PART];
-    double ident[PART], rawIdent[PART];
-    double yRawSum[PART], yFullSum[PART], fdnPre[PART];
-    int map[MAX_IRS];
-    int eiBase = (b == BUS_L) ? 0 : 1;
-    int i, t, slot;
-    for (i = 0; i < MAX_IRS; i++) map[i] = -1;
-    for (t = 0; t < PART; t++) {
-        ident[t] = 0;
-        rawIdent[t] = 0;
-        yRawSum[t] = 0;
-        yFullSum[t] = 0;
-        fdnPre[t] = 0;
-    }
-    for (slot = 0; slot < MAX_FILT; slot++) {
-        for (t = 0; t < PART; t++) {
-            st->firIn[slot][t] = 0;
-            g_fdnRaw[slot][t] = 0;
-        }
-    }
-    paint_lines(st, b, st->fdnIdx[b], st->yBlk[b], map, keep, ident);
-    paint_raw(st, b, st->fdnIdx[b], st->yBlk[b], map, keep, rawIdent, g_fdnRaw);
-    if (st->two) {
-        paint_lines(st, b, st->fdnIdxB[b], st->yBlkB[b], map, keep, ident);
-        paint_raw(st, b, st->fdnIdxB[b], st->yBlkB[b], map, keep, rawIdent, g_fdnRaw);
-    }
-    if (b != BUS_C) {
-        for (i = 0; i < N; i++) {
-            int tgt = early_target(st->fdnIdx[b], i, st->earlyIdx[eiBase][i]);
-            int tgtB = st->two ? early_target(st->fdnIdxB[b], i, st->earlyBIdx[eiBase][i]) : -2;
-            int u = usable_ir(st, tgt);
-            int uB = usable_ir(st, tgtB);
-            if (u >= 0) {
-                int s = ensure_mapped(st, b, map, keep, u);
-                if (s >= 0) {
-                    if (st->rampUse) {
-                        for (t = 0; t < PART; t++) st->firIn[s][t] += (float)(st->rampBlk[RG_EARLY][t] * st->eaBlk[b][i][t]);
-                    } else {
-                        for (t = 0; t < PART; t++) st->firIn[s][t] += (float)(st->early_wet * st->eaBlk[b][i][t]);
-                    }
-                }
-            } else if (u == -1) {
-                if (st->rampUse) {
-                    for (t = 0; t < PART; t++) ident[t] += st->rampBlk[RG_EARLY][t] * st->eaBlk[b][i][t];
-                } else {
-                    for (t = 0; t < PART; t++) ident[t] += st->early_wet * st->eaBlk[b][i][t];
-                }
-            }
-            if (uB >= 0) {
-                int s = ensure_mapped(st, b, map, keep, uB);
-                if (s >= 0) {
-                    if (st->rampUse) {
-                        for (t = 0; t < PART; t++) st->firIn[s][t] += (float)(st->rampBlk[RG_EARLY][t] * st->ebBlk[b][i][t]);
-                    } else {
-                        for (t = 0; t < PART; t++) st->firIn[s][t] += (float)(st->early_wet * st->ebBlk[b][i][t]);
-                    }
-                }
-            } else if (uB == -1) {
-                if (st->rampUse) {
-                    for (t = 0; t < PART; t++) ident[t] += st->rampBlk[RG_EARLY][t] * st->ebBlk[b][i][t];
-                } else {
-                    for (t = 0; t < PART; t++) ident[t] += st->early_wet * st->ebBlk[b][i][t];
-                }
-            }
-        }
-    }
-    for (slot = 0; slot < MAX_FILT; slot++) {
-        Filt *f;
-        float yRaw[PART], yFull[PART];
-        if (!keep[slot] || !st->filt[slot].used || st->filt[slot].bus != b || st->filt[slot].kind != 0) continue;
-        f = &st->filt[slot];
-        if (st->irSos[f->ir] > 0) {
-            double sz[MAX_SOS][2];
-            int s;
-            for (s = 0; s < MAX_SOS; s++) { sz[s][0] = f->sz[s][0]; sz[s][1] = f->sz[s][1]; }
-            run_fir(st, f, g_fdnRaw[slot], yRaw);
-            for (s = 0; s < MAX_SOS; s++) { f->sz[s][0] = sz[s][0]; f->sz[s][1] = sz[s][1]; }
-            run_fir(st, f, st->firIn[slot], yFull);
-        } else {
-            int fi = (int)(f - st->filt);
-            int nsave = MAX_PART * FFTN;
-            float prev[PART];
-            int pos = f->pos, cold = f->cold;
-            for (t = 0; t < PART; t++) prev[t] = f->prev[t];
-            ls_copy(g_fdlSaveRe, st->fdlRe + fi * nsave, nsave * (int)sizeof(float));
-            ls_copy(g_fdlSaveIm, st->fdlIm + fi * nsave, nsave * (int)sizeof(float));
-            run_fir(st, f, g_fdnRaw[slot], yRaw);
-            ls_copy(st->fdlRe + fi * nsave, g_fdlSaveRe, nsave * (int)sizeof(float));
-            ls_copy(st->fdlIm + fi * nsave, g_fdlSaveIm, nsave * (int)sizeof(float));
-            for (t = 0; t < PART; t++) f->prev[t] = prev[t];
-            f->pos = pos;
-            f->cold = cold;
-            run_fir(st, f, st->firIn[slot], yFull);
-        }
-        for (t = 0; t < PART; t++) {
-            yRawSum[t] += (double)yRaw[t];
-            yFullSum[t] += (double)yFull[t];
-        }
-    }
-    for (t = 0; t < PART; t++) {
-        double w = st->rampUse ? st->rampBlk[RG_FDN][t] : st->fdn_wet;
-        double raw = yRawSum[t] + rawIdent[t];
-        double full = yFullSum[t] + ident[t];
-        double early = full - w * raw;
-        double x = raw;
-        if (st->sideHot) x = side_apply(st, b, t, x);
-        if (bloom_hot(st)) x = bloom_apply(st, b, t, x);
-        fdnPre[t] = x * w + early;
-    }
-    for (t = 0; t < PART; t++) directA[t] = st->daBlk[b][t];
-    fir_or_wire(st, b, 1, st->directIdx[b], directA, directA);
-    if (st->two) {
-        for (t = 0; t < PART; t++) directB[t] = st->dbBlk[b][t];
-        fir_or_wire(st, b, 2, st->directBIdx[b], directB, directB);
-    } else {
-        for (t = 0; t < PART; t++) directB[t] = 0;
-    }
-    if (st->rampUse) {
-        for (t = 0; t < PART; t++) {
-            double earlyC = (b == BUS_C) ? st->rampBlk[RG_EARLY][t] * st->esBlk[b][t] : 0.0;
-            double wet = st->rampBlk[RG_DIR][t] * DIRECT_FOLD * (directA[t] + directB[t])
-                + st->rampBlk[RG_MK][t] * (fdnPre[t] + earlyC);
-            accL[t] += st->rampBlk[RG_W + 2 * b][t] * wet;
-            accR[t] += st->rampBlk[RG_W + 2 * b + 1][t] * wet;
-        }
-    } else {
-        for (t = 0; t < PART; t++) {
-            double earlyC = (b == BUS_C) ? st->early_wet * st->esBlk[b][t] : 0.0;
-            double wet = st->direct_wet * DIRECT_FOLD * (directA[t] + directB[t])
-                + st->makeup * (fdnPre[t] + earlyC);
-            accL[t] += sl * wet;
-            accR[t] += sr * wet;
-        }
-    }
-}
-
 static void tail_sos_part(LiveStereo *st, int b, double *x) {
     int sec, t;
     double *c = st->tailC[b];
@@ -3582,7 +3314,7 @@ static void tail_sos_part(LiveStereo *st, int b, double *x) {
     }
 }
 
-/* tailOn only. FDN lines sum, then side, Bloom, one SOS, then fdn_wet.
+/* tailOn only. FDN lines sum, then one SOS, then fdn_wet.
    Early and direct stay on today's filters. icOn does not call this. */
 static void mix_offaxis_bus(LiveStereo *st, int b, double sl, double sr,
     double *accL, double *accR, int *keep) {
@@ -3592,12 +3324,6 @@ static void mix_offaxis_bus(LiveStereo *st, int b, double sl, double sr,
         double acc = 0.0;
         for (i = 0; i < N; i++) acc += st->yBlk[b][i][t] + st->yBlkB[b][i][t];
         sumY[t] = acc;
-    }
-    for (t = 0; t < PART; t++) {
-        double x = sumY[t];
-        if (st->sideHot) x = side_apply(st, b, t, x);
-        if (bloom_hot(st)) x = bloom_apply(st, b, t, x);
-        sumY[t] = x;
     }
     tail_sos_part(st, b, sumY);
     if (st->rampUse) {
@@ -3742,8 +3468,6 @@ static void mix_partition(LiveStereo *st, float *outL, float *outR) {
                     if (!st->icOn) {
                         for (i = 0; i < N; i++) sumY += st->yBlk[b][i][t] + st->yBlkB[b][i][t];
                     }
-                    if (st->sideHot && !st->icOn) sumY = side_apply(st, b, t, sumY);
-                    if (bloom_hot(st) && !st->icOn) sumY = bloom_apply(st, b, t, sumY);
                     direct = st->daBlk[b][t] + st->dbBlk[b][t];
                     gl = st->rampBlk[RG_W + 2 * b][t];
                     gr = st->rampBlk[RG_W + 2 * b + 1][t];
@@ -3760,8 +3484,6 @@ static void mix_partition(LiveStereo *st, float *outL, float *outR) {
                     if (!st->icOn) {
                         for (i = 0; i < N; i++) sumY += st->yBlk[b][i][t] + st->yBlkB[b][i][t];
                     }
-                    if (st->sideHot && !st->icOn) sumY = side_apply(st, b, t, sumY);
-                    if (bloom_hot(st) && !st->icOn) sumY = bloom_apply(st, b, t, sumY);
                     direct = st->daBlk[b][t] + st->dbBlk[b][t];
                     wet = st->direct_wet * DIRECT_FOLD * direct
                         + st->makeup * (st->fdn_wet * sumY + st->early_wet * st->esBlk[b][t]);
@@ -3771,9 +3493,6 @@ static void mix_partition(LiveStereo *st, float *outL, float *outR) {
             }
             continue;
         }
-        if ((bloom_hot(st) || st->sideHot) && !st->icOn) {
-            bloom_colour_bus(st, b, sl, sr, accL, accR, keep);
-        } else
         {
             double directA[PART], directB[PART];
             double ident[PART];
@@ -3871,18 +3590,6 @@ static void mix_partition(LiveStereo *st, float *outL, float *outR) {
     if (st->icOn) {
         double oL[PART], oR[PART];
         ic_apply(st, icA, icB, oL, oR);
-        if (bloom_hot(st) || st->sideHot) {
-            for (t = 0; t < PART; t++) {
-                if (st->sideHot) {
-                    oL[t] = side_apply(st, 0, t, oL[t]);
-                    oR[t] = side_apply(st, 2, t, oR[t]);
-                }
-                if (bloom_hot(st)) {
-                    oL[t] = bloom_apply(st, 0, t, oL[t]);
-                    oR[t] = bloom_apply(st, 2, t, oR[t]);
-                }
-            }
-        }
         if (st->rampUse) {
             for (t = 0; t < PART; t++) {
                 accL[t] += st->rampBlk[RG_MK][t] * st->rampBlk[RG_FDN][t] * oL[t];
@@ -3950,8 +3657,6 @@ static void run_partition(LiveStereo *st, const float *inL, const float *inR, fl
     int t, b, i, hn;
     FwhtFn doFwht;
     DiffuseFn doDiff;
-    bloom_fill(st);
-    side_prepare(st, inL, inR);
     fill_ramp_block(st);
     {
         int e = st->micG[BUS_C] == 0.0;
@@ -3997,18 +3702,6 @@ static void run_partition(LiveStereo *st, const float *inL, const float *inR, fl
             xA = 0;
             xB = 0;
             x = 0.5 * (xL + xR);
-        }
-        if (st->bloomOn) {
-            double det;
-            if (split) {
-                double aa = xA < 0.0 ? -xA : xA;
-                double bb = xB < 0.0 ? -xB : xB;
-                det = aa > bb ? aa : bb;
-            } else if ((int)(st->bC[0] + 0.5) == 4) {
-                /* Swell filters the signed sample. Abs after the high-pass. */
-                det = x;
-            } else det = x < 0.0 ? -x : x;
-            bloom_sample(st, det, t);
         }
         if (st->radA || st->radB) {
             double xin = split ? xA : x;
@@ -4122,10 +3815,6 @@ static void run_partition(LiveStereo *st, const float *inL, const float *inR, fl
         else if (st->two) dry = st->dry_gain * 0.5 * (st->gain_a * xL + st->gain_b * xR);
         else dry = st->dry_gain * x;
         st->dryBlk[t] = dry;
-        if (st->predelayN > 0) {
-            st->pdW += 1;
-            if (st->pdW >= 4800) st->pdW = 0;
-        }
     }
     if (st->modOn) st->modAbs += (double)PART;
     mix_partition(st, outL, outR);

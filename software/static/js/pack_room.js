@@ -155,26 +155,6 @@ function packRoom(data) {
     for (hi = 0; hi < 5; hi++) hp.push(num(data.sub_hp[hi], 0));
     parts.push([9, hp]);
   }
-  if (data && data.bloom && data.bloom.length >= 26) {
-    var bl = [], bi, bn = data.bloom.length > 96 ? 96 : data.bloom.length;
-    for (bi = 0; bi < bn; bi++) bl.push(num(data.bloom[bi], 0));
-    parts.push([10, bl]);
-  }
-  if (data && Number(data.predelay_n) > 0) {
-    var pdn = Number(data.predelay_n);
-    if (pdn > 4799) pdn = 4799;
-    parts.push([11, [pdn]]);
-  }
-  if (data && data.pre_colour && data.pre_colour.length >= 16) {
-    var pc = [], pi, pn = data.pre_colour.length > 32 ? 32 : data.pre_colour.length;
-    for (pi = 0; pi < pn; pi++) pc.push(num(data.pre_colour[pi], 0));
-    parts.push([12, pc]);
-  }
-  if (data && data.side && data.side.length >= 217) {
-    var sd = [], si;
-    for (si = 0; si < 217; si++) sd.push(num(data.side[si], 0));
-    parts.push([13, sd]);
-  }
   if (data && data.offaxis_tail && data.offaxis_tail.length === 45) {
     var ot = [], oi;
     for (oi = 0; oi < 45; oi++) ot.push(num(data.offaxis_tail[oi], 0));

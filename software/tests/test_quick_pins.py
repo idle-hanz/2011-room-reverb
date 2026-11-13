@@ -93,8 +93,8 @@ PIN_TABLE = {
     "polar_views.js": 12,
     "mic_desk.js": 30,
     "source_desk.js": 7,
-    "pack_room.js": 55,
-    "live_fdn.js": 67,
+    "pack_room.js": 56,
+    "live_fdn.js": 68,
     "lr_buttons.js": 1,
     "ms_presets.js": 3,
     "pair_mode.js": 2,
@@ -119,7 +119,7 @@ PIN_TABLE = {
 
 def test_cache_pins():
     live = (SW / "static" / "js" / "live_fdn.js").read_text(encoding="utf-8")
-    assert "WORKLET_VER = 64" in live
+    assert "WORKLET_VER = 65" in live
 
 
 def test_index_versions_match_pin_table():
