@@ -470,18 +470,34 @@ def load_material_sets() -> List[Dict[str, Any]]:
     return out
 
 
-def image_in_early(n: Tuple[int, int, int], solo_l: Optional[str], mute_s: set) -> bool:
+def image_in_early(
+    n: Tuple[int, int, int],
+    solo_l: Optional[str],
+    mute_s: set,
+    is_direct: Optional[bool] = None,
+) -> bool:
     """D16 / D15. True when this image stays in the early field.
 
     No solo and no mute: every image stays. Solo X keeps every image that
-    touches X, and drops the direct image n=(0,0,0). Mute X, with no solo,
-    drops every image that touches X and keeps the direct image.
+    touches X, and drops the direct image. Mute X, with no solo, drops
+    every image that touches X and keeps the direct image.
+
+    ``is_direct`` None uses n=(0,0,0) as the direct image, which is the
+    shoebox. An explicit flag is the polygon marker: that index stays
+    (0,0,0) and is not an A–F card. A polygon reflection has no hits, and
+    Solo still keeps it. Only the true direct path counts as direct.
     """
     nx, ny, nz = int(n[0]), int(n[1]), int(n[2])
-    if nx == 0 and ny == 0 and nz == 0:
+    if is_direct is None:
+        direct = nx == 0 and ny == 0 and nz == 0
+    else:
+        direct = bool(is_direct)
+    if direct:
         return solo_l is None
     hits = surfaces_hit_by_n((nx, ny, nz))
     if solo_l is not None:
+        if is_direct is False and not hits:
+            return True
         return solo_l in hits
     if mute_s:
         return not any(h in mute_s for h in hits)

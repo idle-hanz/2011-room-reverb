@@ -1659,6 +1659,9 @@ class ImageTap:
     fdn_distance_l: Optional[float] = None
     fdn_distance_r: Optional[float] = None
     fdn_distance_c: Optional[float] = None
+    # None keeps the shoebox rule (n == (0, 0, 0) is direct). Polygon taps
+    # keep that index and set this flag. True only on the order-0 path.
+    is_direct: Optional[bool] = None
 
 
 def _box_rank_axis(s: float, R: float, k: int) -> float:

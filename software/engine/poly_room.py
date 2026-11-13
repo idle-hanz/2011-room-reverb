@@ -6,7 +6,8 @@ are the loudest at the two live mics. Direct stays line 0. FDN lengths are the
 path from the stand centre, the same on L, C, and R.
 
 Faces are not mapped onto A–F. Every tap keeps ``n = (0, 0, 0)`` so the shoebox
-wall cards, diffusion hits, and surface solo stay off this path.
+wall cards and diffusion hits stay off this path. ``is_direct`` is true only
+on the order-0 path. A wall Solo drops that path and keeps the reflections.
 """
 from __future__ import annotations
 
@@ -807,6 +808,7 @@ def compute_poly_taps(
                 fdn_distance_l=d_stand,
                 fdn_distance_r=d_stand,
                 fdn_distance_c=d_stand,
+                is_direct=(order == 0),
             )
         )
     return taps

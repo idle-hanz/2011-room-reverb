@@ -687,8 +687,8 @@ def render_early_ir(
     solo_l = parse_solo(surfaces_solo)
     mute_s = parse_mute(surfaces_mute)
     for ti, t in enumerate(taps):
-        # D11 / D16: a silenced image is absent. D15: solo drops n=(0,0,0).
-        if not image_in_early(t.n, solo_l, mute_s):
+        # D11 / D16: a silenced image is absent. Solo drops only the direct path.
+        if not image_in_early(t.n, solo_l, mute_s, getattr(t, "is_direct", None)):
             continue
         d_l = float(t.distance_l)
         d_r = float(t.distance_r)
@@ -2741,7 +2741,10 @@ def _early_gate_row(taps, n: int, solo_l, mute_s) -> list:
         if n_t <= 0:
             row.append(1.0)
             continue
-        row.append(1.0 if image_in_early(taps[i % n_t].n, solo_l, mute_s) else 0.0)
+        tap = taps[i % n_t]
+        row.append(1.0 if image_in_early(
+            tap.n, solo_l, mute_s, getattr(tap, "is_direct", None),
+        ) else 0.0)
     return row
 
 

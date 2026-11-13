@@ -20,7 +20,15 @@ SW = ROOT / "software"
 sys.path[:0] = [str(SW), str(SW / "engine")]
 
 import app_server as A  # noqa: E402
-from early_field import MicStand, dist, mic_positions  # noqa: E402
+from early_field import (  # noqa: E402
+    SPEED_OF_SOUND_M_S,
+    MicStand,
+    allpass_ir_for_stages,
+    dist,
+    mic_positions,
+    precompute_wall_peaking_coeffs,
+)
+from surface_colour import image_in_early  # noqa: E402
 from maths_image import image_position_corner  # noqa: E402
 from fdn import fdn_delays_from_taps  # noqa: E402
 from poly_room import (  # noqa: E402
@@ -35,7 +43,12 @@ from poly_room import (  # noqa: E402
     normalize_shape,
     poly_on,
 )
-from render_pipeline import live_fdn_params, render  # noqa: E402
+from render_pipeline import (  # noqa: E402
+    _early_gate_row,
+    live_fdn_params,
+    render,
+    render_early_ir,
+)
 
 EMPTY = "06bb1aaa0f59d67402b160224e155089"
 CENTRE = "64f8319d8bf4e33353f8681ec31140de"
@@ -206,6 +219,44 @@ def math_finite(tap) -> bool:
         tap.delay_ms_l, tap.delay_ms_r, tap.delay_ms_c,
     )
     return all(v == v and abs(v) < 1e6 for v in nums)
+
+
+def test_polygon_solo_keeps_the_reflections():
+    """Solo drops the order-0 path. The reflections stay. n stays (0, 0, 0)."""
+    stand = _stand()
+    src = (2.6, 1.2, 4.75)
+    taps = compute_poly_taps(ROOM, src, stand, "splay", n=32)
+    assert taps[0].order == 0
+    assert any(t.order > 0 for t in taps)
+    for t in taps:
+        assert t.n == (0, 0, 0)
+        assert t.wall_combo == frozenset()
+        assert t.is_direct is (t.order == 0)
+        assert image_in_early(t.n, "A", set(), t.is_direct) is (t.order != 0)
+        assert image_in_early(t.n, None, {"A"}, t.is_direct) is True
+    gate = _early_gate_row(taps, 32, "A", set())
+    assert gate == [0.0 if t.order == 0 else 1.0 for t in taps]
+    mute = _early_gate_row(taps, 32, None, {"A"})
+    assert mute == [1.0] * 32
+    sr = 48000
+    c = SPEED_OF_SOUND_M_S
+    earliest = min(min(t.delay_ms_l, t.delay_ms_r) for t in taps if t.order > 0)
+    cut = int(sr * earliest / 1000.0)
+    assert cut > 1
+    wall = precompute_wall_peaking_coeffs(ROOM, sr, c, 1.5)
+    ap = {0: None, 1: allpass_ir_for_stages(1, sr), 2: allpass_ir_for_stages(2, sr)}
+    kw = dict(
+        taps=taps, room=ROOM, sr=sr, c=c, length_ms=80.0,
+        depth_per_axis=0.0, humidity=0.0, wall_cache=wall, ap_cache=ap,
+        air_lp=0.0, air_shelf=0.0, early_toys=False,
+    )
+    open_l, open_r = render_early_ir(**kw)
+    solo_l, solo_r = render_early_ir(**kw, surfaces_solo="A")
+    for open_ch, solo_ch in ((open_l, solo_l), (open_r, solo_r)):
+        assert float(np.max(np.abs(open_ch[:cut]))) > 1e-8
+        assert float(np.max(np.abs(solo_ch[:cut]))) == 0.0
+        assert float(np.max(np.abs(solo_ch[cut:]))) > 1e-8
+        assert float(np.max(np.abs(open_ch[cut:] - solo_ch[cut:]))) == 0.0
 
 
 def test_presets_scale_with_the_box():

@@ -127,7 +127,7 @@ def _early_stereo(scene: dict, solo, n_samp: int):
         buf = acc[ch]
         for i in range(n_had):
             t = taps[i % n_t]
-            if not image_in_early(t.n, solo_l, mute_s):
+            if not image_in_early(t.n, solo_l, mute_s, getattr(t, "is_direct", None)):
                 continue
             if ch == "l":
                 amp = float(t.level_l)
