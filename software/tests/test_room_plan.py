@@ -162,3 +162,14 @@ def test_diffuser_trap_and_cloud_feed_surfaces():
     assert _md5(empty) == EMPTY
     assert "diffuser" not in empty
     assert "surf_treatment" not in empty
+
+
+def test_box_at_a_new_size_posts_the_same_keys():
+    """A shoebox size change stays on the keys a box already posts."""
+    empty = live_fdn_params(A.params_from_body({}))
+    sized = live_fdn_params(A.params_from_body({"room_shape": "box", "W": 9.0, "L": 4.0}))
+    assert _md5(empty) == EMPTY
+    assert set(sized) == set(empty)
+    assert "room_shape" not in sized
+    splay = live_fdn_params(A.params_from_body({"room_shape": "splay"}))
+    assert _md5(splay) == "6d996c03137772aaca9cebecab3358ac"

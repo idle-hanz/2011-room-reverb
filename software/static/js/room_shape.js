@@ -1130,6 +1130,11 @@
       return note(before, after);
     }
 
+    function dragBase() {
+      if (!dragging || !dragBefore) return null;
+      return copySnap(dragBefore);
+    }
+
     return {
       snap: copySnap,
       note: note,
@@ -1137,8 +1142,59 @@
       redo: redo,
       beginDrag: beginDrag,
       endDrag: endDrag,
+      dragBase: dragBase,
       isDragging: function () { return dragging; }
     };
+  }
+
+  /* Scale a plan about the origin by new/old on X and Z. One snap to 0.01 m.
+     A corner that was on a wall stays on that wall. Outside or a dent keeps
+     the old token and the same note a corner drag already shows. */
+  function scalePlan(token, oldW, oldL, newW, newL) {
+    var pts = planPoints(token);
+    var sx;
+    var sz;
+    var next = [];
+    var i;
+    var x;
+    var z;
+    if (!pts) return { ok: true, token: String(token == null ? "box" : token) };
+    oldW = Number(oldW);
+    oldL = Number(oldL);
+    newW = Number(newW);
+    newL = Number(newL);
+    if (!(oldW > 0) || !(oldL > 0) || !(newW > 0) || !(newL > 0)) {
+      planDragNoteText = "Corner stays outside the room";
+      return { ok: false, token: String(token) };
+    }
+    if (round2(oldW) === round2(newW) && round2(oldL) === round2(newL)) {
+      return { ok: true, token: String(token) };
+    }
+    sx = newW / oldW;
+    sz = newL / oldL;
+    for (i = 0; i < pts.length; i++) {
+      x = pts[i][0];
+      z = pts[i][1];
+      if (Math.abs(x) <= 1e-6) x = 0;
+      else if (Math.abs(x - oldW) <= 1e-6) x = newW;
+      else x = x * sx;
+      if (Math.abs(z) <= 1e-6) z = 0;
+      else if (Math.abs(z - oldL) <= 1e-6) z = newL;
+      else z = z * sz;
+      x = round2(x);
+      z = round2(z);
+      if (x < -1e-9 || z < -1e-9 || x > newW + 1e-9 || z > newL + 1e-9) {
+        planDragNoteText = "Corner stays outside the room";
+        return { ok: false, token: String(token) };
+      }
+      next.push([x, z]);
+    }
+    if (!convex(next)) {
+      planDragNoteText = "That corner would dent the plan";
+      return { ok: false, token: String(token) };
+    }
+    planDragNoteText = "";
+    return { ok: true, token: encodePlan(next) };
   }
 
   function bindShapeRows(rows, onPick) {
@@ -1178,6 +1234,7 @@
     regularPlan: regularPlan,
     movePlanPoint: movePlanPoint,
     planDragNote: planDragNote,
+    scalePlan: scalePlan,
     addPlanCorner: addPlanCorner,
     delPlanCorner: delPlanCorner,
     typePlanCorner: typePlanCorner,

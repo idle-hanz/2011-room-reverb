@@ -116,3 +116,40 @@ test("the heat map uses a reflected denominator and stays a shoebox field", () =
   assert.match(sl, /bp\.disabled/);
   assert.match(sl, /Every face is full \(90 %\)\./);
 });
+
+test("a plan scales with width and length and one undo restores both", () => {
+  const token = RS.encodePlan(RS.regularPlan(5, 6, 8));
+  const src = RS.planPoints(token);
+  const scaled = RS.scalePlan(token, 6, 8, 9, 4);
+  const pts = RS.planPoints(scaled.token);
+  const hist = RS.createRoomHistory();
+  const before = { W: 6, H: 3, L: 8, room_shape: token };
+  let i;
+  assert.equal(scaled.ok, true);
+  assert.equal(pts.length, src.length);
+  for (i = 0; i < src.length; i++) {
+    assert.equal(pts[i][0], Math.round(src[i][0] * 1.5 * 100) / 100);
+    assert.equal(pts[i][1], Math.round(src[i][1] * 0.5 * 100) / 100);
+  }
+  assert.deepEqual(RS.floorOutline(scaled.token, 9, 4), pts);
+  hist.note(before, { W: 9, H: 3, L: 4, room_shape: scaled.token });
+  assert.deepEqual(hist.undo(), before);
+  ["box", "splay", "lede", "live", "gable", "hex", "tilt:4.00:0.100"].forEach(function (name) {
+    const kept = RS.scalePlan(name, 6, 8, 9, 4);
+    assert.equal(kept.ok, true);
+    assert.equal(kept.token, name);
+  });
+  assert.equal(RS.scalePlan(token, 6, 8, 6, 8).token, token);
+  const wild = RS.encodePlan([[0, 0], [7, 0], [7, 4], [3, 8], [0, 4]]);
+  const refused = RS.scalePlan(wild, 6, 8, 9, 4);
+  assert.equal(refused.ok, false);
+  assert.equal(refused.token, wild);
+  assert.equal(RS.planDragNote(), "Corner stays outside the room");
+  const dim = room.slice(room.indexOf("function onRoomDim"), room.indexOf("function refitDiagrams"));
+  assert.match(dim, /key === "W" \|\| key === "L"/);
+  assert.match(dim, /RoomShape\.scalePlan/);
+  assert.match(dim, /state\[key\] = prev/);
+  assert.match(dim, /dragBase/);
+  assert.match(room, /roomHistLock/);
+  assert.equal(dim.indexOf("state.H"), -1);
+});

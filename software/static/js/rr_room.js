@@ -24,11 +24,13 @@ function endRoomDrag() {
   return roomHist.endDrag(roomHist.snap(state));
 }
 
-/* Undo uses the same size path as a slider. The shape token is copied as stored. */
+/* Undo uses the same size path as a slider. The shape token is copied as stored.
+   The plan string is restored before the size path so a plan is not scaled twice. */
 function applyRoomSnap(next) {
   if (!next) return;
   roomHistLock = true;
   try {
+    state.room_shape = String(next.room_shape == null ? "box" : next.room_shape);
     if (Number(next.W) !== Number(state.W)) onRoomDim("W", next.W);
     if (Number(next.H) !== Number(state.H)) onRoomDim("H", next.H);
     if (Number(next.L) !== Number(state.L)) onRoomDim("L", next.L);
@@ -196,7 +198,25 @@ function onRoomDim(key, val) {
   var prev = Number(state[key]);
   var next = Number(val);
   var spaceWant = state.space;
+  var base = (!roomHistLock && roomHist && roomHist.dragBase) ? roomHist.dragBase() : null;
+  var oldW = base ? Number(base.W) : (key === "W" ? prev : Number(state.W));
+  var oldL = base ? Number(base.L) : (key === "L" ? prev : Number(state.L));
+  var shapeFrom = base ? base.room_shape : state.room_shape;
   state[key] = val;
+  /* A plan scales from the drag start so each 0.01 snap is not stacked.
+     Undo keeps the stored plan string and does not scale it again. */
+  if (!roomHistLock && (key === "W" || key === "L") &&
+      window.RoomShape && RoomShape.scalePlan &&
+      isFinite(oldW) && oldW > 0 && isFinite(oldL) && oldL > 0 &&
+      isFinite(next) && next > 0 && next !== prev) {
+    var scaled = RoomShape.scalePlan(shapeFrom, oldW, oldL, Number(state.W), Number(state.L));
+    if (!scaled.ok) {
+      state[key] = prev;
+      syncUI();
+      return;
+    }
+    state.room_shape = scaled.token;
+  }
   if (isFinite(prev) && prev > 0 && isFinite(next) && next > 0 && next !== prev) {
     scaleRoomAxis(state, key, prev, next);
   }
