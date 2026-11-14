@@ -181,6 +181,13 @@ function paintRoomShape() {
   var slopeBtn = document.getElementById("roomSlopeBtn");
   if (window.RoomShape && tiltBtn && RoomShape.tiltLabel) tiltBtn.textContent = RoomShape.tiltLabel(state.room_shape);
   if (window.RoomShape && slopeBtn && RoomShape.slopeLabel) slopeBtn.textContent = RoomShape.slopeLabel(state.room_shape);
+  var degEl = document.getElementById("roomTiltDeg");
+  var pctEl = document.getElementById("roomSlopePct");
+  if (window.RoomShape && RoomShape.tiltPair && degEl && pctEl) {
+    var pair = RoomShape.tiltPair(state.room_shape) || { deg: 0, slope: 0 };
+    if (document.activeElement !== degEl) degEl.value = Number(pair.deg).toFixed(2);
+    if (document.activeElement !== pctEl) pctEl.value = (Number(pair.slope) * 100).toFixed(1);
+  }
   var planOn = name === "plan";
   var addCorner = document.getElementById("roomPlanAdd");
   var delCorner = document.getElementById("roomPlanDel");
@@ -394,4 +401,17 @@ function applyPlace(name) {
   placePosStore[name] = capturePlacePositions(state);
   syncHadamardUI();
   syncUI();
+}
+
+var roomTiltApply = typeof document !== "undefined" ? document.getElementById("roomTiltApply") : null;
+if (roomTiltApply) {
+  roomTiltApply.addEventListener("click", function () {
+    var degEl = document.getElementById("roomTiltDeg");
+    var pctEl = document.getElementById("roomSlopePct");
+    if (!window.RoomShape || !RoomShape.encodeTiltFields || !degEl || !pctEl) return;
+    state.room_shape = RoomShape.encodeTiltFields(degEl.value, pctEl.value);
+    if (window.RoomMath && RoomMath.clampRoom) Object.assign(state, RoomMath.clampRoom(state));
+    syncUI();
+    scheduleLiveParams();
+  });
 }

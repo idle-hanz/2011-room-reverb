@@ -630,7 +630,10 @@
             <p class="hint" id="roomModes">Axial modes</p>
             <div class="place-row" id="roomTiltRow" role="group" aria-label="Wall tilt and ceiling slope">
               <button type="button" class="chip" id="roomTiltBtn">Walls flat</button>
+              <input type="number" id="roomTiltDeg" aria-label="Wall angle in degrees" title="Wall angle in degrees" step="0.01" style="width:4.6rem" />
               <button type="button" class="chip" id="roomSlopeBtn">Ceiling flat</button>
+              <input type="number" id="roomSlopePct" aria-label="Ceiling slope in percent" title="Ceiling slope in percent" step="0.1" style="width:4.6rem" />
+              <button type="button" class="chip" id="roomTiltApply">Apply</button>
             </div>
             <div class="place-row" id="roomPlanRow" role="group" aria-label="Floor plan">
               <button type="button" class="chip" data-room-shape="plan" aria-pressed="false">Plan</button>
@@ -987,7 +990,7 @@
     <div id="toast" class="toast" hidden role="status"></div>
   </div>
   <script src="/static/js/vendor/three.min.js"></script>
-  <script src="/static/js/room_shape.js?v=11"></script>
+  <script src="/static/js/room_shape.js?v=12"></script>
   <script src="/static/js/maths_look.js?v=2"></script>
   <script src="/static/js/maths_pattern.js?v=2"></script>
   <script src="/static/js/maths_distance.js?v=1"></script>
@@ -1018,7 +1021,7 @@
   <script src="/static/js/rr_state.js?v=12"></script>
   <script src="/static/js/rr_mic.js?v=1"></script>
   <script src="/static/js/rr_mix.js?v=12"></script>
-  <script src="/static/js/rr_room.js?v=8"></script>
+  <script src="/static/js/rr_room.js?v=9"></script>
   <script src="/static/js/rr_source.js?v=2"></script>
   <script src="/static/js/rr_space.js?v=7"></script>
   <script src="/static/js/rr_polar.js?v=3"></script>

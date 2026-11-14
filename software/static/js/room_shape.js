@@ -98,6 +98,20 @@
     return "tilt:" + deg.toFixed(2) + ":" + slope.toFixed(3);
   }
 
+  function encodeTiltFields(deg, percent) {
+    var slope;
+    deg = Number(deg);
+    percent = Number(percent);
+    if (!isFinite(deg)) deg = 0;
+    if (!isFinite(percent)) percent = 0;
+    if (deg < -20) deg = -20;
+    if (deg > 20) deg = 20;
+    slope = percent / 100;
+    if (slope < -0.45) slope = -0.45;
+    if (slope > 0.45) slope = 0.45;
+    return encodeTilt(deg, slope);
+  }
+
   function nextStep(cur, steps) {
     var i;
     var best = 0;
@@ -859,6 +873,7 @@
     planPoints: planPoints,
     encodePlan: encodePlan,
     encodeTilt: encodeTilt,
+    encodeTiltFields: encodeTiltFields,
     regularPlan: regularPlan,
     movePlanPoint: movePlanPoint,
     planDragNote: planDragNote,
