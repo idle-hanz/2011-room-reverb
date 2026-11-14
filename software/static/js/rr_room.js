@@ -186,6 +186,12 @@ function paintRoomShape() {
   var delCorner = document.getElementById("roomPlanDel");
   if (addCorner) addCorner.hidden = !planOn;
   if (delCorner) delCorner.hidden = !planOn;
+  var planNoteEl = document.getElementById("roomPlanNote");
+  if (planNoteEl && window.RoomShape && RoomShape.planNote) {
+    var why = RoomShape.planNote();
+    planNoteEl.textContent = why;
+    planNoteEl.hidden = !why;
+  }
   var hideSwitch = !!(window.RoomShape && RoomShape.showMirrorToggle && !RoomShape.showMirrorToggle(state.room_shape));
   var mirrorRow = document.getElementById("mirrorLrRow");
   var mirrorBox = document.getElementById("mirrorLr");

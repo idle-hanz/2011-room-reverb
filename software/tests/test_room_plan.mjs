@@ -52,7 +52,7 @@ test("tilt zero and a flat ceiling stay the box word", () => {
 });
 
 test("a plan is five to eight corners and panels use the treatment rows", () => {
-  const token = RS.storedShape("plan", 6, 3, 8, "box");
+  const token = RS.encodePlan(RS.regularPlan(6, 6, 8));
   assert.equal(RS.normalize(token), "plan");
   assert.equal(RS.planPoints(token).length, 6);
   const five = RS.encodePlan(RS.regularPlan(5, 6, 8));
@@ -80,7 +80,7 @@ test("a plan is five to eight corners and panels use the treatment rows", () => 
 });
 
 test("a plan or tilt token hides mirror and draws the slope", () => {
-  const plan = RS.storedShape("plan", 6, 3, 8, "box");
+  const plan = RS.encodePlan(RS.regularPlan(6, 6, 8));
   assert.equal(RS.normalize(plan), "plan");
   assert.equal(RS.showMirrorToggle(plan), false);
   assert.equal(RS.showMirrorToggle("tilt:4:0.2"), false);
@@ -102,7 +102,7 @@ test("a plan or tilt token hides mirror and draws the slope", () => {
 test("the heat map uses a reflected denominator and stays a shoebox field", () => {
   const note = "First-order shoebox images, geometric 1/r, no absorption, no air, no tail";
   assert.equal(RS.heatMapNote("box"), note);
-  assert.equal(RS.heatMapNote(RS.storedShape("plan", 6, 3, 8, "box")), null);
+  assert.equal(RS.heatMapNote(RS.encodePlan(RS.regularPlan(6, 6, 8))), null);
   assert.equal(RS.heatMapNote("tilt:4:0.2"), null);
   assert.equal(RS.heatMapNote("splay"), null);
   const rev = RD.reverbDistance([2, 2, 2, 2, 2, 2]);

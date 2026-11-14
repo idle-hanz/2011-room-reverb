@@ -205,12 +205,43 @@
     return pts;
   }
 
+  var planNoteText = "";
+
+  function planNote() {
+    return planNoteText;
+  }
+
+  function planFromOutline(pts, current) {
+    var keep = String(current == null ? "box" : current);
+    var n = pts && pts.length ? pts.length : 0;
+    if (n < 5) {
+      planNoteText = "Fewer than 5 corners";
+      return keep;
+    }
+    if (n > 8) {
+      planNoteText = "More than 8 corners";
+      return keep;
+    }
+    if (!convex(pts)) {
+      planNoteText = "Outline is not convex";
+      return keep;
+    }
+    planNoteText = "";
+    return encodePlan(pts);
+  }
+
+  function planCopy(current, W, L) {
+    if (normalize(current) === "plan") {
+      planNoteText = "";
+      return String(current);
+    }
+    return planFromOutline(floorOutline(current, W, L), current);
+  }
+
   function storedShape(picked, W, H, L, current) {
     var raw = String(picked == null ? "" : picked).trim().toLowerCase();
-    if (raw === "plan") {
-      if (normalize(current) === "plan") return String(current);
-      return encodePlan(regularPlan(6, W, L));
-    }
+    if (raw === "plan") return planCopy(current, W, L);
+    planNoteText = "";
     return normalize(picked);
   }
 
@@ -785,6 +816,9 @@
     axialModes: axialModes,
     axialText: axialText,
     storedShape: storedShape,
+    planNote: planNote,
+    planFromOutline: planFromOutline,
+    planCopy: planCopy,
     tiltPair: tiltPair,
     tiltLabel: tiltLabel,
     slopeLabel: slopeLabel,
