@@ -140,7 +140,7 @@ test("box default is mirrored and the switch splits the cards", () => {
   assert.equal(state.surfaces.C.letter, "C");
 });
 
-test("splay shows no switch and stays one linked card", () => {
+test("splay shows no switch and one card per face", () => {
   const { cs, state, nodes } = boot();
   state.room_shape = "splay";
   state.mirror_lr = false;
@@ -150,10 +150,11 @@ test("splay shows no switch and stays one linked card", () => {
   assert.equal(nodes.mirrorLrRow.hidden, true);
   assert.equal(nodes.mirrorLr.disabled, true);
   const linked = cards(nodes);
-  assert.equal(linked[0].letter, "A");
-  assert.equal(linked[0].pair, "C");
-  assert.match(linked[0].html, /Left \+ Right \(mirrored\)/);
-  assert.match(linked[0].html, /class="sc-link"/);
+  assert.deepEqual(linked.map((c) => c.letter), ["F1", "F2", "F3", "F4", "F5", "F6"]);
+  linked.forEach((c) => assert.equal(c.pair, null));
+  assert.match(linked[0].html, /Wall 1/);
+  assert.match(linked[1].html, /Wall 2/);
+  assert.equal(linked[0].html.includes("sc-link"), false);
   assert.equal(linked.some((c) => c.letter === "C"), false);
   assert.equal(state.surfaces.C.absorb[0], 0.42);
   const wall = page.indexOf('id="surfaceCards"');
@@ -165,7 +166,7 @@ test("splay shows no switch and stays one linked card", () => {
   assert.match(app, /mix\.mirror_lr = !!state\.mirror_lr/);
 });
 
-test("lede and live hide the switch and keep the mirrored card", () => {
+test("lede and live hide the switch and list one card per face", () => {
   ["lede", "live"].forEach((shape) => {
     const { cs, state, nodes } = boot();
     state.room_shape = shape;
@@ -176,12 +177,13 @@ test("lede and live hide the switch and keep the mirrored card", () => {
     assert.equal(nodes.mirrorLrRow.hidden, true, shape);
     assert.equal(nodes.mirrorLr.disabled, true, shape);
     const linked = cards(nodes);
-    const sides = linked.filter((c) => c.pair === "C");
-    assert.equal(sides.length, shape === "lede" ? 2 : 1, shape);
-    sides.forEach((c) => {
-      assert.equal(c.letter, "A");
-      assert.match(c.html, /Left \+ Right \(mirrored\)/);
+    const expectN = shape === "lede" ? 8 : 6;
+    assert.equal(linked.length, expectN, shape);
+    linked.forEach((c, i) => {
+      assert.equal(c.letter, "F" + (i + 1), shape);
+      assert.equal(c.pair, null, shape);
     });
+    assert.match(linked[0].html, /Wall 1/);
     assert.equal(linked.some((c) => c.letter === "C"), false);
     assert.equal(state.surfaces.C.absorb[0], 0.42);
   });
@@ -197,17 +199,12 @@ test("gable hides the switch and lists both roofs and both gable ends", () => {
   assert.equal(nodes.mirrorLrRow.hidden, true);
   assert.equal(nodes.mirrorLr.disabled, true);
   const linked = cards(nodes);
-  assert.deepEqual(linked.map((c) => c.letter), ["A", "D", "B", "E", "F", "F"]);
-  assert.equal(linked[0].pair, "C");
-  assert.match(linked[0].html, /Left \+ Right \(mirrored\)/);
-  assert.match(linked[0].html, /class="sc-link"/);
-  assert.equal(linked.filter((c) => c.html.includes("Gable end")).length, 2);
-  assert.match(linked[4].html, /Left roof/);
-  assert.match(linked[4].html, /#e2e8f0/);
-  assert.match(linked[5].html, /Right roof/);
-  assert.match(linked[5].html, /#e2e8f0/);
-  assert.match(linked[1].html, /#cbd5e1/);
-  assert.match(linked[2].html, /#2dd4bf/);
+  assert.deepEqual(linked.map((c) => c.letter), ["F1", "F2", "F3", "F4", "F5", "F6", "F7"]);
+  linked.forEach((c) => assert.equal(c.pair, null));
+  assert.match(linked[0].html, /Wall 1/);
+  assert.match(linked[5].html, /Left roof/);
+  assert.match(linked[6].html, /Right roof/);
+  assert.equal(linked[0].html.includes("sc-link"), false);
   assert.equal(linked.some((c) => c.letter === "C"), false);
   assert.equal(state.surfaces.C.absorb[0], 0.42);
 });
@@ -227,25 +224,13 @@ test("hex hides the switch and links both angled side pairs", () => {
   assert.equal(nodes.mirrorLrRow.hidden, true);
   assert.equal(nodes.mirrorLr.disabled, true);
   const linked = cards(nodes);
-  assert.deepEqual(linked.map((c) => c.letter), ["A", "A", "B", "D", "E", "F"]);
-  assert.equal(linked[0].pair, "C");
-  assert.equal(linked[1].pair, "C");
-  assert.match(linked[0].html, /Left \+ Right \(mirrored\)/);
-  assert.match(linked[1].html, /Left \+ Right \(mirrored\)/);
-  assert.match(linked[0].html, /class="sc-link"/);
-  assert.match(linked[1].html, /class="sc-link"/);
-  assert.match(linked[0].html, /#38bdf8/);
-  assert.match(linked[1].html, /#38bdf8/);
-  assert.match(linked[2].html, /Front/);
-  assert.match(linked[2].html, /#2dd4bf/);
-  assert.match(linked[3].html, /Back/);
-  assert.match(linked[3].html, /#cbd5e1/);
-  assert.match(linked[4].html, /Floor/);
-  assert.match(linked[4].html, /#78716c/);
-  assert.match(linked[5].html, /Ceiling/);
-  assert.match(linked[5].html, /#e2e8f0/);
-  assert.equal(linked[2].pair, null);
-  assert.equal(linked[3].pair, null);
+  assert.deepEqual(linked.map((c) => c.letter), ["F1", "F2", "F3", "F4", "F5", "F6", "F7", "F8"]);
+  linked.forEach((c) => assert.equal(c.pair, null));
+  assert.match(linked[0].html, /Wall 1/);
+  assert.match(linked[5].html, /Wall 6/);
+  assert.match(linked[6].html, /Floor/);
+  assert.match(linked[7].html, /Ceiling/);
+  assert.equal(linked[0].html.includes("sc-link"), false);
   assert.equal(linked.some((c) => c.letter === "C"), false);
   assert.equal(state.surfaces.C.absorb[0], 0.42);
 });

@@ -682,10 +682,46 @@
     ];
   }
 
+  /* One card per polygon face. Walls follow the floor edge, then floor, then ceiling.
+     Gable keeps the two roofs apart. The shoebox stays on A–F. */
+  function faceRows(shape) {
+    var name = normalize(shape);
+    if (name === "box") return null;
+    if (name === "gable") {
+      return [
+        { id: "wall0", letters: ["F1"], shared: false, label: "Wall 1", facing: "\u2212Z" },
+        { id: "wall1", letters: ["F2"], shared: false, label: "Wall 2", facing: "+X" },
+        { id: "wall2", letters: ["F3"], shared: false, label: "Wall 3", facing: "+Z" },
+        { id: "wall3", letters: ["F4"], shared: false, label: "Wall 4", facing: "\u2212X" },
+        { id: "floor", letters: ["F5"], shared: false, label: "Floor", facing: "\u2212Y" },
+        { id: "roofL", letters: ["F6"], shared: false, label: "Left roof", facing: "+Y" },
+        { id: "roofR", letters: ["F7"], shared: false, label: "Right roof", facing: "+Y" }
+      ];
+    }
+    var pts = floorOutline(shape, 6, 8);
+    var rows = [];
+    var i;
+    for (i = 0; i < pts.length; i++) {
+      rows.push({
+        id: "wall" + i,
+        letters: ["F" + (i + 1)],
+        shared: false,
+        label: "Wall " + (i + 1),
+        facing: "edge " + (i + 1)
+      });
+    }
+    var n = pts.length;
+    rows.push({ id: "floor", letters: ["F" + (n + 1)], shared: false, label: "Floor", facing: "\u2212Y" });
+    rows.push({ id: "ceiling", letters: ["F" + (n + 2)], shared: false, label: "Ceiling", facing: "+Y" });
+    return rows;
+  }
+
   function wallRows(shape, mirror) {
     var name = normalize(shape);
-    if (name === "gable") return gableRows();
-    if (name !== "box") return polyRows(name);
+    if (name !== "box") {
+      var faces = faceRows(shape);
+      if (faces) return faces;
+    }
     var shared = !!mirror;
     var rows = [];
     if (shared) {

@@ -83,6 +83,48 @@
     { letter: "E", slot: "floor" }
   ];
 
+  function isFaceLabel(letter) {
+    return /^F[1-9]\d*$/.test(String(letter || ""));
+  }
+
+  function metaFor(letter) {
+    if (META[letter]) return META[letter];
+    if (!isFaceLabel(letter)) return null;
+    var n = parseInt(String(letter).slice(1), 10) || 1;
+    var palette = ["#c4b5fd", "#f0abfc", "#67e8f9", "#fcd34d", "#86efac", "#fda4af", "#93c5fd"];
+    return {
+      label: "Face " + letter,
+      short: letter,
+      role: "face",
+      face: letter,
+      facing: letter,
+      arrow: "",
+      compass: letter,
+      hint: "Polygon face " + letter,
+      color: palette[(n - 1) % palette.length]
+    };
+  }
+
+  function blankFace(letter) {
+    var m = metaFor(letter);
+    return {
+      letter: letter,
+      label: m.short,
+      hint: m.hint,
+      absorb_hz: ABSORB_HZ.slice(),
+      absorb: [0, 0, 0, 0, 0, 0, 0],
+      eq: {
+        low_shelf_hz: 200, low_shelf_db: 0,
+        high_shelf_hz: 5000, high_shelf_db: 0,
+        peak_hz: 1000, peak_db: 0, peak_q: 1
+      },
+      jitter_D: 0,
+      structure_dif: 0,
+      diffusion: 0,
+      assumed: true
+    };
+  }
+
   function defaultSurface(letter) {
     return {
       letter: letter,
@@ -255,12 +297,15 @@
     LETTERS.forEach(function (L) {
       if (st.surfaces_mute[L] == null) st.surfaces_mute[L] = false;
     });
-    if (LETTERS.indexOf(st.surfaces_solo) < 0) st.surfaces_solo = null;
+    if (LETTERS.indexOf(st.surfaces_solo) < 0 && !isFaceLabel(st.surfaces_solo)) st.surfaces_solo = null;
     return st.surfaces;
   };
 
   ColourSurfaces.prototype._current = function () {
-    return this.surfaces()[this.selected];
+    var surfs = this.surfaces();
+    var L = this.selected;
+    if (isFaceLabel(L) && !surfs[L]) surfs[L] = blankFace(L);
+    return surfs[L];
   };
 
   ColourSurfaces.prototype._buildRoomNet = function () {
@@ -328,7 +373,7 @@
   };
 
   ColourSurfaces.prototype._syncOrientationUI = function (letter) {
-    var m = META[letter];
+    var m = metaFor(letter);
     if (!m) return;
     if (this.els.faceArrow) this.els.faceArrow.textContent = m.arrow;
     if (this.els.faceArrow) this.els.faceArrow.style.color = m.color;
@@ -418,6 +463,14 @@
   ColourSurfaces.prototype.syncWallList = function () {
     var keep = this.selected || "A";
     if (this._sidesLinked()) this._copyCard("A", "C");
+    var rows = this._wallRows();
+    var letters = [];
+    rows.forEach(function (row) {
+      (row.letters || []).forEach(function (L) { letters.push(L); });
+    });
+    if (letters.indexOf(keep) < 0) keep = (rows[0] && rows[0].letters && rows[0].letters[0]) || "A";
+    var st = this.getState() || {};
+    if (st.surfaces_solo && letters.indexOf(st.surfaces_solo) < 0) st.surfaces_solo = null;
     this._buildCards();
     if (this._sidesLinked() && (keep === "A" || keep === "C")) this.select("A");
     else this.select(keep);
@@ -435,7 +488,7 @@
     host.innerHTML = "";
     this._wallRows().forEach(function (row) {
       var L = row.letters[0];
-      var m = META[L];
+      var m = metaFor(L) || META.A;
       var card = document.createElement("div");
       card.className = "surface-card";
       card.setAttribute("role", "option");

@@ -289,7 +289,10 @@
     var h = el("div", "sl-treat-head");
     h.appendChild(el("h3", null, "Treatment \u00b7 " + k + " " + (FACE_NAME[k] || "")));
     var used = faceCover(k);
-    h.appendChild(el("span", "hint", Math.round(used * 100) + " % of " + areas()[k].toFixed(1) + " m\u00b2 treated (max 90 %)"));
+    /* Polygon faces are F1..Fn. The treatment area table is still the shoebox A–F. */
+    var areaM2 = areas()[k];
+    if (areaM2 == null || !isFinite(areaM2)) areaM2 = 0;
+    h.appendChild(el("span", "hint", Math.round(used * 100) + " % of " + areaM2.toFixed(1) + " m\u00b2 treated (max 90 %)"));
     box.appendChild(h);
     var mine = rows().filter(function (r) { return r.face === k; });
     if (!mine.length) box.appendChild(el("p", "hint", "No treatment on this face. Add a panel, or use Auto-treat."));

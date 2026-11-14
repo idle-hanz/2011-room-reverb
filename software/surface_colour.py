@@ -22,6 +22,7 @@ import copy
 import hashlib
 import json
 import math
+import re
 import sys
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Sequence, Tuple
@@ -187,9 +188,94 @@ LETTER_ROLE: Dict[str, str] = {
     "E": "floor", "F": "ceiling",
 }
 
+# Polygon faces. F1, F2, F12. Bare F stays the shoebox ceiling.
+_FACE_LABEL = re.compile(r"^F[1-9]\d*$")
+
+
+def is_face_label(raw: Any) -> bool:
+    return isinstance(raw, str) and _FACE_LABEL.match(raw.strip().upper()) is not None
+
+
+def _blank_face(label: str) -> Dict[str, Any]:
+    """A polygon card that has not been edited. Gain stays 1 and Dff stays 0.
+
+    Cloning the plaster default would colour every bounce the moment the card
+    exists. Zeros are the transparent card.
+    """
+    card = default_surface("A")
+    card["letter"] = label
+    card["label"] = label
+    card["hint"] = "Polygon face"
+    card["absorb"] = [0.0] * len(ABSORB_BAND_HZ)
+    card["jitter_D"] = 0.0
+    card["structure_dif"] = 0.0
+    card["diffusion"] = 0.0
+    card["assumed"] = True
+    return card
+
+
+def _merge_surface_card(dst: Dict[str, Any], src: Dict[str, Any]) -> None:
+    """Paint one posted card onto ``dst``. Always tagged assumed=True."""
+    if "absorb" in src and isinstance(src["absorb"], (list, tuple)):
+        abs_list = []
+        for i in range(len(ABSORB_BAND_HZ)):
+            if i < len(src["absorb"]):
+                try:
+                    abs_list.append(_clamp01(float(src["absorb"][i])))
+                except (TypeError, ValueError):
+                    abs_list.append(dst["absorb"][i])
+            else:
+                abs_list.append(dst["absorb"][i])
+        dst["absorb"] = abs_list
+    legacy = _opt01(src, "diffusion")
+    jitter = _opt01(src, "jitter_D")
+    # jitter_d is the same smear knob as jitter_D. It does not touch Dffs.
+    if jitter is None and "jitter_D" not in src:
+        jitter = _opt01(src, "jitter_d")
+    struct = _opt01(src, "structure_dif")
+    # Old saves name one knob. Copy it into both layers so the sound is unchanged.
+    if jitter is None and legacy is not None and "jitter_D" not in src:
+        jitter = legacy
+    if struct is None and legacy is not None and "structure_dif" not in src:
+        struct = legacy
+    if jitter is not None:
+        dst["jitter_D"] = jitter
+    if struct is not None:
+        dst["structure_dif"] = struct
+    if legacy is not None and "jitter_D" not in src and "structure_dif" not in src:
+        dst["diffusion"] = legacy
+    mat_id = src.get("material")
+    if isinstance(mat_id, str) and mat_id.strip():
+        dst["material"] = mat_id.strip()
+    for extra in ("material_name", "honesty"):
+        if isinstance(src.get(extra), str):
+            dst[extra] = src[extra]
+    eq_src = src.get("eq") if isinstance(src.get("eq"), dict) else src
+    eq = dst["eq"]
+    for key, lo, hi in (
+        ("low_shelf_hz", 20.0, 2000.0),
+        ("low_shelf_db", -24.0, 24.0),
+        ("high_shelf_hz", 500.0, 18000.0),
+        ("high_shelf_db", -24.0, 24.0),
+        ("peak_hz", 40.0, 16000.0),
+        ("peak_db", -24.0, 24.0),
+        ("peak_q", 0.2, 8.0),
+    ):
+        if key in eq_src:
+            try:
+                v = float(eq_src[key])
+                eq[key] = float(max(lo, min(hi, v)))
+            except (TypeError, ValueError):
+                pass
+    dst["assumed"] = True
+
 
 def parse_surfaces(raw: Any) -> Dict[str, Dict[str, Any]]:
-    """Merge client POST surfaces into defaults. Always tagged assumed=True."""
+    """Merge client POST surfaces into defaults. Always tagged assumed=True.
+
+    A–F are always present. An F1..Fn card is added only when the post has
+    that key, so an old preset stays the six shoebox cards.
+    """
     out = default_surfaces()
     if not isinstance(raw, dict):
         return out
@@ -197,59 +283,18 @@ def parse_surfaces(raw: Any) -> Dict[str, Dict[str, Any]]:
         src = raw.get(L) or raw.get(L.lower())
         if not isinstance(src, dict):
             continue
-        dst = out[L]
-        if "absorb" in src and isinstance(src["absorb"], (list, tuple)):
-            abs_list = []
-            for i in range(len(ABSORB_BAND_HZ)):
-                if i < len(src["absorb"]):
-                    try:
-                        abs_list.append(_clamp01(float(src["absorb"][i])))
-                    except (TypeError, ValueError):
-                        abs_list.append(dst["absorb"][i])
-                else:
-                    abs_list.append(dst["absorb"][i])
-            dst["absorb"] = abs_list
-        legacy = _opt01(src, "diffusion")
-        jitter = _opt01(src, "jitter_D")
-        # jitter_d is the same smear knob as jitter_D. It does not touch Dffs.
-        if jitter is None and "jitter_D" not in src:
-            jitter = _opt01(src, "jitter_d")
-        struct = _opt01(src, "structure_dif")
-        # Old saves name one knob. Copy it into both layers so the sound is unchanged.
-        if jitter is None and legacy is not None and "jitter_D" not in src:
-            jitter = legacy
-        if struct is None and legacy is not None and "structure_dif" not in src:
-            struct = legacy
-        if jitter is not None:
-            dst["jitter_D"] = jitter
-        if struct is not None:
-            dst["structure_dif"] = struct
-        if legacy is not None and "jitter_D" not in src and "structure_dif" not in src:
-            dst["diffusion"] = legacy
-        mat_id = src.get("material")
-        if isinstance(mat_id, str) and mat_id.strip():
-            dst["material"] = mat_id.strip()
-        for extra in ("material_name", "honesty"):
-            if isinstance(src.get(extra), str):
-                dst[extra] = src[extra]
-        eq_src = src.get("eq") if isinstance(src.get("eq"), dict) else src
-        eq = dst["eq"]
-        for key, lo, hi in (
-            ("low_shelf_hz", 20.0, 2000.0),
-            ("low_shelf_db", -24.0, 24.0),
-            ("high_shelf_hz", 500.0, 18000.0),
-            ("high_shelf_db", -24.0, 24.0),
-            ("peak_hz", 40.0, 16000.0),
-            ("peak_db", -24.0, 24.0),
-            ("peak_q", 0.2, 8.0),
-        ):
-            if key in eq_src:
-                try:
-                    v = float(eq_src[key])
-                    eq[key] = float(max(lo, min(hi, v)))
-                except (TypeError, ValueError):
-                    pass
-        dst["assumed"] = True
+        _merge_surface_card(out[L], src)
+    seen = set()
+    for key, src in raw.items():
+        if not isinstance(key, str) or not isinstance(src, dict):
+            continue
+        lab = key.strip().upper()
+        if not is_face_label(lab) or lab in seen:
+            continue
+        seen.add(lab)
+        if lab not in out:
+            out[lab] = _blank_face(lab)
+        _merge_surface_card(out[lab], src)
     return out
 
 
@@ -288,44 +333,82 @@ def card_structure_dif(card: Optional[Dict[str, Any]]) -> float:
         return 0.0
 
 
+def _mute_on(v: Any) -> bool:
+    return v is True or v == 1 or (isinstance(v, str) and v.strip().lower() in ("1", "true", "yes"))
+
+
 def parse_solo(raw: Any) -> Optional[str]:
-    """None, or one of A–F. Missing, blank, and off/all clear the solo."""
+    """None, one of A–F, or one polygon face (F1, F2, …).
+
+    Missing, blank, and off/all clear the solo. Bare F stays the ceiling,
+    and it is accepted because it is in A–F.
+    """
     if raw is None:
         return None
     s = str(raw).strip().upper()
     if s in ("", "NULL", "NONE", "OFF", "ALL"):
         return None
-    return s if s in SURFACE_LETTERS else None
+    if s in SURFACE_LETTERS or is_face_label(s):
+        return s
+    return None
 
 
 def parse_mute(raw: Any) -> set:
-    """Muted letters. A dict of flags, a list of letters, or 'all'."""
+    """Muted letters. A dict of flags, a list of letters, or 'all'.
+
+    ``all`` is the six shoebox letters. F1..Fn join only when the post names them.
+    """
     if raw is None:
         return set()
     if isinstance(raw, dict):
         out = set()
         for L in SURFACE_LETTERS:
             v = raw[L] if L in raw else raw.get(L.lower())
-            if v is True or v == 1 or (isinstance(v, str) and v.strip().lower() in ("1", "true", "yes")):
+            if _mute_on(v):
                 out.add(L)
+        for key, v in raw.items():
+            if not isinstance(key, str):
+                continue
+            lab = key.strip().upper()
+            if is_face_label(lab) and _mute_on(v):
+                out.add(lab)
         return out
     if isinstance(raw, str):
         if raw.strip().lower() in ("all", "*"):
             return set(SURFACE_LETTERS)
         parts = [p.strip().upper() for p in raw.replace(",", " ").split() if p.strip()]
-        return {p for p in parts if p in SURFACE_LETTERS}
+        return {p for p in parts if p in SURFACE_LETTERS or is_face_label(p)}
     if isinstance(raw, (list, tuple)):
         out = set()
         for item in raw:
-            if isinstance(item, str) and item.strip().upper() in SURFACE_LETTERS:
-                out.add(item.strip().upper())
+            if not isinstance(item, str):
+                continue
+            token = item.strip().upper()
+            if token in SURFACE_LETTERS or is_face_label(token):
+                out.add(token)
         return out
     return set()
 
 
 def mute_flags(raw: Any) -> Dict[str, bool]:
+    """A–F flags, then any F-label the post actually carried (true or false).
+
+    A missing mute, and a post with only A–F, stay the six-key dict.
+    """
     muted = parse_mute(raw)
-    return {L: L in muted for L in SURFACE_LETTERS}
+    out = {L: L in muted for L in SURFACE_LETTERS}
+    if not isinstance(raw, dict):
+        return out
+    extras = []
+    for key in raw:
+        if not isinstance(key, str):
+            continue
+        lab = key.strip().upper()
+        if is_face_label(lab):
+            extras.append(lab)
+    for lab in sorted(set(extras), key=lambda s: (int(s[1:]), s)):
+        out[lab] = lab in muted
+    return out
 
 
 def face_is_heard(letter: str, solo: Optional[str], mute: set) -> bool:
@@ -380,6 +463,27 @@ def effective_surfaces(
         c["diffusion"] = 0.0
         c["muted"] = True
         out[L] = c
+    if isinstance(surfaces, dict):
+        extras = []
+        for key, card in surfaces.items():
+            if isinstance(key, str) and is_face_label(key.strip().upper()) and isinstance(card, dict):
+                extras.append((key.strip().upper(), card))
+        for lab, card in sorted(extras, key=lambda row: (int(row[0][1:]), row[0])):
+            if face_is_heard(lab, solo_l, mute_s):
+                out[lab] = card
+                continue
+            c = dict(card)
+            c["absorb"] = [1.0] * len(ABSORB_BAND_HZ)
+            eq = dict(c.get("eq") or {})
+            eq["low_shelf_db"] = 0.0
+            eq["high_shelf_db"] = 0.0
+            eq["peak_db"] = 0.0
+            c["eq"] = eq
+            c["jitter_D"] = 0.0
+            c["structure_dif"] = 0.0
+            c["diffusion"] = 0.0
+            c["muted"] = True
+            out[lab] = c
     return out
 
 
@@ -475,6 +579,7 @@ def image_in_early(
     solo_l: Optional[str],
     mute_s: set,
     is_direct: Optional[bool] = None,
+    face_hits: Optional[Sequence[str]] = None,
 ) -> bool:
     """D16 / D15. True when this image stays in the early field.
 
@@ -484,8 +589,13 @@ def image_in_early(
 
     ``is_direct`` None uses n=(0,0,0) as the direct image, which is the
     shoebox. An explicit flag is the polygon marker: that index stays
-    (0,0,0) and is not an A–F card. A polygon reflection has no hits, and
-    Solo still keeps it. Only the true direct path counts as direct.
+    (0,0,0) and is not an A–F card. A polygon reflection has no A–F hits,
+    and an A–F Solo still keeps it. Only the true direct path counts as direct.
+
+    ``face_hits`` is the polygon label list. None keeps the shoebox rule.
+    An empty tuple is the direct polygon path and must not fall through to
+    the A–F hits. Solo or mute of F2 uses that list. Solo or mute of A–F
+    does not filter those reflections.
     """
     nx, ny, nz = int(n[0]), int(n[1]), int(n[2])
     if is_direct is None:
@@ -494,6 +604,18 @@ def image_in_early(
         direct = bool(is_direct)
     if direct:
         return solo_l is None
+    if face_hits is not None:
+        hits = [str(h).strip().upper() for h in face_hits if isinstance(h, str) and h.strip()]
+        if solo_l is not None:
+            if is_face_label(solo_l):
+                return solo_l in hits
+            return True
+        if mute_s:
+            watched = {m for m in mute_s if is_face_label(m)}
+            if watched:
+                return not any(h in watched for h in hits)
+            return True
+        return True
     hits = surfaces_hit_by_n((nx, ny, nz))
     if solo_l is not None:
         if is_direct is False and not hits:
@@ -526,6 +648,23 @@ def surfaces_hit_by_n(n: Tuple[int, int, int]) -> List[str]:
         if abs(nz) >= 2:
             hit.append("B" if nz < 0 else "D")
     return hit
+
+
+def material_letters(n, surfaces, face_hits=None) -> List[str]:
+    """Shoebox crossings, or polygon labels that have a card.
+
+    A polygon tap with no F card stays on the empty hit list, so the live
+    pack does not grow a cascade. Missing cards are skipped.
+    """
+    if face_hits is None:
+        return surfaces_hit_by_n(n)
+    if not isinstance(surfaces, dict):
+        return []
+    out: List[str] = []
+    for lab in face_hits:
+        if isinstance(lab, str) and isinstance(surfaces.get(lab), dict):
+            out.append(lab)
+    return out
 
 
 def last_hit_letter_from_n(n: Tuple[int, int, int]) -> Optional[str]:

@@ -204,6 +204,7 @@ from surface_colour import (  # noqa: E402
     image_in_early,
     solo_mute_gates,
     surfaces_hit_by_n,
+    material_letters,
     surfaces_payload,
     fit_line_cascade,
     fit_absorb_stages,
@@ -688,12 +689,15 @@ def render_early_ir(
     mute_s = parse_mute(surfaces_mute)
     for ti, t in enumerate(taps):
         # D11 / D16: a silenced image is absent. Solo drops only the direct path.
-        if not image_in_early(t.n, solo_l, mute_s, getattr(t, "is_direct", None)):
+        face_hits = getattr(t, "face_labels", None)
+        if not image_in_early(t.n, solo_l, mute_s, getattr(t, "is_direct", None), face_hits):
             continue
         d_l = float(t.distance_l)
         d_r = float(t.distance_r)
-        # ASSUMED surface hit from geometric n (not Structure A–F OCR masks)
+        # Jitter stays on the shoebox crossing. A polygon n is (0, 0, 0), so
+        # this list is empty and the path length does not move.
         hit = surfaces_hit_by_n(t.n) if surfaces else []
+        colour_hit = material_letters(t.n, surfaces, face_hits) if surfaces else []
         if surfaces and hit:
             img = t.position
             # Partner's own tap index, not the slot, so the key matches t.index.
@@ -781,10 +785,11 @@ def render_early_ir(
             br, d_r, sr, humidity, air_lp=air_lp, air_shelf=air_shelf,
             air_climate=air_climate, air_iso=air_iso,
         )
-        # ASSUMED absorb×EQ cascade for hit surfaces
-        if surfaces and hit:
-            bl = apply_surface_to_buffer(bl, surfaces, hit, float(sr))
-            br = apply_surface_to_buffer(br, surfaces, hit, float(sr))
+        # ASSUMED absorb×EQ cascade for hit surfaces. Polygon cards use the
+        # F label. The jitter block above still uses the shoebox crossing.
+        if surfaces and colour_hit:
+            bl = apply_surface_to_buffer(bl, surfaces, colour_hit, float(sr))
+            br = apply_surface_to_buffer(br, surfaces, colour_hit, float(sr))
         if g_l != 0.0:
             bl = apply_prox_shelf(bl, g_l, sr)
         if g_r != 0.0:
@@ -908,16 +913,17 @@ def movement_peak_ms(p, surfaces=None) -> float:
     return 0.10 + 0.05 * ((pct - 50.0) / 50.0)
 
 
-def tap_dff(n, surfaces, master: float = DIFFUSION_MASTER_LIVE) -> float:
+def tap_dff(n, surfaces, master: float = DIFFUSION_MASTER_LIVE, face_hits=None) -> float:
     """Dff = Clip(sum(hit Dif) × Diffusion Master). 202 × MDif; 485 Master.
 
     Geometric hits (both walls when |n|≥2). Not A–F bit tables.
     Master live −0.5 (394/485 Max) makes Dff ≤ 0 like 463.
+    ``face_hits`` None keeps that map. A polygon label with no card adds nothing.
     """
     if not surfaces:
         return 0.0
     acc = 0.0
-    for letter in surfaces_hit_by_n(n):
+    for letter in material_letters(n, surfaces, face_hits):
         card = surfaces.get(letter) if isinstance(surfaces, dict) else None
         if not isinstance(card, dict):
             continue
@@ -925,16 +931,18 @@ def tap_dff(n, surfaces, master: float = DIFFUSION_MASTER_LIVE) -> float:
     return dff_after_master(acc, master)
 
 
-def tap_reflect_gain(n, surfaces) -> float:
+def tap_reflect_gain(n, surfaces, face_hits=None) -> float:
     """ASSUMED: serial |R|=√(1−ᾱ) for geometric hits so walls colour the FDN wet.
 
     ᾱ is the mean of that card's absorb bands. Direct (no hits) stays 1.
     Not Structure A–F masks.
+    ``face_hits`` None keeps the shoebox crossings. A missing F card is skipped,
+    so a polygon room with no face card stays gain 1.
     """
     if not surfaces:
         return 1.0
     g = 1.0
-    for letter in surfaces_hit_by_n(n):
+    for letter in material_letters(n, surfaces, face_hits):
         card = surfaces.get(letter) if isinstance(surfaces, dict) else None
         if not isinstance(card, dict):
             continue
@@ -1037,11 +1045,13 @@ def _scale_inject_reflect(inj, taps, surfaces, sr=None, reaktor_parity=False) ->
         return
     colour = bool(sr) and not reaktor_parity
     for i in range(n_lines):
-        g = tap_reflect_gain(taps[i % n_t].n, surfaces)
+        tap = taps[i % n_t]
+        faces = getattr(tap, "face_labels", None)
+        g = tap_reflect_gain(tap.n, surfaces, faces)
         inj[:, i] *= g
         if not colour or g == 0.0:
             continue
-        fit = _line_surf_fit(surfaces, surfaces_hit_by_n(taps[i % n_t].n), float(sr))
+        fit = _line_surf_fit(surfaces, material_letters(tap.n, surfaces, faces), float(sr))
         coef = fit.get("coef") or []
         if not coef:
             continue
@@ -1082,7 +1092,8 @@ def _play_surf_cascade(surfaces, taps, taps_b, sr, n, parity):
             if n_t <= 0 or i >= n_fit:
                 rows.append((0, []))
                 continue
-            letters = surfaces_hit_by_n(bank[i % n_t].n)
+            tap = bank[i % n_t]
+            letters = material_letters(tap.n, surfaces, getattr(tap, "face_labels", None))
             fit = _line_surf_fit(surfaces, letters, sr)
             rows.append((int(fit["k"]), list(fit["coef"])))
             db = float(fit["residual_db"])
@@ -1213,7 +1224,8 @@ def render_fdn_ir(
             n_out = 1
     n_t = len(taps) if taps is not None else 0
     dff_per_tap = [
-        tap_dff(t.n, surfaces, master=diffusion_master) for t in taps
+        tap_dff(t.n, surfaces, master=diffusion_master, face_hits=getattr(t, "face_labels", None))
+        for t in taps
     ] if n_t else []
     buses = {
         "l": np.zeros(n_out, dtype=np.float64),
@@ -1456,7 +1468,7 @@ def _inject_levels(taps, n, surfaces):
         return inj_l, inj_c, inj_r
     for i in range(n):
         t = taps[i % n_t]
-        rg = tap_reflect_gain(t.n, surfaces)
+        rg = tap_reflect_gain(t.n, surfaces, getattr(t, "face_labels", None))
         inj_l[i] = rg * float(t.level_l)
         inj_r[i] = rg * float(t.level_r)
         inj_c[i] = rg * float(getattr(t, "level_c", 0.5 * (t.level_l + t.level_r)))
@@ -2744,6 +2756,7 @@ def _early_gate_row(taps, n: int, solo_l, mute_s) -> list:
         tap = taps[i % n_t]
         row.append(1.0 if image_in_early(
             tap.n, solo_l, mute_s, getattr(tap, "is_direct", None),
+            getattr(tap, "face_labels", None),
         ) else 0.0)
     return row
 
@@ -3152,7 +3165,10 @@ def live_fdn_params(
             room, source, stand_i, shape, c, n_had, mic_colour, grid, parity,
             bool(p.get("real_wall_polarity")),
         )
-    dff_per_tap = [tap_dff(t.n, surfaces, master=diffusion_master) for t in taps]
+    dff_per_tap = [
+        tap_dff(t.n, surfaces, master=diffusion_master, face_hits=getattr(t, "face_labels", None))
+        for t in taps
+    ]
     solo_l = parse_solo(p.get("surfaces_solo"))
     mute_s = parse_mute(p.get("surfaces_mute"))
     peaking = live_peaking_banks(room, rate, c, DEFAULT_DEPTH)
@@ -3181,7 +3197,7 @@ def live_fdn_params(
                 amp = float(getattr(t, "level_c", 0.5 * (t.level_l + t.level_r)))
             # H-1: inject level is the true capsule. Line air stays at the stand.
             dist_m = _tap_distance(t, ch)
-            amp *= tap_reflect_gain(t.n, surfaces)
+            amp *= tap_reflect_gain(t.n, surfaces, getattr(t, "face_labels", None))
             inject.append(amp)
             ag, _lp, sh, sh2 = _live_air_for_distance(
                 dist_m, rate, humidity, air_lp, air_shelf, air_climate, air_iso,
@@ -3305,7 +3321,10 @@ def live_fdn_params(
             )
             stand_b = _place_stand(stand_b, p)
         taps_b = _shape_taps(prep_b.source, stand_b)
-        dff_b = [tap_dff(t.n, surfaces, master=diffusion_master) for t in taps_b]
+        dff_b = [
+            tap_dff(t.n, surfaces, master=diffusion_master, face_hits=getattr(t, "face_labels", None))
+            for t in taps_b
+        ]
         for ch in ("l", "c", "r"):
             dly_b = fdn_delays_from_taps(taps_b, sr=rate, c=c, n=n_had, channel=ch)
             delay_ms_b = [1000.0 * float(d) / float(rate) for d in dly_b]
@@ -3323,7 +3342,7 @@ def live_fdn_params(
                 else:
                     amp = float(getattr(t, "level_c", 0.5 * (t.level_l + t.level_r)))
                 dist_m = _tap_distance(t, ch)
-                amp *= tap_reflect_gain(t.n, surfaces)
+                amp *= tap_reflect_gain(t.n, surfaces, getattr(t, "face_labels", None))
                 inject_b.append(amp)
                 ag, _lp, sh, sh2 = _live_air_for_distance(
                     dist_m, rate, humidity, air_lp, air_shelf, air_climate, air_iso,

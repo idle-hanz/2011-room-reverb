@@ -1294,6 +1294,32 @@
       ctx.fillStyle = "#5c6478";
       ctx.font = "12px Segoe UI, system-ui, sans-serif";
       ctx.fillText(geo.state.W.toFixed(1) + " × " + geo.state.L.toFixed(1) + " m", 14, 22);
+      enter(env, drawFaceLabels, ctx, geo);
+    }
+  function drawFaceLabels(ctx, geo) { var env = envStack[envStack.length - 1];
+      if (!global.RoomShape || RoomShape.normalize(geo.state.room_shape) === "box") return;
+      var outline = floorOutlinePx(geo.state, env.fl);
+      if (!outline || outline.length < 2) return;
+      ctx.save();
+      ctx.fillStyle = "#c4b5fd";
+      ctx.font = "600 12px Segoe UI, system-ui, sans-serif";
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+      var i;
+      var n = outline.length;
+      for (i = 0; i < n; i++) {
+        var a = outline[i];
+        var b = outline[(i + 1) % n];
+        ctx.fillText("F" + (i + 1), (a.px + b.px) / 2, (a.py + b.py) / 2);
+      }
+      var cx = 0;
+      var cy = 0;
+      for (i = 0; i < n; i++) {
+        cx += outline[i].px;
+        cy += outline[i].py;
+      }
+      ctx.fillText("F" + (n + 1), cx / n, cy / n);
+      ctx.restore();
     }
   function drawElev(geo) { var env = envStack[envStack.length - 1];
       const ctx = env.ectx;
@@ -1315,8 +1341,24 @@
       ctx.fillStyle = "#8b92a5";
       ctx.font = "11px Segoe UI, system-ui, sans-serif";
       ctx.textAlign = "left";
-      ctx.fillText("Floor", env.el.ox + 6, env.el.oy + env.el.rh - 6);
-      ctx.fillText("Ceiling", env.el.ox + 6, env.el.oy + 14);
+      var floorTag = "Floor";
+      var ceilTag = "Ceiling";
+      if (global.RoomShape && RoomShape.normalize(geo.state.room_shape) !== "box" && RoomShape.wallRows) {
+        var faceRows = RoomShape.wallRows(geo.state.room_shape, false);
+        var floorRow = null;
+        var ceilBits = [];
+        var ri;
+        for (ri = 0; ri < faceRows.length; ri++) {
+          if (faceRows[ri].id === "floor") floorRow = faceRows[ri];
+          if (faceRows[ri].id === "ceiling" || faceRows[ri].id === "roofL" || faceRows[ri].id === "roofR") {
+            ceilBits.push(faceRows[ri].letters[0]);
+          }
+        }
+        if (floorRow) floorTag = "Floor " + floorRow.letters[0];
+        if (ceilBits.length) ceilTag = ceilBits.join(" ");
+      }
+      ctx.fillText(floorTag, env.el.ox + 6, env.el.oy + env.el.rh - 6);
+      ctx.fillText(ceilTag, env.el.ox + 6, env.el.oy + 14);
 
       const Sp = ePx(geo.source.z, geo.source.y, env.el);
       const Cp = ePx(geo.mic_centre.z, geo.mic_centre.y, env.el);

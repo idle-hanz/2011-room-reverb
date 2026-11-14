@@ -1662,6 +1662,8 @@ class ImageTap:
     # None keeps the shoebox rule (n == (0, 0, 0) is direct). Polygon taps
     # keep that index and set this flag. True only on the order-0 path.
     is_direct: Optional[bool] = None
+    # Polygon bounce labels (F1..Fn). None is the shoebox. () is the direct path.
+    face_labels: Optional[Tuple[str, ...]] = None
 
 
 def _box_rank_axis(s: float, R: float, k: int) -> float:

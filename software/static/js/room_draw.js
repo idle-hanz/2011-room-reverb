@@ -307,7 +307,7 @@
         [ridge, H, 0], [W, eave, 0], [W, eave, L], [ridge, H, L]
       ], "F")
     ];
-    return orient(faces);
+    return assignFaceLabels(orient(faces));
   }
 
   function polyFaces(shape, W, H, L) {
@@ -319,23 +319,21 @@
     function h(z) { return heightAt(shape, z, H, L); }
     var floor = pts.map(function (p) { return [p[0], 0, p[1]]; });
     var ceil = pts.map(function (p) { return [p[0], h(p[1]), p[1]]; });
-    var faces = [new Face("floor", floor, "E"), new Face("ceiling", ceil, "F")];
+    var faces = [new Face("floor", floor, ""), new Face("ceiling", ceil, "")];
     var i;
     for (i = 0; i < pts.length; i++) {
       var x1 = pts[i][0];
       var z1 = pts[i][1];
       var x2 = pts[(i + 1) % pts.length][0];
       var z2 = pts[(i + 1) % pts.length][1];
-      var letter = edgeLetter(pts, i, W, L);
-      if (normalize(shape) === "splay") letter = WALL_LETTER[i];
       faces.push(new Face("wall" + i, [
         [x1, 0, z1],
         [x2, 0, z2],
         [x2, h(z2), z2],
         [x1, h(z1), z1]
-      ], letter));
+      ], ""));
     }
-    return orient(faces);
+    return assignFaceLabels(orient(faces));
   }
 
   function splayFaces(W, H, L) {
@@ -671,6 +669,14 @@
     return (r << 16) | (g << 8) | b;
   }
 
+  function faceTint(letter) {
+    if (LETTER_COLOR[letter] != null) return LETTER_COLOR[letter];
+    var m = /^F([1-9]\d*)$/.exec(String(letter || ""));
+    if (!m) return 0x1a1d26;
+    var palette = [0xc4b5fd, 0xf0abfc, 0x67e8f9, 0xfcd34d, 0x86efac, 0xfda4af, 0x93c5fd];
+    return palette[(parseInt(m[1], 10) - 1) % palette.length];
+  }
+
   function wallColor(surfaces, letter) {
     var id = materialId(surfaces, letter);
     if ((letter === "A" || letter === "C") && !id) {
@@ -678,7 +684,25 @@
     }
     if (id && MATERIAL_COLOR[id] != null) return MATERIAL_COLOR[id];
     if (id) return hashColor(id);
-    return LETTER_COLOR[letter] != null ? LETTER_COLOR[letter] : 0x1a1d26;
+    return faceTint(letter);
+  }
+
+  /* Same order as poly_room._label_faces. The face list stays in mesh order. */
+  function assignFaceLabels(faces) {
+    function wallKey(face) {
+      if (face.name.indexOf("wall") !== 0) return 1e9;
+      var rest = face.name.slice(4);
+      var n = parseInt(rest, 10);
+      return String(n) === rest ? n : 1e9;
+    }
+    var walls = faces.filter(function (f) { return f.name.indexOf("wall") === 0; }).slice();
+    walls.sort(function (a, b) { return wallKey(a) - wallKey(b); });
+    var floors = faces.filter(function (f) { return f.name === "floor"; });
+    var ceils = faces.filter(function (f) { return f.name === "ceiling"; });
+    var ordered = walls.concat(floors, ceils);
+    var rest = faces.filter(function (f) { return ordered.indexOf(f) < 0; });
+    ordered.concat(rest).forEach(function (face, i) { face.letter = "F" + (i + 1); });
+    return faces;
   }
 
   function colorKey(surfaces) {

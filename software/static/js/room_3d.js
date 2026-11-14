@@ -269,13 +269,14 @@
         faces.forEach(function (face) {
           var ring = face.v.map(function (p) { return enter(env, mapRoom, p, L); });
           var col = RoomDraw.wallColor(surfaces, face.letter);
-          var floorFace = face.letter === "E";
+          var floorFace = face.name === "floor";
+          var ceilFace = face.name === "ceiling";
           var mat = new env.THREE.MeshStandardMaterial({
             color: col,
             roughness: floorFace ? 0.92 : 0.88,
             metalness: 0.05,
             transparent: !floorFace,
-            opacity: floorFace ? 1 : (face.letter === "F" ? 0.28 : 0.55),
+            opacity: floorFace ? 1 : (ceilFace ? 0.28 : 0.55),
             side: env.THREE.DoubleSide,
             depthWrite: floorFace
           });
@@ -285,7 +286,8 @@
           env.roomGroup.add(mesh);
           env.roomGroup.add(enter(env, loopLine, ring, edgeMatS));
           var named = labelName[face.letter];
-          if (!named) return;
+          var text = named ? named[0] : (face.letter || face.name);
+          var tint = named ? named[1] : "#c4b5fd";
           var c = [0, 0, 0];
           face.v.forEach(function (p) {
             c[0] += p[0];
@@ -299,7 +301,7 @@
             c[2] / n - face.n[2] * 0.2
           ];
           var tp = enter(env, mapRoom, outP, L);
-          wallLabel(named[0], named[1], tp[0], tp[1], tp[2]);
+          wallLabel(text, tint, tp[0], tp[1], tp[2]);
         });
         var floorFace0 = faces[0];
         var fc = [0, 0, 0];

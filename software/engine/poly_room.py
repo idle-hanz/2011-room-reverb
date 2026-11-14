@@ -5,9 +5,11 @@ scale with W / L / H. Order 4, parent-side prune, distance cut. Thirty-two taps
 are the loudest at the two live mics. Direct stays line 0. FDN lengths are the
 path from the stand centre, the same on L, C, and R.
 
-Faces are not mapped onto A–F. Every tap keeps ``n = (0, 0, 0)`` so the shoebox
-wall cards and diffusion hits stay off this path. ``is_direct`` is true only
-on the order-0 path. A wall Solo drops that path and keeps the reflections.
+Every tap keeps ``n = (0, 0, 0)`` so an A–F card does not colour this path.
+Each face also carries a stable ``F1..Fn`` label (walls, then floor, then
+ceiling). Those labels stay off the audio until a card for that label is
+posted. ``is_direct`` is true only on the order-0 path. An A–F Solo drops
+that path and keeps the reflections.
 """
 from __future__ import annotations
 
@@ -166,6 +168,7 @@ class Face:
 
     def __init__(self, name: str, verts):
         self.name = name
+        self.label = ""
         self.v = np.asarray(verts, float)
         n = np.zeros(3)
         m = len(self.v)
@@ -331,6 +334,42 @@ def shape_metrics(shape, W: float, H: float, L: float):
     return _mesh_volume(faces), _areas_from_faces(faces, W, H, L)
 
 
+def _label_faces(faces: List[Face]) -> List[Face]:
+    """Stable F1..Fn. Walls in wall-number order, then floor, then ceiling.
+
+    The face list itself stays in mesh order. A shoebox mesh is not passed
+    through here, so its faces keep an empty label.
+    """
+    def wall_key(face: Face) -> int:
+        rest = face.name[4:]
+        if face.name.startswith("wall") and rest.isdigit():
+            return int(rest)
+        return 10**6
+
+    walls = sorted((f for f in faces if f.name.startswith("wall")), key=wall_key)
+    floors = [f for f in faces if f.name == "floor"]
+    ceils = [f for f in faces if f.name == "ceiling"]
+    seen = {id(f) for f in walls + floors + ceils}
+    rest = [f for f in faces if id(f) not in seen]
+    for i, face in enumerate(walls + floors + ceils + rest):
+        face.label = f"F{i + 1}"
+    return faces
+
+
+def _seq_labels(faces, seq):
+    """Labels bounced on this image. None when the mesh was not labelled.
+
+    The direct image has an empty sequence, which is an empty tuple, not None.
+    """
+    if not any(getattr(face, "label", "") for face in faces):
+        return None
+    out = []
+    for g in seq:
+        if 0 <= g < len(faces) and faces[g].label:
+            out.append(faces[g].label)
+    return tuple(out)
+
+
 def faces_for(shape, W: float, H: float, L: float, plan=None) -> List[Face]:
     """Presets are fractions of the shoebox that contains them.
 
@@ -344,28 +383,28 @@ def faces_for(shape, W: float, H: float, L: float, plan=None) -> List[Face]:
         pts = _plan_points(plan) if plan is not None else _plan_points(shape)
         if not pts:
             return box_faces(W, H, L)
-        return _prism(pts, lambda x, z: H)
+        return _label_faces(_prism(pts, lambda x, z: H))
     if name == "tilt":
         deg, slope = _tilt_pair(shape)
 
         def h(x, z, H=H, L=L, slope=slope):
             return _slope_height(z, H, L, slope)
 
-        return _prism(_tilt_floor(W, L, deg), h)
+        return _label_faces(_prism(_tilt_floor(W, L, deg), h))
     if name == "splay":
         # Prototype trapezoid 4→6 over length 6, ceiling 2.6→3.2, shifted into the box.
         def h(x, z, H=H, L=L):
             t = 0.0 if L <= 0.0 else z / L
             return H * (0.8125 + 0.1875 * t)
 
-        return _prism([(W / 6.0, 0.0), (5.0 * W / 6.0, 0.0), (W, L), (0.0, L)], h)
+        return _label_faces(_prism([(W / 6.0, 0.0), (5.0 * W / 6.0, 0.0), (W, L), (0.0, L)], h))
     if name == "lede":
         # Splayed front for the first 2/7 of the length, then parallel. Flat ceiling.
         z1 = (2.0 / 7.0) * L
-        return _prism(
+        return _label_faces(_prism(
             [(0.25 * W, 0.0), (0.75 * W, 0.0), (W, z1), (W, L), (0.0, L), (0.0, z1)],
             lambda x, z: H,
-        )
+        ))
     if name == "live":
         # One pair of side walls and the ceiling, 6° each. Sides sum to 12°.
         tan6 = math.tan(math.radians(6.0))
@@ -376,13 +415,13 @@ def faces_for(shape, W: float, H: float, L: float, plan=None) -> List[Face]:
             t = 0.0 if L <= 0.0 else z / L
             return (H - inset_y) + inset_y * t
 
-        return _prism([(inset_x, 0.0), (W - inset_x, 0.0), (W, L), (0.0, L)], h)
+        return _label_faces(_prism([(inset_x, 0.0), (W - inset_x, 0.0), (W, L), (0.0, L)], h))
     if name == "gable":
-        return _gable_faces(W, H, L)
+        return _label_faces(_gable_faces(W, H, L))
     if name == "hex":
         # Front and back are flat, width W/2, centred on x = W/2.
         # The other four walls meet the box sides at (0, L/2) and (W, L/2).
-        return _prism(
+        return _label_faces(_prism(
             [
                 (W / 4.0, 0.0),
                 (3.0 * W / 4.0, 0.0),
@@ -392,7 +431,7 @@ def faces_for(shape, W: float, H: float, L: float, plan=None) -> List[Face]:
                 (0.0, L / 2.0),
             ],
             lambda x, z: H,
-        )
+        ))
     return box_faces(W, H, L)
 
 
@@ -690,7 +729,7 @@ def compute_poly_taps(
         return offaxis_shelf_gain_linear(theta)
 
     taps: List[ImageTap] = []
-    for i, (pos, order, _seq) in enumerate(chosen):
+    for i, (pos, order, seq) in enumerate(chosen):
         pol = 1 if (real_wall_polarity or order % 2 == 0) else -1
         d_stand = dist(stand_pt, pos)
         d_l = dist(left, pos)
@@ -809,6 +848,7 @@ def compute_poly_taps(
                 fdn_distance_r=d_stand,
                 fdn_distance_c=d_stand,
                 is_direct=(order == 0),
+                face_labels=_seq_labels(faces, seq),
             )
         )
     return taps
