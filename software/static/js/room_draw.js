@@ -54,6 +54,16 @@
     return "box";
   }
 
+  /* Named presets stay on normalize. plan: and tilt: keep the raw token so the existing prism can read the corners. */
+  function shellToken(raw) {
+    var ext = shapeApi();
+    if (ext && ext.normalize) {
+      var kind = ext.normalize(raw);
+      if (kind === "plan" || kind === "tilt") return String(raw);
+    }
+    return normalize(raw);
+  }
+
   function tan6() {
     return Math.tan(6 * Math.PI / 180);
   }
@@ -608,7 +618,7 @@
   }
 
   function imageRooms(shape, W, H, L, source, receivers, opts) {
-    if (normalize(shape) === "box") return null;
+    if (shellToken(shape) === "box") return null;
     opts = opts || {};
     receivers = receivers || [];
     var order = opts.order == null ? 4 : opts.order;
@@ -980,6 +990,7 @@
     FADE_MS: FADE_MS,
     LETTER_COLOR: LETTER_COLOR,
     normalize: normalize,
+    shellToken: shellToken,
     polyFaces: polyFaces,
     splayFaces: splayFaces,
     imageRooms: imageRooms,

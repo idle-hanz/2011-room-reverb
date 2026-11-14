@@ -196,10 +196,10 @@
       return env.getState() || null;
     }
   function isPoly() { var env = envStack[envStack.length - 1];
-      return !!(global.RoomDraw && RoomDraw.normalize(sceneState() && sceneState().room_shape) !== "box");
+      return !!(global.RoomDraw && RoomDraw.shellToken(sceneState() && sceneState().room_shape) !== "box");
     }
   function polyShape() { var env = envStack[envStack.length - 1];
-      return global.RoomDraw ? RoomDraw.normalize(sceneState() && sceneState().room_shape) : "box";
+      return global.RoomDraw ? RoomDraw.shellToken(sceneState() && sceneState().room_shape) : "box";
     }
   function nowMs() { var env = envStack[envStack.length - 1];
       return (global.performance && performance.now) ? performance.now() : Date.now();

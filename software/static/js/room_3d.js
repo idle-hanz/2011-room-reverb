@@ -249,7 +249,7 @@
           });
         }
       }
-      shape = global.RoomDraw ? RoomDraw.normalize(shape) : "box";
+      shape = global.RoomDraw ? RoomDraw.shellToken(shape) : "box";
 
       function wallLabel(text, color, x, y, z) {
         var spr = makeLabel(text, color, true);
@@ -1063,7 +1063,7 @@
       if (env.disposed) return;
       var geo = env.RoomMath.compute(env.getState());
       var s = geo.state;
-      var shape = global.RoomDraw ? RoomDraw.normalize(s.room_shape) : "box";
+      var shape = global.RoomDraw ? RoomDraw.shellToken(s.room_shape) : "box";
       var shell = shape + "|" + s.W + "|" + s.H + "|" + s.L;
       if (shape !== "box" && global.RoomDraw) shell += "|" + RoomDraw.colorKey(s.surfaces);
       if (shell !== env.lastShell) {
