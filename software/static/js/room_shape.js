@@ -245,19 +245,51 @@
     return normalize(picked);
   }
 
-  function movePlanPoint(token, index, x, z, W, L) {
+  var planDragNoteText = "";
+
+  function planDragNote() {
+    return planDragNoteText;
+  }
+
+  function snapTo(v, q) {
+    return q > 0 ? Math.round(v / q) * q : v;
+  }
+
+  function movePlanPoint(token, index, x, z, W, L, step) {
     var pts = planPoints(token);
+    var q = Number(step);
     var next;
     var i;
-    if (!pts) return String(token || "box");
+    if (!(q > 0)) q = 0.01;
+    if (!pts) {
+      planDragNoteText = "";
+      return String(token || "box");
+    }
     index = index | 0;
-    if (index < 0 || index >= pts.length) return String(token);
-    x = Math.max(0, Math.min(Number(W), Number(x)));
-    z = Math.max(0, Math.min(Number(L), Number(z)));
+    if (index < 0 || index >= pts.length) {
+      planDragNoteText = "";
+      return String(token);
+    }
+    W = Number(W);
+    L = Number(L);
+    x = snapTo(Number(x), q);
+    z = snapTo(Number(z), q);
+    if (!(x >= -1e-9 && x <= W + 1e-9 && z >= -1e-9 && z <= L + 1e-9)) {
+      planDragNoteText = "Corner stays outside the room";
+      return String(token);
+    }
+    if (x < 0) x = 0;
+    if (z < 0) z = 0;
+    if (x > W) x = W;
+    if (z > L) z = L;
     next = [];
     for (i = 0; i < pts.length; i++) next.push(pts[i].slice());
     next[index] = [x, z];
-    if (!convex(next)) return String(token);
+    if (!convex(next)) {
+      planDragNoteText = "That corner would dent the plan";
+      return String(token);
+    }
+    planDragNoteText = "";
     return encodePlan(next);
   }
 
@@ -829,6 +861,7 @@
     encodeTilt: encodeTilt,
     regularPlan: regularPlan,
     movePlanPoint: movePlanPoint,
+    planDragNote: planDragNote,
     addPlanCorner: addPlanCorner,
     delPlanCorner: delPlanCorner,
     hitPlan: hitPlan,

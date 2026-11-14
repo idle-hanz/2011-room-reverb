@@ -62,6 +62,7 @@
               <div class="canvas-wrap diagram-frame" id="floorFrame">
                 <button type="button" class="diagram-expand" aria-label="Enlarge floor plan">Enlarge</button>
                 <canvas id="floorCanvas" width="900" height="640" aria-label="Room floor plan XZ"></canvas>
+                <p class="hint" id="floorPlanNote" hidden></p>
                 <p class="hint" id="floorHeatNote" hidden>First-order shoebox images, geometric 1/r, no absorption, no air, no tail</p>
               </div>
             </div>
@@ -158,6 +159,7 @@
               <div class="canvas-wrap source-floor-wrap diagram-frame" id="srcFloorFrame">
                 <button type="button" class="diagram-expand" aria-label="Enlarge source top view">Enlarge</button>
                 <canvas id="srcFloorCanvas" width="720" height="420" tabindex="0" aria-label="Source top view. Arrows aim, F faces the mic, O is omni."></canvas>
+                <p class="hint" id="srcFloorPlanNote" hidden></p>
               </div>
               <div class="canvas-wrap source-elev-wrap diagram-frame" id="srcElevFrame">
                 <button type="button" class="diagram-expand" aria-label="Enlarge source side view">Enlarge</button>
@@ -985,7 +987,7 @@
     <div id="toast" class="toast" hidden role="status"></div>
   </div>
   <script src="/static/js/vendor/three.min.js"></script>
-  <script src="/static/js/room_shape.js?v=10"></script>
+  <script src="/static/js/room_shape.js?v=11"></script>
   <script src="/static/js/maths_look.js?v=2"></script>
   <script src="/static/js/maths_pattern.js?v=2"></script>
   <script src="/static/js/maths_distance.js?v=1"></script>
@@ -998,7 +1000,7 @@
   <script src="/static/js/room_view_pose.js?v=1"></script>
   <script src="/static/js/room_draw.js?v=10"></script>
   <script src="/static/js/room_3d.js?v=29"></script>
-  <script src="/static/js/room_editor.js?v=34"></script>
+  <script src="/static/js/room_editor.js?v=35"></script>
   <script src="/static/js/image_views.js?v=27"></script>
   <script src="/static/js/colour_surfaces.js?v=11"></script>
   <script src="/static/js/polar_field.js?v=19"></script>

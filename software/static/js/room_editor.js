@@ -83,6 +83,18 @@
     env.RING_PX = 30;
     env.RING_HIT = 16;
 
+    function showPlanDragNote(text) {
+      var canvas = env.floorCanvas;
+      var id;
+      var el;
+      if (!canvas || !canvas.parentNode) return;
+      id = canvas.id === "srcFloorCanvas" ? "srcFloorPlanNote" : "floorPlanNote";
+      el = canvas.parentNode.querySelector("#" + id);
+      if (!el) return;
+      el.textContent = text || "";
+      el.hidden = !text;
+    }
+
     env.floorCanvas.addEventListener("pointerdown", function (evt) {
       const geo = RoomMath.compute(env.getState());
       env.fl = enter(env, floorLayout, geo);
@@ -157,7 +169,9 @@
         const st0 = env.getState();
         if (env.drag.kind === "plan" && global.RoomShape && RoomShape.movePlanPoint) {
           const m = enter(env, toM, p.x, p.y, env.fl);
-          const token = RoomShape.movePlanPoint(st0.room_shape, env.drag.index, m.x, m.z, st0.W, st0.L);
+          const step = evt.shiftKey ? 0.1 : 0.01;
+          const token = RoomShape.movePlanPoint(st0.room_shape, env.drag.index, m.x, m.z, st0.W, st0.L, step);
+          showPlanDragNote(RoomShape.planDragNote ? RoomShape.planDragNote() : "");
           enter(env, mergePatch, { room_shape: token });
           enter(env, redraw);
           return;
