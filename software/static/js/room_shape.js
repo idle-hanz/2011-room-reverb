@@ -1009,6 +1009,79 @@
     }
   }
 
+  /* Page-only size and shape history. Not saved and not posted. */
+  function createRoomHistory(limit) {
+    var cap = limit | 0;
+    var undoStack = [];
+    var redoStack = [];
+    var dragBefore = null;
+    var dragging = false;
+    if (!(cap > 0)) cap = 50;
+
+    function copySnap(s) {
+      return {
+        W: Number(s && s.W),
+        H: Number(s && s.H),
+        L: Number(s && s.L),
+        room_shape: String(s && s.room_shape != null ? s.room_shape : "box")
+      };
+    }
+
+    function sameSnap(a, b) {
+      return !!a && !!b && a.W === b.W && a.H === b.H && a.L === b.L && a.room_shape === b.room_shape;
+    }
+
+    function note(before, after) {
+      if (!before || !after || sameSnap(before, after)) return false;
+      undoStack.push({ before: copySnap(before), after: copySnap(after) });
+      if (undoStack.length > cap) undoStack.shift();
+      redoStack = [];
+      return true;
+    }
+
+    function undo() {
+      var step;
+      if (!undoStack.length) return null;
+      step = undoStack.pop();
+      redoStack.push(step);
+      return copySnap(step.before);
+    }
+
+    function redo() {
+      var step;
+      if (!redoStack.length) return null;
+      step = redoStack.pop();
+      undoStack.push(step);
+      return copySnap(step.after);
+    }
+
+    function beginDrag(before) {
+      if (dragging || !before) return false;
+      dragging = true;
+      dragBefore = copySnap(before);
+      return true;
+    }
+
+    function endDrag(after) {
+      var before;
+      if (!dragging) return false;
+      dragging = false;
+      before = dragBefore;
+      dragBefore = null;
+      return note(before, after);
+    }
+
+    return {
+      snap: copySnap,
+      note: note,
+      undo: undo,
+      redo: redo,
+      beginDrag: beginDrag,
+      endDrag: endDrag,
+      isDragging: function () { return dragging; }
+    };
+  }
+
   function bindShapeRows(rows, onPick) {
     var list = liveRows(rows);
     var r, buttons, b;
@@ -1072,6 +1145,7 @@
     legacyLabelMap: legacyLabelMap,
     remapWalkValue: remapWalkValue,
     paintShapeRows: paintShapeRows,
-    bindShapeRows: bindShapeRows
+    bindShapeRows: bindShapeRows,
+    createRoomHistory: createRoomHistory
   };
 });

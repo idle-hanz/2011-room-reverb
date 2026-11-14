@@ -83,6 +83,10 @@
     env.RING_PX = 30;
     env.RING_HIT = 16;
 
+    function armRoomDrag() {
+      if (typeof global.beginRoomDrag === "function") global.beginRoomDrag();
+    }
+
     function showPlanDragNote(text) {
       var canvas = env.floorCanvas;
       var id;
@@ -114,6 +118,7 @@
       if (planHit) {
         if (RoomShape.selectPlanCorner) RoomShape.selectPlanCorner(planHit.index);
         if (typeof global.paintRoomCorners === "function") global.paintRoomCorners();
+        armRoomDrag();
         env.drag = { kind: "plan", canvas: "floor", index: planHit.index };
         env.floorCanvas.classList.add("dragging");
         try { env.floorCanvas.setPointerCapture(evt.pointerId); } catch (e) {}
@@ -124,6 +129,7 @@
       const wallHit = (!onHandle && global.RRDrag && global.RRDrag.hitWall)
         ? global.RRDrag.hitWall(p.x, p.y, env.fl) : null;
       if (wallHit) {
+        armRoomDrag();
         env.drag = {
           kind: "wall",
           canvas: "floor",
@@ -275,6 +281,7 @@
       const ceilHit = (!onHandle && global.RRDrag && global.RRDrag.hitCeiling)
         ? global.RRDrag.hitCeiling(p.x, p.y, env.el) : null;
       if (ceilHit) {
+        armRoomDrag();
         env.drag = {
           kind: "ceiling",
           canvas: "elev",
@@ -1597,6 +1604,7 @@
       redraw();
       if (was && !was.moved && was.face) selectDiagramFace(was.face);
       if (was && !(was.kind === "face" && !was.moved)) env.onDragEnd();
+      if (typeof global.endRoomDrag === "function") global.endRoomDrag();
     }
   function mergePatch(patch) { var env = envStack[envStack.length - 1];
       const st = Object.assign({}, env.getState(), patch);

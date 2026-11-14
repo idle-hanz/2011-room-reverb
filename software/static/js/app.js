@@ -160,9 +160,32 @@ if (polarLinkBtn) {
 
 ["W","H","L"].forEach(function (id) {
   var el = document.getElementById(id);
+  var keyBefore = null;
   if (!el) return;
+  el.addEventListener("pointerdown", function () {
+    if (window.beginRoomDrag) window.beginRoomDrag();
+  });
+  el.addEventListener("input", function () {
+    if (window.roomHistDragging && window.roomHistDragging()) return;
+    if (window.roomSnap) keyBefore = window.roomSnap();
+  }, true);
   el.addEventListener("input", function (e) {
     onRoomDim(id, parseFloat(e.target.value));
+  });
+  el.addEventListener("change", function () {
+    if (window.roomHistDragging && window.roomHistDragging()) {
+      if (window.endRoomDrag) window.endRoomDrag();
+      keyBefore = null;
+      return;
+    }
+    if (keyBefore && window.noteRoomEdit) window.noteRoomEdit(keyBefore);
+    keyBefore = null;
+  });
+  el.addEventListener("pointerup", function () {
+    if (window.endRoomDrag) window.endRoomDrag();
+  });
+  el.addEventListener("pointercancel", function () {
+    if (window.endRoomDrag) window.endRoomDrag();
   });
 });
 if (climatePick) {
@@ -653,20 +676,24 @@ var roomTiltBtn = document.getElementById("roomTiltBtn");
 var roomSlopeBtn = document.getElementById("roomSlopeBtn");
 if (roomTiltBtn) {
   roomTiltBtn.addEventListener("click", function () {
+    var before = window.roomSnap ? window.roomSnap() : null;
     if (!window.RoomShape || !RoomShape.cycleTilt) return;
     state.room_shape = RoomShape.cycleTilt(state.room_shape);
     Object.assign(state, RoomMath.clampRoom(state));
     syncUI();
     scheduleLiveParams();
+    if (window.noteRoomEdit) window.noteRoomEdit(before);
   });
 }
 if (roomSlopeBtn) {
   roomSlopeBtn.addEventListener("click", function () {
+    var before = window.roomSnap ? window.roomSnap() : null;
     if (!window.RoomShape || !RoomShape.cycleSlope) return;
     state.room_shape = RoomShape.cycleSlope(state.room_shape);
     Object.assign(state, RoomMath.clampRoom(state));
     syncUI();
     scheduleLiveParams();
+    if (window.noteRoomEdit) window.noteRoomEdit(before);
   });
 }
 var roomPlanAdd = document.getElementById("roomPlanAdd");
@@ -675,6 +702,7 @@ if (roomPlanAdd) {
   roomPlanAdd.addEventListener("click", function () {
     var idx;
     var before;
+    var beforeSnap = window.roomSnap ? window.roomSnap() : null;
     if (!window.RoomShape || !RoomShape.addPlanCorner) return;
     idx = RoomShape.planSelection ? RoomShape.planSelection() : 0;
     before = state.room_shape;
@@ -684,6 +712,7 @@ if (roomPlanAdd) {
     syncUI();
     scheduleLiveParams();
     scheduleImagesFetch(0);
+    if (window.noteRoomEdit) window.noteRoomEdit(beforeSnap);
   });
 }
 if (roomPlanDel) {
@@ -692,6 +721,7 @@ if (roomPlanDel) {
     var before;
     var pts;
     var keep;
+    var beforeSnap = window.roomSnap ? window.roomSnap() : null;
     if (!window.RoomShape || !RoomShape.delPlanCorner) return;
     idx = RoomShape.planSelection ? RoomShape.planSelection() : 0;
     before = state.room_shape;
@@ -707,6 +737,7 @@ if (roomPlanDel) {
     syncUI();
     scheduleLiveParams();
     scheduleImagesFetch(0);
+    if (window.noteRoomEdit) window.noteRoomEdit(beforeSnap);
   });
 }
 ["diffuser", "trap", "cloud"].forEach(function (kind) {

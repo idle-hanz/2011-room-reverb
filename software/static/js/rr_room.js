@@ -1,6 +1,75 @@
 /* Room size, shape, place, and the Hadamard chips. */
 "use strict";
 
+var roomHist = (window.RoomShape && RoomShape.createRoomHistory) ? RoomShape.createRoomHistory(50) : null;
+var roomHistLock = false;
+
+function roomSnap() {
+  if (!roomHist) return null;
+  return roomHist.snap(state);
+}
+
+function noteRoomEdit(before) {
+  if (roomHistLock || !roomHist || !before) return false;
+  return roomHist.note(before, roomHist.snap(state));
+}
+
+function beginRoomDrag() {
+  if (roomHistLock || !roomHist) return false;
+  return roomHist.beginDrag(roomHist.snap(state));
+}
+
+function endRoomDrag() {
+  if (roomHistLock || !roomHist) return false;
+  return roomHist.endDrag(roomHist.snap(state));
+}
+
+/* Undo uses the same size path as a slider. The shape token is copied as stored. */
+function applyRoomSnap(next) {
+  if (!next) return;
+  roomHistLock = true;
+  try {
+    if (Number(next.W) !== Number(state.W)) onRoomDim("W", next.W);
+    if (Number(next.H) !== Number(state.H)) onRoomDim("H", next.H);
+    if (Number(next.L) !== Number(state.L)) onRoomDim("L", next.L);
+    state.room_shape = String(next.room_shape == null ? "box" : next.room_shape);
+    if (window.RoomMath && RoomMath.clampRoom) Object.assign(state, RoomMath.clampRoom(state));
+    syncUI();
+    scheduleLiveParams();
+    scheduleImagesFetch(0);
+  } finally {
+    roomHistLock = false;
+  }
+}
+
+function undoRoom() {
+  if (!roomHist) return;
+  applyRoomSnap(roomHist.undo(roomHist.snap(state)));
+}
+
+function redoRoom() {
+  if (!roomHist) return;
+  applyRoomSnap(roomHist.redo(roomHist.snap(state)));
+}
+
+function roomHistTyping(el) {
+  var tag;
+  var type;
+  if (!el) return false;
+  if (el.isContentEditable) return true;
+  tag = el.tagName;
+  if (tag === "TEXTAREA" || tag === "SELECT") return true;
+  if (tag !== "INPUT") return false;
+  type = String(el.type || "text").toLowerCase();
+  return type === "text" || type === "number" || type === "search" || type === "email" || type === "url" || type === "password" || type === "tel";
+}
+
+window.roomSnap = roomSnap;
+window.noteRoomEdit = noteRoomEdit;
+window.beginRoomDrag = beginRoomDrag;
+window.endRoomDrag = endRoomDrag;
+window.roomHistDragging = function () { return !!(roomHist && roomHist.isDragging()); };
+
 
 function syncHadamardUI() {
   var n = state.hadamard_n || 32;
@@ -162,6 +231,7 @@ function roomShapeRows() {
 }
 
 function applyRoomShape(picked) {
+  var before = roomSnap();
   var name = (window.RoomShape && RoomShape.normalize) ? RoomShape.normalize(picked) : "box";
   state.room_shape = (window.RoomShape && RoomShape.storedShape)
     ? RoomShape.storedShape(picked, state.W, state.H, state.L, state.room_shape)
@@ -170,6 +240,7 @@ function applyRoomShape(picked) {
   syncUI();
   scheduleLiveParams();
   scheduleImagesFetch(0);
+  noteRoomEdit(before);
 }
 
 function paintRoomShape() {
@@ -310,7 +381,9 @@ if (roomCornerList) {
     var i;
     var pts;
     if (!input || !input.getAttribute || input.getAttribute("data-corner") == null) return;
+    var beforeSnap;
     if (!window.RoomShape || !RoomShape.typePlanCorner) return;
+    beforeSnap = roomSnap();
     i = parseInt(input.getAttribute("data-corner"), 10);
     row = input.closest ? input.closest("[data-corner-row]") : null;
     xEl = row ? row.querySelector('[data-axis="x"]') : null;
@@ -327,6 +400,7 @@ if (roomCornerList) {
     syncUI();
     scheduleLiveParams();
     scheduleImagesFetch(0);
+    noteRoomEdit(beforeSnap);
   });
 }
 
@@ -523,6 +597,7 @@ function applyPlace(name) {
 var roomTiltApply = typeof document !== "undefined" ? document.getElementById("roomTiltApply") : null;
 if (roomTiltApply) {
   roomTiltApply.addEventListener("click", function () {
+    var before = roomSnap();
     var degEl = document.getElementById("roomTiltDeg");
     var pctEl = document.getElementById("roomSlopePct");
     if (!window.RoomShape || !RoomShape.encodeTiltFields || !degEl || !pctEl) return;
@@ -530,5 +605,43 @@ if (roomTiltApply) {
     if (window.RoomMath && RoomMath.clampRoom) Object.assign(state, RoomMath.clampRoom(state));
     syncUI();
     scheduleLiveParams();
+    noteRoomEdit(before);
+  });
+}
+
+if (typeof document !== "undefined") {
+  var roomRatioRow = document.getElementById("roomRatioRow");
+  var roomRatioBefore = null;
+  if (roomRatioRow) {
+    roomRatioRow.addEventListener("click", function (evt) {
+      var btn = evt.target && evt.target.closest ? evt.target.closest("[data-ratio]") : null;
+      if (!btn) return;
+      roomRatioBefore = roomSnap();
+    }, true);
+    roomRatioRow.addEventListener("click", function (evt) {
+      var btn = evt.target && evt.target.closest ? evt.target.closest("[data-ratio]") : null;
+      if (!btn || !roomRatioBefore) return;
+      noteRoomEdit(roomRatioBefore);
+      roomRatioBefore = null;
+    }, false);
+  }
+
+  var roomUndoBtn = document.getElementById("roomUndo");
+  var roomRedoBtn = document.getElementById("roomRedo");
+  if (roomUndoBtn) roomUndoBtn.addEventListener("click", undoRoom);
+  if (roomRedoBtn) roomRedoBtn.addEventListener("click", redoRoom);
+
+  document.addEventListener("keydown", function (evt) {
+    var key;
+    if (!(evt.ctrlKey || evt.metaKey) || evt.altKey) return;
+    if (roomHistTyping(evt.target)) return;
+    key = String(evt.key || "").toLowerCase();
+    if (key === "z" && !evt.shiftKey) {
+      evt.preventDefault();
+      undoRoom();
+    } else if ((key === "z" && evt.shiftKey) || key === "y") {
+      evt.preventDefault();
+      redoRoom();
+    }
   });
 }

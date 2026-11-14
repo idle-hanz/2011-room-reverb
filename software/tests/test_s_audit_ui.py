@@ -577,6 +577,9 @@ _UI_ONLY_IDS = {
     # Walls and Ceiling themselves post on click and stay out of this set.
     "roomTiltDeg",
     "roomSlopePct",
+    # Empty on load. A real undo posts through the same path as the edit.
+    "roomUndo",
+    "roomRedo",
 }
 
 
