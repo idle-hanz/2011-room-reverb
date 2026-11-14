@@ -114,7 +114,7 @@ def _rows():
     add(R("sx", 2.6, unit="m", tab="Room", in_defaults=True))
     add(R("sz", 4.75, unit="m", tab="Room", in_defaults=True))
     add(R("sy", 1.2, unit="m", tab="Mic", lo=0, hi=20, in_defaults=True))
-    add(R("room_shape", None, tab="Room", choices=_SHAPES, page="box"))
+    add(R("room_shape", None, tab="Room", choices=_SHAPES, page="box", controls=["roomTiltDeg", "roomSlopePct"]))
     add(R("mirror_lr", False, tab="Surfaces", controls=["mirrorLr"], page=True))
     add(R("smooth", True, tab="Room", in_defaults=True))
     add(R("movement", 0.0, tab="Room", lo=0, hi=100))

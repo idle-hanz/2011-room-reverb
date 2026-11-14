@@ -211,6 +211,10 @@
         "/api/room/result"
       ],
       "path": "both",
+      "controls": [
+        "roomTiltDeg",
+        "roomSlopePct"
+      ],
       "page": "box"
     },
     {
@@ -4474,6 +4478,10 @@
         "/api/room/result"
       ],
       "path": "both",
+      "controls": [
+        "roomTiltDeg",
+        "roomSlopePct"
+      ],
       "page": "box"
     },
     "mirror_lr": {
