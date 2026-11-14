@@ -80,6 +80,8 @@
                 <button type="button" class="chip" data-room-shape="live" aria-pressed="false">Live room</button>
                 <button type="button" class="chip" data-room-shape="gable" aria-pressed="false">Gable</button>
                 <button type="button" class="chip" data-room-shape="hex" aria-pressed="false">Hex</button>
+                <button type="button" class="chip" data-room-shape="fan" aria-pressed="false">Fan</button>
+                <button type="button" class="chip" data-room-shape="octagon" aria-pressed="false">Octagon</button>
               </div>
               <div class="tool-row" id="roomDiagramRow" role="group" aria-label="Room diagram">
                 <button type="button" class="chip active" id="roomDiagramBtn" aria-pressed="true">Room</button>
@@ -625,6 +627,8 @@
               <button type="button" class="chip" data-room-shape="live" aria-pressed="false">Live room</button>
               <button type="button" class="chip" data-room-shape="gable" aria-pressed="false">Gable</button>
               <button type="button" class="chip" data-room-shape="hex" aria-pressed="false">Hex</button>
+              <button type="button" class="chip" data-room-shape="fan" aria-pressed="false">Fan</button>
+              <button type="button" class="chip" data-room-shape="octagon" aria-pressed="false">Octagon</button>
             </div>
             <div class="place-row" id="roomRatioRow" role="group" aria-label="Shoebox ratios">
               <button type="button" class="chip" data-ratio="bolt">Bolt</button>
@@ -643,6 +647,7 @@
               <button type="button" class="chip" data-room-shape="plan" aria-pressed="false">Plan</button>
               <button type="button" class="chip" id="roomPlanAdd" hidden>+ corner</button>
               <button type="button" class="chip" id="roomPlanDel" hidden>− corner</button>
+              <button type="button" class="chip" id="roomPlanMirror">Mirror</button>
             </div>
             <p class="hint" id="roomPlanNote" hidden></p>
             <div id="roomCornerList" hidden></div>
@@ -996,7 +1001,7 @@
     <div id="toast" class="toast" hidden role="status"></div>
   </div>
   <script src="/static/js/vendor/three.min.js"></script>
-  <script src="/static/js/room_shape.js?v=15"></script>
+  <script src="/static/js/room_shape.js?v=16"></script>
   <script src="/static/js/maths_look.js?v=2"></script>
   <script src="/static/js/maths_pattern.js?v=2"></script>
   <script src="/static/js/maths_distance.js?v=1"></script>
@@ -1027,7 +1032,7 @@
   <script src="/static/js/rr_state.js?v=12"></script>
   <script src="/static/js/rr_mic.js?v=1"></script>
   <script src="/static/js/rr_mix.js?v=12"></script>
-  <script src="/static/js/rr_room.js?v=11"></script>
+  <script src="/static/js/rr_room.js?v=12"></script>
   <script src="/static/js/rr_source.js?v=2"></script>
   <script src="/static/js/rr_space.js?v=7"></script>
   <script src="/static/js/rr_polar.js?v=3"></script>

@@ -252,9 +252,68 @@
     return planFromOutline(floorOutline(current, W, L), current);
   }
 
+  function round2(v) {
+    return Math.round(Number(v) * 100) / 100;
+  }
+
+  /* Narrow at the labelled front (z = L), full width at the labelled back (z = 0). */
+  function fanPlan(W, L) {
+    W = Number(W);
+    L = Number(L);
+    return [
+      [0, 0],
+      [W, 0],
+      [0.80 * W, 0.62 * L],
+      [0.64 * W, L],
+      [0.36 * W, L],
+      [0.20 * W, 0.62 * L]
+    ];
+  }
+
+  /* Box with each corner cut at 29% of the shorter side. */
+  function octagonPlan(W, L) {
+    var c;
+    W = Number(W);
+    L = Number(L);
+    c = 0.29 * Math.min(W, L);
+    return [
+      [c, 0],
+      [W - c, 0],
+      [W, c],
+      [W, L - c],
+      [W - c, L],
+      [c, L],
+      [0, L - c],
+      [0, c]
+    ];
+  }
+
+  function mirrorPlan(current, W, L) {
+    var token = current;
+    var pts;
+    var flipped = [];
+    var i;
+    W = Number(W);
+    if (normalize(current) !== "plan") {
+      token = planCopy(current, W, L);
+      if (normalize(token) !== "plan") return String(current == null ? "box" : current);
+    }
+    pts = planPoints(token);
+    if (!pts) return String(current == null ? "box" : current);
+    for (i = 0; i < pts.length; i++) flipped.push([round2(W - pts[i][0]), round2(pts[i][1])]);
+    if (!convex(flipped)) {
+      planNoteText = "Outline is not convex";
+      return String(token);
+    }
+    planNoteText = "";
+    return encodePlan(flipped);
+  }
+
   function storedShape(picked, W, H, L, current) {
     var raw = String(picked == null ? "" : picked).trim().toLowerCase();
     if (raw === "plan") return planCopy(current, W, L);
+    if (raw === "fan") return planFromOutline(fanPlan(W, L), current);
+    if (raw === "octagon") return planFromOutline(octagonPlan(W, L), current);
     planNoteText = "";
     return normalize(picked);
   }
@@ -1106,6 +1165,7 @@
     planNote: planNote,
     planFromOutline: planFromOutline,
     planCopy: planCopy,
+    mirrorPlan: mirrorPlan,
     tiltPair: tiltPair,
     tiltLabel: tiltLabel,
     slopeLabel: slopeLabel,

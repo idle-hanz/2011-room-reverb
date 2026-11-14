@@ -626,6 +626,20 @@ if (typeof document !== "undefined") {
     }, false);
   }
 
+  var roomPlanMirror = document.getElementById("roomPlanMirror");
+  if (roomPlanMirror) {
+    roomPlanMirror.addEventListener("click", function () {
+      var before = roomSnap();
+      if (!window.RoomShape || !RoomShape.mirrorPlan) return;
+      state.room_shape = RoomShape.mirrorPlan(state.room_shape, state.W, state.L);
+      if (window.RoomMath && RoomMath.clampRoom) Object.assign(state, RoomMath.clampRoom(state));
+      syncUI();
+      scheduleLiveParams();
+      scheduleImagesFetch(0);
+      noteRoomEdit(before);
+    });
+  }
+
   var roomUndoBtn = document.getElementById("roomUndo");
   var roomRedoBtn = document.getElementById("roomRedo");
   if (roomUndoBtn) roomUndoBtn.addEventListener("click", undoRoom);

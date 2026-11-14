@@ -580,6 +580,8 @@ _UI_ONLY_IDS = {
     # Empty on load. A real undo posts through the same path as the edit.
     "roomUndo",
     "roomRedo",
+    # Box and the other four-corner floors refuse, so the click posts nothing.
+    "roomPlanMirror",
 }
 
 
