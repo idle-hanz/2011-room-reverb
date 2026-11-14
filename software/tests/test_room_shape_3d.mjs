@@ -269,7 +269,7 @@ test("lede and live faces match poly_room and Play's loudest taps", () => {
   assert.equal(RD.imageRooms("box", 6, 3, 8, SRC, [{ id: "C", p: REC }]), null);
   const lede = RD.polyFaces("lede", 6, 3, 8);
   const letters = lede.filter(function (f) { return f.name.indexOf("wall") === 0; }).map(function (f) { return f.letter; });
-  assert.deepEqual(letters, ["F1", "F2", "F3", "F4", "F5", "F6"]);
+  assert.deepEqual(letters, ["D1", "C2", "C1", "B1", "A1", "A2"]);
 });
 
 test("gable roof faces match poly_room and Play's loudest taps", () => {
@@ -307,14 +307,14 @@ test("gable roof faces match poly_room and Play's loudest taps", () => {
     closeVerts(face.v, py.faces[i].v, "gable " + face.name + " " + i);
     closeVerts([face.n], [py.faces[i].n], "gable n " + i);
   });
-  assert.deepEqual(faces.map(function (f) { return f.letter; }), ["F5", "F2", "F4", "F1", "F3", "F6", "F7"]);
+  assert.deepEqual(faces.map(function (f) { return f.letter; }), ["E1", "C1", "A1", "D1", "B1", "F1", "F2"]);
   const ends = faces.filter(function (f) { return f.name === "wall0" || f.name === "wall2"; });
   assert.equal(ends.length, 2);
   ends.forEach(function (f) { assert.equal(f.v.length, 5); });
   const roofs = faces.filter(function (f) { return f.name === "ceiling"; });
   assert.equal(roofs.length, 2);
   roofs.forEach(function (f) {
-    assert.ok(f.letter === "F6" || f.letter === "F7");
+    assert.ok(f.letter === "F1" || f.letter === "F2");
     assert.ok(f.v.some(function (p) { return Math.abs(p[1] - 3) < 1e-9; }));
     assert.ok(f.v.some(function (p) { return Math.abs(p[1] - 2.25) < 1e-9; }));
   });
@@ -385,7 +385,7 @@ test("hex faces match poly_room and Play's loudest taps", () => {
     closeVerts(face.v, py.faces[i].v, "hex " + face.name + " " + i);
     closeVerts([face.n], [py.faces[i].n], "hex n " + i);
   });
-  assert.deepEqual(faces.map(function (f) { return f.letter; }), ["F7", "F8", "F1", "F2", "F3", "F4", "F5", "F6"]);
+  assert.deepEqual(faces.map(function (f) { return f.letter; }), ["E1", "F1", "D1", "C2", "C1", "B1", "A1", "A2"]);
   const walls = faces.filter(function (f) { return f.name.indexOf("wall") === 0; });
   assert.equal(walls.length, 6);
   const floor = faces.filter(function (f) { return f.name === "floor"; });
@@ -399,12 +399,10 @@ test("hex faces match poly_room and Play's loudest taps", () => {
     E: { material: "wood_parquet" },
     F: { material: "acoustic_ceiling_tile" }
   };
-  walls.forEach(function (face, i) {
-    assert.equal(face.letter, "F" + (i + 1));
-  });
-  assert.equal(RD.wallColor({ F1: { material: "brick_unglazed" } }, "F1"), 0xa34b3a);
-  assert.equal(RD.wallColor({ F2: { material: "concrete_painted" } }, "F2"), 0xb7b7b2);
-  assert.notEqual(RD.wallColor(surfaces, "F1"), RD.wallColor(surfaces, "F2"));
+  assert.deepEqual(walls.map(function (face) { return face.letter; }), ["D1", "C2", "C1", "B1", "A1", "A2"]);
+  assert.equal(RD.wallColor({ D1: { material: "brick_unglazed" } }, "D1"), 0xa34b3a);
+  assert.equal(RD.wallColor({ C2: { material: "concrete_painted" } }, "C2"), 0xb7b7b2);
+  assert.notEqual(RD.wallColor(surfaces, "A1"), RD.wallColor(surfaces, "A2"));
   assert.equal(RD.wallColor(surfaces, "E"), 0x8b5a2b);
   assert.equal(RD.wallColor(surfaces, "F"), 0xd5d8dc);
   assert.notEqual(RD.wallColor(surfaces, "A"), RD.wallColor(surfaces, "B"));

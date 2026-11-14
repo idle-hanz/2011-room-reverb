@@ -99,6 +99,29 @@ function applyDefaultsObject(target, d) {
   });
 }
 
+function stampSetupJson(raw, pretty) {
+  var copy;
+  try { copy = JSON.parse(raw); } catch (e) { return raw; }
+  if (!copy || typeof copy !== "object" || Array.isArray(copy)) return raw;
+  delete copy.face_label_rev;
+  copy.face_label_rev = 1;
+  try { return pretty ? JSON.stringify(copy, null, 2) : JSON.stringify(copy); }
+  catch (e2) { return raw; }
+}
+
+/* Old walk-order F# keys become the Surfaces labels. A revision flag skips it.
+   The flag is removed before it can sit on the live state. */
+function remapLegacyFaces(data) {
+  if (!data || data.face_label_rev) return;
+  var RS = typeof RoomShape !== "undefined" ? RoomShape : null;
+  if (!RS || typeof RS.legacyLabelMap !== "function" || typeof RS.remapWalkValue !== "function") return;
+  var map = RS.legacyLabelMap(data.room_shape || "box", data.W, data.H, data.L);
+  if (!map || !Object.keys(map).length) return;
+  if (data.surfaces) data.surfaces = RS.remapWalkValue(data.surfaces, map);
+  if (data.surfaces_mute) data.surfaces_mute = RS.remapWalkValue(data.surfaces_mute, map);
+  if (data.surfaces_solo != null) data.surfaces_solo = RS.remapWalkValue(data.surfaces_solo, map);
+}
+
 function scheduleSetupSave() {
   if (!setupSaveArmed) return;
   if (setupSaveTimer) clearTimeout(setupSaveTimer);
@@ -108,6 +131,7 @@ function scheduleSetupSave() {
     if (typeof omitRealWall === "function") omitRealWall(state);
     var raw;
     try { raw = JSON.stringify(state); } catch (e) { return; }
+    if (typeof stampSetupJson === "function") raw = stampSetupJson(raw);
     if (raw === setupBaseline) return;
     try {
       localStorage.setItem(SETUP_KEY, raw);
@@ -121,6 +145,8 @@ function scheduleSetupSave() {
 function applySetupObject(data) {
   if (!data || typeof data !== "object" || Array.isArray(data)) return false;
   if (typeof stripLegacyRoute === "function") stripLegacyRoute(data);
+  if (typeof remapLegacyFaces === "function") remapLegacyFaces(data);
+  if (Object.prototype.hasOwnProperty.call(data, "face_label_rev")) delete data.face_label_rev;
   Object.keys(state).forEach(function (k) {
     if (!Object.prototype.hasOwnProperty.call(data, k)) delete state[k];
   });
@@ -140,7 +166,10 @@ function applySetupObject(data) {
 
 function armSetupSave() {
   setupSaveArmed = true;
-  try { setupBaseline = JSON.stringify(state); } catch (e) { setupBaseline = ""; }
+  try {
+    var armed = JSON.stringify(state);
+    setupBaseline = (typeof stampSetupJson === "function") ? stampSetupJson(armed) : armed;
+  } catch (e) { setupBaseline = ""; }
 }
 
 function offerSetupRestore() {
@@ -165,6 +194,7 @@ function downloadSetup() {
     showToast("Save failed");
     return;
   }
+  if (typeof stampSetupJson === "function") raw = stampSetupJson(raw, true);
   var blob = new Blob([raw], { type: "application/json" });
   var a = document.createElement("a");
   var url = URL.createObjectURL(blob);
@@ -175,8 +205,10 @@ function downloadSetup() {
   a.remove();
   setTimeout(function () { URL.revokeObjectURL(url); }, 1500);
   try {
-    localStorage.setItem(SETUP_KEY, JSON.stringify(state));
-    setupBaseline = JSON.stringify(state);
+    var stored = JSON.stringify(state);
+    if (typeof stampSetupJson === "function") stored = stampSetupJson(stored);
+    localStorage.setItem(SETUP_KEY, stored);
+    setupBaseline = stored;
   } catch (err) {}
 }
 

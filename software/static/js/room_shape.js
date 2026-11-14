@@ -759,44 +759,163 @@
     ];
   }
 
-  /* One card per polygon face. Walls follow the floor edge, then floor, then ceiling.
-     Gable keeps the two roofs apart. The shoebox stays on A–F. */
-  function faceRows(shape) {
-    var name = normalize(shape);
-    if (name === "box") return null;
-    if (name === "gable") {
-      return [
-        { id: "wall0", letters: ["F1"], shared: false, label: "Wall 1", facing: "\u2212Z" },
-        { id: "wall1", letters: ["F2"], shared: false, label: "Wall 2", facing: "+X" },
-        { id: "wall2", letters: ["F3"], shared: false, label: "Wall 3", facing: "+Z" },
-        { id: "wall3", letters: ["F4"], shared: false, label: "Wall 4", facing: "\u2212X" },
-        { id: "floor", letters: ["F5"], shared: false, label: "Floor", facing: "\u2212Y" },
-        { id: "roofL", letters: ["F6"], shared: false, label: "Left roof", facing: "+Y" },
-        { id: "roofR", letters: ["F7"], shared: false, label: "Right roof", facing: "+Y" }
-      ];
-    }
-    var pts = floorOutline(shape, 6, 8);
-    var rows = [];
-    var i;
-    for (i = 0; i < pts.length; i++) {
-      rows.push({
-        id: "wall" + i,
-        letters: ["F" + (i + 1)],
-        shared: false,
-        label: "Wall " + (i + 1),
-        facing: "edge " + (i + 1)
-      });
-    }
-    var n = pts.length;
-    rows.push({ id: "floor", letters: ["F" + (n + 1)], shared: false, label: "Floor", facing: "\u2212Y" });
-    rows.push({ id: "ceiling", letters: ["F" + (n + 2)], shared: false, label: "Ceiling", facing: "+Y" });
-    return rows;
+  /* Surfaces letters. A −X, B +Z, C +X, D −Z, E floor, F ceiling. */
+  var LETTER_ORDER = ["A", "B", "C", "D", "E", "F"];
+  var LETTER_FACING = { A: "\u2212X", B: "+Z", C: "+X", D: "\u2212Z", E: "\u2212Y", F: "+Y" };
+  var LETTER_NAME = { A: "Left", B: "Front", C: "Right", D: "Back", E: "Floor", F: "Ceiling" };
+
+  function finiteSize(v, fallback) {
+    var n = Number(v);
+    return isFinite(n) && n > 0 ? n : fallback;
   }
 
-  function wallRows(shape, mirror) {
+  /* Outward plan normal of floor edge i. Left-of-edge points inward on these outlines. */
+  function outwardWallLetter(pts, i) {
+    var a = pts[i];
+    var b = pts[(i + 1) % pts.length];
+    var nx = -(b[1] - a[1]);
+    var nz = b[0] - a[0];
+    var cx = 0;
+    var cz = 0;
+    var k;
+    for (k = 0; k < pts.length; k++) {
+      cx += pts[k][0];
+      cz += pts[k][1];
+    }
+    cx /= pts.length;
+    cz /= pts.length;
+    var mx = (a[0] + b[0]) * 0.5;
+    var mz = (a[1] + b[1]) * 0.5;
+    if (nx * (cx - mx) + nz * (cz - mz) > 0) {
+      nx = -nx;
+      nz = -nz;
+    }
+    var ax = Math.abs(nx);
+    var az = Math.abs(nz);
+    var best = Math.max(ax, az);
+    if (Math.abs(az - best) <= 1e-9) return nz < 0 ? "D" : "B";
+    return nx < 0 ? "A" : "C";
+  }
+
+  /* Walk order: walls along the floor, then floor, then ceiling or the two roofs.
+     Labels are numbered after that, front to back then left to right. */
+  function faceSpecs(shape, W, H, L) {
+    var name = normalize(shape);
+    if (name === "box") return [];
+    W = finiteSize(W, 6);
+    H = finiteSize(H, 3);
+    L = finiteSize(L, 8);
+    var pts = floorOutline(shape, W, L);
+    var specs = [];
+    var i;
+    var cx = 0;
+    var cz = 0;
+    for (i = 0; i < pts.length; i++) {
+      var a = pts[i];
+      var b = pts[(i + 1) % pts.length];
+      specs.push({
+        id: "wall" + i,
+        role: "wall",
+        letter: outwardWallLetter(pts, i),
+        cx: (a[0] + b[0]) * 0.5,
+        cz: (a[1] + b[1]) * 0.5
+      });
+      cx += a[0];
+      cz += a[1];
+    }
+    cx /= pts.length || 1;
+    cz /= pts.length || 1;
+    specs.push({ id: "floor", role: "floor", letter: "E", cx: cx, cz: cz });
+    if (name === "gable") {
+      specs.push({ id: "roofL", role: "ceiling", letter: "F", cx: W * 0.25, cz: L * 0.5, roof: "left" });
+      specs.push({ id: "roofR", role: "ceiling", letter: "F", cx: W * 0.75, cz: L * 0.5, roof: "right" });
+    } else {
+      specs.push({ id: "ceiling", role: "ceiling", letter: "F", cx: cx, cz: cz });
+    }
+    var groups = {};
+    specs.forEach(function (spec) {
+      (groups[spec.letter] || (groups[spec.letter] = [])).push(spec);
+    });
+    LETTER_ORDER.forEach(function (letter) {
+      var group = groups[letter] || [];
+      group.sort(function (p, q) {
+        if (Math.abs(p.cz - q.cz) > 1e-9) return q.cz - p.cz;
+        if (Math.abs(p.cx - q.cx) > 1e-9) return p.cx - q.cx;
+        if (p.id < q.id) return -1;
+        if (p.id > q.id) return 1;
+        return 0;
+      });
+      group.forEach(function (spec, index) { spec.label = letter + (index + 1); });
+    });
+    return specs;
+  }
+
+  function specLabel(spec, count) {
+    if (spec.roof === "left") return "Left roof";
+    if (spec.roof === "right") return "Right roof";
+    var name = LETTER_NAME[spec.letter] || spec.letter;
+    if (count > 1 && spec.role === "wall") return name + " " + spec.label.slice(1);
+    return name;
+  }
+
+  /* One card per polygon face, grouped A then B then C then D then E then F.
+     A single face is still numbered (E1). The shoebox stays on A–F. */
+  function faceRows(shape, W, H, L) {
+    if (normalize(shape) === "box") return null;
+    var specs = faceSpecs(shape, W, H, L);
+    if (!specs.length) return null;
+    var counts = {};
+    specs.forEach(function (spec) { counts[spec.letter] = (counts[spec.letter] || 0) + 1; });
+    var rows = specs.slice().sort(function (a, b) {
+      var dl = LETTER_ORDER.indexOf(a.letter) - LETTER_ORDER.indexOf(b.letter);
+      if (dl) return dl;
+      return parseInt(a.label.slice(1), 10) - parseInt(b.label.slice(1), 10);
+    });
+    return rows.map(function (spec) {
+      return {
+        id: spec.id,
+        letters: [spec.label],
+        shared: false,
+        label: specLabel(spec, counts[spec.letter]),
+        facing: LETTER_FACING[spec.letter]
+      };
+    });
+  }
+
+  /* Old walk-order F# to the Surfaces label of the same face. Empty on a box. */
+  function legacyLabelMap(shape, W, H, L) {
+    var specs = faceSpecs(shape, W, H, L);
+    var map = {};
+    specs.forEach(function (spec, i) { map["F" + (i + 1)] = spec.label; });
+    return map;
+  }
+
+  function remapWalkValue(value, map) {
+    if (typeof value === "string") {
+      var token = value.trim().toUpperCase();
+      return Object.prototype.hasOwnProperty.call(map, token) ? map[token] : value;
+    }
+    if (Array.isArray(value)) {
+      return value.map(function (item) {
+        return typeof item === "string" ? remapWalkValue(item, map) : item;
+      });
+    }
+    if (value && typeof value === "object") {
+      var out = {};
+      Object.keys(value).forEach(function (key) {
+        var token = String(key).trim().toUpperCase();
+        var dest = Object.prototype.hasOwnProperty.call(map, token) ? map[token] : key;
+        out[dest] = value[key];
+      });
+      return out;
+    }
+    return value;
+  }
+
+  function wallRows(shape, mirror, W, H, L) {
     var name = normalize(shape);
     if (name !== "box") {
-      var faces = faceRows(shape);
+      var faces = faceRows(shape, W, H, L);
       if (faces) return faces;
     }
     var shared = !!mirror;
@@ -898,6 +1017,8 @@
     heatMapNote: heatMapNote,
     sidesLinked: sidesLinked,
     wallRows: wallRows,
+    legacyLabelMap: legacyLabelMap,
+    remapWalkValue: remapWalkValue,
     paintShapeRows: paintShapeRows,
     bindShapeRows: bindShapeRows
   };

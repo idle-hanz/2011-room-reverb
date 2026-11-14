@@ -768,8 +768,10 @@ if (loadSetupFile) {
       }
       showToast("Setup loaded");
       try {
-        localStorage.setItem(SETUP_KEY, JSON.stringify(state));
-        setupBaseline = JSON.stringify(state);
+        var stored = JSON.stringify(state);
+        if (typeof stampSetupJson === "function") stored = stampSetupJson(stored);
+        localStorage.setItem(SETUP_KEY, stored);
+        setupBaseline = stored;
       } catch (err2) {}
     };
     reader.onerror = function () { showToast("Load failed"); };

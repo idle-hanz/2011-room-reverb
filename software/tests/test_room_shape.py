@@ -42,12 +42,14 @@ from poly_room import (  # noqa: E402
     lr_symmetric,
     normalize_shape,
     poly_on,
+    remap_legacy_setup,
 )
 from render_pipeline import (  # noqa: E402
     _early_gate_row,
     live_fdn_params,
     render,
     render_early_ir,
+    tap_reflect_gain,
 )
 
 EMPTY = "06bb1aaa0f59d67402b160224e155089"
@@ -221,8 +223,16 @@ def math_finite(tap) -> bool:
     return all(v == v and abs(v) < 1e6 for v in nums)
 
 
+def _hits_letter(tap, letter: str) -> bool:
+    labels = tap.face_labels or ()
+    return any(
+        lab == letter or (len(lab) > 1 and lab[0] == letter and lab[1].isdigit())
+        for lab in labels
+    )
+
+
 def test_polygon_solo_keeps_the_reflections():
-    """Solo drops the order-0 path. The reflections stay. n stays (0, 0, 0)."""
+    """Solo drops the order-0 path. Bare A keeps the A splits and drops the rest."""
     stand = _stand()
     src = (2.6, 1.2, 4.75)
     taps = compute_poly_taps(ROOM, src, stand, "splay", n=32)
@@ -235,9 +245,13 @@ def test_polygon_solo_keeps_the_reflections():
         assert image_in_early(t.n, "A", set(), t.is_direct) is (t.order != 0)
         assert image_in_early(t.n, None, {"A"}, t.is_direct) is True
     gate = _early_gate_row(taps, 32, "A", set())
-    assert gate == [0.0 if t.order == 0 else 1.0 for t in taps]
     mute = _early_gate_row(taps, 32, None, {"A"})
-    assert mute == [1.0] * 32
+    assert any(flag == 1.0 for flag in gate)
+    assert any(flag == 0.0 for flag in mute)
+    for tap, solo_flag, mute_flag in zip(taps, gate, mute):
+        on_a = (not tap.is_direct) and _hits_letter(tap, "A")
+        assert solo_flag == (1.0 if on_a else 0.0)
+        assert mute_flag == (0.0 if on_a else 1.0)
     sr = 48000
     c = SPEED_OF_SOUND_M_S
     earliest = min(min(t.delay_ms_l, t.delay_ms_r) for t in taps if t.order > 0)
@@ -255,15 +269,19 @@ def test_polygon_solo_keeps_the_reflections():
     for open_ch, solo_ch in ((open_l, solo_l), (open_r, solo_r)):
         assert float(np.max(np.abs(open_ch[:cut]))) > 1e-8
         assert float(np.max(np.abs(solo_ch[:cut]))) == 0.0
-        assert float(np.max(np.abs(solo_ch[cut:]))) > 1e-8
-        assert float(np.max(np.abs(open_ch[cut:] - solo_ch[cut:]))) == 0.0
+    assert float(np.max(np.abs(solo_l[cut:]))) > 1e-8 or float(np.max(np.abs(solo_r[cut:]))) > 1e-8
+    assert (
+        float(np.max(np.abs(open_l[cut:] - solo_l[cut:]))) > 0.0
+        or float(np.max(np.abs(open_r[cut:] - solo_r[cut:]))) > 0.0
+    )
 
 
 def test_polygon_mute_f2_drops_only_that_wall():
-    """Mute F2 drops early taps that bounce on that wall. Direct and the rest stay.
+    """Mute C1 drops only the old F2 wall. Direct and the other faces stay.
 
-    F2 is the second floor edge, not the ceiling. An A–F mute still keeps
-    every polygon tap. Omitting the face list keeps today's A–F rule.
+    Splay walk order was F1..F4 walls, F5 floor, F6 ceiling. Those faces are
+    now D1, C1, B1, A1, E1, F1. A missing split card stays gain 1.
+    Omitting the face list keeps the shoebox A–F rule.
     """
     from surface_colour import mute_flags, parse_mute, parse_solo, parse_surfaces
 
@@ -273,47 +291,52 @@ def test_polygon_mute_f2_drops_only_that_wall():
     assert taps[0].order == 0
     assert taps[0].face_labels == ()
     reflected = [t for t in taps if t.order > 0]
-    assert any(t.face_labels and "F2" in t.face_labels for t in reflected)
-    assert any(not t.face_labels or "F2" not in t.face_labels for t in reflected)
+    assert any(t.face_labels and "C1" in t.face_labels for t in reflected)
+    assert any(not t.face_labels or "C1" not in t.face_labels for t in reflected)
     faces = faces_for("splay", *ROOM)
     walls = sorted(
         (f for f in faces if f.name.startswith("wall")),
         key=lambda f: int(f.name[4:]),
     )
-    assert [f.label for f in walls] == ["F1", "F2", "F3", "F4"]
-    assert next(f.label for f in faces if f.name == "floor") == "F5"
-    assert next(f.label for f in faces if f.name == "ceiling") == "F6"
+    assert [f.label for f in walls] == ["D1", "C1", "B1", "A1"]
+    assert next(f.label for f in faces if f.name == "floor") == "E1"
+    assert next(f.label for f in faces if f.name == "ceiling") == "F1"
     assert all(not f.label for f in faces_for("box", *ROOM))
     gable = faces_for("gable", *ROOM)
-    assert [f.label for f in gable if f.name.startswith("wall") and f.name[4:].isdigit()]
     by_wall = {f.name: f.label for f in gable if f.name.startswith("wall")}
-    assert by_wall == {"wall0": "F1", "wall1": "F2", "wall2": "F3", "wall3": "F4"}
-    assert [f.label for f in gable if f.name == "ceiling"] == ["F6", "F7"]
-    gate = _early_gate_row(taps, 32, None, {"F2"})
+    assert by_wall == {"wall0": "D1", "wall1": "C1", "wall2": "B1", "wall3": "A1"}
+    assert [f.label for f in gable if f.name == "ceiling"] == ["F1", "F2"]
+    assert next(f.label for f in gable if f.name == "floor") == "E1"
+    gate = _early_gate_row(taps, 32, None, {"C1"})
     assert len(gate) == 32
     for tap, flag in zip(taps, gate):
-        if tap.is_direct or not tap.face_labels or "F2" not in tap.face_labels:
+        if tap.is_direct or not tap.face_labels or "C1" not in tap.face_labels:
             assert flag == 1.0
         else:
             assert flag == 0.0
     assert any(flag == 0.0 for flag in gate)
-    assert _early_gate_row(taps, 32, None, {"A"}) == [1.0] * 32
+    bare_cards = parse_surfaces(None)
+    assert set(bare_cards) == set("ABCDEF")
+    assert tap_reflect_gain((0, 0, 0), bare_cards, ("C1",)) == 1.0
+    assert tap_reflect_gain((0, 0, 0), bare_cards, ("D1", "E1", "F1")) == 1.0
     for tap in taps:
-        assert image_in_early(tap.n, None, {"F2"}, tap.is_direct) is True
+        assert image_in_early(tap.n, None, {"C1"}, tap.is_direct) is True
         assert image_in_early(tap.n, "A", set(), tap.is_direct) is (tap.order != 0)
     bare = parse_surfaces({"A": {"absorb": [0.2] * 7}})
     assert set(bare) == set("ABCDEF")
-    posted = parse_surfaces({"A": {"absorb": [0.2] * 7}, "F2": {"absorb": [0.4] * 7}})
-    assert posted["F2"]["absorb"][0] == 0.4
+    assert "C1" not in bare
+    posted = parse_surfaces({"A": {"absorb": [0.2] * 7}, "C1": {"absorb": [0.4] * 7}})
+    assert posted["C1"]["absorb"][0] == 0.4
     assert posted["A"]["absorb"] == bare["A"]["absorb"]
-    assert "F2" not in mute_flags(None)
+    assert "C1" not in mute_flags(None)
     assert mute_flags({"A": False}) == {L: False for L in "ABCDEF"}
-    flagged = mute_flags({"F2": True, "F1": False})
+    flagged = mute_flags({"C1": True, "A1": False})
     assert list(flagged)[:6] == list("ABCDEF")
-    assert flagged["F1"] is False and flagged["F2"] is True
-    assert parse_solo("F2") == "F2"
+    assert flagged["A1"] is False and flagged["C1"] is True
+    assert parse_solo("C1") == "C1"
     assert parse_solo("F") == "F"
     assert parse_mute("all") == set("ABCDEF")
+    assert "C1" not in parse_mute("all")
     assert "F2" not in parse_mute("all")
     sr = 48000
     c = SPEED_OF_SOUND_M_S
@@ -325,7 +348,7 @@ def test_polygon_mute_f2_drops_only_that_wall():
         air_lp=0.0, air_shelf=0.0, early_toys=False,
     )
     open_l, open_r = render_early_ir(**kw)
-    mute_l, mute_r = render_early_ir(**kw, surfaces_mute={"F2": True})
+    mute_l, mute_r = render_early_ir(**kw, surfaces_mute={"C1": True})
     assert float(np.max(np.abs(open_l - mute_l))) > 0.0 or float(np.max(np.abs(open_r - mute_r))) > 0.0
     assert float(np.max(np.abs(mute_l))) > 1e-8 or float(np.max(np.abs(mute_r))) > 1e-8
     earliest = min(min(t.delay_ms_l, t.delay_ms_r) for t in taps if t.order > 0)
@@ -333,6 +356,84 @@ def test_polygon_mute_f2_drops_only_that_wall():
     assert cut > 1
     assert float(np.max(np.abs(open_l[:cut] - mute_l[:cut]))) == 0.0
     assert float(np.max(np.abs(open_r[:cut] - mute_r[:cut]))) == 0.0
+
+
+def test_gable_mute_f_drops_both_roofs():
+    """Mute F drops both roof splits and keeps the walls. Mute F2 drops one roof."""
+    stand = _stand()
+    src = (2.6, 1.2, 4.75)
+    taps = compute_poly_taps(ROOM, src, stand, "gable", n=32)
+    roofs = {"F1", "F2"}
+    gate = _early_gate_row(taps, 32, None, {"F"})
+    split = _early_gate_row(taps, 32, None, {"F2"})
+    saw_f1 = saw_f2 = saw_wall = False
+    for tap, flag, one in zip(taps, gate, split):
+        labels = set(tap.face_labels or ())
+        on_roof = bool(labels & roofs)
+        if tap.is_direct or not on_roof:
+            assert flag == 1.0
+        else:
+            assert flag == 0.0
+        if "F2" in labels and not tap.is_direct:
+            assert one == 0.0
+            saw_f2 = True
+        else:
+            assert one == 1.0
+        if "F1" in labels:
+            saw_f1 = True
+        if tap.order > 0 and labels and not on_roof:
+            saw_wall = True
+            assert flag == 1.0
+    assert saw_f1 and saw_f2 and saw_wall
+    assert any(flag == 0.0 for flag in gate)
+    assert any(flag == 0.0 for flag in split)
+
+
+def test_old_gable_walk_labels_remap_on_load():
+    """A 0b05da2 gable setup maps F1..F7 onto D1 C1 B1 A1 E1 F1 F2.
+
+    Shoebox A–F cards stay put. A setup already stamped face_label_rev is
+    left alone, so a new ceiling F1 is not read as the old back wall.
+    """
+    old = {
+        "room_shape": "gable",
+        "W": 6,
+        "H": 3,
+        "L": 8,
+        "surfaces": {f"F{i}": {"absorb": [i] + [0] * 6} for i in range(1, 8)},
+        "surfaces_mute": {"F2": True, "A": False},
+        "surfaces_solo": "F7",
+    }
+    new = remap_legacy_setup(old)
+    assert [new["surfaces"][k]["absorb"][0] for k in ("D1", "C1", "B1", "A1", "E1", "F1", "F2")] == [
+        1, 2, 3, 4, 5, 6, 7,
+    ]
+    assert "F3" not in new["surfaces"]
+    assert new["surfaces_mute"]["C1"] is True
+    assert new["surfaces_mute"]["A"] is False
+    assert "F2" not in new["surfaces_mute"]
+    assert new["surfaces_solo"] == "F2"
+    shoebox = {
+        "room_shape": "box",
+        "surfaces": {"A": {"absorb": [0.2] * 7}, "F": {"absorb": [0.3] * 7}},
+        "surfaces_solo": "F",
+    }
+    same = remap_legacy_setup(shoebox)
+    assert same["surfaces"]["A"]["absorb"][0] == 0.2
+    assert same["surfaces"]["F"]["absorb"][0] == 0.3
+    assert same["surfaces_solo"] == "F"
+    assert "F1" not in same["surfaces"]
+    fresh = {
+        "room_shape": "gable",
+        "face_label_rev": 1,
+        "W": 6,
+        "H": 3,
+        "L": 8,
+        "surfaces": {"F1": {"absorb": [0.9] * 7}},
+    }
+    kept = remap_legacy_setup(fresh)
+    assert kept["surfaces"]["F1"]["absorb"][0] == 0.9
+    assert "D1" not in kept["surfaces"]
 
 
 def test_presets_scale_with_the_box():

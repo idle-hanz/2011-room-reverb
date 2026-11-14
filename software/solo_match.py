@@ -128,6 +128,8 @@ def _early_stereo(scene: dict, solo, n_samp: int):
         for i in range(n_had):
             t = taps[i % n_t]
             faces = getattr(t, "face_labels", None)
+            # Polygon labels are the Surfaces letter plus a split. Bare F
+            # covers F1, F2, F3. The shoebox list is None and stays A–F.
             if not image_in_early(t.n, solo_l, mute_s, getattr(t, "is_direct", None), faces):
                 continue
             if ch == "l":

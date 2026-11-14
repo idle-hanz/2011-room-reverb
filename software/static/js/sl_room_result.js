@@ -289,7 +289,7 @@
     var h = el("div", "sl-treat-head");
     h.appendChild(el("h3", null, "Treatment \u00b7 " + k + " " + (FACE_NAME[k] || "")));
     var used = faceCover(k);
-    /* Polygon faces are F1..Fn. The treatment area table is still the shoebox A–F. */
+    /* Polygon faces are A1, F2, and the rest. The treatment area table is still the shoebox A–F. */
     var areaM2 = areas()[k];
     if (areaM2 == null || !isFinite(areaM2)) areaM2 = 0;
     h.appendChild(el("span", "hint", Math.round(used * 100) + " % of " + areaM2.toFixed(1) + " m\u00b2 treated (max 90 %)"));

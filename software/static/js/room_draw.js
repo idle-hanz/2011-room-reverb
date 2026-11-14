@@ -680,11 +680,14 @@
   }
 
   function faceTint(letter) {
-    if (LETTER_COLOR[letter] != null) return LETTER_COLOR[letter];
-    var m = /^F([1-9]\d*)$/.exec(String(letter || ""));
+    var raw = String(letter || "");
+    if (LETTER_COLOR[raw] != null) return LETTER_COLOR[raw];
+    var m = /^([A-F])([1-9]\d*)$/.exec(raw);
     if (!m) return 0x1a1d26;
     var palette = [0xc4b5fd, 0xf0abfc, 0x67e8f9, 0xfcd34d, 0x86efac, 0xfda4af, 0x93c5fd];
-    return palette[(parseInt(m[1], 10) - 1) % palette.length];
+    var n = parseInt(m[2], 10) - 1;
+    var shift = m[1].charCodeAt(0) - 65;
+    return palette[(n + shift) % palette.length];
   }
 
   function wallColor(surfaces, letter) {
@@ -697,22 +700,49 @@
     return faceTint(letter);
   }
 
-  /* Same order as poly_room._label_faces. The face list stays in mesh order. */
+  /* Same rule as poly_room._label_faces. The face list stays in mesh order.
+     Floor is E. Ceiling and roof pieces are F. A wall takes the outward axis. */
+  function surfaceLetter(face) {
+    if (face.name === "floor") return "E";
+    if (face.name === "ceiling") return "F";
+    var x = -face.n[0];
+    var y = -face.n[1];
+    var z = -face.n[2];
+    var ax = Math.abs(x);
+    var ay = Math.abs(y);
+    var az = Math.abs(z);
+    var best = Math.max(ax, ay, az);
+    if (Math.abs(az - best) <= 1e-9) return z < 0 ? "D" : "B";
+    if (Math.abs(ax - best) <= 1e-9) return x < 0 ? "A" : "C";
+    return y < 0 ? "E" : "F";
+  }
+
   function assignFaceLabels(faces) {
-    function wallKey(face) {
-      if (face.name.indexOf("wall") !== 0) return 1e9;
-      var rest = face.name.slice(4);
-      var n = parseInt(rest, 10);
-      return String(n) === rest ? n : 1e9;
-    }
-    var walls = faces.filter(function (f) { return f.name.indexOf("wall") === 0; }).slice();
-    walls.sort(function (a, b) { return wallKey(a) - wallKey(b); });
-    var floors = faces.filter(function (f) { return f.name === "floor"; });
-    var ceils = faces.filter(function (f) { return f.name === "ceiling"; });
-    var ordered = walls.concat(floors, ceils);
-    var rest = faces.filter(function (f) { return ordered.indexOf(f) < 0; });
-    ordered.concat(rest).forEach(function (face, i) { face.letter = "F" + (i + 1); });
+    var groups = {};
+    faces.forEach(function (face) {
+      var letter = surfaceLetter(face);
+      (groups[letter] || (groups[letter] = [])).push(face);
+    });
+    Object.keys(groups).forEach(function (letter) {
+      groups[letter].sort(function (a, b) {
+        var ca = mean(a.v);
+        var cb = mean(b.v);
+        if (Math.abs(ca[2] - cb[2]) > 1e-9) return cb[2] - ca[2];
+        if (Math.abs(ca[0] - cb[0]) > 1e-9) return ca[0] - cb[0];
+        if (a.name < b.name) return -1;
+        if (a.name > b.name) return 1;
+        return 0;
+      });
+      groups[letter].forEach(function (face, i) { face.letter = letter + (i + 1); });
+    });
     return faces;
+  }
+
+  function splitHit(hit, token) {
+    var h = String(hit || "").toUpperCase();
+    var t = String(token || "").toUpperCase();
+    if (h === t) return true;
+    return /^[A-F]$/.test(t) && /^[A-F][1-9]\d*$/.test(h) && h.charAt(0) === t;
   }
 
   function colorKey(surfaces) {
@@ -835,21 +865,25 @@
     return n <= lim;
   }
 
-  /* Solo keeps a path that hits that wall. Mute hides a path that hits a muted wall. */
+  /* Solo keeps a path that hits that wall. Mute hides a path that hits a muted wall.
+     Bare F covers F1, F2, F3. A split matches only itself. */
   function surfaceShown(hits, solo, mute) {
     var list = hits || [];
     if (!list.length) return true;
     var i;
     if (solo) {
-      var s = String(solo).toUpperCase();
       for (i = 0; i < list.length; i++) {
-        if (String(list[i]).toUpperCase() === s) return true;
+        if (splitHit(list[i], solo)) return true;
       }
       return false;
     }
     var off = mute || {};
+    var keys = Object.keys(off);
+    var k;
     for (i = 0; i < list.length; i++) {
-      if (off[String(list[i]).toUpperCase()]) return false;
+      for (k = 0; k < keys.length; k++) {
+        if (off[keys[k]] && splitHit(list[i], keys[k])) return false;
+      }
     }
     return true;
   }

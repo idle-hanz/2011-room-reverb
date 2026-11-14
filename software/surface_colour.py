@@ -188,8 +188,8 @@ LETTER_ROLE: Dict[str, str] = {
     "E": "floor", "F": "ceiling",
 }
 
-# Polygon faces. F1, F2, F12. Bare F stays the shoebox ceiling.
-_FACE_LABEL = re.compile(r"^F[1-9]\d*$")
+# Polygon splits. A1, F2, F12. Bare A–F stay the shoebox cards.
+_FACE_LABEL = re.compile(r"^[A-F][1-9]\d*$")
 
 
 def is_face_label(raw: Any) -> bool:
@@ -273,8 +273,9 @@ def _merge_surface_card(dst: Dict[str, Any], src: Dict[str, Any]) -> None:
 def parse_surfaces(raw: Any) -> Dict[str, Dict[str, Any]]:
     """Merge client POST surfaces into defaults. Always tagged assumed=True.
 
-    A–F are always present. An F1..Fn card is added only when the post has
-    that key, so an old preset stays the six shoebox cards.
+    A–F are always present. An A1 / F2 card is added only when the post has
+    that key, so an old preset stays the six shoebox cards. Walk-order F#
+    keys are mapped by the loader, not here.
     """
     out = default_surfaces()
     if not isinstance(raw, dict):
@@ -338,10 +339,11 @@ def _mute_on(v: Any) -> bool:
 
 
 def parse_solo(raw: Any) -> Optional[str]:
-    """None, one of A–F, or one polygon face (F1, F2, …).
+    """None, one of A–F, or one polygon split (A1, F2, …).
 
     Missing, blank, and off/all clear the solo. Bare F stays the ceiling,
-    and it is accepted because it is in A–F.
+    and it is accepted because it is in A–F. On a polygon room that bare
+    letter hears every split of the letter.
     """
     if raw is None:
         return None
@@ -356,7 +358,8 @@ def parse_solo(raw: Any) -> Optional[str]:
 def parse_mute(raw: Any) -> set:
     """Muted letters. A dict of flags, a list of letters, or 'all'.
 
-    ``all`` is the six shoebox letters. F1..Fn join only when the post names them.
+    ``all`` is the six shoebox letters. A1 / F2 join only when the post names them.
+    On a polygon room a bare letter mutes every split of that letter.
     """
     if raw is None:
         return set()
@@ -391,7 +394,7 @@ def parse_mute(raw: Any) -> set:
 
 
 def mute_flags(raw: Any) -> Dict[str, bool]:
-    """A–F flags, then any F-label the post actually carried (true or false).
+    """A–F flags, then any split the post actually carried (true or false).
 
     A missing mute, and a post with only A–F, stay the six-key dict.
     """
@@ -411,14 +414,29 @@ def mute_flags(raw: Any) -> Dict[str, bool]:
     return out
 
 
-def face_is_heard(letter: str, solo: Optional[str], mute: set) -> bool:
-    """Solo wins on its own face. Every other face, and any mute, is silent."""
-    L = str(letter).upper()
-    if solo is not None and L == solo:
+def _split_hit(hit: str, token: str) -> bool:
+    """True when ``token`` names this card or polygon label.
+
+    A split matches itself. A bare A–F letter matches every split of that
+    letter (F covers F1, F2, F3). A split does not match the bare letter.
+    """
+    h = str(hit).strip().upper()
+    t = str(token).strip().upper()
+    if h == t:
         return True
-    if solo is not None and L != solo:
-        return False
-    return L not in mute
+    return t in SURFACE_LETTERS and is_face_label(h) and h[0] == t
+
+
+def face_is_heard(letter: str, solo: Optional[str], mute: set) -> bool:
+    """Solo wins on its own face. A bare letter also wins on that letter's splits.
+
+    Every other face, and any mute, is silent. Mute F silences F and F1, F2.
+    Mute F2 silences only F2. Solo F2 still hears F2 when F is muted.
+    """
+    L = str(letter).upper()
+    if solo is not None:
+        return _split_hit(L, solo)
+    return not any(_split_hit(L, m) for m in mute)
 
 
 def solo_mute_gates(solo: Any, mute: Any) -> List[float]:
@@ -594,8 +612,9 @@ def image_in_early(
 
     ``face_hits`` is the polygon label list. None keeps the shoebox rule.
     An empty tuple is the direct polygon path and must not fall through to
-    the A–F hits. Solo or mute of F2 uses that list. Solo or mute of A–F
-    does not filter those reflections.
+    the A–F hits. Solo or mute of F2 uses that list and drops only F2.
+    Solo or mute of bare F, on a polygon list, covers F1, F2, F3. The
+    shoebox path (no face list) still uses plain A–F.
     """
     nx, ny, nz = int(n[0]), int(n[1]), int(n[2])
     if is_direct is None:
@@ -607,14 +626,9 @@ def image_in_early(
     if face_hits is not None:
         hits = [str(h).strip().upper() for h in face_hits if isinstance(h, str) and h.strip()]
         if solo_l is not None:
-            if is_face_label(solo_l):
-                return solo_l in hits
-            return True
+            return any(_split_hit(h, solo_l) for h in hits)
         if mute_s:
-            watched = {m for m in mute_s if is_face_label(m)}
-            if watched:
-                return not any(h in watched for h in hits)
-            return True
+            return not any(_split_hit(h, m) for h in hits for m in mute_s)
         return True
     hits = surfaces_hit_by_n((nx, ny, nz))
     if solo_l is not None:
@@ -653,8 +667,8 @@ def surfaces_hit_by_n(n: Tuple[int, int, int]) -> List[str]:
 def material_letters(n, surfaces, face_hits=None) -> List[str]:
     """Shoebox crossings, or polygon labels that have a card.
 
-    A polygon tap with no F card stays on the empty hit list, so the live
-    pack does not grow a cascade. Missing cards are skipped.
+    A polygon tap with no card for that split stays on the empty hit list,
+    so the live pack does not grow a cascade. Missing cards are skipped.
     """
     if face_hits is None:
         return surfaces_hit_by_n(n)

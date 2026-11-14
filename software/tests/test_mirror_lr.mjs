@@ -150,10 +150,10 @@ test("splay shows no switch and one card per face", () => {
   assert.equal(nodes.mirrorLrRow.hidden, true);
   assert.equal(nodes.mirrorLr.disabled, true);
   const linked = cards(nodes);
-  assert.deepEqual(linked.map((c) => c.letter), ["F1", "F2", "F3", "F4", "F5", "F6"]);
+  assert.deepEqual(linked.map((c) => c.letter), ["A1", "B1", "C1", "D1", "E1", "F1"]);
   linked.forEach((c) => assert.equal(c.pair, null));
-  assert.match(linked[0].html, /Wall 1/);
-  assert.match(linked[1].html, /Wall 2/);
+  assert.match(linked[0].html, /Left/);
+  assert.match(linked[1].html, /Front/);
   assert.equal(linked[0].html.includes("sc-link"), false);
   assert.equal(linked.some((c) => c.letter === "C"), false);
   assert.equal(state.surfaces.C.absorb[0], 0.42);
@@ -178,12 +178,13 @@ test("lede and live hide the switch and list one card per face", () => {
     assert.equal(nodes.mirrorLr.disabled, true, shape);
     const linked = cards(nodes);
     const expectN = shape === "lede" ? 8 : 6;
+    const expectLetters = shape === "lede"
+      ? ["A1", "A2", "B1", "C1", "C2", "D1", "E1", "F1"]
+      : ["A1", "B1", "C1", "D1", "E1", "F1"];
     assert.equal(linked.length, expectN, shape);
-    linked.forEach((c, i) => {
-      assert.equal(c.letter, "F" + (i + 1), shape);
-      assert.equal(c.pair, null, shape);
-    });
-    assert.match(linked[0].html, /Wall 1/);
+    assert.deepEqual(linked.map((c) => c.letter), expectLetters, shape);
+    linked.forEach((c) => assert.equal(c.pair, null, shape));
+    assert.match(linked[0].html, /Left/);
     assert.equal(linked.some((c) => c.letter === "C"), false);
     assert.equal(state.surfaces.C.absorb[0], 0.42);
   });
@@ -199,9 +200,9 @@ test("gable hides the switch and lists both roofs and both gable ends", () => {
   assert.equal(nodes.mirrorLrRow.hidden, true);
   assert.equal(nodes.mirrorLr.disabled, true);
   const linked = cards(nodes);
-  assert.deepEqual(linked.map((c) => c.letter), ["F1", "F2", "F3", "F4", "F5", "F6", "F7"]);
+  assert.deepEqual(linked.map((c) => c.letter), ["A1", "B1", "C1", "D1", "E1", "F1", "F2"]);
   linked.forEach((c) => assert.equal(c.pair, null));
-  assert.match(linked[0].html, /Wall 1/);
+  assert.match(linked[0].html, /Left/);
   assert.match(linked[5].html, /Left roof/);
   assert.match(linked[6].html, /Right roof/);
   assert.equal(linked[0].html.includes("sc-link"), false);
@@ -224,10 +225,10 @@ test("hex hides the switch and links both angled side pairs", () => {
   assert.equal(nodes.mirrorLrRow.hidden, true);
   assert.equal(nodes.mirrorLr.disabled, true);
   const linked = cards(nodes);
-  assert.deepEqual(linked.map((c) => c.letter), ["F1", "F2", "F3", "F4", "F5", "F6", "F7", "F8"]);
+  assert.deepEqual(linked.map((c) => c.letter), ["A1", "A2", "B1", "C1", "C2", "D1", "E1", "F1"]);
   linked.forEach((c) => assert.equal(c.pair, null));
-  assert.match(linked[0].html, /Wall 1/);
-  assert.match(linked[5].html, /Wall 6/);
+  assert.match(linked[0].html, /Left 1/);
+  assert.match(linked[1].html, /Left 2/);
   assert.match(linked[6].html, /Floor/);
   assert.match(linked[7].html, /Ceiling/);
   assert.equal(linked[0].html.includes("sc-link"), false);

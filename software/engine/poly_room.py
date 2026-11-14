@@ -6,10 +6,14 @@ are the loudest at the two live mics. Direct stays line 0. FDN lengths are the
 path from the stand centre, the same on L, C, and R.
 
 Every tap keeps ``n = (0, 0, 0)`` so an A–F card does not colour this path.
-Each face also carries a stable ``F1..Fn`` label (walls, then floor, then
-ceiling). Those labels stay off the audio until a card for that label is
-posted. ``is_direct`` is true only on the order-0 path. An A–F Solo drops
-that path and keeps the reflections.
+Each face carries the Surfaces letter of the shoebox wall it belongs to,
+plus a split number (A1, F2). Floor is E. Ceiling and roof pieces are F.
+A wall takes the letter whose outward axis is closest: A −X, B +Z, C +X,
+D −Z. A tie within 1e-9 prefers Z, then X, then Y. Splits are numbered
+front to back, then left to right. The shoebox mesh is not labelled.
+Those labels stay off the audio until a card for that label is posted.
+``is_direct`` is true only on the order-0 path. An A–F Solo drops that
+path. On a polygon it also keeps only that letter's splits.
 """
 from __future__ import annotations
 
@@ -334,12 +338,57 @@ def shape_metrics(shape, W: float, H: float, L: float):
     return _mesh_volume(faces), _areas_from_faces(faces, W, H, L)
 
 
-def _label_faces(faces: List[Face]) -> List[Face]:
-    """Stable F1..Fn. Walls in wall-number order, then floor, then ceiling.
+def _surface_letter(face: Face) -> str:
+    """Shoebox letter. Floor is E. A ceiling or roof piece is F by name.
 
-    The face list itself stays in mesh order. A shoebox mesh is not passed
+    A wall uses its outward normal (``orient`` stores the inward one). The
+    largest axis wins. A component within 1e-9 of that winner breaks the
+    tie in axis order Z, X, Y.
+    """
+    if face.name == "floor":
+        return "E"
+    if face.name == "ceiling":
+        return "F"
+    outward = -np.asarray(face.n, float)
+    mag = np.abs(outward)
+    best = float(np.max(mag))
+    for axis in (2, 0, 1):
+        if abs(float(mag[axis]) - best) <= 1e-9:
+            sign = float(outward[axis])
+            if axis == 0:
+                return "A" if sign < 0.0 else "C"
+            if axis == 2:
+                return "D" if sign < 0.0 else "B"
+            return "E" if sign < 0.0 else "F"
+    return "F"
+
+
+def _split_key(face: Face):
+    """Front (+Z) first, then left (smaller X), then the mesh name."""
+    centre = face.v.mean(0)
+    return (-float(centre[2]), float(centre[0]), face.name)
+
+
+def _label_faces(faces: List[Face]) -> List[Face]:
+    """Surfaces letter plus a split number. The face list stays in mesh order.
+
+    One face of a letter is still numbered (E1), so a polygon label never
+    collides with the shoebox letters A–F. A shoebox mesh is not passed
     through here, so its faces keep an empty label.
     """
+    groups: dict = {}
+    for face in faces:
+        groups.setdefault(_surface_letter(face), []).append(face)
+    for letter, group in groups.items():
+        group.sort(key=_split_key)
+        for i, face in enumerate(group, start=1):
+            face.label = f"{letter}{i}"
+    return faces
+
+
+def _walk_order(faces: List[Face]) -> List[Face]:
+    """0b05da2 order: walls by wall number, then floor, then ceiling."""
+
     def wall_key(face: Face) -> int:
         rest = face.name[4:]
         if face.name.startswith("wall") and rest.isdigit():
@@ -351,9 +400,65 @@ def _label_faces(faces: List[Face]) -> List[Face]:
     ceils = [f for f in faces if f.name == "ceiling"]
     seen = {id(f) for f in walls + floors + ceils}
     rest = [f for f in faces if id(f) not in seen]
-    for i, face in enumerate(walls + floors + ceils + rest):
-        face.label = f"F{i + 1}"
-    return faces
+    return walls + floors + ceils + rest
+
+
+def legacy_label_map(shape, W: float = 6.0, H: float = 3.0, L: float = 8.0) -> dict:
+    """Old walk-order F# to the Surfaces label of the same face. Empty on a box."""
+    if not poly_on(shape):
+        return {}
+    faces = faces_for(shape, W, H, L)
+    if not any(face.label for face in faces):
+        return {}
+    return {
+        f"F{i + 1}": face.label
+        for i, face in enumerate(_walk_order(faces))
+        if face.label
+    }
+
+
+def _remap_label_value(raw, table: dict):
+    if isinstance(raw, str):
+        lab = raw.strip().upper()
+        return table.get(lab, raw)
+    if isinstance(raw, dict):
+        out = {}
+        for key, val in raw.items():
+            if isinstance(key, str):
+                dest = table.get(key.strip().upper(), key)
+            else:
+                dest = key
+            out[dest] = val
+        return out
+    if isinstance(raw, list):
+        return [_remap_label_value(item, table) if isinstance(item, str) else item for item in raw]
+    return raw
+
+
+def remap_legacy_setup(setup: dict) -> dict:
+    """Map a saved setup's walk-order F# keys. ``face_label_rev`` skips the map.
+
+    A setup that only has shoebox A–F cards is unchanged. The revision flag
+    stays on the dict when the caller put it there. The page strips it
+    before the flag can sit on the live state.
+    """
+    if not isinstance(setup, dict) or setup.get("face_label_rev"):
+        return setup
+    shape = setup.get("room_shape") or "box"
+    try:
+        width = float(setup.get("W") or 6.0)
+        height = float(setup.get("H") or 3.0)
+        length = float(setup.get("L") or 8.0)
+    except (TypeError, ValueError):
+        width, height, length = 6.0, 3.0, 8.0
+    table = legacy_label_map(shape, width, height, length)
+    if not table:
+        return setup
+    out = dict(setup)
+    for key in ("surfaces", "surfaces_mute", "surfaces_solo"):
+        if key in out:
+            out[key] = _remap_label_value(out[key], table)
+    return out
 
 
 def _seq_labels(faces, seq):

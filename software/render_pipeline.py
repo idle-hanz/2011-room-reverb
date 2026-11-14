@@ -688,7 +688,8 @@ def render_early_ir(
     solo_l = parse_solo(surfaces_solo)
     mute_s = parse_mute(surfaces_mute)
     for ti, t in enumerate(taps):
-        # D11 / D16: a silenced image is absent. Solo drops only the direct path.
+        # D11 / D16: a silenced image is absent. Solo drops the direct path.
+        # On a polygon list, bare F also drops every ceiling split.
         face_hits = getattr(t, "face_labels", None)
         if not image_in_early(t.n, solo_l, mute_s, getattr(t, "is_direct", None), face_hits):
             continue
@@ -918,7 +919,7 @@ def tap_dff(n, surfaces, master: float = DIFFUSION_MASTER_LIVE, face_hits=None) 
 
     Geometric hits (both walls when |n|≥2). Not A–F bit tables.
     Master live −0.5 (394/485 Max) makes Dff ≤ 0 like 463.
-    ``face_hits`` None keeps that map. A polygon label with no card adds nothing.
+    ``face_hits`` None keeps that map. A polygon split with no card adds nothing.
     """
     if not surfaces:
         return 0.0
@@ -936,8 +937,8 @@ def tap_reflect_gain(n, surfaces, face_hits=None) -> float:
 
     ᾱ is the mean of that card's absorb bands. Direct (no hits) stays 1.
     Not Structure A–F masks.
-    ``face_hits`` None keeps the shoebox crossings. A missing F card is skipped,
-    so a polygon room with no face card stays gain 1.
+    ``face_hits`` None keeps the shoebox crossings. A missing split card is
+    skipped, so a polygon room with no face card stays gain 1.
     """
     if not surfaces:
         return 1.0

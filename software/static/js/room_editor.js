@@ -1358,7 +1358,7 @@
       var floorTag = "Floor";
       var ceilTag = "Ceiling";
       if (global.RoomShape && RoomShape.normalize(geo.state.room_shape) !== "box" && RoomShape.wallRows) {
-        var faceRows = RoomShape.wallRows(geo.state.room_shape, false);
+        var faceRows = RoomShape.wallRows(geo.state.room_shape, false, geo.state.W, geo.state.H, geo.state.L);
         var floorRow = null;
         var ceilBits = [];
         var ri;

@@ -84,25 +84,34 @@
   ];
 
   function isFaceLabel(letter) {
-    return /^F[1-9]\d*$/.test(String(letter || ""));
+    return /^[A-F][1-9]\d*$/.test(String(letter || "").toUpperCase());
   }
 
   function metaFor(letter) {
-    if (META[letter]) return META[letter];
-    if (!isFaceLabel(letter)) return null;
-    var n = parseInt(String(letter).slice(1), 10) || 1;
-    var palette = ["#c4b5fd", "#f0abfc", "#67e8f9", "#fcd34d", "#86efac", "#fda4af", "#93c5fd"];
+    var raw = String(letter || "").toUpperCase();
+    if (META[raw]) return META[raw];
+    var m = /^([A-F])([1-9]\d*)$/.exec(raw);
+    if (!m) return null;
+    var base = META[m[1]];
     return {
-      label: "Face " + letter,
-      short: letter,
-      role: "face",
-      face: letter,
-      facing: letter,
-      arrow: "",
-      compass: letter,
-      hint: "Polygon face " + letter,
-      color: palette[(n - 1) % palette.length]
+      label: base.short + " " + m[2],
+      short: base.short + " " + m[2],
+      role: base.role,
+      face: raw,
+      facing: base.facing,
+      arrow: base.arrow,
+      compass: base.short,
+      hint: base.short + " " + m[2],
+      color: base.color
     };
+  }
+
+  /* Bare F covers F1, F2, F3. A split matches only itself. */
+  function labelCovers(hit, token) {
+    var h = String(hit || "").toUpperCase();
+    var t = String(token || "").toUpperCase();
+    if (h === t) return !!t;
+    return /^[A-F]$/.test(t) && /^[A-F][1-9]\d*$/.test(h) && h.charAt(0) === t;
   }
 
   function blankFace(letter) {
@@ -361,7 +370,7 @@
       var vmin = Math.min.apply(null, vals), vmax = Math.max.apply(null, vals);
       var span = Math.max(1e-6, vmax - vmin);
       ctx.beginPath();
-      ctx.strokeStyle = META[L].color;
+      ctx.strokeStyle = (metaFor(L) || META.A).color;
       ctx.lineWidth = 1.4;
       for (var j = 0; j < n; j++) {
         var x = (W - 4) * j / (n - 1) + 2;
@@ -409,7 +418,9 @@
 
   ColourSurfaces.prototype._wallRows = function () {
     var st = this.getState() || {};
-    if (global.RoomShape && RoomShape.wallRows) return RoomShape.wallRows(st.room_shape, !!st.mirror_lr);
+    if (global.RoomShape && RoomShape.wallRows) {
+      return RoomShape.wallRows(st.room_shape, !!st.mirror_lr, st.W, st.H, st.L);
+    }
     return [
       { id: "left", letters: ["A"], shared: false, label: "Left", facing: "\u2212X" },
       { id: "right", letters: ["C"], shared: false, label: "Right", facing: "+X" },
@@ -1199,7 +1210,9 @@
   };
 
   ColourSurfaces.prototype._roleOf = function (letter) {
-    return (this.letterRole && this.letterRole[letter]) || (META[letter] && META[letter].role) || "";
+    if (this.letterRole && this.letterRole[letter]) return this.letterRole[letter];
+    var m = metaFor(letter);
+    return (m && m.role) || "";
   };
 
   ColourSurfaces.prototype._legal = function (mat, letter) {
@@ -1323,7 +1336,7 @@
 
   ColourSurfaces.prototype._syncHonesty = function () {
     var s = this._current();
-    var m = META[this.selected];
+    var m = metaFor(this.selected);
     if (this.els.title) {
       this.els.title.textContent = s.material_name
         ? ("Surface " + this.selected + " · " + s.material_name)
@@ -1343,9 +1356,16 @@
     var cards = this.els.cards ? this.els.cards.querySelectorAll(".surface-card") : [];
     cards.forEach(function (c) {
       var L = c.getAttribute("data-letter");
-      var heard = solo ? L === solo : !mute[L];
+      var covered = false;
+      var key;
+      if (!solo) {
+        for (key in mute) {
+          if (mute[key] && labelCovers(L, key)) covered = true;
+        }
+      }
+      var heard = solo ? labelCovers(L, solo) : !covered;
       c.classList.toggle("is-muted", !heard);
-      c.classList.toggle("is-solo", solo === L);
+      c.classList.toggle("is-solo", !!(solo && labelCovers(L, solo)));
       var sb = c.querySelector("[data-solo]");
       var mb = c.querySelector("[data-mute]");
       if (sb) {

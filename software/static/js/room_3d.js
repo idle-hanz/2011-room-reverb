@@ -265,7 +265,10 @@
           transparent: true,
           opacity: 0.7
         });
-        var labelName = { A: ["Left", "#38bdf8"], B: ["Front", "#2dd4bf"], C: ["Right", "#a78bfa"], D: ["Back", "#fb7185"] };
+        var labelName = {
+          A: ["Left", "#38bdf8"], B: ["Front", "#2dd4bf"], C: ["Right", "#a78bfa"],
+          D: ["Back", "#fb7185"], E: ["Floor", "#78716c"], F: ["Ceiling", "#e2e8f0"]
+        };
         faces.forEach(function (face) {
           var ring = face.v.map(function (p) { return enter(env, mapRoom, p, L); });
           var col = RoomDraw.wallColor(surfaces, face.letter);
@@ -285,8 +288,9 @@
           if (floorFace) mesh.name = "floor";
           env.roomGroup.add(mesh);
           env.roomGroup.add(enter(env, loopLine, ring, edgeMatS));
-          var named = labelName[face.letter];
-          var text = named ? named[0] : (face.letter || face.name);
+          var key = String(face.letter || "");
+          var named = labelName[key] || labelName[key.charAt(0)];
+          var text = named ? (key.length > 1 ? key + " " + named[0] : named[0]) : (key || face.name);
           var tint = named ? named[1] : "#c4b5fd";
           var c = [0, 0, 0];
           face.v.forEach(function (p) {

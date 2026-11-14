@@ -445,7 +445,8 @@
         if (!wireOnly && rec.key === "home") {
           var faces = got.packs[0].pack.faces;
           faces.forEach(function (face, i) {
-            var opacity = face.letter === "E" ? 1 : (face.letter === "F" ? 0.22 : 0.45);
+            var kind = String(face.letter || "").charAt(0);
+            var opacity = kind === "E" ? 1 : (kind === "F" ? 0.22 : 0.45);
             var mesh = enter(env, polyFill, enter(env, mapRing, rec.rings[i], room.L), RoomDraw.wallColor(got.surfaces, face.letter), opacity);
             env.root.add(mesh);
           });
@@ -464,13 +465,14 @@
       var faces = got.packs[0].pack.faces;
       var names = { A: ["A Left", "#38bdf8"], B: ["B Front", "#2dd4bf"], C: ["C Right", "#a78bfa"], D: ["D Back", "#fb7185"], E: ["E Floor", "#78716c"], F: ["F Ceiling", "#e2e8f0"] };
       faces.forEach(function (face) {
-        var named = names[face.letter];
+        var key = String(face.letter || "");
+        var named = names[key] || names[key.charAt(0)];
         if (!named) return;
         var c = [0, 0, 0];
         face.v.forEach(function (p) { c[0] += p[0]; c[1] += p[1]; c[2] += p[2]; });
         var n = face.v.length || 1;
         var tp = enter(env, mapPt, { x: c[0] / n, y: c[1] / n, z: c[2] / n }, room.L);
-        var spr = enter(env, makeLabel, named[0], named[1]);
+        var spr = enter(env, makeLabel, names[key] ? named[0] : (key + " " + named[0].slice(2)), named[1]);
         spr.position.set(tp.x, tp.y, tp.z);
         env.root.add(spr);
       });
