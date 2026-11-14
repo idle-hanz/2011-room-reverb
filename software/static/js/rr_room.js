@@ -211,6 +211,123 @@ function paintRoomShape() {
     paintRoomShape._shown = name;
     colourSurfaces.syncWallList();
   }
+  paintRoomCorners();
+}
+
+function setPlanDragNote(text) {
+  ["roomCornerNote", "floorPlanNote", "srcFloorPlanNote"].forEach(function (id) {
+    var el = document.getElementById(id);
+    if (!el) return;
+    el.textContent = text || "";
+    el.hidden = !text;
+  });
+}
+
+/* Corner X and Z for a plan: room. Hidden for every other shape.
+   A rebuild is skipped while a field in the list is focused and the corner count matches. */
+function paintRoomCorners() {
+  var list = document.getElementById("roomCornerList");
+  var name = (window.RoomShape && RoomShape.normalize) ? RoomShape.normalize(state.room_shape) : "box";
+  var planOn = name === "plan";
+  var pts = (planOn && window.RoomShape && RoomShape.planPoints) ? RoomShape.planPoints(state.room_shape) : null;
+  var sel = 0;
+  var rows;
+  var i;
+  if (!list) return;
+  if (!planOn || !pts) {
+    list.hidden = true;
+    list.textContent = "";
+    setPlanDragNote("");
+    return;
+  }
+  list.hidden = false;
+  if (window.RoomShape && RoomShape.planSelection) sel = RoomShape.planSelection();
+  if (sel < 0 || sel >= pts.length) {
+    sel = 0;
+    if (window.RoomShape && RoomShape.selectPlanCorner) RoomShape.selectPlanCorner(0);
+  }
+  rows = list.querySelectorAll("[data-corner-row]");
+  if (list.contains(document.activeElement) && rows.length === pts.length) {
+    list.querySelectorAll("[data-corner-pick]").forEach(function (btn) {
+      var on = parseInt(btn.getAttribute("data-corner-pick"), 10) === sel;
+      btn.classList.toggle("active", on);
+      btn.setAttribute("aria-pressed", on ? "true" : "false");
+    });
+  } else {
+    list.textContent = "";
+    for (i = 0; i < pts.length; i++) {
+      var on = i === sel;
+      var row = document.createElement("div");
+      var pick = document.createElement("button");
+      var xIn = document.createElement("input");
+      var zIn = document.createElement("input");
+      row.className = "place-row";
+      row.setAttribute("data-corner-row", String(i));
+      pick.type = "button";
+      pick.className = "chip" + (on ? " active" : "");
+      pick.setAttribute("data-corner-pick", String(i));
+      pick.setAttribute("aria-pressed", on ? "true" : "false");
+      pick.textContent = String(i + 1);
+      xIn.type = "number";
+      xIn.step = "0.01";
+      xIn.style.width = "4.6rem";
+      xIn.setAttribute("data-corner", String(i));
+      xIn.setAttribute("data-axis", "x");
+      xIn.setAttribute("aria-label", "Corner " + (i + 1) + " X metres");
+      xIn.value = Number(pts[i][0]).toFixed(2);
+      zIn.type = "number";
+      zIn.step = "0.01";
+      zIn.style.width = "4.6rem";
+      zIn.setAttribute("data-corner", String(i));
+      zIn.setAttribute("data-axis", "z");
+      zIn.setAttribute("aria-label", "Corner " + (i + 1) + " Z metres");
+      zIn.value = Number(pts[i][1]).toFixed(2);
+      row.appendChild(pick);
+      row.appendChild(xIn);
+      row.appendChild(zIn);
+      list.appendChild(row);
+    }
+  }
+  setPlanDragNote(window.RoomShape && RoomShape.planDragNote ? RoomShape.planDragNote() : "");
+}
+
+window.paintRoomCorners = paintRoomCorners;
+
+var roomCornerList = document.getElementById("roomCornerList");
+if (roomCornerList) {
+  roomCornerList.addEventListener("click", function (evt) {
+    var btn = evt.target && evt.target.closest ? evt.target.closest("[data-corner-pick]") : null;
+    if (!btn || !window.RoomShape || !RoomShape.selectPlanCorner) return;
+    RoomShape.selectPlanCorner(btn.getAttribute("data-corner-pick"));
+    paintRoomCorners();
+    if (window.editor && editor.redraw) editor.redraw();
+  });
+  roomCornerList.addEventListener("change", function (evt) {
+    var input = evt.target;
+    var row;
+    var xEl;
+    var zEl;
+    var i;
+    var pts;
+    if (!input || !input.getAttribute || input.getAttribute("data-corner") == null) return;
+    if (!window.RoomShape || !RoomShape.typePlanCorner) return;
+    i = parseInt(input.getAttribute("data-corner"), 10);
+    row = input.closest ? input.closest("[data-corner-row]") : null;
+    xEl = row ? row.querySelector('[data-axis="x"]') : null;
+    zEl = row ? row.querySelector('[data-axis="z"]') : null;
+    if (!xEl || !zEl) return;
+    RoomShape.selectPlanCorner(i);
+    state.room_shape = RoomShape.typePlanCorner(state.room_shape, i, xEl.value, zEl.value, state.W, state.L);
+    if (window.RoomMath && RoomMath.clampRoom) Object.assign(state, RoomMath.clampRoom(state));
+    pts = RoomShape.planPoints ? RoomShape.planPoints(state.room_shape) : null;
+    if (pts && pts[i]) {
+      xEl.value = Number(pts[i][0]).toFixed(2);
+      zEl.value = Number(pts[i][1]).toFixed(2);
+    }
+    syncUI();
+    scheduleLiveParams();
+    scheduleImagesFetch(0);
+  });
 }
 
 function addShapePanel(kind) {

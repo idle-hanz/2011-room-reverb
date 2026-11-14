@@ -307,51 +307,100 @@
     return encodePlan(next);
   }
 
-  function addPlanCorner(token) {
+  function edgeIndex(pts, index) {
+    var at;
+    if (index == null || !isFinite(Number(index))) return null;
+    at = index | 0;
+    if (at < 0 || at >= pts.length) at = 0;
+    return at;
+  }
+
+  function addPlanCorner(token, index) {
     var pts = planPoints(token);
     var best = 0;
     var bestLen = -1;
     var i;
     var mid;
     var next;
-    if (!pts || pts.length >= 8) return String(token || "box");
-    for (i = 0; i < pts.length; i++) {
-      var a = pts[i];
-      var b = pts[(i + 1) % pts.length];
-      var len = Math.hypot(b[0] - a[0], b[1] - a[1]);
-      if (len > bestLen) {
-        bestLen = len;
-        best = i;
+    var at;
+    if (!pts || pts.length >= 8) {
+      if (pts && pts.length >= 8) planNoteText = "At most 8 corners";
+      return String(token || "box");
+    }
+    at = edgeIndex(pts, index);
+    if (at == null) {
+      for (i = 0; i < pts.length; i++) {
+        var a = pts[i];
+        var b = pts[(i + 1) % pts.length];
+        var len = Math.hypot(b[0] - a[0], b[1] - a[1]);
+        if (len > bestLen) {
+          bestLen = len;
+          best = i;
+        }
       }
+      at = best;
     }
     mid = [
-      (pts[best][0] + pts[(best + 1) % pts.length][0]) * 0.5,
-      (pts[best][1] + pts[(best + 1) % pts.length][1]) * 0.5
+      (pts[at][0] + pts[(at + 1) % pts.length][0]) * 0.5,
+      (pts[at][1] + pts[(at + 1) % pts.length][1]) * 0.5
     ];
-    next = pts.slice(0, best + 1).concat([mid], pts.slice(best + 1));
-    if (!convex(next)) return String(token);
+    next = pts.slice(0, at + 1).concat([mid], pts.slice(at + 1));
+    if (!convex(next)) {
+      planNoteText = "Outline is not convex";
+      return String(token);
+    }
+    planNoteText = "";
     return encodePlan(next);
   }
 
-  function delPlanCorner(token) {
+  function delPlanCorner(token, index) {
     var pts = planPoints(token);
     var best = 0;
     var bestLen = 1e9;
     var i;
-    if (!pts || pts.length <= 5) return String(token || "box");
-    for (i = 0; i < pts.length; i++) {
-      var a = pts[(i + pts.length - 1) % pts.length];
-      var b = pts[(i + 1) % pts.length];
-      var len = Math.hypot(b[0] - a[0], b[1] - a[1]);
-      if (len < bestLen) {
-        bestLen = len;
-        best = i;
+    var at;
+    if (!pts || pts.length <= 5) {
+      if (pts && pts.length <= 5) planNoteText = "At least 5 corners";
+      return String(token || "box");
+    }
+    at = edgeIndex(pts, index);
+    if (at == null) {
+      for (i = 0; i < pts.length; i++) {
+        var a = pts[(i + pts.length - 1) % pts.length];
+        var b = pts[(i + 1) % pts.length];
+        var len = Math.hypot(b[0] - a[0], b[1] - a[1]);
+        if (len < bestLen) {
+          bestLen = len;
+          best = i;
+        }
       }
+      at = best;
     }
     pts = pts.slice();
-    pts.splice(best, 1);
-    if (!convex(pts)) return String(token);
+    pts.splice(at, 1);
+    if (!convex(pts)) {
+      planNoteText = "That corner would dent the plan";
+      return String(token);
+    }
+    planNoteText = "";
     return encodePlan(pts);
+  }
+
+  function typePlanCorner(token, index, x, z, W, L) {
+    planNoteText = "";
+    return movePlanPoint(token, index, x, z, W, L, 0.01);
+  }
+
+  var planSelected = 0;
+
+  function planSelection() {
+    return planSelected;
+  }
+
+  function selectPlanCorner(index) {
+    var n = index | 0;
+    if (n < 0) n = 0;
+    planSelected = n;
   }
 
   function hitPlan(px, py, state, lay) {
@@ -998,6 +1047,9 @@
     planDragNote: planDragNote,
     addPlanCorner: addPlanCorner,
     delPlanCorner: delPlanCorner,
+    typePlanCorner: typePlanCorner,
+    planSelection: planSelection,
+    selectPlanCorner: selectPlanCorner,
     hitPlan: hitPlan,
     panelRow: panelRow,
     floorOutline: floorOutline,

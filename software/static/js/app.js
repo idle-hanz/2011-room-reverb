@@ -673,18 +673,40 @@ var roomPlanAdd = document.getElementById("roomPlanAdd");
 var roomPlanDel = document.getElementById("roomPlanDel");
 if (roomPlanAdd) {
   roomPlanAdd.addEventListener("click", function () {
+    var idx;
+    var before;
     if (!window.RoomShape || !RoomShape.addPlanCorner) return;
-    state.room_shape = RoomShape.addPlanCorner(state.room_shape);
+    idx = RoomShape.planSelection ? RoomShape.planSelection() : 0;
+    before = state.room_shape;
+    state.room_shape = RoomShape.addPlanCorner(state.room_shape, idx);
+    if (state.room_shape !== before && RoomShape.selectPlanCorner) RoomShape.selectPlanCorner(idx + 1);
+    if (window.RoomMath && RoomMath.clampRoom) Object.assign(state, RoomMath.clampRoom(state));
     syncUI();
     scheduleLiveParams();
+    scheduleImagesFetch(0);
   });
 }
 if (roomPlanDel) {
   roomPlanDel.addEventListener("click", function () {
+    var idx;
+    var before;
+    var pts;
+    var keep;
     if (!window.RoomShape || !RoomShape.delPlanCorner) return;
-    state.room_shape = RoomShape.delPlanCorner(state.room_shape);
+    idx = RoomShape.planSelection ? RoomShape.planSelection() : 0;
+    before = state.room_shape;
+    state.room_shape = RoomShape.delPlanCorner(state.room_shape, idx);
+    if (state.room_shape !== before && RoomShape.selectPlanCorner) {
+      pts = RoomShape.planPoints ? RoomShape.planPoints(state.room_shape) : null;
+      keep = idx;
+      if (pts && keep >= pts.length) keep = pts.length - 1;
+      if (keep < 0) keep = 0;
+      RoomShape.selectPlanCorner(keep);
+    }
+    if (window.RoomMath && RoomMath.clampRoom) Object.assign(state, RoomMath.clampRoom(state));
     syncUI();
     scheduleLiveParams();
+    scheduleImagesFetch(0);
   });
 }
 ["diffuser", "trap", "cloud"].forEach(function (kind) {

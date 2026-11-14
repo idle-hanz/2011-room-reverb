@@ -112,6 +112,8 @@
       const planHit = (!onHandle && global.RoomShape && RoomShape.hitPlan)
         ? RoomShape.hitPlan(p.x, p.y, env.getState(), env.fl) : null;
       if (planHit) {
+        if (RoomShape.selectPlanCorner) RoomShape.selectPlanCorner(planHit.index);
+        if (typeof global.paintRoomCorners === "function") global.paintRoomCorners();
         env.drag = { kind: "plan", canvas: "floor", index: planHit.index };
         env.floorCanvas.classList.add("dragging");
         try { env.floorCanvas.setPointerCapture(evt.pointerId); } catch (e) {}
@@ -1152,12 +1154,15 @@
       ctx.fillText(kind === "null" ? "Null" : "Off-axis", px + 12, py - 14);
     }
   function drawPlanPoints(ctx, geo) { var env = envStack[envStack.length - 1];
+      var sel;
       if (!global.RoomShape || RoomShape.normalize(geo.state.room_shape) !== "plan") return;
       var pts = RoomShape.floorPx(geo.state.room_shape, geo.state.W, geo.state.L, env.fl);
-      ctx.fillStyle = "#e7e1d4";
-      pts.forEach(function (p) {
+      sel = RoomShape.planSelection ? RoomShape.planSelection() : -1;
+      pts.forEach(function (p, i) {
+        var on = i === sel;
+        ctx.fillStyle = on ? "#f5c16c" : "#e7e1d4";
         ctx.beginPath();
-        ctx.arc(p.px, p.py, 5, 0, Math.PI * 2);
+        ctx.arc(p.px, p.py, on ? 8 : 5, 0, Math.PI * 2);
         ctx.fill();
       });
     }
