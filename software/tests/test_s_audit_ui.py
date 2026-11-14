@@ -573,6 +573,10 @@ _UI_ONLY_IDS = {
     "roomMicSetupLink",
     # Polar link. Click only calls setView("polar"). It does not post.
     "micPolarLink",
+    # Wall angle and ceiling percent post only when Apply is clicked.
+    # Walls and Ceiling themselves post on click and stay out of this set.
+    "roomTiltDeg",
+    "roomSlopePct",
 }
 
 
@@ -648,6 +652,7 @@ def test_a12_visible_controls_post_or_are_ui_only(audit_server):
                 if (el.getAttribute('data-polar-page')) return true;
                 if (el.getAttribute('data-src-freq') || el.getAttribute('data-src-plane')) return true;
                 if (el.getAttribute('data-plane')) return true;
+                if (el.getAttribute('data-room-shape') === 'plan') return true;
                 if (choicePressed(el)) return true;
                 if (el.id === 'oneSourceBtn' && (el.getAttribute('aria-pressed') === 'true' || el.classList.contains('active'))) return true;
                 if (el.id === 'surfacesSoloOff' && (el.getAttribute('aria-pressed') === 'true' || el.classList.contains('is-on'))) return true;
@@ -836,7 +841,8 @@ def test_a12_visible_controls_post_or_are_ui_only(audit_server):
 def test_mirror_porous_and_panel_post_when_they_can(audit_server):
     """A box mirror click and a roomy add both change the live post.
 
-    A plan token disables mirror. A full room disables both add buttons.
+    Plan on a four-corner box stays box. Plan on LEDE copies that outline
+    and disables mirror. A full room disables both add buttons.
     The enlarged heat note names the shoebox approximation.
     """
     p, b = _chrome()
@@ -872,12 +878,16 @@ def test_mirror_porous_and_panel_post_when_they_can(audit_server):
         assert "First-order shoebox images" in note, note
         assert "geometric 1/r" in note, note
         assert pg.locator("#floorHeatNote").is_hidden() is False
-        pg.evaluate(
-            """() => {
-              state.room_shape = RoomShape.storedShape('plan', state.W, state.H, state.L, 'box');
-              syncUINow();
-            }"""
+        pg.click("#floorFrame .diagram-expand")
+        pg.get_by_text("Shape, ratios, tilt, plan and treatment").click()
+        pg.locator("#roomShapeRow [data-room-shape='lede']").click()
+        pg.locator("#roomPlanRow [data-room-shape='plan']").click()
+        pg.wait_for_function(
+            "() => String(state.room_shape).indexOf('plan:') === 0",
+            timeout=4000,
         )
+        pg.click("#floorFrame .diagram-expand")
+        pg.evaluate("() => syncUINow()")
         hidden_note = pg.locator("#floorHeatNote").inner_text()
         assert "not a shoebox" in hidden_note, hidden_note
         assert pg.evaluate("() => document.getElementById('mirrorLr').disabled") is True
