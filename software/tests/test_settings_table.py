@@ -150,10 +150,23 @@ ref_mode rendered_t20 route_c route_l route_r selected_mics
 _ORPHAN_TABLE_ONLY = frozenset(
     "binaural_image_set binaural_level_ref binaural_tail_mode ear_spacing_m".split()
 )
+# Room and Polar checkboxes. The page reads data-mic and data-polar.
+# They are not setting keys.
+_DISPLAY_CONTROLS = frozenset({
+    "data-mic=L",
+    "data-mic=C",
+    "data-mic=R",
+    "data-polar=L",
+    "data-polar=C",
+    "data-polar=R",
+    "data-polar=sum",
+})
 
 
 def test_controls_posts_and_reads_are_in_the_table():
-    controls, bare = _html_controls()
+    html_controls, bare = _html_controls()
+    assert _DISPLAY_CONTROLS <= html_controls
+    controls = html_controls - _DISPLAY_CONTROLS
     posted = _posted_keys()
     reads = _server_reads()
     names = set(BY_NAME)

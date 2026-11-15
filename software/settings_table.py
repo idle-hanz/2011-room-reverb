@@ -331,14 +331,6 @@ def _rows():
     add(R("ref_mode", "peak", tab="Surfaces", choices=["peak", "rms"], route="colour", path="neither"))
     add(R("rendered_t20", None, tab="Surfaces", route="room", path="render"))
 
-    # Display toggles. Nothing in the audio post uses these names.
-    add(R("show_mic_L", True, tab="Space", route="none", path="neither", controls=["data-mic=L"]))
-    add(R("show_mic_C", False, tab="Space", route="none", path="neither", controls=["data-mic=C"]))
-    add(R("show_mic_R", True, tab="Space", route="none", path="neither", controls=["data-mic=R"]))
-    add(R("polar_show_L", False, tab="Polar", route="none", path="neither", controls=["data-polar=L"]))
-    add(R("polar_show_C", False, tab="Polar", route="none", path="neither", controls=["data-polar=C"]))
-    add(R("polar_show_R", False, tab="Polar", route="none", path="neither", controls=["data-polar=R"]))
-    add(R("polar_show_sum", True, tab="Polar", route="none", path="neither", controls=["data-polar=sum"]))
     add(R("mics", ["C"], tab="Space", route="polar", path="neither"))
     add(R("selected_mics", None, tab="Space", route="polar", path="neither"))
     add(R("n_az", 72, tab="Polar", lo=24, hi=180, route="polar", path="neither"))
