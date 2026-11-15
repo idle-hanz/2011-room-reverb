@@ -455,7 +455,13 @@ def test_a10_header_status_on_every_tab(audit_server):
                   el.dispatchEvent(new Event('input', { bubbles: true }));
                 }"""
             )
-            pg.wait_for_timeout(200)
+            pg.wait_for_function(
+                """() => {
+                  const el = document.getElementById('headerStatus');
+                  return !!(el && (el.textContent || '').indexOf('forced live_params error') >= 0);
+                }""",
+                timeout=5000,
+            )
             text = pg.locator("#headerStatus").inner_text()
             assert "forced live_params error" in text, view
             box = pg.locator("#headerStatus").bounding_box()
