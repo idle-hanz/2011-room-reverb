@@ -178,9 +178,7 @@ Sidebar: **Room size**, **Listen** (setup + capsules), **Mix** (Hadamard N, earl
 Engine check from `software/`:
 
 ```bat
-.venv\Scripts\activate
-cd engine
-python selfcheck.py
+.venv\Scripts\python.exe tests\selfcheck.py
 ```
 
 ---

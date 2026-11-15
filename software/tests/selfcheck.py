@@ -23,6 +23,13 @@ Verifies:
 
 from __future__ import annotations
 
+import sys
+from pathlib import Path
+
+_ENGINE = Path(__file__).resolve().parent.parent / "engine"
+if str(_ENGINE) not in sys.path:
+    sys.path.insert(0, str(_ENGINE))
+
 from early_field import (
     build_image_indices,
     LIVE_32,
@@ -485,7 +492,7 @@ def test_to_v_tables_verified_subset() -> None:
 def test_data_tables_not_imported_by_audio() -> None:
     """absorb_masks / to_v_tables stay out of the render path."""
     from pathlib import Path
-    root = Path(__file__).resolve().parent
+    root = Path(__file__).resolve().parent.parent / "engine"
     for name in ("early_field.py", "fdn.py"):
         text = (root / name).read_text(encoding="utf-8")
         assert "absorb_masks" not in text, name

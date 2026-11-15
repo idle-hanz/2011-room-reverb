@@ -167,10 +167,10 @@ Mic setups include AB, XY, ORTF, NOS, DIN, **MS** (UI label: omni mid + inward c
 4. Compare early field first; expect FDN / Surfaces differences.  
 5. Output: `software/renders/out.wav`.
 
+Engine check from `software/`:
+
 ```bat
-.venv\Scripts\activate
-cd engine
-python selfcheck.py
+.venv\Scripts\python.exe tests\selfcheck.py
 ```
 
 ---

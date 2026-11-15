@@ -66,7 +66,7 @@ From `software\`:
 
 ```
 .\.venv\Scripts\python.exe -m pytest tests\test_quick_pins.py -q -p no:cacheprovider
-.\.venv\Scripts\python.exe engine\selfcheck.py
+.\.venv\Scripts\python.exe tests\selfcheck.py
 node --test (Get-ChildItem tests\*.mjs | % FullName)
 ```
 

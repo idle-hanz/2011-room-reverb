@@ -40,6 +40,6 @@ Details: [`docs/QUICKSTART.md`](docs/QUICKSTART.md)
 
 A Thursday run starts at [`CURRENT_BRIEF.md`](CURRENT_BRIEF.md) and `handoff_build_support_2/roadmap/thursday_prompts/RUN_RULES.md`. Software geometric level is **1/r**. Shoebox faces stay **A–F** (A left, B front, C right, D back, E floor, F ceiling). Polygon faces are **F1..Fn**. `WORKLET_VER` is **65**. There is no preamp, compressor, or bloom. UI and docs mark **VERIFIED** vs **ASSUMED**. FDN uses Sylvester, not OCR Hadamard rows.
 
-Tests, from `software\`: `.\.venv\Scripts\python.exe -m pytest tests\test_quick_pins.py -q -p no:cacheprovider`, then `.\.venv\Scripts\python.exe engine\selfcheck.py`, then `node --test (Get-ChildItem tests\*.mjs | % FullName)`. PowerShell does not expand the glob. At the end of a run: `pytest -n auto -m "not slow"` and `pytest -n auto -m slow`.
+Tests, from `software\`: `.\.venv\Scripts\python.exe -m pytest tests\test_quick_pins.py -q -p no:cacheprovider`, then `.\.venv\Scripts\python.exe tests\selfcheck.py`, then `node --test (Get-ChildItem tests\*.mjs | % FullName)`. PowerShell does not expand the glob. At the end of a run: `pytest -n auto -m "not slow"` and `pytest -n auto -m slow`.
 
 © Idle Hanz
