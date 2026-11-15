@@ -26,8 +26,8 @@ Details: [`docs/QUICKSTART.md`](docs/QUICKSTART.md)
 
 | Path | What |
 |------|------|
-| `software/` | FastAPI app, static UI, engine |
-| `HANDOVER.md` | **Start here** for a new agent chat |
+| `software/` | FastAPI app, static UI, engine. Eight HTTP routes |
+| `CURRENT_BRIEF.md` | **Thursday start**, with `RUN_RULES.md` |
 | `docs/` | Guides + diagrams |
 | `findings/` | Structure mining notes |
 | `ensemble/` | Original `.ens` (reference) |
@@ -38,8 +38,8 @@ Details: [`docs/QUICKSTART.md`](docs/QUICKSTART.md)
 - Unscaled ±1 Hadamard FDN (**no `1/√N`**)  
 - Image times **are** Diffuser Delay; Hadamard only mixes and feeds back  
 
-Agent sessions: read **`HANDOVER.md`** first. UI and docs mark **VERIFIED** vs **ASSUMED**. Panel names: B Ahead · D Behind · E Floor · F Ceiling · A+C Sides (Left/Right split ASSUMED). FDN uses Sylvester, not OCR Hadamard rows.
+A Thursday run starts at [`CURRENT_BRIEF.md`](CURRENT_BRIEF.md) and `handoff_build_support_2/roadmap/thursday_prompts/RUN_RULES.md`. Software geometric level is **1/r**. Shoebox faces stay **A–F** (A left, B front, C right, D back, E floor, F ceiling). Polygon faces are **F1..Fn**. `WORKLET_VER` is **65**. There is no preamp, compressor, or bloom. UI and docs mark **VERIFIED** vs **ASSUMED**. FDN uses Sylvester, not OCR Hadamard rows.
 
-Next session: read [`HANDOVER.md`](HANDOVER.md).
+Tests, from `software\`: `.\.venv\Scripts\python.exe -m pytest tests\test_quick_pins.py -q -p no:cacheprovider`, then `.\.venv\Scripts\python.exe engine\selfcheck.py`, then `node --test (Get-ChildItem tests\*.mjs | % FullName)`. PowerShell does not expand the glob. At the end of a run: `pytest -n auto -m "not slow"` and `pytest -n auto -m slow`.
 
 © Idle Hanz
