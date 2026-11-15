@@ -300,19 +300,6 @@ def diffusion_scale_from_room(room: Vec3, knob: float = DFFS_KNOB_DEFAULT) -> fl
     return max(largest * mean * float(knob), 1e-9)
 
 
-def inject_tap_into_fdn(
-    tap_amplitude: float,
-    tap_index: int,
-    n_lines: int = 32,
-    signs: Sequence[Sequence[int]] | None = None,
-) -> List[float]:
-    """Legacy Hadamard-column inject. Not the 2011 forward path — kept for tests."""
-    if signs is None:
-        signs = unscaled_hadamard_signs(n_lines)
-    col = tap_index % n_lines
-    return [float(tap_amplitude) * float(signs[row][col]) for row in range(n_lines)]
-
-
 def stub_note() -> str:
     return (
         "FDN: unscaled ±1 Hadamard; delays = image ms (cap 1000); "
@@ -1019,20 +1006,6 @@ class FDN:
             res["report"], stab=res["stab"], guard=res["guard"],
             kept_cuts=int(sum(p is not None for p in peaks)),
         ))
-
-    def _apply_peaking(self, reads: "np.ndarray") -> "np.ndarray":
-        if not self.peaking:
-            return reads
-        out = reads.copy()
-        for i in range(self.n):
-            if not self._use_peak[i]:
-                continue
-            x = reads[i]
-            yi = self._b0[i] * x + self._z1[i]
-            self._z1[i] = self._b1[i] * x - self._a1[i] * yi + self._z2[i]
-            self._z2[i] = self._b2[i] * x - self._a2[i] * yi
-            out[i] = yi
-        return out
 
     def process_block(self, inject: "np.ndarray") -> Tuple["np.ndarray", "np.ndarray"]:
         """

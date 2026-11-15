@@ -107,18 +107,6 @@ class BinauralColour:
     def _packed(self, index: int) -> np.ndarray:
         return pack_record(np.asarray(self._sos[int(index)], dtype=np.float64))
 
-    def record_for(self, bus: str, az: float, el: float):
-        """Packed SOS record (tuple) for one ear, or None when colour is off."""
-        if not self.measured or str(bus).lower() == "c":
-            return None
-        rec = self._packed(self._record_index(bus, az, el))
-        return tuple(float(x) for x in rec)
-
-    def all_records(self):
-        if not self.measured:
-            return []
-        return [tuple(float(x) for x in self._packed(i)) for i in range(len(self._sos))]
-
     def bank_for(self, taps, taps_b, n: int, direct_index: int) -> dict:
         """Live bank. FDN slots are wires (−1). Early and direct use node records."""
         sr = int(self.sr)

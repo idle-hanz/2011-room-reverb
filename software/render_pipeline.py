@@ -227,7 +227,6 @@ DEFAULT_FRAME_MS = 200.0
 DEFAULT_EARLY_MS = 90.0
 DEFAULT_DEPTH = 1.5
 DEFAULT_HUMIDITY = 0.0
-TARGET_PEAK_DBTP = -1.0
 
 
 def fft_convolve(a: np.ndarray, b: np.ndarray) -> np.ndarray:
@@ -369,13 +368,6 @@ def hann_window(n: int) -> np.ndarray:
     if n <= 1:
         return np.ones(n, dtype=np.float64)
     return 0.5 - 0.5 * np.cos(2.0 * math.pi * np.arange(n, dtype=np.float64) / (n - 1))
-
-
-def peak_normalize(L: np.ndarray, R: np.ndarray, target_dbtp: float = TARGET_PEAK_DBTP):
-    peak = max(float(np.max(np.abs(L))), float(np.max(np.abs(R))), 1e-12)
-    target = 10.0 ** (target_dbtp / 20.0)
-    scale = target / peak
-    return L * scale, R * scale, peak, scale
 
 
 FDN_MS_CAP = 12500.0
@@ -551,22 +543,6 @@ def path_sox_soz(
     sox = min(0.98, max(0.02, sox))
     soz = min(0.98, max(0.02, soz))
     return sox, soz
-
-
-def _apply_allpass_cached(buf, delay_samp, amp, stages, ap_cache):
-    """Integer-sample placement (legacy). Prefer _apply_ir_at for jittered delays."""
-    if stages <= 0:
-        if 0 <= delay_samp < len(buf):
-            buf[delay_samp] += amp
-        return
-    ir = ap_cache[stages]
-    if delay_samp >= len(buf) or delay_samp + len(ir) <= 0:
-        return
-    start = max(0, delay_samp)
-    ir0 = start - delay_samp
-    end = min(len(buf), delay_samp + len(ir))
-    ir1 = ir0 + (end - start)
-    buf[start:end] += amp * ir[ir0:ir1]
 
 
 def _apply_ir_at(buf, delay_float, amp, stages, ap_cache):
@@ -1319,65 +1295,6 @@ def _apply_tail_buses(buses, pack) -> None:
     rows = np.asarray(pack, dtype=np.float64).reshape(3, 3, 5)
     for i, ch in enumerate("lcr"):
         buses[ch][:] = apply_sos_df1(buses[ch], rows[i])
-
-
-def _fft_conv_head(x: np.ndarray, h: np.ndarray) -> np.ndarray:
-    """Causal FFT convolution, truncated to len(x). No SciPy."""
-    n = int(x.shape[0])
-    nfft = 1 << max(0, (n + int(h.shape[0]) - 2).bit_length())
-    y = np.fft.irfft(np.fft.rfft(x, nfft) * np.fft.rfft(h, nfft), nfft)
-    return y[:n]
-
-
-def render_binaural_fdn_ir(
-    taps, room, sr, c, length_ms, g, depth,
-    preset: str = "SADIE2_KU100",
-    tail_mode: str | None = None,
-):
-    """Uncoloured FDN tail, then the head's diffuse-field IC mixer.
-
-    A = √2 · even lines of the left loop, B = √2 · odd lines of the right loop.
-    L = Hc·A + Hs·B, R = Hs·A + Hc·B, via the shipped 513-tap M/S FIRs.
-    D3b: the Render F3 trim is applied here. render() never calls this
-    function (it trims inside render_fdn_ir), so the scalar is not doubled.
-    This loop has no line_t60, so the lock-only F2 row stays off.
-    """
-    from mic_colour.binaural import tail_fir
-
-    if tail_mode is None:
-        tail_mode = D("binaural_tail_mode")
-    n_samp = int(float(sr) * float(length_ms) / 1000.0) + 1
-    n_lines = 32
-    dff = [tap_dff(t.n, None, master=DIFFUSION_MASTER_LIVE) for t in taps]
-    polys = {}
-    for ch in ("l", "r"):
-        dly = fdn_delays_from_taps(taps, sr=sr, c=c, n=n_lines, channel=ch)
-        inj = build_inject_from_taps(taps, n_samp, sr, c, n_lines, channel=ch)
-        dffs = dffs_from_taps(
-            taps, dff, diffusion_scale_from_room(room), n=n_lines, channel=ch,
-        )
-        fdn = FDN(
-            dly, g=g, room=room, sr=sr, c=c,
-            depth_per_axis=depth, peaking=True, n=n_lines, dffs=dffs,
-        )
-        hp = _SUB_HP.get()
-        if hp is not None:
-            inj = _df1_columns(inj, hp)
-        polys[ch] = fdn.process_block_poly(inj) * loop_level_trim_lin("render", False)
-    if str(tail_mode) != str(D("binaural_tail_mode")):
-        return polys["l"].sum(axis=1), polys["r"].sum(axis=1)
-    scale = math.sqrt(2.0)
-    A = scale * polys["l"][:, 0::2].sum(axis=1)
-    B = scale * polys["r"][:, 1::2].sum(axis=1)
-    fir = tail_fir(str(preset or "SADIE2_KU100"), int(sr))
-    if fir is None:
-        return A, B
-    hp, hm = fir
-    mid = A + B
-    side = A - B
-    pm = _fft_conv_head(mid, hp)
-    sm = _fft_conv_head(side, hm)
-    return 0.5 * (pm + sm), 0.5 * (pm - sm)
 
 
 LIVE_DIRECT_FOLD = 0.55

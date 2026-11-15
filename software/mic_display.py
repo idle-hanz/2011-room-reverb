@@ -39,17 +39,6 @@ def prepare_from_metres(
     return sox, soz, mz
 
 
-def metres_from_prepare(
-    W: float, L: float, sox: float, soz: float, mz: float
-) -> Tuple[float, float, float]:
-    """(SoX, SoZ, MZ) → (SX, SZ, MCZ)."""
-    W, L = float(W), float(L)
-    mcz = L - float(mz)
-    sx = W * float(sox)
-    sz = mcz + (L - mcz) * float(soz)
-    return sx, sz, mcz
-
-
 def clamp(v: float, lo: float, hi: float) -> float:
     return max(lo, min(hi, float(v)))
 
