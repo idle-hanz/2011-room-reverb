@@ -38,20 +38,23 @@
   };
   var WALL_LETTER = ["D", "C", "B", "A"];
 
+  function shapeApi() {
+    if (typeof RoomShape !== "undefined" && RoomShape && RoomShape.floorOutline) return RoomShape;
+    if (typeof require === "function") {
+      var loaded = require("./room_shape.js");
+      if (loaded && loaded.floorOutline) return loaded;
+    }
+    return null;
+  }
+
+  /* Preset names come from RoomShape. plan and tilt stay the shoebox word here.
+     shellToken keeps the raw token for those two. */
   function normalize(raw) {
-    var key = String(raw == null ? "" : raw).trim().toLowerCase().replace(/[^a-z0-9]/g, "");
-    if (
-      key === "splay" || key === "splayed" || key === "rfz" || key === "control" ||
-      key === "splayedcontrol" || key === "splayedcontrolroom"
-    ) return "splay";
-    if (key === "lede" || key === "ledestyle") return "lede";
-    if (
-      key === "live" || key === "nonparallel" || key === "nonparallellive" ||
-      key === "nonparallelliveroom"
-    ) return "live";
-    if (key === "gable" || key === "gableroof") return "gable";
-    if (key === "hex" || key === "hexagon") return "hex";
-    return "box";
+    var ext = shapeApi();
+    if (!ext || !ext.normalize) return "box";
+    var kind = ext.normalize(raw);
+    if (kind === "plan" || kind === "tilt") return "box";
+    return kind;
   }
 
   /* Named presets stay on normalize. plan: and tilt: keep the raw token so the existing prism can read the corners. */
@@ -64,56 +67,15 @@
     return normalize(raw);
   }
 
-  function tan6() {
-    return Math.tan(6 * Math.PI / 180);
-  }
-
-  function shapeApi() {
-    if (typeof RoomShape !== "undefined" && RoomShape && RoomShape.floorOutline) return RoomShape;
-    return null;
-  }
-
   function floorPts(shape, W, L) {
     var ext = shapeApi();
-    if (ext) {
-      var kind = ext.normalize(shape);
-      if (kind === "plan" || kind === "tilt") return ext.floorOutline(shape, W, L);
-    }
-    var name = normalize(shape);
-    if (name === "splay") return [[W / 6, 0], [5 * W / 6, 0], [W, L], [0, L]];
-    if (name === "lede") {
-      var z1 = (2 / 7) * L;
-      return [[0.25 * W, 0], [0.75 * W, 0], [W, z1], [W, L], [0, L], [0, z1]];
-    }
-    if (name === "live") {
-      var inset = Math.min(0.25 * W, L * tan6());
-      return [[inset, 0], [W - inset, 0], [W, L], [0, L]];
-    }
-    if (name === "hex") {
-      return [
-        [W / 4, 0],
-        [3 * W / 4, 0],
-        [W, L / 2],
-        [3 * W / 4, L],
-        [W / 4, L],
-        [0, L / 2]
-      ];
-    }
+    if (ext && ext.floorOutline) return ext.floorOutline(shape, W, L);
     return [[0, 0], [W, 0], [W, L], [0, L]];
   }
 
   function heightAt(shape, z, H, L) {
     var ext = shapeApi();
-    if (ext && (ext.normalize(shape) === "plan" || ext.normalize(shape) === "tilt")) {
-      return ext.ceilingAt(shape, z, H, L);
-    }
-    var name = normalize(shape);
-    var t = !(L > 0) ? 0 : z / L;
-    if (name === "splay") return H * (0.8125 + 0.1875 * t);
-    if (name === "live") {
-      var insetY = Math.min(0.45 * H, L * tan6());
-      return (H - insetY) + insetY * t;
-    }
+    if (ext && ext.ceilingAt) return ext.ceilingAt(shape, z, H, L);
     return H;
   }
 

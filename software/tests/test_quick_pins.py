@@ -84,7 +84,7 @@ PIN_TABLE = {
     "spectrum_colors.js": 1,
     "freq_palette.js": 2,
     "room_view_pose.js": 1,
-    "room_draw.js": 11,
+    "room_draw.js": 12,
     "room_3d.js": 30,
     "room_editor.js": 38,
     "image_views.js": 28,
