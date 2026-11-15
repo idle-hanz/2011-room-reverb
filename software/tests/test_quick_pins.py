@@ -73,7 +73,7 @@ PIN_TABLE = {
     "app.css": 54,
     "sl_room_result.css": 3,
     "rr_controls.css": 1,
-    "room_shape.js": 17,
+    "room_shape.js": 18,
     "maths_look.js": 2,
     "maths_pattern.js": 2,
     "maths_distance.js": 1,
