@@ -88,7 +88,7 @@ PIN_TABLE = {
     "room_3d.js": 30,
     "room_editor.js": 38,
     "image_views.js": 28,
-    "colour_surfaces.js": 12,
+    "colour_surfaces.js": 13,
     "polar_field.js": 19,
     "polar_views.js": 12,
     "mic_desk.js": 30,

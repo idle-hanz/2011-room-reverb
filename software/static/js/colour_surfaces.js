@@ -291,6 +291,7 @@
     this._bindDiffusion();
     this._bindColourTools();
     this._bindMaterials();
+    this._bindCopyBox();
     this._loadMaterials();
     this.select("A");
     this.drawColour();
@@ -447,6 +448,35 @@
     dst.assumed = src.assumed;
   };
 
+  /* A1 and A2 take A. E1 takes E. F1 and F2 take F. Mute and Solo stay put. */
+  function copyLetterMaterials(surfaces, labels) {
+    var list = labels || [];
+    var i;
+    var lab;
+    var src;
+    var dst;
+    if (!surfaces) return surfaces;
+    for (i = 0; i < list.length; i++) {
+      lab = String(list[i] || "").toUpperCase();
+      if (!isFaceLabel(lab)) continue;
+      src = surfaces[lab.charAt(0)];
+      if (!src) continue;
+      if (!surfaces[lab]) surfaces[lab] = blankFace(lab);
+      dst = surfaces[lab];
+      if (src === dst) continue;
+      dst.absorb = (src.absorb || []).slice();
+      dst.material = src.material;
+      dst.material_name = src.material_name;
+      dst.honesty = src.honesty;
+      if (src.eq) dst.eq = JSON.parse(JSON.stringify(src.eq));
+      dst.jitter_D = src.jitter_D;
+      dst.structure_dif = src.structure_dif;
+      dst.diffusion = src.diffusion;
+      dst.assumed = src.assumed;
+    }
+    return surfaces;
+  }
+
   /* While the sides are one pair, left's material is the one that is posted. */
   ColourSurfaces.prototype._shareSides = function () {
     if (!this._sidesLinked()) return;
@@ -491,9 +521,36 @@
     this.syncWallList();
   };
 
+  ColourSurfaces.prototype._paintCopyBox = function () {
+    var btn = document.getElementById("copyBoxMaterials");
+    if (!btn) return;
+    var st = this.getState() || {};
+    var name = (global.RoomShape && RoomShape.normalize) ? RoomShape.normalize(st.room_shape) : "box";
+    btn.hidden = name === "box";
+  };
+
+  ColourSurfaces.prototype.copyBoxMaterials = function () {
+    var labels = [];
+    this._wallRows().forEach(function (row) {
+      (row.letters || []).forEach(function (L) { labels.push(L); });
+    });
+    copyLetterMaterials(this.surfaces(), labels);
+    this.select(this.selected || "A");
+    this.onChange();
+  };
+
+  ColourSurfaces.prototype._bindCopyBox = function () {
+    var self = this;
+    var btn = document.getElementById("copyBoxMaterials");
+    if (!btn || btn._bound) return;
+    btn._bound = true;
+    btn.addEventListener("click", function () { self.copyBoxMaterials(); });
+  };
+
   ColourSurfaces.prototype._buildCards = function () {
     var self = this;
     this._paintMirrorToggle();
+    this._paintCopyBox();
     var host = this.els.cards;
     if (!host) return;
     host.innerHTML = "";
@@ -1476,4 +1533,7 @@
     LETTERS: LETTERS,
     META: META
   };
-})(window);
+  if (typeof module === "object" && module.exports) {
+    module.exports = { copyLetterMaterials: copyLetterMaterials };
+  }
+})(typeof window !== "undefined" ? window : globalThis);

@@ -582,6 +582,8 @@ _UI_ONLY_IDS = {
     "roomRedo",
     # Box and the other four-corner floors refuse, so the click posts nothing.
     "roomPlanMirror",
+    # Copy box materials posts /api/params/live and is hidden on a box room.
+    # A plan's width or length change posts through the existing W and L controls.
 }
 
 
